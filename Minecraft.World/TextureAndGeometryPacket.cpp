@@ -177,6 +177,9 @@ void TextureAndGeometryPacket::read(DataInputStream *dis) //throws IOException
 		this->BoxDataA[i].fD = dis->readFloat();
 		this->BoxDataA[i].fU = dis->readFloat();
 		this->BoxDataA[i].fV = dis->readFloat();
+		this->BoxDataA[i].fA = dis->readFloat();
+		this->BoxDataA[i].fM = dis->readFloat();
+		this->BoxDataA[i].fS = dis->readFloat();
 	}
 }
 
@@ -203,6 +206,9 @@ void TextureAndGeometryPacket::write(DataOutputStream *dos) //throws IOException
 		dos->writeFloat(this->BoxDataA[i].fD);
 		dos->writeFloat(this->BoxDataA[i].fU);
 		dos->writeFloat(this->BoxDataA[i].fV);
+		dos->writeFloat(this->BoxDataA[i].fA);
+		dos->writeFloat(this->BoxDataA[i].fM);
+		dos->writeFloat(this->BoxDataA[i].fS);
 	}
 }
 

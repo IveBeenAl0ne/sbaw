@@ -9,6 +9,7 @@
 ModelPart * HumanoidModel::AddOrRetrievePart(SKIN_BOX *pBox)
 {
 	ModelPart *pAttachTo=nullptr;
+	float scale=0;
 
 	switch(pBox->ePart)
 	{
@@ -32,20 +33,28 @@ ModelPart * HumanoidModel::AddOrRetrievePart(SKIN_BOX *pBox)
 		break;
 	case eBodyPart_Jacket:
 		pAttachTo=jacket;
+		scale=0.25;
 		break;
 	case eBodyPart_Sleeve0:
 		pAttachTo=sleeve0;
+		scale=0.25;
 		break;
 	case eBodyPart_Sleeve1:
 		pAttachTo=sleeve1;
+		scale=0.25;
 		break;
 	case eBodyPart_Pants0:
 		pAttachTo=pants0;
+		scale=0.25;
 		break;
 	case eBodyPart_Pants1:
 		pAttachTo=pants1;
+		scale=0.25;
 		break;
 	}
+
+	// check if this box has a declared scale then add it
+	if (pBox->fS != 0) scale = pBox->fS;
 
 	// first check this box doesn't already exist
 	ModelPart *pNewBox = pAttachTo->retrieveChild(pBox);
@@ -64,6 +73,8 @@ ModelPart * HumanoidModel::AddOrRetrievePart(SKIN_BOX *pBox)
 
 		pNewBox = new ModelPart(this, static_cast<int>(pBox->fU), static_cast<int>(pBox->fV));
 		pNewBox->visible=false;
+		if (pBox->fM > 0) pNewBox->bMirror = true; // check if this box has the mirror flag
+		pNewBox->hideWithArmor = (unsigned int)pBox->fA; // add the "hide when armor is worn" bit flags
 		pNewBox->addHumanoidBox(pBox->fX, pBox->fY, pBox->fZ, pBox->fW, pBox->fH, pBox->fD, 0); 
 		// 4J-PB - don't compile here, since the lighting isn't set up. It'll be compiled on first use.
 		//pNewBox->compile(1.0f/16.0f);	
@@ -73,7 +84,7 @@ ModelPart * HumanoidModel::AddOrRetrievePart(SKIN_BOX *pBox)
 	return pNewBox;
 }
 
-void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror, bool force32)
+void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror, bool force32, bool isArmor)
 {
 	this->texWidth = texWidth;
 	this->texHeight = texHeight;
@@ -113,7 +124,7 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 	if ((texWidth == 64 && texHeight == 64) && !force32)
 	{
 		jacket = new ModelPart(this, 16, 32);
-		jacket->addHumanoidBox(-4, 0, -2, 8, 12, 4, g + 0.5);
+		jacket->addHumanoidBox(-4, 0, -2, 8, 12, 4, g + 0.25);
 		jacket->setPos(0, 0 + yOffset, 0);
 	}
 
@@ -131,13 +142,13 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 
 		if (slimHands == false)
 		{
-			sleeve0->addHumanoidBox(-3, -2, -2, 4, 12, 4, g + 0.5);
-			sleeve1->addHumanoidBox(-1, -2, -2, 4, 12, 4, g + 0.5);
+			sleeve0->addHumanoidBox(-3, -2, -2, 4, 12, 4, g + 0.25);
+			sleeve1->addHumanoidBox(-1, -2, -2, 4, 12, 4, g + 0.25);
 		}
 		else if (slimHands == true)
 		{
-			sleeve0->addHumanoidBox(-2, -2, -2, 3, 12, 4, g + 0.5);
-			sleeve1->addHumanoidBox(-1, -2, -2, 3, 12, 4, g + 0.5);
+			sleeve0->addHumanoidBox(-2, -2, -2, 3, 12, 4, g + 0.25);
+			sleeve1->addHumanoidBox(-1, -2, -2, 3, 12, 4, g + 0.25);
 		}
 
 		sleeve0->setPos(-5, 2 + yOffset, 0);
@@ -172,11 +183,11 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 		leg1 = new ModelPart(this, 16, 48);
 
 		pants0 = new ModelPart(this, 0, 32);
-		pants0->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.5);
+		pants0->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25);
 		pants0->setPos(-1.9, 12 + yOffset, 0);
 
 		pants1 = new ModelPart(this, 0, 48);
-		pants1->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.5);
+		pants1->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25);
 		pants1->setPos(1.9, 12 + yOffset, 0);
 	}
 	else if ((texWidth == 64 && texHeight == 32) || force32)
@@ -226,6 +237,7 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 	bowAndArrow=false;
 	elytraFlying = false;
 	elytraCrouching = false;
+	m_isArmor = isArmor;
 
 
 	// 4J added
@@ -238,32 +250,37 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 
 HumanoidModel::HumanoidModel() : Model()
 {
-	_init(0, 0, 64, 32, false, true, false);
+	_init(0, 0, 64, 32, false, true, false, false);
 }
 
 HumanoidModel::HumanoidModel(float g) : Model()
 {
-	_init(g, 0, 64, 32, false, true, false);
+	_init(g, 0, 64, 32, false, true, false, false);
+}
+
+HumanoidModel::HumanoidModel(float g, bool isArmor) : Model()
+{
+	_init(g, 0, 64, 32, false, true, false, isArmor);
 }
 
 HumanoidModel::HumanoidModel(float g, float yOffset, int texWidth, int texHeight) : Model()
 {
-	_init(g,yOffset,texWidth,texHeight, false, true, false);
+	_init(g,yOffset,texWidth,texHeight, false, true, false, false);
 }
 
 HumanoidModel::HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands) : Model()
 {
-	_init(g,yOffset,texWidth,texHeight, slimHands, true, false);
+	_init(g,yOffset,texWidth,texHeight, slimHands, true, false, false);
 }
 
 HumanoidModel::HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror) : Model()
 {
-	_init(g,yOffset,texWidth,texHeight, slimHands, mirror, false);
+	_init(g,yOffset,texWidth,texHeight, slimHands, mirror, false, false);
 }
 
 HumanoidModel::HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror, bool force32) : Model()
 {
-	_init(g,yOffset,texWidth,texHeight, slimHands, mirror, force32);
+	_init(g,yOffset,texWidth,texHeight, slimHands, mirror, force32, false);
 }
 
 void HumanoidModel::render(shared_ptr<Entity> entity, float time, float r, float bob, float yRot, float xRot, float scale, bool usecompiled)
@@ -308,12 +325,12 @@ void HumanoidModel::render(shared_ptr<Entity> entity, float time, float r, float
 	}
 	else
 	{
-		head->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderHead))>0);
-		body->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderTorso))>0);
-		arm0->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderArm0))>0);
-		arm1->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderArm1))>0);
-		leg0->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderLeg0))>0);
-		leg1->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderLeg1))>0);
+		head->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderHead))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorHead))>0||!m_isArmor));
+		body->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderTorso))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorTorso))>0||!m_isArmor));
+		arm0->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderArm0))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorArm0))>0||!m_isArmor));
+		arm1->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderArm1))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorArm1))>0||!m_isArmor));
+		leg0->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderLeg0))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorLeg0))>0||!m_isArmor));
+		leg1->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderLeg1))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorLeg1))>0||!m_isArmor));
 		hair->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderHair))>0);
 
 		if (jacket)

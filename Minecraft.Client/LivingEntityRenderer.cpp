@@ -8,34 +8,33 @@
 #include "../Minecraft.World/Arrow.h"
 #include "../Minecraft.World/Mth.h"
 #include "../Minecraft.World/Player.h"
-#include "Skins.h"
-
 
 ResourceLocation LivingEntityRenderer::ENCHANT_GLINT_LOCATION = ResourceLocation(TN__BLUR__MISC_GLINT);
 int LivingEntityRenderer::MAX_ARMOR_LAYERS = 4;
 
-LivingEntityRenderer::LivingEntityRenderer(Model *model, float shadow, bool slimHands, bool createNewVar)
+LivingEntityRenderer::LivingEntityRenderer(Model *model, float shadow, bool isPlayer)
 {
 	this->model = model;
 
-	if (slimHands == true)
-		this->modelSlim = new HumanoidModel(0, 0, 64, 32, true);
-
-	if (createNewVar)
+	if (isPlayer)
 	{
-		this->newModel = new HumanoidModel(0, 0, 64, 64, false, false);
-
-		if (slimHands == true)
-			this->newModelSlim = new HumanoidModel(0, 0, 64, 64, true, false);
+		this->modelWide = new HumanoidModel(0, 0, 64, 64, false);
+		this->modelSlim = new HumanoidModel(0, 0, 64, 64, true);
 	}
 
 	shadowRadius = shadow;
 	armor = nullptr;
+	resModel = model;
 }
 
 void LivingEntityRenderer::setArmor(Model *armor)
 {
 	this->armor = armor;
+}
+
+void LivingEntityRenderer::setPlayerModelType(Model *humanoidModel)
+{
+	resModel = humanoidModel;
 }
 
 float LivingEntityRenderer::rotlerp(float from, float to, float a)
@@ -56,8 +55,6 @@ void LivingEntityRenderer::render(shared_ptr<Entity> _mob, double x, double y, d
 	}
 
 	shared_ptr<LivingEntity> mob = dynamic_pointer_cast<LivingEntity>(_mob);
-	shared_ptr<Player> player = dynamic_pointer_cast<Player>(_mob);
-	Model *resModel = static_cast<HumanoidModel *>(model);
 
 	if (mob == nullptr)
 	{
@@ -66,30 +63,6 @@ void LivingEntityRenderer::render(shared_ptr<Entity> _mob, double x, double y, d
 
 	glPushMatrix();
 	glDisable(GL_CULL_FACE);
-
-	if (player != nullptr)
-	{
-		Textures *textures = Minecraft::GetInstance()->textures;
-		int skinId = player->getPlayerDefaultSkin() - 1;
-		int defaultSkin = player->getPlayerDefaultSkin() + 35;
-
-		if (slim[skinId] == true)
-		{
-			if (textures->getHeight(player->customTextureUrl, defaultSkin) == 64)
-				resModel = static_cast<HumanoidModel *>(newModelSlim);
-			else
-				resModel = static_cast<HumanoidModel *>(modelSlim);
-		}
-		else
-		{
-			if (textures->getHeight(player->customTextureUrl, defaultSkin) == 64)
-				resModel = static_cast<HumanoidModel *>(newModel);
-			else
-				resModel = static_cast<HumanoidModel *>(model);
-		}
-	}
-	else
-		resModel = static_cast<HumanoidModel *>(model);
 
 	resModel->attackTime = getAttackAnim(mob, a);
 	if (armor != nullptr) armor->attackTime = resModel->attackTime;
@@ -281,33 +254,6 @@ void LivingEntityRenderer::render(shared_ptr<Entity> _mob, double x, double y, d
 
 void LivingEntityRenderer::renderModel(shared_ptr<LivingEntity> mob, float wp, float ws, float bob, float headRotMinusBodyRot, float headRotx, float scale)
 {
-	shared_ptr<Player> player = dynamic_pointer_cast<Player>(mob);
-	Model *resModel = static_cast<HumanoidModel *>(model);
-
-	if (player != nullptr)
-	{
-		Textures *textures = Minecraft::GetInstance()->textures;
-		int skinId = player->getPlayerDefaultSkin() - 1;
-		int defaultSkin = player->getPlayerDefaultSkin() + 35;
-
-		if (slim[skinId] == true)
-		{
-			if (textures->getHeight(player->customTextureUrl, defaultSkin) == 64)
-				resModel = static_cast<HumanoidModel *>(newModelSlim);
-			else
-				resModel = static_cast<HumanoidModel *>(modelSlim);
-		}
-		else
-		{
-			if (textures->getHeight(player->customTextureUrl, defaultSkin) == 64)
-				resModel = static_cast<HumanoidModel *>(newModel);
-			else
-				resModel = static_cast<HumanoidModel *>(model);
-		}
-	}
-	else
-		resModel = static_cast<HumanoidModel *>(model);
-
 	bindTexture(mob);
 	if (!mob->isInvisible())
 	{
@@ -351,7 +297,7 @@ void LivingEntityRenderer::setupRotations(shared_ptr<LivingEntity> mob, float bo
 	else
 	{
 		wstring name = mob->getAName();
-		if (name == L"Dinnerbone" || name == L"Grumm")
+		if (name == L"Dinnerbone" || name == L"Grumm" || mob->getAnimOverrideBitmask() & (1 << HumanoidModel::eAnim_Dinnerbone))
 		{
 			if ( !mob->instanceof(eTYPE_PLAYER) || !dynamic_pointer_cast<Player>(mob)->isCapeHidden() )
 			{
@@ -379,33 +325,6 @@ void LivingEntityRenderer::additionalRendering(shared_ptr<LivingEntity> mob, flo
 
 void LivingEntityRenderer::renderArrows(shared_ptr<LivingEntity> mob, float a)
 {
-	shared_ptr<Player> player = dynamic_pointer_cast<Player>(mob);
-	Model *resModel = static_cast<HumanoidModel *>(model);
-
-	if (player != nullptr)
-	{
-		Textures *textures = Minecraft::GetInstance()->textures;
-		int skinId = player->getPlayerDefaultSkin() - 1;
-		int defaultSkin = player->getPlayerDefaultSkin() + 35;
-
-		if (slim[skinId] == true)
-		{
-			if (textures->getHeight(player->customTextureUrl, defaultSkin) == 64)
-				resModel = static_cast<HumanoidModel *>(newModelSlim);
-			else
-				resModel = static_cast<HumanoidModel *>(modelSlim);
-		}
-		else
-		{
-			if (textures->getHeight(player->customTextureUrl, defaultSkin) == 64)
-				resModel = static_cast<HumanoidModel *>(newModel);
-			else
-				resModel = static_cast<HumanoidModel *>(model);
-		}
-	}
-	else
-		resModel = static_cast<HumanoidModel *>(model);
-
 	int arrowCount = mob->getArrowCount();
 
 	if (arrowCount > 0)

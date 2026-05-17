@@ -17,6 +17,7 @@ public:
 	bool bMirror;
 	bool visible;
 	bool neverRender;
+	unsigned int hideWithArmor;
     vector <Cube *> cubes;
     vector <ModelPart *> children;
     static const float RAD;

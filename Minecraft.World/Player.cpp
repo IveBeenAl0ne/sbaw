@@ -727,6 +727,22 @@ void Player::setCustomSkin(DWORD skinId)
 
 }
 
+int Player::GetModelTypeFromAnimBitmask(unsigned int uiAnimOverrideBitmask)
+{
+	if (uiAnimOverrideBitmask&(1<<HumanoidModel::eAnim_SlimModel)) return 2;
+	else if (uiAnimOverrideBitmask&(1<<HumanoidModel::eAnim_WideModel)) return 1;
+	return 0;
+}
+
+int Player::GetModelTypeFromTextureId(int textureId)
+{
+	if (textureId > 8 && textureId < 18) return 2;
+	else if (textureId == 18) return 1;
+	else if (textureId > 44 && textureId < 54) return 2;
+	else if (textureId == 54) return 1;
+	else return 0;
+}
+
 unsigned int Player::getSkinAnimOverrideBitmask(DWORD skinId)
 {
 	unsigned long bitmask = 0L;
@@ -2903,25 +2919,25 @@ int Player::getTexture()
 	case eDefaultSkins_Skin7:
 		return TN_MOB_CHAR7; // 4J - was L"/mob/char7.png";
 	case eDefaultSkins_Skin8:
-		return TN_MOB_CHAR8; // 4J - was L"/mob/char8.png";
+		return TN_MOB_ALEX; // 4J - was L"/mob/alex.png";
 	case eDefaultSkins_Skin9:
-		return TN_MOB_CHAR9; // 4J - was L"/mob/char9.png";
+		return TN_MOB_ALEX1; // 4J - was L"/mob/alex1.png";
 	case eDefaultSkins_Skin10:
-		return TN_MOB_CHAR10; // 4J - was L"/mob/char10.png";
+		return TN_MOB_ALEX2; // 4J - was L"/mob/alex2.png";
 	case eDefaultSkins_Skin11:
-		return TN_MOB_CHAR11; // 4J - was L"/mob/char11.png";
+		return TN_MOB_ALEX3; // 4J - was L"/mob/alex3.png";
 	case eDefaultSkins_Skin12:
-		return TN_MOB_CHAR12; // 4J - was L"/mob/char12.png";
+		return TN_MOB_ALEX4; // 4J - was L"/mob/alex4.png";
 	case eDefaultSkins_Skin13:
-		return TN_MOB_CHAR13; // 4J - was L"/mob/char13.png";
+		return TN_MOB_ALEX5; // 4J - was L"/mob/alex5.png";
 	case eDefaultSkins_Skin14:
-		return TN_MOB_CHAR14; // 4J - was L"/mob/char14.png";
+		return TN_MOB_ALEX6; // 4J - was L"/mob/alex6.png";
 	case eDefaultSkins_Skin15:
-		return TN_MOB_CHAR15; // 4J - was L"/mob/char15.png";
+		return TN_MOB_ALEX7; // 4J - was L"/mob/alex7.png";
 	case eDefaultSkins_Skin16:
-		return TN_MOB_CHAR16; // 4J - was L"/mob/char16.png";
+		return TN_MOB_DEVALEX; // 4J - was L"/mob/DevAlex.png";
 	case eDefaultSkins_Skin17:
-		return TN_MOB_CHAR17; // 4J - was L"/mob/char17.png";
+		return TN_MOB_DEVSTEVE; // 4J - was L"/mob/DevSteve.png";
 
 	default:
 		return TN_MOB_CHAR; // 4J - was L"/mob/char.png";

@@ -9626,7 +9626,14 @@ void CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, SKIN_BOX *SkinBoxA, D
 {
 	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
 	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
-	Model *pModel = renderer ? renderer->getModel() : nullptr;
+	unsigned int m_uiAnimOverrideBitmask = GetAnimOverrideBitmask(dwSkinID);
+	Model *pModel;
+	if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_SlimModel))
+		pModel = renderer ? renderer->getModel(2) : nullptr;
+	else if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_WideModel))
+		pModel = renderer ? renderer->getModel(1) : nullptr;
+	else
+		pModel = renderer ? renderer->getModel(0) : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 	vector<SKIN_BOX *> *pvSkinBoxes = new vector<SKIN_BOX *>;
 
@@ -9659,7 +9666,14 @@ vector<ModelPart *> * CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, vect
 {
 	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
 	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
-	Model *pModel = renderer ? renderer->getModel() : nullptr;
+	unsigned int m_uiAnimOverrideBitmask = GetAnimOverrideBitmask(dwSkinID);
+	Model *pModel;
+	if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_SlimModel))
+		pModel = renderer ? renderer->getModel(2) : nullptr;
+	else if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_WideModel))
+		pModel = renderer ? renderer->getModel(1) : nullptr;
+	else
+		pModel = renderer ? renderer->getModel(0) : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 
 	EnterCriticalSection( &csAdditionalModelParts );

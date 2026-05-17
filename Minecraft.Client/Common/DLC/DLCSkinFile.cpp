@@ -120,9 +120,9 @@ void DLCSkinFile::addParameter(DLCManager::EDLCParameterType type, const wstring
 
 #ifdef __PS3__
 			// 4J Stu - The Xbox version used swscanf_s which isn't available in GCC.
-			swscanf(value.c_str(), L"%10ls%f%f%f%f%f%f%f%f", wchBodyPart,
+			swscanf(value.c_str(), L"%10ls%f%f%f%f%f%f%f%f%f%f%f", wchBodyPart,
 #else
-			swscanf_s(value.c_str(), L"%9ls%f%f%f%f%f%f%f%f", wchBodyPart,10,
+			swscanf_s(value.c_str(), L"%9ls%f%f%f%f%f%f%f%f%f%f%f", wchBodyPart,10,
 #endif
 				&pSkinBox->fX,
 				&pSkinBox->fY,
@@ -131,7 +131,10 @@ void DLCSkinFile::addParameter(DLCManager::EDLCParameterType type, const wstring
 				&pSkinBox->fH,
 				&pSkinBox->fD,
 				&pSkinBox->fU,
-				&pSkinBox->fV);
+				&pSkinBox->fV,
+				&pSkinBox->fA,
+				&pSkinBox->fM,
+				&pSkinBox->fS);
  
 			if(wcscmp(wchBodyPart,L"HEAD")==0)
 			{

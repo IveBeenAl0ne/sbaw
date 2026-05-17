@@ -19,6 +19,6 @@ enum eBodyPart
 typedef struct 
 {
 	eBodyPart ePart;
-	float fX,fY,fZ,fW,fH,fD,fU,fV;
+	float fX,fY,fZ,fW,fH,fD,fU,fV,fA,fM,fS;
 }
 SKIN_BOX;

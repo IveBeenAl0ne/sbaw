@@ -442,6 +442,8 @@ public:
 	static DWORD getCapeIdFromPath(const wstring &cape);
 	static wstring getCapePathFromId(DWORD capeId);
 	static unsigned int getSkinAnimOverrideBitmask(DWORD skinId);
+	static int GetModelTypeFromAnimBitmask(unsigned int uiAnimOverrideBitmask);
+	static int GetModelTypeFromTextureId(int textureId);
 
 	// 4J Added
 	void setXuid(PlayerUID xuid);

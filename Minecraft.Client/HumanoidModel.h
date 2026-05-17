@@ -15,6 +15,7 @@ public:
     float eating_swing;	
     bool elytraFlying;    
     bool elytraCrouching; 
+    bool m_isArmor;
     unsigned int m_uiAnimOverrideBitmask; 
     float m_fYOffset;
     enum animbits
@@ -37,11 +38,20 @@ public:
         eAnim_DisableRenderLeg1,
         eAnim_DisableRenderHair,
         eAnim_SmallModel,
-        eAnim_DisableRenderJacket,
-        eAnim_DisableRenderSleeve0,
-        eAnim_DisableRenderSleeve1,
-        eAnim_DisableRenderPants0,
-        eAnim_DisableRenderPants1
+		eAnim_WideModel,
+		eAnim_SlimModel,
+		eAnim_DisableRenderSleeve1,
+		eAnim_DisableRenderSleeve0,
+		eAnim_DisableRenderPants1,
+		eAnim_DisableRenderPants0,
+		eAnim_DisableRenderJacket,
+		eAnim_RenderArmorHead,
+		eAnim_RenderArmorArm0,
+		eAnim_RenderArmorArm1,
+		eAnim_RenderArmorTorso,
+		eAnim_RenderArmorLeg0,
+		eAnim_RenderArmorLeg1,
+		eAnim_Dinnerbone
     };
 
 
@@ -60,10 +70,11 @@ public:
         (1 << HumanoidModel::eAnim_DisableRenderPants1);
 
     void _init(float g, float yOffset, int texWidth, int texHeight,
-               bool slimHands, bool mirror, bool force32);
+               bool slimHands, bool mirror, bool force32, bool isArmor = false);
 
     HumanoidModel();
     HumanoidModel(float g);
+    HumanoidModel(float g, bool isArmor);
     HumanoidModel(float g, float yOffset, int texWidth, int texHeight);
     HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands);
     HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror);

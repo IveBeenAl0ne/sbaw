@@ -14,6 +14,7 @@ void ModelPart::_init()
 	bMirror = false;
 	visible = true;
 	neverRender = false;
+	hideWithArmor = 0L;
 	x=y=z = 0.0f;
 	xRot=yRot=zRot = 0.0f;
 	translateX = translateY = translateZ = 0.0f;
