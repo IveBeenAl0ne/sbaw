@@ -727,19 +727,18 @@ void Player::setCustomSkin(DWORD skinId)
 
 }
 
-int Player::GetModelTypeFromAnimBitmask(unsigned int uiAnimOverrideBitmask)
+int Player::GetModelTypeFromAnimBitmask(unsigned int animBitmask)
 {
-	if (uiAnimOverrideBitmask&(1<<HumanoidModel::eAnim_SlimModel)) return 2;
-	else if (uiAnimOverrideBitmask&(1<<HumanoidModel::eAnim_WideModel)) return 1;
-	return 0;
+	if (animBitmask&(1<<HumanoidModel::eAnim_SlimModel)) return 2;
+	else if (animBitmask&(1<<HumanoidModel::eAnim_WideModel)) return 1;
+	else return 0;
 }
 
 int Player::GetModelTypeFromTextureId(int textureId)
 {
 	if (textureId > 8 && textureId < 18) return 2;
 	else if (textureId == 18) return 1;
-	else if (textureId > 44 && textureId < 54) return 2;
-	else if (textureId == 54) return 1;
+	else if (textureId >= 0 && textureId < 9) return 1;
 	else return 0;
 }
 

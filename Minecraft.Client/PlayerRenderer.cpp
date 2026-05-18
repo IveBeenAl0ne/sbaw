@@ -76,8 +76,8 @@ PlayerRenderer::PlayerRenderer() : LivingEntityRenderer( new HumanoidModel(0), 0
 
 void PlayerRenderer::setModelType(shared_ptr<Player> player)
 {
-	if (Player::GetModelTypeFromTextureId(player->getCustomSkin()) == 1 || Player::GetModelTypeFromAnimBitmask(player->getAnimOverrideBitmask()) == 1) resModel = humanoidModelWide;
-	else if (Player::GetModelTypeFromTextureId(player->getCustomSkin()) == 2 || Player::GetModelTypeFromAnimBitmask(player->getAnimOverrideBitmask()) == 2) resModel = humanoidModelSlim;
+	if (Player::GetModelTypeFromTextureId(player->getCustomSkin()) == 2 || Player::GetModelTypeFromAnimBitmask(player->getAnimOverrideBitmask()) == 2) resModel = humanoidModelSlim;
+	else if (Player::GetModelTypeFromTextureId(player->getCustomSkin()) == 1 || Player::GetModelTypeFromAnimBitmask(player->getAnimOverrideBitmask()) == 1) resModel = humanoidModelWide;
 	else resModel = humanoidModel;
 }
 
