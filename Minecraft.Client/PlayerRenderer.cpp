@@ -63,11 +63,12 @@ static unsigned int nametagColorForIndex(int index)
 
 ResourceLocation PlayerRenderer::DEFAULT_LOCATION = ResourceLocation(TN_MOB_CHAR);
 
-PlayerRenderer::PlayerRenderer() : LivingEntityRenderer( new HumanoidModel(0), 0.5f, true )
+PlayerRenderer::PlayerRenderer() : LivingEntityRenderer(new HumanoidModel(0), 0.5f, true)
 {
-	humanoidModel = static_cast<HumanoidModel *>(model);
-	humanoidModelWide = static_cast<HumanoidModel *>(modelWide);
-	humanoidModelSlim = static_cast<HumanoidModel *>(modelSlim);
+	humanoidModel = static_cast<HumanoidModel*>(model);
+	humanoidModelWide = static_cast<HumanoidModel*>(modelWide);
+	humanoidModelSlim = static_cast<HumanoidModel*>(modelSlim);
+	resModel = humanoidModel;
 
 	armorParts1 = new HumanoidModel(1.0f, true);
 	armorParts2 = new HumanoidModel(0.5f, true);
