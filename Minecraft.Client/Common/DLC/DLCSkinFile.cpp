@@ -160,9 +160,214 @@ void DLCSkinFile::addParameter(DLCManager::EDLCParameterType type, const wstring
 			{
 				pSkinBox->ePart=eBodyPart_Leg1;
 			}
+			else if(wcscmp(wchBodyPart,L"HEADWEAR")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Headwear;
+			}
+			else if(wcscmp(wchBodyPart,L"JACKET")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Jacket;
+			}
+			else if(wcscmp(wchBodyPart,L"SLEEVE0")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Sleeve0;
+			}
+			else if(wcscmp(wchBodyPart,L"SLEEVE1")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Sleeve1;
+			}
+			else if(wcscmp(wchBodyPart,L"PANTS0")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Pants0;
+			}
+			else if(wcscmp(wchBodyPart,L"PANTS1")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Pants1;
+			}
+			else if(wcscmp(wchBodyPart,L"WAIST")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Waist;
+			}
+			else if(wcscmp(wchBodyPart,L"LEGGING0")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Legging0;
+			}
+			else if(wcscmp(wchBodyPart,L"LEGGING1")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Legging1;
+			}
+			else if(wcscmp(wchBodyPart,L"SOCK0")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Sock0;
+			}
+			else if(wcscmp(wchBodyPart,L"SOCK1")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Sock1;
+			}
+			else if(wcscmp(wchBodyPart,L"BOOT0")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Boot0;
+			}
+			else if(wcscmp(wchBodyPart,L"BOOT1")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Boot1;
+			}
+			else if(wcscmp(wchBodyPart,L"ARMARMOR0")==0)
+			{
+				pSkinBox->ePart=eBodyPart_ArmArmor0;
+			}
+			else if(wcscmp(wchBodyPart,L"ARMARMOR1")==0)
+			{
+				pSkinBox->ePart=eBodyPart_ArmArmor1;
+			}
+			else if(wcscmp(wchBodyPart,L"BODYARMOR")==0)
+			{
+				pSkinBox->ePart=eBodyPart_BodyArmor;
+			}
+			else if(wcscmp(wchBodyPart,L"BELT")==0)
+			{
+				pSkinBox->ePart=eBodyPart_Belt;
+			}
 
 			// add this to the skin's vector of parts
 			m_AdditionalBoxes.push_back(pSkinBox);
+		}
+		break;
+	case DLCManager::e_DLCParamType_Offset:
+		{
+			WCHAR wchBodyPart[10];
+			wchar_t wchDirection[2];
+			SKIN_OFFSET *pSkinOffset = new SKIN_OFFSET;
+			ZeroMemory(pSkinOffset,sizeof(SKIN_OFFSET));
+
+#ifdef __PS3__
+			// 4J Stu - The Xbox version used swscanf_s which isn't available in GCC.
+			swscanf(value.c_str(), L"%10ls%2ls%f", wchBodyPart,
+#else
+			swscanf_s(value.c_str(), L"%9ls%2ls%f", wchBodyPart,10, wchDirection,2,
+#endif
+				&pSkinOffset->fO);
+
+			if(wcscmp(wchDirection,L"X")==0)
+			{
+				pSkinOffset->fD=eOffsetDirection_X;
+			}
+			else if (wcscmp(wchDirection,L"Y")==0)
+			{
+				pSkinOffset->fD=eOffsetDirection_Y;
+			}
+			else if(wcscmp(wchDirection,L"Z")==0)
+			{
+				pSkinOffset->fD=eOffsetDirection_Z;
+			}
+ 
+			if(wcscmp(wchBodyPart,L"HEAD")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Head;
+			}
+			else if(wcscmp(wchBodyPart,L"BODY")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Body;
+			}
+			else if(wcscmp(wchBodyPart,L"ARM0")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Arm0;
+			}
+			else if(wcscmp(wchBodyPart,L"ARM1")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Arm1;
+			}
+			else if(wcscmp(wchBodyPart,L"LEG0")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Leg0;
+			}
+			else if(wcscmp(wchBodyPart,L"LEG1")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Leg1;
+			}
+			else if(wcscmp(wchBodyPart,L"HEADWEAR")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Headwear;
+			}
+			else if(wcscmp(wchBodyPart,L"JACKET")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Jacket;
+			}
+			else if(wcscmp(wchBodyPart,L"SLEEVE0")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Sleeve0;
+			}
+			else if(wcscmp(wchBodyPart,L"SLEEVE1")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Sleeve1;
+			}
+			else if(wcscmp(wchBodyPart,L"PANTS0")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Pants0;
+			}
+			else if(wcscmp(wchBodyPart,L"PANTS1")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Pants1;
+			}
+			else if(wcscmp(wchBodyPart,L"HELMET")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Helmet;
+			}
+			else if(wcscmp(wchBodyPart,L"WAIST")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Waist;
+			}
+			else if(wcscmp(wchBodyPart,L"LEGGING0")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Legging0;
+			}
+			else if(wcscmp(wchBodyPart,L"LEGGING1")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Legging1;
+			}
+			else if(wcscmp(wchBodyPart,L"SOCK0")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Sock0;
+			}
+			else if(wcscmp(wchBodyPart,L"SOCK1")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Sock1;
+			}
+			else if(wcscmp(wchBodyPart,L"BOOT0")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Boot0;
+			}
+			else if(wcscmp(wchBodyPart,L"BOOT1")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Boot1;
+			}
+			else if(wcscmp(wchBodyPart,L"ARMARMOR1")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_ArmArmor1;
+			}
+			else if(wcscmp(wchBodyPart,L"ARMARMOR0")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_ArmArmor0;
+			}
+			else if(wcscmp(wchBodyPart,L"BODYARMOR")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_BodyArmor;
+			}
+			else if(wcscmp(wchBodyPart,L"BELT")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Belt;
+			}
+			else if(wcscmp(wchBodyPart,L"TOOL0")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Tool0;
+			}
+			else if(wcscmp(wchBodyPart,L"TOOL1")==0)
+			{
+				pSkinOffset->ePart=eBodyOffset_Tool1;
+			}
+
+			// add this to the skin's vector of offsets
+			m_Offsets.push_back(pSkinOffset);
 		}
 		break;
 	case DLCManager::e_DLCParamType_Anim:

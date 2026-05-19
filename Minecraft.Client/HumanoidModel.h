@@ -1,9 +1,11 @@
 ﻿#pragma once
 #include "Model.h"
+#include "SkinOffset.h"
 class HumanoidModel : public Model
 {
 public:
     ModelPart* head, * hair, * body, * jacket, * arm0, * sleeve0, * arm1, * sleeve1, * leg0, * pants0, * leg1, * pants1, * ear, * cloak;
+	ModelPart* waist, * belt, * bodyArmor, * armArmor0, * armArmor1, * legging0, * legging1, * sock0, * sock1, * boot0, * boot1;
     ModelPart* elytraLeft, * elytraRight;
     int holdingLeftHand;
     int holdingRightHand;
@@ -69,16 +71,13 @@ public:
         (1 << HumanoidModel::eAnim_DisableRenderPants0) |
         (1 << HumanoidModel::eAnim_DisableRenderPants1);
 
-    void _init(float g, float yOffset, int texWidth, int texHeight,
-               bool slimHands, bool mirror, bool force32, bool isArmor = false);
+    void _init(float g, float yOffset, int texWidth, int texHeight, bool slim, bool isArmor);
 
     HumanoidModel();
     HumanoidModel(float g);
     HumanoidModel(float g, bool isArmor);
     HumanoidModel(float g, float yOffset, int texWidth, int texHeight);
-    HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands);
-    HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror);
-    HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror, bool force32);
+    HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slim);
 
     virtual void render(shared_ptr<Entity> entity, float time, float r, float bob,
                         float yRot, float xRot, float scale, bool usecompiled);

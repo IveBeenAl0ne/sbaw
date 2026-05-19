@@ -51,6 +51,42 @@ ModelPart * HumanoidModel::AddOrRetrievePart(SKIN_BOX *pBox)
 		pAttachTo=pants1;
 		scale=0.25;
 		break;
+	case eBodyPart_Headwear:
+		pAttachTo=hair;
+		break;
+	case eBodyPart_Waist:
+		pAttachTo=waist;
+		break;
+	case eBodyPart_Belt:
+		pAttachTo=belt;
+		break;
+	case eBodyPart_BodyArmor:
+		pAttachTo=bodyArmor;
+		break;
+	case eBodyPart_ArmArmor0:
+		pAttachTo=armArmor0;
+		break;
+	case eBodyPart_ArmArmor1:
+		pAttachTo=armArmor1;
+		break;
+	case eBodyPart_Legging0:
+		pAttachTo=legging0;
+		break;
+	case eBodyPart_Legging1:
+		pAttachTo=legging1;
+		break;
+	case eBodyPart_Sock0:
+		pAttachTo=sock0;
+		break;
+	case eBodyPart_Sock1:
+		pAttachTo=sock1;
+		break;
+	case eBodyPart_Boot0:
+		pAttachTo=boot0;
+		break;
+	case eBodyPart_Boot1:
+		pAttachTo=boot1;
+		break;
 	}
 
 	// check if this box has a declared scale then add it
@@ -84,7 +120,7 @@ ModelPart * HumanoidModel::AddOrRetrievePart(SKIN_BOX *pBox)
 	return pNewBox;
 }
 
-void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror, bool force32, bool isArmor)
+void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, bool slim, bool isArmor)
 {
 	this->texWidth = texWidth;
 	this->texHeight = texHeight;
@@ -94,6 +130,18 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 	sleeve1 = nullptr;
 	pants0 = nullptr;
 	pants1 = nullptr;
+
+	waist = nullptr;
+	belt = nullptr;
+	bodyArmor = nullptr;
+	armArmor0 = nullptr;
+	armArmor1 = nullptr;
+	legging0 = nullptr;
+	legging1 = nullptr;
+	sock0 = nullptr;
+	sock1 = nullptr;
+	boot0 = nullptr;
+	boot1 = nullptr;
 
 	m_fYOffset=yOffset;
     cloak = new ModelPart(this, 0, 0);
@@ -121,18 +169,11 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
     hair->addHumanoidBox(-4, -8, -4, 8, 8, 8, g + 0.5f); // Head
     hair->setPos(0, 0 + yOffset, 0);
 
-	if ((texWidth == 64 && texHeight == 64) && !force32)
-	{
-		jacket = new ModelPart(this, 16, 32);
-		jacket->addHumanoidBox(-4, 0, -2, 8, 12, 4, g + 0.25);
-		jacket->setPos(0, 0 + yOffset, 0);
-	}
-
     body = new ModelPart(this, 16, 16);
     body->addHumanoidBox(-4, 0, -2, 8, 12, 4, g); // Body
     body->setPos(0, 0 + yOffset, 0);
 
-	if ((texWidth == 64 && texHeight == 64) && !force32)
+	if (texHeight == 64)
 	{
 		arm0 = new ModelPart(this, 24 + 16, 16);
 		arm1 = new ModelPart(this, 16 + 16, 48);
@@ -140,60 +181,96 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 		sleeve0 = new ModelPart(this, 24 + 16, 32);
 		sleeve1 = new ModelPart(this, 32 + 16, 48);
 
-		if (slimHands == false)
+		if (!slim)
 		{
-			sleeve0->addHumanoidBox(-3, -2, -2, 4, 12, 4, g + 0.25);
-			sleeve1->addHumanoidBox(-1, -2, -2, 4, 12, 4, g + 0.25);
+			sleeve0->addHumanoidBox(-3, -2, -2, 4, 12, 4, g + 0.25); // Sleeve0
+			sleeve1->addHumanoidBox(-1, -2, -2, 4, 12, 4, g + 0.25); // Sleeve1
 		}
-		else if (slimHands == true)
+		else if (slim)
 		{
-			sleeve0->addHumanoidBox(-2, -2, -2, 3, 12, 4, g + 0.25);
-			sleeve1->addHumanoidBox(-1, -2, -2, 3, 12, 4, g + 0.25);
+			sleeve0->addHumanoidBox(-2, -2, -2, 3, 12, 4, g + 0.25); // Sleeve0 Slim
+			sleeve1->addHumanoidBox(-1, -2, -2, 3, 12, 4, g + 0.25); // Sleeve1 Slim
 		}
+
+		jacket = new ModelPart(this, 16, 32);
+		jacket->addHumanoidBox(-4, 0, -2, 8, 12, 4, g + 0.25);
+		jacket->setPos(0, 0 + yOffset, 0);
 
 		sleeve0->setPos(-5, 2 + yOffset, 0);
 		sleeve1->setPos(5, 2 + yOffset, 0);
+
+		waist = new ModelPart(this, 0, 0);
+		waist->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // Waist
+		waist->setPos(0, 0 + yOffset, 0);
+		belt = new ModelPart(this, 0, 0);
+		belt->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // Belt
+		belt->setPos(0, 0 + yOffset, 0);
+		bodyArmor = new ModelPart(this, 0, 0);
+		bodyArmor->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // BodyArmor
+		bodyArmor->setPos(0, 0 + yOffset, 0);
+		armArmor0 = new ModelPart(this, 0, 0);
+		armArmor0->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // ArmArmor0
+		armArmor0->setPos(-5, 2 + yOffset, 0);
+		armArmor1 = new ModelPart(this, 0, 0);
+		armArmor1->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // ArmArmor1
+		armArmor1->setPos(5, 2 + yOffset, 0);
+		legging0 = new ModelPart(this, 0, 0);
+		legging0->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // Legging0
+		legging0->setPos(-1.9, 12 + yOffset, 0);
+		legging1 = new ModelPart(this, 0, 0);
+		legging1->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // Legging1
+		legging1->setPos(1.9, 12 + yOffset, 0);
+		sock0 = new ModelPart(this, 0, 0);
+		sock0->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // Sock0
+		sock0->setPos(-1.9, 12 + yOffset, 0);
+		sock1 = new ModelPart(this, 0, 0);
+		sock1->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // Sock1
+		sock1->setPos(1.9, 12 + yOffset, 0);
+		boot0 = new ModelPart(this, 0, 0);
+		boot0->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // Boot0
+		boot0->setPos(-1.9, 12 + yOffset, 0);
+		boot1 = new ModelPart(this, 0, 0);
+		boot1->addHumanoidBox(0, 0, 0, 0, 0, 0, g); // Boot1
+		boot1->setPos(1.9, 12 + yOffset, 0);
 	}
-	else if ((texWidth == 64 && texHeight == 32) || force32)
+	else if (texHeight == 32)
 	{
 		arm0 = new ModelPart(this, 24 + 16, 16);
 		arm1 = new ModelPart(this, 24 + 16, 16);
-	}
-
-	if (slimHands == false)
-	{
-		arm0->addHumanoidBox(-3, -2, -2, 4, 12, 4, g);
-		arm1->addHumanoidBox(-1, -2, -2, 4, 12, 4, g);
-	}
-	else if (slimHands == true)
-	{
-		arm0->addHumanoidBox(-2, -2, -2, 3, 12, 4, g);
-		arm1->addHumanoidBox(-1, -2, -2, 3, 12, 4, g);
-	}
-
-    arm0->setPos(-5, 2 + yOffset, 0);
-    arm1->setPos(5, 2 + yOffset, 0);
-
-	if (mirror == true)
 		arm1->bMirror = true;
+	}
 
-	if ((texWidth == 64 && texHeight == 64) && !force32)
+	if (!slim)
 	{
-		leg0 = new ModelPart(this, 0, 16);
+		arm0->addHumanoidBox(-3, -2, -2, 4, 12, 4, g); // Arm0
+		arm1->addHumanoidBox(-1, -2, -2, 4, 12, 4, g); // Arm1
+	}
+	else if (slim)
+	{
+		arm0->addHumanoidBox(-2, -2, -2, 3, 12, 4, g); // Arm0 Slim
+		arm1->addHumanoidBox(-1, -2, -2, 3, 12, 4, g); // Arm1 Slim
+	}
+
+	arm0->setPos(-5, 2 + yOffset, 0);
+	arm1->setPos(5, 2 + yOffset, 0);
+
+	leg0 = new ModelPart(this, 0, 16);
+	if (texHeight == 64)
+	{
 		leg1 = new ModelPart(this, 16, 48);
 
 		pants0 = new ModelPart(this, 0, 32);
-		pants0->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25);
+		pants0->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25); // Pants0
 		pants0->setPos(-1.9, 12 + yOffset, 0);
 
 		pants1 = new ModelPart(this, 0, 48);
-		pants1->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25);
+		pants1->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25); // Pants1
 		pants1->setPos(1.9, 12 + yOffset, 0);
 	}
-	else if ((texWidth == 64 && texHeight == 32) || force32)
+	else if (texHeight == 32)
 	{
-		leg0 = new ModelPart(this, 0, 16);
 		leg1 = new ModelPart(this, 0, 16);
+		leg1->bMirror = true;
 	}
 
     leg0->addHumanoidBox(-2, 0, -2, 4, 12, 4, g); // Leg0
@@ -201,9 +278,6 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 
     leg1->addHumanoidBox(-2, 0, -2, 4, 12, 4, g); // Leg1
     leg1->setPos(1.9, 12 + yOffset, 0);
-
-	if (mirror == true)
-		leg1->bMirror = true;
 
 	// 4J added - compile now to avoid random performance hit first time cubes are rendered
 	// 4J Stu - Not just performance, but alpha+depth tests don't work right unless we compile here
@@ -219,7 +293,7 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 	leg1->compile(1.0f/16.0f);
 	hair->compile(1.0f/16.0f);
 
-	if (jacket != 0)
+	if (jacket)
 		jacket->compile(1.0f/16.0f);
 	if (sleeve0 != 0)
 		sleeve0->compile(1.0f/16.0f);
@@ -229,6 +303,28 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 		pants0->compile(1.0f/16.0f);
 	if (pants1 != 0)
 		pants1->compile(1.0f/16.0f);
+	if (waist != 0)
+		waist->compile(1.0f/16.0f);
+	if (belt != 0)
+		belt->compile(1.0f/16.0f);
+	if (bodyArmor != 0)
+		bodyArmor->compile(1.0f/16.0f);
+	if (armArmor0 != 0)
+		armArmor0->compile(1.0f/16.0f);
+	if (armArmor1 != 0)
+		armArmor1->compile(1.0f/16.0f);
+	if (legging0 != 0)
+		legging0->compile(1.0f/16.0f);
+	if (legging1 != 0)
+		legging1->compile(1.0f/16.0f);
+	if (sock0 != 0)
+		sock0->compile(1.0f/16.0f);
+	if (sock1 != 0)
+		sock1->compile(1.0f/16.0f);
+	if (boot0 != 0)
+		boot0->compile(1.0f/16.0f);
+	if (boot1 != 0)
+		boot1->compile(1.0f/16.0f);
 
 	holdingLeftHand=0;
 	holdingRightHand=0;
@@ -238,7 +334,6 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 	elytraFlying = false;
 	elytraCrouching = false;
 	m_isArmor = isArmor;
-
 
 	// 4J added
 	eating = false;
@@ -250,37 +345,27 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 
 HumanoidModel::HumanoidModel() : Model()
 {
-	_init(0, 0, 64, 32, false, true, false, false);
+	_init(0, 0, 64, 32, false, false);
 }
 
 HumanoidModel::HumanoidModel(float g) : Model()
 {
-	_init(g, 0, 64, 32, false, true, false, false);
+	_init(g, 0, 64, 32, false, false);
 }
 
 HumanoidModel::HumanoidModel(float g, bool isArmor) : Model()
 {
-	_init(g, 0, 64, 32, false, true, false, isArmor);
+	_init(g, 0, 64, 32, false, isArmor);
 }
 
 HumanoidModel::HumanoidModel(float g, float yOffset, int texWidth, int texHeight) : Model()
 {
-	_init(g,yOffset,texWidth,texHeight, false, true, false, false);
+	_init(g, yOffset, texWidth, texHeight, false, false);
 }
 
-HumanoidModel::HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands) : Model()
+HumanoidModel::HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slim) : Model()
 {
-	_init(g,yOffset,texWidth,texHeight, slimHands, true, false, false);
-}
-
-HumanoidModel::HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror) : Model()
-{
-	_init(g,yOffset,texWidth,texHeight, slimHands, mirror, false, false);
-}
-
-HumanoidModel::HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror, bool force32) : Model()
-{
-	_init(g,yOffset,texWidth,texHeight, slimHands, mirror, force32, false);
+	_init(g, yOffset, texWidth, texHeight, slim, false);
 }
 
 void HumanoidModel::render(shared_ptr<Entity> entity, float time, float r, float bob, float yRot, float xRot, float scale, bool usecompiled)
@@ -343,6 +428,28 @@ void HumanoidModel::render(shared_ptr<Entity> entity, float time, float r, float
 			pants0->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderPants0))>0);
 		if (pants1)
 			pants1->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderPants1))>0);
+		if (waist != 0)
+			waist->render(scale, usecompiled);
+		if (belt)
+			belt->render(scale, usecompiled);
+		if (bodyArmor)
+			bodyArmor->render(scale, usecompiled);
+		if (armArmor0)
+			armArmor0->render(scale, usecompiled);
+		if (armArmor1)
+			armArmor1->render(scale, usecompiled);
+		if (legging0)
+			legging0->render(scale, usecompiled);
+		if (legging1)
+			legging1->render(scale, usecompiled);
+		if (sock0)
+			sock0->render(scale, usecompiled);
+		if (sock1)
+			sock1->render(scale, usecompiled);
+		if (boot0)
+			boot0->render(scale, usecompiled);
+		if (boot1)
+			boot1->render(scale, usecompiled);
 	}
 }
 
@@ -357,9 +464,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 		hair->xRot = head->xRot;
 		body->z = 0.0f;
 
-		if (jacket)
-			jacket->z = 0.0f;
-
 		// Does the skin have an override for anim?
 
 		if(uiBitmaskOverrideAnim&(1<<eAnim_ArmsDown))
@@ -368,18 +472,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			arm1->xRot=0.0f;
 			arm0->zRot = 0.0f;
 			arm1->zRot = 0.0f;
-
-			if (sleeve0)
-			{
-				sleeve0->xRot=0.0f;
-				sleeve0->zRot=0.0f;
-			}
-
-			if (sleeve1)
-			{
-				sleeve1->xRot=0.0f;
-				sleeve1->zRot=0.0f;
-			}
 		}
 		else if(uiBitmaskOverrideAnim&(1<<eAnim_ArmsOutFront))
 		{
@@ -387,18 +479,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			arm1->xRot=-HALF_PI;
 			arm0->zRot = 0.0f;
 			arm1->zRot = 0.0f;
-
-			if (sleeve0)
-			{
-				sleeve0->xRot=-HALF_PI;
-				sleeve0->zRot=0.0f;
-			}
-
-			if (sleeve1)
-			{
-				sleeve1->xRot=-HALF_PI;
-				sleeve1->zRot=0.0f;
-			}
 		}
 		else if(uiBitmaskOverrideAnim&(1<<eAnim_SingleArms))
 		{
@@ -406,18 +486,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			arm1->xRot = (Mth::cos(time * 0.6662f + PI) * 2.0f) * r * 0.5f;
 			arm0->zRot = 0.0f;
 			arm1->zRot = 0.0f;
-
-			if (sleeve0)
-			{
-				sleeve0->xRot=(Mth::cos(time * 0.6662f + PI) * 2.0f) * r * 0.5f;
-				sleeve0->zRot=0.0f;
-			}
-
-			if (sleeve1)
-			{
-				sleeve1->xRot=(Mth::cos(time * 0.6662f + PI) * 2.0f) * r * 0.5f;
-				sleeve1->zRot=0.0f;
-			}
 		}
 		// 4J-PB - Weeping Angel - does't look good holding something in the arm that's up
 		else if((uiBitmaskOverrideAnim&(1<<eAnim_StatueOfLiberty)) && (holdingRightHand==0) && (attackTime==0.0f))
@@ -426,18 +494,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			arm0->zRot = -0.3f;
 			arm1->xRot = ( Mth::cos(time * 0.6662f) * 2.0f) * r * 0.5f;
 			arm1->zRot = 0.0f;
-
-			if (sleeve0)
-			{
-				sleeve0->xRot=-PI;
-				sleeve0->zRot=-0.3f;
-			}
-
-			if (sleeve1)
-			{
-				sleeve1->xRot=( Mth::cos(time * 0.6662f) * 2.0f) * r * 0.5f;
-				sleeve1->zRot=0.0f;
-			}
 		}
 		else
 		{
@@ -445,18 +501,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			arm1->xRot = ( Mth::cos(time * 0.6662f) * 2.0f) * r * 0.5f;
 			arm0->zRot = 0.0f;
 			arm1->zRot = 0.0f;
-
-			if (sleeve0)
-			{
-				sleeve0->xRot=(Mth::cos(time * 0.6662f + PI) * 2.0f) * r * 0.5f;
-				sleeve0->zRot=0.0f;
-			}
-
-			if (sleeve1)
-			{
-				sleeve1->xRot=( Mth::cos(time * 0.6662f) * 2.0f) * r * 0.5f;
-				sleeve1->zRot=0.0f;
-			}
 		}
 		//        arm0.zRot = ((float) (util.Mth.cos(time * 0.2312f) + 1) * 1) * r;
 
@@ -466,12 +510,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 
 		leg0->yRot = 0.0f;
 		leg1->yRot = 0.0f;
-
-		if (pants0)
-			pants0->yRot=0.0f;
-
-		if (pants1)
-			pants1->yRot=0.0f;
 
 		if (riding)
 		{
@@ -483,24 +521,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 				leg1->xRot = -HALF_PI * 0.8f;
 				leg0->yRot = HALF_PI * 0.2f;
 				leg1->yRot = -HALF_PI * 0.2f;
-
-				if (sleeve0)
-					sleeve0->xRot+=-HALF_PI * 0.4f;
-
-				if (sleeve1)
-					sleeve1->xRot+=-HALF_PI * 0.4f;
-
-				if (pants0)
-				{
-					pants0->xRot=-HALF_PI * 0.8f;
-					pants0->yRot=HALF_PI * 0.2f;
-				}
-
-				if (pants1)
-				{
-					pants1->xRot=-HALF_PI * 0.8f;
-					pants1->yRot=-HALF_PI * 0.2f;
-				}
 			}
 			else
 			{
@@ -508,18 +528,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 				arm1->xRot += -HALF_PI * 0.4f;
 				leg0->xRot = -HALF_PI * 0.4f;
 				leg1->xRot = -HALF_PI * 0.4f;
-
-				if (sleeve0)
-					sleeve0->xRot+=-HALF_PI * 0.4f;
-
-				if (sleeve1)
-					sleeve1->xRot+=-HALF_PI * 0.4f;
-
-				if (pants0)
-					pants0->xRot=-HALF_PI * 0.4f;
-
-				if (pants1)
-					pants1->xRot=-HALF_PI * 0.4f;
 			}
 		}
 		else if(idle && !sneaking )
@@ -528,18 +536,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			leg1->xRot = -HALF_PI;
 			leg0->yRot = HALF_PI * 0.2f;
 			leg1->yRot = -HALF_PI * 0.2f;
-
-			if (pants0)
-			{
-				pants0->xRot=-HALF_PI;
-				pants0->yRot=HALF_PI * 0.2f;
-			}
-
-			if (pants1)
-			{
-				pants1->xRot=-HALF_PI;
-				pants1->yRot=-HALF_PI * 0.2f;
-			}
 		}		
 		else if(uiBitmaskOverrideAnim&(1<<eAnim_NoLegAnim))
 		{
@@ -548,67 +544,30 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			leg1->xRot=0.0f;
 			leg1->zRot=0.0f;
 			leg0->yRot = 0.0f;
-			leg1->yRot = 0.0f;	
-
-			if (pants0)
-			{
-				pants0->xRot=0.0f;
-				pants0->zRot=0.0f;
-				pants0->yRot=0.0f;
-			}
-
-			if (pants1)
-			{
-				pants1->xRot=0.0f;
-				pants1->zRot=0.0f;
-				pants1->yRot=0.0f;
-			}
+			leg1->yRot = 0.0f;
 		}
 		else if(uiBitmaskOverrideAnim&(1<<eAnim_SingleLegs))
 		{
 			leg0->xRot = ( Mth::cos(time * 0.6662f) * 1.4f) * r;
 			leg1->xRot = ( Mth::cos(time * 0.6662f) * 1.4f) * r;
-
-			if (pants0)
-				pants0->xRot=( Mth::cos(time * 0.6662f) * 1.4f) * r;
-
-			if (pants1)
-				pants1->xRot=( Mth::cos(time * 0.6662f) * 1.4f) * r;
 		}
 		else
 		{
 			leg0->xRot = ( Mth::cos(time * 0.6662f) * 1.4f) * r;
 			leg1->xRot = ( Mth::cos(time * 0.6662f + PI) * 1.4f) * r;
-
-			if (pants0)
-				pants0->xRot=( Mth::cos(time * 0.6662f) * 1.4f) * r;
-
-			if (pants1)
-				pants1->xRot=( Mth::cos(time * 0.6662f + PI) * 1.4f) * r;
 		}
 
 		if (holdingLeftHand != 0) 
 		{
 			arm1->xRot = arm1->xRot * 0.5f - HALF_PI * 0.2f * holdingLeftHand;
-
-			if (sleeve1)
-				sleeve1->xRot=sleeve1->xRot * 0.5f - HALF_PI * 0.2f * holdingLeftHand;
 		}
 		if (holdingRightHand != 0) 
 		{
 			arm0->xRot = arm0->xRot * 0.5f - HALF_PI * 0.2f * holdingRightHand;
-
-			if (sleeve0)
-				sleeve0->xRot=sleeve0->xRot * 0.5f - HALF_PI * 0.2f * holdingRightHand;
 		}
 
 		arm0->yRot = 0.0f;
 		arm1->yRot = 0.0f;
-
-		if (sleeve0)
-			sleeve0->yRot=0.0f;
-		if (sleeve1)
-			sleeve1->yRot=0.0f;
 
 		if (attackTime > -9990.0f)
 		{
@@ -622,20 +581,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			arm1->yRot += body->yRot;
 			arm1->xRot += body->yRot;
 
-			if (sleeve0)
-			{
-				sleeve0->z=Mth::sin(body->yRot) * 5.0f;
-				sleeve0->x=-Mth::cos(body->yRot) * 5.0f;
-				sleeve0->yRot+=body->yRot;
-			}
-			if (sleeve1)
-			{
-				sleeve1->z=-Mth::sin(body->yRot) * 5.0f;
-				sleeve1->x=Mth::cos(body->yRot) * 5.0f;
-				sleeve1->yRot+=body->yRot;
-				sleeve1->xRot+=body->yRot;
-			}
-
 			swing = 1.0f - attackTime;
 			swing *= swing;
 			swing *= swing;
@@ -643,27 +588,15 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			float aa = Mth::sin(swing * PI);
 			float bb = Mth::sin(attackTime * PI) * -(head->xRot - 0.7f) * 0.75f;
 			arm0->xRot -= aa * 1.2f + bb;	// 4J - changed 1.2 -> 1.2f
-			arm0->yRot += body->yRot * 2.0f; 
-
-			if (sleeve0)
-			{
-				sleeve0->xRot -= aa * 1.2f + bb;
-				sleeve0->yRot += body->yRot * 2.0f; 
-			}
+			arm0->yRot += body->yRot * 2.0f;
 
 			if((uiBitmaskOverrideAnim&(1<<eAnim_StatueOfLiberty))&& (holdingRightHand==0) && (attackTime==0.0f))
 			{
 				arm0->zRot -= Mth::sin(attackTime * PI) * -0.4f;
-
-				if (sleeve0)
-					sleeve0->zRot -= Mth::sin(attackTime * PI) * -0.4f;
 			}
 			else
 			{
 				arm0->zRot = Mth::sin(attackTime * PI) * -0.4f;
-
-				if (sleeve0)
-					sleeve0->zRot = Mth::sin(attackTime * PI) * -0.4f;
 			}
 		}
 
@@ -679,13 +612,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			arm0->xRot = - Mth::abs(Mth::cos(eating_t / 4.0f * PI) * 0.1f) * (eating_swing > 0.2 ? 1.0f : 0.0f) * 2.0f;		// This factor is the chomping bit (conditional factor is so that he doesn't eat whilst the food is being pulled away at the end)
 			arm0->yRot -= iss * 0.5f;																			// This factor and the following to the general arm movement through the life of the swing
 			arm0->xRot -= iss * 1.2f;
-
-			if (sleeve0)
-			{
-				sleeve0->xRot = -Mth::abs(Mth::cos(eating_t / 4.0f * PI) * 0.1f) * (eating_swing > 0.2 ? 1.0f : 0.0f) * 2.0f;
-				sleeve0->yRot -= iss * 0.5f;
-				sleeve0->xRot -= iss * 1.2f;
-			}
 		}
 
 		if (sneaking)
@@ -709,39 +635,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 				hair->y = +1.0f;
 				ear->y = +1.0f;
 				cloak->y = 0.0f;
-
-				if (jacket)
-				{
-					jacket->xRot = -0.5f;
-					jacket->z = 2.0f;
-					jacket->y = 0.0f;
-				}
-
-				if (sleeve0)
-				{
-					sleeve0->xRot += 0.4f;
-					sleeve0->y = 2.0f;
-				}
-
-				if (sleeve1)
-				{
-					sleeve1->xRot += 0.4f;
-					sleeve1->y = 2.0f;
-				}
-
-				if (pants0)
-				{
-					pants0->xRot -= 0.0f;
-					pants0->z = -4.0f;
-					pants0->y = +9.0f;
-				}
-
-				if (pants1)
-				{
-					pants1->xRot -= 0.0f;
-					pants1->z = -4.0f;
-					pants1->y = +9.0f;
-				}
 			}
 			else
 			{
@@ -761,38 +654,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 				hair->y = +1.0f;
 				ear->y = +1.0f;
 				cloak->y = 0.0f;
-
-				if (jacket)
-				{
-					jacket->xRot = 0.5f;
-					jacket->y = 0.0f;
-				}
-
-				if (sleeve0)
-				{
-					sleeve0->xRot += 0.4f;
-					sleeve0->y = 2.0f;
-				}
-
-				if (sleeve1)
-				{
-					sleeve1->xRot += 0.4f;
-					sleeve1->y = 2.0f;
-				}
-
-				if (pants0)
-				{
-					pants0->xRot -= 0.0f;
-					pants0->z = +4.0f;
-					pants0->y = +9.0f;
-				}
-
-				if (pants1)
-				{
-					pants1->xRot -= 0.0f;
-					pants1->z = +4.0f;
-					pants1->y = +9.0f;
-				}
 			}
 		}
 		else
@@ -800,15 +661,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			body->xRot = 0.0f;
 			leg0->z = 0.1f;
 			leg1->z = 0.1f;
-
-			if (jacket)
-				jacket->xRot = 0.0f;
-
-			if (pants0)
-				pants0->z = 0.1f;
-
-			if (pants1)
-				pants1->z = 0.1f;
 
 			if(!riding && idle)
 			{
@@ -821,17 +673,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 				hair->y = 10.0f;
 				ear->y = 11.0f;
 				cloak->y = 10.0f;
-
-				if (jacket)
-					jacket->y = 10.0f;
-				if (sleeve0)
-					sleeve0->y = 12.0f;
-				if (sleeve1)
-					sleeve1->y = 12.0f;
-				if (pants0)
-					pants0->y = 22.0f;
-				if (pants1)
-					pants1->y = 22.0f;
 			}
 			else
 			{
@@ -844,17 +685,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 				hair->y = 0.0f;
 				ear->y = 1.0f;
 				cloak->y = 0.0f;
-
-				if (jacket)
-					jacket->y = 0.0f;
-				if (sleeve0)
-					sleeve0->y = 2.0f;
-				if (sleeve1)
-					sleeve1->y = 2.0f;
-				if (pants0)
-					pants0->y = 12.0f;
-				if (pants1)
-					pants1->y = 12.0f;
 			}
 		}
 
@@ -862,18 +692,6 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 		arm1->zRot -= ((Mth::cos(bob * 0.09f)) * 0.05f + 0.05f);
 		arm0->xRot += ((Mth::sin(bob * 0.067f)) * 0.05f);
 		arm1->xRot -= ((Mth::sin(bob * 0.067f)) * 0.05f);
-
-		if (sleeve0)
-		{
-			sleeve0->xRot += ((Mth::sin(bob * 0.067f)) * 0.05f);
-			sleeve0->zRot += ((Mth::cos(bob * 0.09f)) * 0.05f + 0.05f);
-		}
-
-		if (sleeve1)
-		{
-			sleeve1->xRot -= ((Mth::sin(bob * 0.067f)) * 0.05f);
-			sleeve1->zRot -= ((Mth::cos(bob * 0.09f)) * 0.05f + 0.05f);
-		}
 
 		if (bowAndArrow) 
 		{
@@ -892,79 +710,189 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			arm1->zRot -= ((float) (Mth::cos(bob * 0.09f)) * 0.05f + 0.05f);
 			arm0->xRot += ((float) (Mth::sin(bob * 0.067f)) * 0.05f);
 			arm1->xRot -= ((float) (Mth::sin(bob * 0.067f)) * 0.05f);
+		}
 
-			if (sleeve0)
+		if (elytraFlying)
+		{
+			if (elytraCrouching)
 			{
-				sleeve0->zRot = 0.0f;
-				sleeve0->yRot = -(0.1f - attack2 * 0.6f) + head->yRot;
-				sleeve0->xRot = -HALF_PI + head->xRot;
-				sleeve0->xRot -= attack2 * 1.2f - attack * 0.4f;
-				sleeve0->zRot += ((float) (Mth::cos(bob * 0.09f)) * 0.05f + 0.05f);
-				sleeve0->xRot += ((float) (Mth::sin(bob * 0.067f)) * 0.05f);
+				arm0->xRot = PI;  arm0->yRot = 0.0f; arm0->zRot = 0.0f; arm0->y = 2.0f;
+				arm1->xRot = 0.0f; arm1->yRot = 0.0f; arm1->zRot = 0.0f; arm1->y = 2.0f;
+				leg0->xRot = 0.0f; leg0->yRot = 0.0f; leg0->zRot = 0.0f;
+				leg1->xRot = 0.0f; leg1->yRot = 0.0f; leg1->zRot = 0.0f;
+			}
+			else
+			{
+				float elytraTime = (float)(entity->tickCount) * 0.3f;  
+				float spd2 = (float)(entity->xd * entity->xd + entity->yd * entity->yd + entity->zd * entity->zd);
+				float fDamp = spd2 / 0.2f;
+				fDamp = fDamp * fDamp * fDamp;
+				if (fDamp < 1.0f) fDamp = 1.0f;
+
+				float armAmp = 2.0f * r * 0.5f / fDamp;
+				float legAmp = 1.4f * r / fDamp;
+
+				arm0->xRot = Mth::cos(elytraTime + PI) * armAmp;
+				arm0->yRot = 0.0f; arm0->zRot = 0.0f; arm0->y = 2.0f;
+
+				arm1->xRot = Mth::cos(elytraTime) * armAmp;
+				arm1->yRot = 0.0f; arm1->zRot = 0.0f; arm1->y = 2.0f;
+
+				leg0->xRot = Mth::cos(elytraTime) * legAmp;
+				leg0->yRot = 0.0f; leg0->zRot = 0.0f;
+				leg1->xRot = Mth::cos(elytraTime + PI) * legAmp;
+				leg1->yRot = 0.0f; leg1->zRot = 0.0f;
 			}
 
-			if (sleeve1)
-			{
-				sleeve1->zRot = 0.0f;
-				sleeve1->yRot = +(0.1f - attack2 * 0.6f) + head->yRot + 0.4f;
-				sleeve1->xRot = -HALF_PI + head->xRot;
-				sleeve1->xRot -= attack2 * 1.2f - attack * 0.4f;
-				sleeve1->zRot -= ((float) (Mth::cos(bob * 0.09f)) * 0.05f + 0.05f);
-				sleeve1->xRot -= ((float) (Mth::sin(bob * 0.067f)) * 0.05f);
-			}
+			body->xRot = 0.0f;
+			body->z = 0.0f;
+
+
+			head->xRot = -(float)(PI / 4.0f);   
+			hair->xRot = head->xRot;
+		}
+
+		if (jacket != 0)
+		{
+			jacket->x = body->x;
+			jacket->y = body->y;
+			jacket->z = body->z;
+			jacket->xRot = body->xRot;
+			jacket->yRot = body->yRot;
+		}
+		if (sleeve0 != 0)
+		{
+			sleeve0->x = arm0->x;
+			sleeve0->y = arm0->y;
+			sleeve0->z = arm0->z;
+			sleeve0->xRot = arm0->xRot;
+			sleeve0->yRot = arm0->yRot;
+			sleeve0->zRot = arm0->zRot;
+		}
+		if (sleeve1 != 0)
+		{
+			sleeve1->x = arm1->x;
+			sleeve1->y = arm1->y;
+			sleeve1->z = arm1->z;
+			sleeve1->xRot = arm1->xRot;
+			sleeve1->yRot = arm1->yRot;
+			sleeve1->zRot = arm1->zRot;
+		}
+		if (pants0 != 0)
+		{
+			pants0->x = leg0->x;
+			pants0->y = leg0->y;
+			pants0->z = leg0->z;
+			pants0->xRot = leg0->xRot;
+			pants0->yRot = leg0->yRot;
+			pants0->zRot = leg0->zRot;
+		}
+		if (pants1 != 0)
+		{
+			pants1->x = leg1->x;
+			pants1->y = leg1->y;
+			pants1->z = leg1->z;
+			pants1->xRot = leg1->xRot;
+			pants1->yRot = leg1->yRot;
+			pants1->zRot = leg1->zRot;
+		}
+		if (waist != 0)
+		{
+			waist->x = body->x;
+			waist->y = body->y;
+			waist->z = body->z;
+			waist->xRot = body->xRot;
+			waist->yRot = body->yRot;
+		}
+		if (belt != 0)
+		{
+			belt->x = body->x;
+			belt->y = body->y;
+			belt->z = body->z;
+			belt->xRot = body->xRot;
+			belt->yRot = body->yRot;
+		}
+		if (bodyArmor != 0)
+		{
+			bodyArmor->x = body->x;
+			bodyArmor->y = body->y;
+			bodyArmor->z = body->z;
+			bodyArmor->xRot = body->xRot;
+			bodyArmor->yRot = body->yRot;
+		}
+		if (armArmor0 != 0)
+		{
+			armArmor0->x = arm0->x;
+			armArmor0->y = arm0->y;
+			armArmor0->z = arm0->z;
+			armArmor0->xRot = arm0->xRot;
+			armArmor0->yRot = arm0->yRot;
+			armArmor0->zRot = arm0->zRot;
+		}
+		if (armArmor1 != 0)
+		{
+			armArmor1->x = arm1->x;
+			armArmor1->y = arm1->y;
+			armArmor1->z = arm1->z;
+			armArmor1->xRot = arm1->xRot;
+			armArmor1->yRot = arm1->yRot;
+			armArmor1->zRot = arm1->zRot;
+		}
+		if (legging0 != 0)
+		{
+			legging0->x = leg0->x;
+			legging0->y = leg0->y;
+			legging0->z = leg0->z;
+			legging0->xRot = leg0->xRot;
+			legging0->yRot = leg0->yRot;
+			legging0->zRot = leg0->zRot;
+		}
+		if (legging1 != 0)
+		{
+			legging1->x = leg1->x;
+			legging1->y = leg1->y;
+			legging1->z = leg1->z;
+			legging1->xRot = leg1->xRot;
+			legging1->yRot = leg1->yRot;
+			legging1->zRot = leg1->zRot;
+		}
+		if (sock0 != 0)
+		{
+			sock0->x = leg0->x;
+			sock0->y = leg0->y;
+			sock0->z = leg0->z;
+			sock0->xRot = leg0->xRot;
+			sock0->yRot = leg0->yRot;
+			sock0->zRot = leg0->zRot;
+		}
+		if (sock1 != 0)
+		{
+			sock1->x = leg1->x;
+			sock1->y = leg1->y;
+			sock1->z = leg1->z;
+			sock1->xRot = leg1->xRot;
+			sock1->yRot = leg1->yRot;
+			sock1->zRot = leg1->zRot;
+		}
+		if (boot0 != 0)
+		{
+			boot0->x = leg0->x;
+			boot0->y = leg0->y;
+			boot0->z = leg0->z;
+			boot0->xRot = leg0->xRot;
+			boot0->yRot = leg0->yRot;
+			boot0->zRot = leg0->zRot;
+		}
+		if (boot1 != 0)
+		{
+			boot1->x = leg1->x;
+			boot1->y = leg1->y;
+			boot1->z = leg1->z;
+			boot1->xRot = leg1->xRot;
+			boot1->yRot = leg1->yRot;
+			boot1->zRot = leg1->zRot;
 		}
 	}
-
-	if (elytraFlying)
-	{
-		if (elytraCrouching)
-		{
-			arm0->xRot = PI;  arm0->yRot = 0.0f; arm0->zRot = 0.0f; arm0->y = 2.0f;
-			if (sleeve0) { sleeve0->xRot = PI; sleeve0->yRot = 0.0f; sleeve0->zRot = 0.0f; sleeve0->y = 2.0f; }
-
-			arm1->xRot = 0.0f; arm1->yRot = 0.0f; arm1->zRot = 0.0f; arm1->y = 2.0f;
-			if (sleeve1) { sleeve1->xRot = 0.0f; sleeve1->yRot = 0.0f; sleeve1->zRot = 0.0f; sleeve1->y = 2.0f; }
-
-			leg0->xRot = 0.0f; leg0->yRot = 0.0f; leg0->zRot = 0.0f;
-			leg1->xRot = 0.0f; leg1->yRot = 0.0f; leg1->zRot = 0.0f;
-			if (pants0) { pants0->xRot = 0.0f; pants0->yRot = 0.0f; pants0->zRot = 0.0f; }
-			if (pants1) { pants1->xRot = 0.0f; pants1->yRot = 0.0f; pants1->zRot = 0.0f; }
-		}
-		else
-		{
-			float elytraTime = (float)(entity->tickCount) * 0.3f;  
-			float spd2 = (float)(entity->xd * entity->xd + entity->yd * entity->yd + entity->zd * entity->zd);
-			float fDamp = spd2 / 0.2f;
-			fDamp = fDamp * fDamp * fDamp;
-			if (fDamp < 1.0f) fDamp = 1.0f;
-
-			float armAmp = 2.0f * r * 0.5f / fDamp;
-			float legAmp = 1.4f * r / fDamp;
-
-			arm0->xRot = Mth::cos(elytraTime + PI) * armAmp;
-			arm0->yRot = 0.0f; arm0->zRot = 0.0f; arm0->y = 2.0f;
-			if (sleeve0) { sleeve0->xRot = arm0->xRot; sleeve0->yRot = 0.0f; sleeve0->zRot = 0.0f; sleeve0->y = 2.0f; }
-
-			arm1->xRot = Mth::cos(elytraTime) * armAmp;
-			arm1->yRot = 0.0f; arm1->zRot = 0.0f; arm1->y = 2.0f;
-			if (sleeve1) { sleeve1->xRot = arm1->xRot; sleeve1->yRot = 0.0f; sleeve1->zRot = 0.0f; sleeve1->y = 2.0f; }
-
-			leg0->xRot = Mth::cos(elytraTime) * legAmp;
-			leg0->yRot = 0.0f; leg0->zRot = 0.0f;
-			leg1->xRot = Mth::cos(elytraTime + PI) * legAmp;
-			leg1->yRot = 0.0f; leg1->zRot = 0.0f;
-			if (pants0) { pants0->xRot = leg0->xRot; pants0->yRot = 0.0f; pants0->zRot = 0.0f; }
-			if (pants1) { pants1->xRot = leg1->xRot; pants1->yRot = 0.0f; pants1->zRot = 0.0f; }
-		}
-
-		body->xRot = 0.0f;
-		body->z = 0.0f;
-
-
-		head->xRot = -(float)(PI / 4.0f);   
-		hair->xRot = head->xRot;
-	}
-
 }
 
 void HumanoidModel::renderHair(float scale,bool usecompiled)

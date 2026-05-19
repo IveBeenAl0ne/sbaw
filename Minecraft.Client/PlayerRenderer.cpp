@@ -77,9 +77,12 @@ PlayerRenderer::PlayerRenderer() : LivingEntityRenderer(new HumanoidModel(0), 0.
 
 void PlayerRenderer::setModelType(shared_ptr<Player> player)
 {
-	if (Player::GetModelTypeFromTextureId(player->getCustomSkin()) == 2 || Player::GetModelTypeFromAnimBitmask(player->getAnimOverrideBitmask()) == 2) resModel = humanoidModelSlim;
-	else if (Player::GetModelTypeFromTextureId(player->getCustomSkin()) == 1 || Player::GetModelTypeFromAnimBitmask(player->getAnimOverrideBitmask()) == 1) resModel = humanoidModelWide;
-	else resModel = humanoidModel;
+	if (Player::GetModelTypeFromTextureId(player->getCustomSkin()) == 2 || Player::GetModelTypeFromAnimBitmask(player->getAnimOverrideBitmask()) == 2)
+		resModel = humanoidModelSlim;
+	else if (Player::GetModelTypeFromTextureId(player->getCustomSkin()) == 1 || Player::GetModelTypeFromAnimBitmask(player->getAnimOverrideBitmask()) == 1)
+		resModel = humanoidModelWide;
+	else
+		resModel = humanoidModel;
 }
 
 unsigned int PlayerRenderer::getNametagColour(int index)
@@ -93,7 +96,6 @@ int PlayerRenderer::prepareArmor(shared_ptr<LivingEntity> _player, int layer, fl
 {
 	// 4J - dynamic cast required because we aren't using templates/generics in our version
 	shared_ptr<Player> player = dynamic_pointer_cast<Player>(_player);
-	setModelType(player);
 
 	// 4J-PB - need to disable rendering armour for some special skins (Daleks)
 	unsigned int uiAnimOverrideBitmask = player->getAnimOverrideBitmask();
@@ -375,7 +377,6 @@ void PlayerRenderer::additionalRendering(shared_ptr<LivingEntity> _mob, float a)
 
 	// 4J - dynamic cast required because we aren't using templates/generics in our version
 	shared_ptr<Player> mob = dynamic_pointer_cast<Player>(_mob);
-	setModelType(mob);
 
 	shared_ptr<ItemInstance> headGear = mob->inventory->getArmor(3);
 	if (headGear != nullptr)
@@ -478,7 +479,7 @@ void PlayerRenderer::additionalRendering(shared_ptr<LivingEntity> _mob, float a)
 		glRotatef(lean2 / 2, 0, 0, 1);
 		glRotatef(-lean2 / 2, 0, 1, 0);
 		glRotatef(180, 0, 1, 0);
-		resModel->renderCloak(1 / 16.0f, true);
+		humanoidModel->renderCloak(1 / 16.0f, true);
 		glPopMatrix();
 	}
 

@@ -18,7 +18,7 @@ LivingEntityRenderer::LivingEntityRenderer(Model *model, float shadow, bool isPl
 
 	if (isPlayer)
 	{
-		this->modelWide = new HumanoidModel(0, 0, 64, 64, false);
+		this->modelWide = new HumanoidModel(0, 0, 64, 64);
 		this->modelSlim = new HumanoidModel(0, 0, 64, 64, true);
 	}
 

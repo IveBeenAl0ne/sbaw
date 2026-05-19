@@ -738,7 +738,6 @@ int Player::GetModelTypeFromTextureId(int textureId)
 {
 	if (textureId > 8 && textureId < 18) return 2;
 	else if (textureId == 18) return 1;
-	else if (textureId >= 0 && textureId < 9) return 1;
 	else return 0;
 }
 
