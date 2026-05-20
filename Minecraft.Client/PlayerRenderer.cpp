@@ -124,6 +124,10 @@ int PlayerRenderer::prepareArmor(shared_ptr<LivingEntity> _player, int layer, fl
 			armor->leg0->visible = layer == 2 || layer == 3;
 			armor->leg1->visible = layer == 2 || layer == 3;
 
+			armor->body->isArmorPart2 = layer == 2;
+			armor->leg0->isArmorPart2 = layer == 2;
+			armor->leg1->isArmorPart2 = layer == 2;
+
 			setArmor(armor);
 			if (armor != nullptr) armor->attackTime = resModel->attackTime;
 			if (armor != nullptr) armor->riding = resModel->riding;

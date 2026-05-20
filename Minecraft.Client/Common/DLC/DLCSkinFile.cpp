@@ -397,6 +397,15 @@ vector<SKIN_BOX *> *DLCSkinFile::getAdditionalBoxes()
 	return &m_AdditionalBoxes;
 }
 
+int DLCSkinFile::getOffsetsCount()
+{
+	return static_cast<int>(m_Offsets.size());
+}
+vector<SKIN_OFFSET *> *DLCSkinFile::getOffsets()
+{
+	return &m_Offsets;
+}
+
 wstring DLCSkinFile::getParameterAsString(DLCManager::EDLCParameterType type)
 {
 	switch(type)

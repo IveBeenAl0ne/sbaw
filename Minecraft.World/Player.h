@@ -555,6 +555,8 @@ public:
 
 	vector<ModelPart *> *GetAdditionalModelParts();
 	void SetAdditionalModelParts(vector<ModelPart *> *ppAdditionalModelParts);
+	vector<SKIN_OFFSET *> *GetSkinOffsets();
+	void SetSkinOffsets(vector<SKIN_OFFSET *> *ppSkinOffsets);
 
 #if defined(__PS3__) || defined(__ORBIS__)
 	enum ePlayerNameValidState
@@ -571,6 +573,9 @@ private:
 	vector<ModelPart *> *m_ppAdditionalModelParts;
 	bool m_bCheckedForModelParts;
 	bool m_bCheckedDLCForModelParts;
+	vector<SKIN_OFFSET *> *m_ppSkinOffsets;
+	bool m_bCheckedForSkinOffsets;
+	bool m_bCheckedDLCForSkinOffsets;
 
 #if defined(__PS3__) || defined(__ORBIS__)
 	ePlayerNameValidState m_ePlayerNameValidState; // 4J-PB - to ensure we have the characters for this name in our font, or display a player number instead

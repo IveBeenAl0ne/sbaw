@@ -12,7 +12,9 @@ TextureAndGeometryPacket::TextureAndGeometryPacket()
 	this->dwTextureBytes = 0;
 	this->pbData = nullptr;
 	this->dwBoxC = 0;
+	this->dwOffsetC = 0;
 	this->BoxDataA = nullptr;
+	this->OffsetDataA = nullptr;
 	uiAnimOverrideBitmask=0;
 }
 
@@ -43,7 +45,9 @@ TextureAndGeometryPacket::TextureAndGeometryPacket(const wstring &textureName, P
 	this->pbData = pbData;
 	this->dwTextureBytes = dwBytes;
 	this->dwBoxC = 0;
+	this->dwOffsetC = 0;
 	this->BoxDataA=nullptr;
+	this->OffsetDataA=nullptr;
 	this->uiAnimOverrideBitmask=0;
 }
 
@@ -62,6 +66,7 @@ TextureAndGeometryPacket::TextureAndGeometryPacket(const wstring &textureName, P
 	this->dwTextureBytes = dwBytes;
 	this->uiAnimOverrideBitmask = pDLCSkinFile->getAnimOverrideBitmask();
 	this->dwBoxC = pDLCSkinFile->getAdditionalBoxesCount();
+	this->dwOffsetC = pDLCSkinFile->getOffsetsCount();
 	if(this->dwBoxC!=0)
 	{
 		this->BoxDataA= new SKIN_BOX [this->dwBoxC];
@@ -77,9 +82,24 @@ TextureAndGeometryPacket::TextureAndGeometryPacket(const wstring &textureName, P
 	{
 		this->BoxDataA=nullptr;
 	}
+	if(this->dwOffsetC!=0)
+	{
+		this->OffsetDataA= new SKIN_OFFSET [this->dwOffsetC];
+		vector<SKIN_OFFSET *> *pSkinOffsets=pDLCSkinFile->getOffsets();
+		int iCount=0;
+
+		for(auto& pSkinOffset : *pSkinOffsets)
+		{
+			this->OffsetDataA[iCount++]=*pSkinOffset;
+		}
+	}
+	else
+	{
+		this->OffsetDataA=nullptr;
+	}
 }
 
-TextureAndGeometryPacket::TextureAndGeometryPacket(const wstring &textureName, PBYTE pbData, DWORD dwBytes,vector<SKIN_BOX *> *pvSkinBoxes, unsigned int uiAnimOverrideBitmask)
+TextureAndGeometryPacket::TextureAndGeometryPacket(const wstring &textureName, PBYTE pbData, DWORD dwBytes, vector<SKIN_BOX *> *pvSkinBoxes, vector<SKIN_OFFSET *> *pvSkinOffsets, unsigned int uiAnimOverrideBitmask)
 {
 	this->textureName = textureName;
 
@@ -107,6 +127,22 @@ TextureAndGeometryPacket::TextureAndGeometryPacket(const wstring &textureName, P
 		for(auto& pSkinBox : *pvSkinBoxes)
 		{
 			this->BoxDataA[iCount++]=*pSkinBox;
+		}
+	}
+	if(pvSkinOffsets==nullptr)
+	{
+		this->dwOffsetC=0;
+		this->OffsetDataA=nullptr;
+	}
+	else
+	{
+		this->dwOffsetC = static_cast<DWORD>(pvSkinOffsets->size());
+		this->OffsetDataA= new SKIN_OFFSET [this->dwOffsetC];
+		int iCount=0;
+
+		for(auto& pSkinOffset : *pvSkinOffsets)
+		{
+			this->OffsetDataA[iCount++]=*pSkinOffset;
 		}
 	}
 
@@ -148,6 +184,7 @@ void TextureAndGeometryPacket::read(DataInputStream *dis) //throws IOException
 	uiAnimOverrideBitmask = dis->readInt();
 
 	short rawBoxC = dis->readShort();
+	short rawOffsetC = dis->readShort();
     if (rawBoxC <= 0)
     {
         dwBoxC = 0;
@@ -160,10 +197,26 @@ void TextureAndGeometryPacket::read(DataInputStream *dis) //throws IOException
             dwBoxC = 0; // sane limit for skin boxes
         }
     }
+	if (rawOffsetC <= 0)
+    {
+        dwOffsetC = 0;
+    }
+    else
+    {
+        dwOffsetC = (DWORD)(unsigned short)rawOffsetC;
+        if (dwOffsetC > 256)
+        {
+            dwOffsetC = 0; // sane limit for skin offsets
+        }
+    }
 
 	if(dwBoxC>0)
 	{
 		this->BoxDataA= new SKIN_BOX [dwBoxC];
+	}
+	if(dwOffsetC>0)
+	{
+		this->OffsetDataA= new SKIN_OFFSET [dwOffsetC];
 	}
 
 	for(DWORD i=0;i<dwBoxC;i++)
@@ -181,9 +234,15 @@ void TextureAndGeometryPacket::read(DataInputStream *dis) //throws IOException
 		this->BoxDataA[i].fM = dis->readFloat();
 		this->BoxDataA[i].fS = dis->readFloat();
 	}
+	for(DWORD i=0;i<dwOffsetC;i++)
+	{
+		this->OffsetDataA[i].ePart = static_cast<eBodyOffset>(dis->readShort());
+		this->OffsetDataA[i].fD = dis->readFloat();
+		this->OffsetDataA[i].fO = dis->readFloat();
+	}
 }
 
-void TextureAndGeometryPacket::write(DataOutputStream *dos) //throws IOException
+void __fastcall TextureAndGeometryPacket::write(DataOutputStream *dos) //throws IOException
 {
 	dos->writeUTF(textureName);
 	dos->writeInt(dwSkinID);
@@ -209,6 +268,14 @@ void TextureAndGeometryPacket::write(DataOutputStream *dos) //throws IOException
 		dos->writeFloat(this->BoxDataA[i].fA);
 		dos->writeFloat(this->BoxDataA[i].fM);
 		dos->writeFloat(this->BoxDataA[i].fS);
+	}
+
+	dos->writeShort(static_cast<short>(dwOffsetC));
+	for(DWORD i=0;i<dwOffsetC;i++)
+	{
+		dos->writeShort(static_cast<short>(this->OffsetDataA[i].ePart));
+		dos->writeFloat(this->OffsetDataA[i].fD);
+		dos->writeFloat(this->OffsetDataA[i].fO);
 	}
 }
 

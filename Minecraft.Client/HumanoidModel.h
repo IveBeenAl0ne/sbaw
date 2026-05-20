@@ -79,12 +79,9 @@ public:
     HumanoidModel(float g, float yOffset, int texWidth, int texHeight);
     HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slim);
 
-    virtual void render(shared_ptr<Entity> entity, float time, float r, float bob,
-                        float yRot, float xRot, float scale, bool usecompiled);
-    virtual void setupAnim(float time, float r, float bob, float yRot, float xRot,
-                           float scale, shared_ptr<Entity> entity,
-                           unsigned int uiBitmaskOverrideAnim = 0);
-
+    virtual void render(shared_ptr<Entity> entity, float time, float r, float bob, float yRot, float xRot, float scale, bool usecompiled);
+	virtual void renderUI(float time, float r, float bob, float yRot, float xRot, float scale, bool usecompiled, vector<SKIN_OFFSET *> *skinOffsets);
+    virtual void setupAnim(float time, float r, float bob, float yRot, float xRot, float scale, shared_ptr<Entity> entity, unsigned int uiBitmaskOverrideAnim = 0);
     void renderHair(float scale, bool usecompiled);
     void renderEars(float scale, bool usecompiled);
     void renderCloak(float scale, bool usecompiled);

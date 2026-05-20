@@ -18,6 +18,7 @@ public:
 	bool visible;
 	bool neverRender;
 	unsigned int hideWithArmor;
+	bool isArmorPart2;
     vector <Cube *> cubes;
     vector <ModelPart *> children;
     static const float RAD;

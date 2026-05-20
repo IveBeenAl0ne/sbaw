@@ -104,6 +104,7 @@ private:
 	DWORD m_originalSkinId;
 	wstring m_currentSkinPath, m_selectedSkinPath, m_selectedCapePath;
 	vector<SKIN_BOX *> *m_vAdditionalSkinBoxes;
+	vector<SKIN_OFFSET *> *m_vSkinOffsets;
 
 	bool m_bSlidingSkins, m_bAnimatingMove;
 	ESkinSelectNavigation m_currentNavigation;
