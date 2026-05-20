@@ -10,6 +10,42 @@
 #include "Common/UI/UI.h"
 #include "lce_filesystem/FolderFile.h"
 
+static bool isDigitW(wchar_t ch)
+{
+	return ch >= L'0' && ch <= L'9';
+}
+
+static bool isDataPackPckName(const wstring &baseNameLower)
+{
+	const wstring suffix = L"data.pck";
+	if(baseNameLower.size() <= suffix.size() + 1)
+	{
+		return false;
+	}
+	if(baseNameLower[0] != L'x')
+	{
+		return false;
+	}
+	if(baseNameLower.compare(baseNameLower.size() - suffix.size(), suffix.size(), suffix) != 0)
+	{
+		return false;
+	}
+	const size_t digitsStart = 1;
+	const size_t digitsEnd = baseNameLower.size() - suffix.size();
+	if(digitsEnd <= digitsStart)
+	{
+		return false;
+	}
+	for(size_t i = digitsStart; i < digitsEnd; ++i)
+	{
+		if(!isDigitW(baseNameLower[i]))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 static bool hasPckFolderFallback(const wstring &path, wstring &folderPath)
 {
 	wstring lowerPath = toLower(path);
@@ -23,8 +59,10 @@ static bool hasPckFolderFallback(const wstring &path, wstring &folderPath)
 		return false;
 	}
 
-	if(!(lowerPath.find(L"x16Data.pck") != wstring::npos
-		|| lowerPath.find(L"x32Data.pck") != wstring::npos))
+	const size_t nameStart = lowerPath.find_last_of(L"/\\");
+	const size_t baseOffset = (nameStart == wstring::npos) ? 0 : (nameStart + 1);
+	wstring baseNameLower = lowerPath.substr(baseOffset);
+	if(!isDataPackPckName(baseNameLower))
 	{
 		return false;
 	}
