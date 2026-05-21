@@ -3,16 +3,16 @@
 #include "UI.h"
 #include "UIScene_SettingsUIMenu.h"
 
-int UIScene_SettingsUIMenu::m_iControlTypeSettingA[8]=
+int UIScene_SettingsUIMenu::m_iControlTypeSettingA[6]=
 {
 	IDS_CONTROLTYPE_KBM,
 	IDS_CONTROLTYPE_XBOXONE,
 	IDS_CONTROLTYPE_XBOX360,
-	IDS_CONTROLTYPE_VITA,
+	// IDS_CONTROLTYPE_VITA,
 	IDS_CONTROLTYPE_PLAYSTATION3,
 	IDS_CONTROLTYPE_PLAYSTATION4,
 	IDS_CONTROLTYPE_WIIU,
-	IDS_CONTROLTYPE_SWITCH,
+	// IDS_CONTROLTYPE_SWITCH,
 };
 
 UIScene_SettingsUIMenu::UIScene_SettingsUIMenu(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
@@ -51,7 +51,7 @@ UIScene_SettingsUIMenu::UIScene_SettingsUIMenu(int iPad, void *initData, UILayer
 	m_sliderUISizeSplitscreen.init(TempString,eControl_UISizeSplitscreen,1,3,app.GetGameSettings(m_iPad,eGameSetting_UISizeSplitscreen)+1);
 
 	swprintf( (WCHAR *)TempString, 256, L"%ls: %ls", app.GetString( IDS_SLIDER_CONTROLTYPE ),app.GetString(m_iControlTypeSettingA[app.GetGameSettings(m_iPad,eGameSetting_ControlType)]));	
-	m_sliderControlType.init(TempString,eControl_ControlType,0,7,app.GetGameSettings(m_iPad,eGameSetting_ControlType));
+	m_sliderControlType.init(TempString,eControl_ControlType,0,5,app.GetGameSettings(m_iPad,eGameSetting_ControlType));
 
 	doHorizontalResizeCheck();
 

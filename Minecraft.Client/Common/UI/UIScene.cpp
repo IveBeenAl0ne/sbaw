@@ -19,6 +19,7 @@ UIScene::UIScene(int iPad, UILayer *parentLayer)
 	bHasFocus = false;
 	m_hasTickedOnce = false;
 	m_bFocussedOnce = false;
+	m_bPanoramaUsesDefaultPlatformSkin = false;
 	m_bVisible = true;
 	m_bCanHandleInput = false;
 	m_bIsReloading = false;
@@ -38,6 +39,12 @@ UIScene::UIScene(int iPad, UILayer *parentLayer)
 
 UIScene::~UIScene()
 {
+	if(m_bPanoramaUsesDefaultPlatformSkin)
+	{
+		ui.PopDefaultPlatformSkinForPanorama();
+		m_bPanoramaUsesDefaultPlatformSkin = false;
+	}
+
 	/* Destroy the Iggy player. */
 	IggyPlayerDestroy( swf );
 
@@ -56,6 +63,12 @@ UIScene::~UIScene()
 
 void UIScene::destroyMovie()
 {
+	if(m_bPanoramaUsesDefaultPlatformSkin)
+	{
+		ui.PopDefaultPlatformSkinForPanorama();
+		m_bPanoramaUsesDefaultPlatformSkin = false;
+	}
+
 	/* Destroy the Iggy player. */
 	IggyPlayerDestroy( swf );
 	swf = nullptr;
@@ -74,6 +87,12 @@ void UIScene::reloadMovie(bool force)
 	m_bIsReloading = true;
 	if(swf)
 	{
+		if(m_bPanoramaUsesDefaultPlatformSkin)
+		{
+			ui.PopDefaultPlatformSkinForPanorama();
+			m_bPanoramaUsesDefaultPlatformSkin = false;
+		}
+
 		/* Destroy the Iggy player. */
 		IggyPlayerDestroy( swf );
 
@@ -278,6 +297,15 @@ void UIScene::loadMovie()
 {
 	EnterCriticalSection(&UIController::ms_reloadSkinCS);		// MGH - added to prevent crash loading Iggy movies while the skins were being reloaded
 	wstring moviePath = getMoviePath();
+
+#ifdef _WINDOWS64
+	const bool isPanoramaMovie = (moviePath == L"Panorama" || moviePath == L"PanoramaSplit");
+	if(isPanoramaMovie)
+	{
+		ui.PushDefaultPlatformSkinForPanorama();
+		m_bPanoramaUsesDefaultPlatformSkin = true;
+	}
+#endif
 
 #ifdef __PS3__
 	if(RenderManager.IsWidescreen())

@@ -5,7 +5,7 @@
 class UIScene_SettingsUIMenu : public UIScene
 {
 protected:
-	static int m_iControlTypeSettingA[8];
+	static int m_iControlTypeSettingA[6];
 private:
 	enum EControls
 	{

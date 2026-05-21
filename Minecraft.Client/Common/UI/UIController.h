@@ -187,6 +187,14 @@ private:
 	int m_accumulatedTicks;
 	uint64_t m_lastUiSfx; // Tracks time (ms) of last UI sound effect
 
+#ifdef _WINDOWS64
+	IggyLibrary m_savedPlatformSkinHD;
+	IggyLibrary m_savedPlatformSkin;
+	IggyLibrary m_panoramaPlatformSkinHD;
+	IggyLibrary m_panoramaPlatformSkin;
+	int m_platformSkinOverrideDepth;
+#endif
+
 	D3D11_RECT m_customRenderingClearRect;
 
 	unordered_map<size_t, UIScene *> m_registeredCallbackScenes; // A collection of scenes and unique id's that are used in async callbacks so we can safely handle when they get destroyed
@@ -252,6 +260,11 @@ public:
 	virtual bool IsReloadingSkin();
 	virtual bool IsExpectingOrReloadingSkin();
 	virtual void CleanUpSkinReload();
+
+#ifdef _WINDOWS64
+	void PushDefaultPlatformSkinForPanorama();
+	void PopDefaultPlatformSkinForPanorama();
+#endif
 
 private:
 	static int reloadSkinThreadProc(void* lpParam);

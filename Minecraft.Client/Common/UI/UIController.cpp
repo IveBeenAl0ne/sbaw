@@ -189,7 +189,7 @@ static void RADLINK DeallocateFunction ( void * alloc_callback_user_data , void 
 #ifdef _WINDOWS64
 static wstring GetControlTypeSkinPath(int controlType, bool hd)
 {
-	const wchar_t *skinName = L"PS4";
+	const wchar_t *skinName = L"windows"; // default to windows if control type is unknown
 
 	switch(controlType)
 	{
@@ -203,7 +203,7 @@ static wstring GetControlTypeSkinPath(int controlType, bool hd)
 		skinName = L"xbox360";
 		break;
 	case 3:
-		skinName = L"vita";
+		skinName = L"vita"; // not implemented yet
 		break;
 	case 4:
 		skinName = L"PS3";
@@ -215,7 +215,7 @@ static wstring GetControlTypeSkinPath(int controlType, bool hd)
 		skinName = L"WiiU";
 		break;
 	case 7:
-		skinName = L"Switch";
+		skinName = L"Switch"; // not implemented yet
 		break;
 	default:
 		break;
@@ -242,6 +242,14 @@ UIController::UIController()
 	m_moj7 = nullptr;
 	m_moj11 = nullptr;
 	m_unicodeBitmapFont = nullptr;
+
+#ifdef _WINDOWS64
+	m_savedPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_savedPlatformSkin = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkin = IGGY_INVALID_LIBRARY;
+	m_platformSkinOverrideDepth = 0;
+#endif
 
 	// 4J-JEV: It's important that these remain the same, unless updateCurrentLanguage is going to be called.
 	m_eCurrentFont = m_eTargetFont = eFont_NotLoaded;
@@ -767,6 +775,14 @@ void UIController::ReloadSkin()
 	}
 
 #ifdef _WINDOWS64
+	m_savedPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_savedPlatformSkin = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkin = IGGY_INVALID_LIBRARY;
+	m_platformSkinOverrideDepth = 0;
+#endif
+
+#ifdef _WINDOWS64
 	// 4J Stu - Don't load on a thread on windows. I haven't investigated this in detail, so a quick fix
 	reloadSkinThreadProc(this);
 #else
@@ -796,6 +812,70 @@ void UIController::StartReloadSkinThread()
 {
 	if(m_reloadSkinThread) m_reloadSkinThread->Run();
 }
+
+#ifdef _WINDOWS64
+void UIController::PushDefaultPlatformSkinForPanorama()
+{
+	if(m_platformSkinOverrideDepth++ > 0)
+	{
+		return;
+	}
+
+	m_savedPlatformSkinHD = m_iggyLibraries[eLibrary_Platform];
+	m_savedPlatformSkin = m_iggyLibraries[eLibraryFallback_Platform];
+	m_panoramaPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkin = IGGY_INVALID_LIBRARY;
+
+	const wstring defaultHd = L"Graphics\\ControlType\\HD\\windowsHD.swf";
+	const wstring defaultSd = L"Graphics\\ControlType\\windows.swf";
+
+	IggyLibrary hdLib = loadSkin(defaultHd, L"platformskinHD.swf");
+	if(hdLib != IGGY_INVALID_LIBRARY)
+	{
+		m_panoramaPlatformSkinHD = hdLib;
+		m_iggyLibraries[eLibrary_Platform] = hdLib;
+	}
+
+	IggyLibrary sdLib = loadSkin(defaultSd, L"platformskin.swf");
+	if(sdLib != IGGY_INVALID_LIBRARY)
+	{
+		m_panoramaPlatformSkin = sdLib;
+		m_iggyLibraries[eLibraryFallback_Platform] = sdLib;
+	}
+}
+
+void UIController::PopDefaultPlatformSkinForPanorama()
+{
+	if(m_platformSkinOverrideDepth == 0)
+	{
+		return;
+	}
+	if(--m_platformSkinOverrideDepth > 0)
+	{
+		return;
+	}
+
+	if(m_panoramaPlatformSkinHD != IGGY_INVALID_LIBRARY)
+	{
+		IggyLibraryDestroy(m_panoramaPlatformSkinHD);
+		m_panoramaPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	}
+	if(m_panoramaPlatformSkin != IGGY_INVALID_LIBRARY)
+	{
+		IggyLibraryDestroy(m_panoramaPlatformSkin);
+		m_panoramaPlatformSkin = IGGY_INVALID_LIBRARY;
+	}
+
+	if(m_savedPlatformSkinHD != IGGY_INVALID_LIBRARY)
+	{
+		m_iggyLibraries[eLibrary_Platform] = m_savedPlatformSkinHD;
+	}
+	if(m_savedPlatformSkin != IGGY_INVALID_LIBRARY)
+	{
+		m_iggyLibraries[eLibraryFallback_Platform] = m_savedPlatformSkin;
+	}
+}
+#endif
 
 int UIController::reloadSkinThreadProc(void* lpParam)
 {
