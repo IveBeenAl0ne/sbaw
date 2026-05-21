@@ -202,19 +202,19 @@ static wstring GetControlTypeSkinPath(int controlType, bool hd)
 	case 2:
 		skinName = L"xbox360";
 		break;
-	case 3:
+	case -1:
 		skinName = L"vita"; // not implemented yet
 		break;
-	case 4:
+	case 3:
 		skinName = L"PS3";
 		break;
-	case 5:
+	case 4:
 		skinName = L"PS4";
 		break;
-	case 6:
+	case 5:
 		skinName = L"WiiU";
 		break;
-	case 7:
+	case -2:
 		skinName = L"Switch"; // not implemented yet
 		break;
 	default:
