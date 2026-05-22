@@ -261,7 +261,7 @@ LAUNCHER
 
 BUILD_DIR="$SOURCE_DIR/build/windows64-clang"
 mkdir -p "$BUILD_DIR"
-info "LegacyEvolved LCE v$VERSION build script"
+info "neoLegacy v$VERSION build script"
 info "Source: $SOURCE_DIR | Type: $BUILD_TYPE"
 echo ""
 check_deps

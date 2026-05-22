@@ -20,6 +20,7 @@ static std::map<wstring, int> doorItemMap = {
 
 DoorTile::DoorTile(int id, Material *material, const wstring& doorType) : Tile(id, material,isSolidRender())
 {
+	setLightBlock(0);
 	this->doorType = doorType;
 
 	float r = 0.5f;

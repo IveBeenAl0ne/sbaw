@@ -10,6 +10,7 @@ TrapDoorTile::TrapDoorTile(int id, Material *material) : Tile(id, material,isSol
 {
 	float r = 0.5f;
 	float h = 1.0f;
+	setLightBlock(0);
 	setShape(0.5f - r, 0, 0.5f - r, 0.5f + r, h, 0.5f + r);
 }
 

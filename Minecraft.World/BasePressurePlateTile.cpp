@@ -11,6 +11,7 @@ BasePressurePlateTile::BasePressurePlateTile(int id, const wstring &tex, Materia
 {
 	texture = tex;
 	setTicking(true);
+	setLightBlock(0);
 
 	// 4J Stu - Move this to derived classes
 	//updateShape(getDataForSignal(Redstone::SIGNAL_MAX));

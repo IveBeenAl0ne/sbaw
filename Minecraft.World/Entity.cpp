@@ -892,7 +892,7 @@ void Entity::move(double xa, double ya, double za, bool noEntityCubes)   // 4J -
 	checkFallDamage(ya, onGround);
 
 	if (xaOrg != xa) xd = 0;
-	if (yaOrg != ya) yd = 0;
+	if (yaOrg != ya && yd < 0) yd = 0; // ONE LINE OF CODE??? REALLY?? THIS TOOK ME 4 HOURS YOUVE GOT TO BE KIDDING ME - A VERY ANGRY FIREBLADE
 	if (zaOrg != za) zd = 0;
 
 	double xm = x - xo;

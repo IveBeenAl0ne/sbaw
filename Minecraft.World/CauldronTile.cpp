@@ -14,6 +14,7 @@ const wstring CauldronTile::TEXTURE_BOTTOM = L"cauldron_bottom";
 
 CauldronTile::CauldronTile(int id) : Tile(id, Material::metal, isSolidRender())
 {
+	setLightBlock(0);
 	iconInner = nullptr;
 	iconTop = nullptr;
 	iconBottom = nullptr;

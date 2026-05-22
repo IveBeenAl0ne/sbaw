@@ -7,6 +7,7 @@
 
 FenceTile::FenceTile(int id, const wstring &texture, Material *material) : Tile( id, material, isSolidRender())
 {
+	setLightBlock(0);
 	this->texture = texture;
 }
 

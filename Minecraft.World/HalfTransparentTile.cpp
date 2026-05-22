@@ -7,6 +7,7 @@ HalfTransparentTile::HalfTransparentTile(int id, const wstring &tex, Material *m
 {
 	this->allowSame = allowSame;
 	this->texture = tex;
+	setLightBlock(0);
 }
 
 bool HalfTransparentTile::isSolidRender(bool isServerLevel)

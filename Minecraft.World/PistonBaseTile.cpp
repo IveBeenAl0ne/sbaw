@@ -5,6 +5,7 @@
 #include "PistonExtensionTile.h"
 #include "Facing.h"
 #include "net.minecraft.world.level.h"
+#include "net.minecraft.world.phys.h"
 #include "../Minecraft.Client/Minecraft.h"
 #include "../Minecraft.Client/MultiPlayerLevel.h"
 #include "net.minecraft.world.h"
@@ -342,7 +343,7 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 
 			PIXBeginNamedEvent(0,"Contract sticky phase C\n");
 			if (!pistonPiece && block > 0 && (isPushable(block, level, twoX, twoY, twoZ, false))
-				&& (Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_NORMAL || block == Tile::pistonBase_Id || block == Tile::pistonStickyBase_Id))
+				&& (Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_NORMAL || Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_SLIME || block == Tile::pistonBase_Id || block == Tile::pistonStickyBase_Id))
 			{
 				stopSharingIfServer(level, twoX, twoY, twoZ);	// 4J added
 
@@ -356,7 +357,42 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 				ignoreUpdate(false);
 				level->removeTile(twoX, twoY, twoZ);
 				ignoreUpdate(true);
-			}
+
+				if (block == Tile::slimeBlock->id)
+				{
+					for (int face = 0; face < 6; face++)
+					{
+						int adjX = twoX + Facing::STEP_X[face];
+						int adjY = twoY + Facing::STEP_Y[face];
+						int adjZ = twoZ + Facing::STEP_Z[face];
+
+						int adjBlock = level->getTile(adjX, adjY, adjZ);
+						if (adjBlock == 0)
+						{
+							continue;
+						}
+
+						if (!isPushable(adjBlock, level, adjX, adjY, adjZ, false))
+						{
+							continue;
+						}
+
+						int adjData = level->getData(adjX, adjY, adjZ);
+						int destX = adjX - Facing::STEP_X[facing];
+						int destY = adjY - Facing::STEP_Y[facing];
+						int destZ = adjZ - Facing::STEP_Z[facing];
+
+						stopSharingIfServer(level, destX, destY, destZ);
+						level->setTileAndData(destX, destY, destZ, Tile::pistonMovingPiece_Id, adjData, Tile::UPDATE_NONE);
+						level->setTileEntity(destX, destY, destZ, PistonMovingPiece::newMovingPieceEntity(adjBlock, adjData, facing, false, false));
+
+						ignoreUpdate(false);
+						level->removeTile(adjX, adjY, adjZ);
+						ignoreUpdate(true);
+						level->updateNeighborsAt(adjX, adjY, adjZ, adjBlock);
+					}
+				}
+			}	
 			else if (!pistonPiece)
 			{
 				stopSharingIfServer(level, x + Facing::STEP_X[facing], y + Facing::STEP_Y[facing], z + Facing::STEP_Z[facing]);	// 4J added
@@ -647,6 +683,26 @@ bool PistonBaseTile::createPush(Level *level, int sx, int sy, int sz, int facing
 	int ez = cz;
 	int count = 0;
 	int tiles[MAX_PUSH_DEPTH + 1];
+	struct MoveBlock
+	{
+		int x;
+		int y;
+		int z;
+		int block;
+		int data;
+	};
+	vector<MoveBlock> movedBlocks;
+	auto alreadyMoved = [&movedBlocks](int x, int y, int z)
+	{
+		for (const auto &move : movedBlocks)
+		{
+			if (move.x == x && move.y == y && move.z == z)
+			{
+				return true;
+			}
+		}
+		return false;
+	};
 
 	while (cx != sx || cy != sy || cz != sz)
 	{
@@ -670,11 +726,60 @@ bool PistonBaseTile::createPush(Level *level, int sx, int sy, int sz, int facing
 			level->setTileAndData(cx, cy, cz, Tile::pistonMovingPiece_Id, data, Tile::UPDATE_NONE);
 			level->setTileEntity(cx, cy, cz, PistonMovingPiece::newMovingPieceEntity(block, data, facing, true, false));
 		}
+		if (block == Tile::slimeBlock->id)
+		{
+			AABB *bb = AABB::newTemp(nx, ny, nz, nx + 1, ny + 2, nz + 1);
+			auto entities = level->getEntities(nullptr, bb);
+		}
+		movedBlocks.push_back({ nx, ny, nz, block, data });
 		tiles[count++] = block;
 
 		cx = nx;
 		cy = ny;
 		cz = nz;
+	}
+
+	for (size_t i = 0; i < movedBlocks.size(); i++)
+	{
+		if (movedBlocks[i].block != Tile::slimeBlock->id)
+		{
+			continue;
+		}
+
+		for (int face = 0; face < 6; face++)
+		{
+			int nx = movedBlocks[i].x + Facing::STEP_X[face];
+			int ny = movedBlocks[i].y + Facing::STEP_Y[face];
+			int nz = movedBlocks[i].z + Facing::STEP_Z[face];
+
+			if (alreadyMoved(nx, ny, nz))
+			{
+				continue;
+			}
+
+			int block = level->getTile(nx, ny, nz);
+			if (block == 0)
+			{
+				continue;
+			}
+
+			if (!isPushable(block, level, nx, ny, nz, false))
+			{
+				continue;
+			}
+
+			int data = level->getData(nx, ny, nz);
+			int dx = nx + Facing::STEP_X[facing];
+			int dy = ny + Facing::STEP_Y[facing];
+			int dz = nz + Facing::STEP_Z[facing];
+
+			stopSharingIfServer(level, dx, dy, dz);
+			level->setTileAndData(dx, dy, dz, Tile::pistonMovingPiece_Id, data, Tile::UPDATE_NONE);
+			level->setTileEntity(dx, dy, dz, PistonMovingPiece::newMovingPieceEntity(block, data, facing, true, false));
+			level->removeTile(nx, ny, nz);
+			level->updateNeighborsAt(nx, ny, nz, block);
+			movedBlocks.push_back({ nx, ny, nz, block, data });
+		}
 	}
 
 	cx = ex;

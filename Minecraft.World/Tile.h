@@ -125,6 +125,7 @@ public:
 	static SoundType *SOUND_GRAVEL;
 	static SoundType *SOUND_GRASS;
 	static SoundType *SOUND_STONE;
+	static SoundType *SOUND_SLIME;
 	static SoundType *SOUND_METAL;
 	static SoundType *SOUND_GLASS;
 	static SoundType *SOUND_CLOTH;
@@ -175,8 +176,9 @@ public:
 	static const int SHAPE_HOPPER = 38;
 	static const int SHAPE_QUARTZ = 39;
 	static const int SHAPE_THIN_PANE = 40;
+	static const int SHAPE_SLIME = 41;
 
-	static const int SHAPE_COUNT = 41;
+	static const int SHAPE_COUNT = 42;
 
 	static  Tile **tiles;
 
@@ -373,7 +375,7 @@ public:
 
 	static const int stairs_acaciawood_Id = 163;
 	static const int stairs_darkwood_Id = 164;
-	//165 slimeblock
+	static const int slime_Id = 165;
 	static const int barrier_Id = 166;
 	static const int iron_trapdoor_Id = 167;
 	static const int prismarine_Id = 168;
@@ -498,6 +500,7 @@ public:
 	static Tile *rail;
 	static Tile *stairs_stone;
 	static Tile *wallSign;
+	static Tile *slimeBlock;
 	static Tile *lever;
 	static Tile *pressurePlate_stone;
 	static Tile *door_iron;
@@ -820,6 +823,7 @@ protected:
 
 public:
 	virtual void registerIcons(IconRegister *iconRegister);
+	virtual void updateEntityAfterFallOn(Level *level, shared_ptr<Entity> entity);
 	virtual wstring getTileItemIconName();
 
 	// AP - added this function so we can generate the faceFlags for a block in a single fast function

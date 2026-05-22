@@ -181,7 +181,8 @@ void LivingEntity::checkFallDamage(double ya, bool onGround)
 
 		if (t > 0)
 		{
-			Tile::tiles[t]->fallOn(level, xt, yt, zt, shared_from_this(), fallDistance);
+			auto ent = shared_from_this();
+			Tile::tiles[t]->fallOn(level, xt, yt, zt, ent, fallDistance);
 		}
 	}
 

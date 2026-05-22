@@ -416,6 +416,10 @@ void Chunk::rebuild()
 
 						if (renderLayer > currentLayer)
 						{
+							if (currentLayer == 1 && tile == Tile::slimeBlock)
+							{
+								rendered |= tileRenderer->tesselateSlimeInnerInWorld(tile, x, y, z);
+							}
 							renderNextLayer = true;
 						}
 						else if (renderLayer == currentLayer)

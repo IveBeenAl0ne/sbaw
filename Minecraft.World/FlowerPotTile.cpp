@@ -7,6 +7,7 @@
 
 FlowerPotTile::FlowerPotTile(int id) : Tile(id, Material::decoration, isSolidRender() )
 {
+	setLightBlock(0);
 	updateDefaultShape();
 	sendTileData();
 }

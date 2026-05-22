@@ -22,7 +22,8 @@ const wstring RedStoneDustTile::TEXTURE_LINE_OVERLAY = L"_line_overlay";
 RedStoneDustTile::RedStoneDustTile(int id) : Tile(id, Material::decoration,isSolidRender())
 {
 	shouldSignal = true;
-
+	setLightBlock(0);
+	
 	updateDefaultShape();
 
 	iconCross = nullptr;

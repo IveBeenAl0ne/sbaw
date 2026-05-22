@@ -6,6 +6,7 @@
 
 TorchTile::TorchTile(int id) : Tile(id, Material::decoration,isSolidRender())
 {
+	setLightBlock(0);
 	this->setTicking(true);
 }
 

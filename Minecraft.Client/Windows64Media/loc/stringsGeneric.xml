@@ -1301,6 +1301,10 @@ Can also be used for low-level lighting.</value>
 		<value>Can be mined with a pickaxe to collect cobblestone.</value>
 	</data>	
 
+	<data name="IDS_DESC_SLIME_BLOCK">
+		<value>Causes players and mobs to bounce when they jump on it.</value>
+	</data>
+
 	<data name="IDS_DESC_DIRT">
 		<value>Collected using a shovel. Can be used for construction.</value>
 	</data>	
@@ -2948,6 +2952,10 @@ Can also be used for low-level lighting.</value>
 	<data name="IDS_TILE_STONE">
 		<value>Stone</value>
 	</data>	
+
+	<data name="IDS_TILE_SLIME_BLOCK">
+		<value>Slime Block</value>
+	</data>
 
 	<data name="IDS_TILE_GRASS">
 		<value>Grass Block</value>

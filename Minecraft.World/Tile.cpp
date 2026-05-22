@@ -34,6 +34,7 @@ Tile::SoundType *Tile::SOUND_WOOD = nullptr;
 Tile::SoundType *Tile::SOUND_GRAVEL = nullptr;
 Tile::SoundType *Tile::SOUND_GRASS = nullptr;
 Tile::SoundType *Tile::SOUND_STONE = nullptr;
+Tile::SoundType *Tile::SOUND_SLIME = nullptr;
 Tile::SoundType *Tile::SOUND_METAL = nullptr;
 Tile::SoundType *Tile::SOUND_GLASS = nullptr;
 Tile::SoundType *Tile::SOUND_CLOTH = nullptr;
@@ -68,6 +69,7 @@ Tile *Tile::sand = nullptr;
 Tile *Tile::gravel = nullptr;
 Tile *Tile::goldOre = nullptr;
 Tile *Tile::ironOre = nullptr;
+Tile *Tile::slimeBlock = nullptr;
 Tile *Tile::coalOre = nullptr;
 Tile *Tile::treeTrunk = nullptr;
 LeafTile *Tile::leaves = nullptr;
@@ -313,6 +315,7 @@ void Tile::staticCtor()
 	Tile::SOUND_GRAVEL = new Tile::SoundType(eMaterialSoundType_GRAVEL, 1, 1);
 	Tile::SOUND_GRASS = new Tile::SoundType(eMaterialSoundType_GRASS, 1, 1);
 	Tile::SOUND_STONE = new Tile::SoundType(eMaterialSoundType_STONE, 1, 1);
+	Tile::SOUND_SLIME = new Tile::SoundType(eMaterialSoundType_STONE, 1, 1, eSoundType_MOB_SLIME_BIG, eSoundType_MOB_SLIME_BIG);
 	Tile::SOUND_METAL = new Tile::SoundType(eMaterialSoundType_STONE, 1, 1.5f);
 	Tile::SOUND_GLASS = new Tile::SoundType(eMaterialSoundType_STONE, 1, 1, eSoundType_RANDOM_GLASS,eSoundType_STEP_STONE);
 	Tile::SOUND_CLOTH = new Tile::SoundType(eMaterialSoundType_CLOTH, 1, 1);
@@ -518,6 +521,7 @@ void Tile::staticCtor()
 	Tile::tree2Trunk = (new TreeTile2(162))->setDestroyTime(2.0f)->setSoundType(Tile::SOUND_WOOD)->setIconName(L"log")->setDescriptionId(IDS_TILE_LOG)->sendTileData()->setUseDescriptionId(IDS_DESC_LOG);
 	Tile::woodStairsAcacia = (new StairTile(163, Tile::wood, TreeTile::ACACIA_TRUNK))->setBaseItemTypeAndMaterial(Item::eBaseItemType_stairs, Item::eMaterial_acaciawood)->setIconName(L"stairsWoodAcacia")->setDescriptionId(IDS_TILE_STAIRS_ACACIAWOOD)->sendTileData()->setUseDescriptionId(IDS_DESC_STAIRS);
 	Tile::woodStairsDark = (new StairTile(164, Tile::wood, TreeTile::DARK_TRUNK))->setBaseItemTypeAndMaterial(Item::eBaseItemType_stairs, Item::eMaterial_darkwood)->setIconName(L"stairsWoodDark")->setDescriptionId(IDS_TILE_STAIRS_DARKWOOD)->sendTileData()->setUseDescriptionId(IDS_DESC_STAIRS);
+	Tile::slimeBlock = (new SlimeTile(165))->setSoundType(SOUND_SLIME)->setIconName(L"slime")->setDescriptionId(IDS_TILE_SLIME_BLOCK)->setUseDescriptionId(IDS_DESC_SLIME_BLOCK)->disableMipmap();
 	Tile::barrier = (new BarrierTile(166, Material::stone, false))	->setIndestructible()->setExplodeable(6000000)->setSoundType(Tile::SOUND_STONE)->setIconName(L"barrier")->setDescriptionId(IDS_TILE_BARRIER)->setNotCollectStatistics()->setUseDescriptionId(IDS_DESC_BARRIER);
 	Tile::iron_trapdoor = (new TrapDoorTile(167, Material::metal))->setBaseItemTypeAndMaterial(Item::eBaseItemType_door, Item::eMaterial_trap)->setDestroyTime(5.0f)->setSoundType(Tile::SOUND_METAL)->setIconName(L"iron_trapdoor")->setDescriptionId(IDS_TILE_IRON_TRAPDOOR)->setNotCollectStatistics()->sendTileData()->setUseDescriptionId(IDS_DESC_TRAPDOOR);
 
@@ -1560,6 +1564,12 @@ void Tile::registerIcons(IconRegister *iconRegister)
 	icon = iconRegister->registerIcon(getIconName());
 }
 
+void Tile::updateEntityAfterFallOn(Level *level, shared_ptr<Entity> entity)
+{
+	if (!entity) return;
+	entity->fallDistance = 0.0f;
+}
+
 wstring Tile::getTileItemIconName()
 {
 	return L"";
@@ -1846,4 +1856,5 @@ const int Tile::stairs_quartz_Id;
 const int Tile::woolCarpet_Id;
 const int Tile::stairs_acaciawood_Id;
 const int Tile::stairs_darkwood_Id;
+const int Tile::slime_Id;
 #endif

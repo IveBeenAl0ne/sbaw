@@ -17,6 +17,14 @@ bool TileRenderer::fancy = true;
 
 const float smallUV = ( 1.0f / 16.0f );
 
+static inline void tessColor(Tesselator* t, float r, float g, float b, float a)
+{
+	if (a >= 0.999f)
+		t->color(r, g, b);
+	else
+		t->color(r, g, b, a);
+}
+
 void TileRenderer::_init()
 {
 	fixedTexture = nullptr;
@@ -40,6 +48,8 @@ void TileRenderer::_init()
 	fixedShape = false;
 	smoothShapeLighting = false;
 	minecraft = Minecraft::GetInstance();
+
+	fixedTextureAlpha = 1.0f;
 
 	xMin = 0;
 	yMin = 0;
@@ -335,6 +345,9 @@ bool TileRenderer::tesselateInWorld( Tile* tt, int x, int y, int z, int forceDat
 		break;
 	case Tile::SHAPE_CACTUS:
 		retVal = tesselateCactusInWorld( tt, x, y, z );
+		break;
+	case Tile::SHAPE_SLIME:
+		retVal = tesselateSlimeBlockInWorld( tt, x, y, z );
 		break;
 	case Tile::SHAPE_CROSS_TEXTURE:
 		retVal = tesselateCrossInWorld( tt, x, y, z );
@@ -6279,6 +6292,50 @@ bool TileRenderer::tesselateBlockInWorld( Tile* tt, int x, int y, int z, float r
 
 }
 
+bool TileRenderer::tesselateSlimeBlockInWorld(Tile *tt, int x, int y, int z)
+{
+ 	setFixedTexture(getTexture(Tile::slimeBlock));
+	setShape(0, 0, 0, 1, 1, 1);
+
+	this->fixedTextureAlpha = 0.35f;
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_ALPHA_TEST);
+	glEnable(GL_BLEND);
+
+	glDepthMask(false);
+	tesselateBlockInWorld(tt, x, y, z);
+	glDepthMask(true);
+
+	glEnable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
+
+	this->fixedTextureAlpha = 1.0f;
+	clearFixedTexture();
+
+	return true;
+}
+
+bool TileRenderer::tesselateSlimeInnerInWorld(Tile *tt, int x, int y, int z)
+{
+	const float innerSizeStart = 3.0f / 16.0f;
+	const float innerSizeFinish = 13.0f / 16.0f;
+	setFixedTexture(getTexture(Tile::slimeBlock));
+	setShape(innerSizeStart, innerSizeStart, innerSizeStart, innerSizeFinish, innerSizeFinish, innerSizeFinish);
+	this->fixedTextureAlpha = 0.18f;
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_ALPHA_TEST);
+	glEnable(GL_BLEND);
+	glDepthMask(false);
+	bool result = tesselateBlockInWorld(tt, x, y, z);
+	glDepthMask(true);
+	glEnable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
+	this->fixedTextureAlpha = 1.0f;
+	clearFixedTexture();
+	return result;
+}
+
 bool TileRenderer::tesselateBeaconInWorld(Tile *tt, int x, int y, int z)
 {
 	float obsHeight = 3.0f / 16.0f;
@@ -6299,7 +6356,7 @@ bool TileRenderer::tesselateBeaconInWorld(Tile *tt, int x, int y, int z)
 	noCulling = false;
 
 	clearFixedTexture();
-
+	
 	return true;
 }
 
@@ -7285,16 +7342,16 @@ void TileRenderer::renderFaceDown( Tile* tt, double x, double y, double z, Icon 
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z1), static_cast<float>(u10), static_cast<float>(v10) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z0), ( float )( u00 ), ( float )( v00 ) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y0), static_cast<float>(z0), static_cast<float>(u01), static_cast<float>(v01) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y0), static_cast<float>(z1), ( float )( u11 ), ( float )( v11 ) );
 	}
@@ -7397,16 +7454,16 @@ void TileRenderer::renderFaceUp( Tile* tt, double x, double y, double z, Icon *t
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(z1), ( float )( u11 ), ( float )( v11 ) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(z0), ( float )( u01 ), ( float )( v01 ) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z0), ( float )( u00 ), ( float )( v00 ) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z1), ( float )( u10 ), ( float )( v10 ) );
 	}
@@ -7516,16 +7573,16 @@ void TileRenderer::renderNorth( Tile* tt, double x, double y, double z, Icon *te
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z0), static_cast<float>(u01), static_cast<float>(v01) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(z0), static_cast<float>(u00), static_cast<float>(v00) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y0), static_cast<float>(z0), static_cast<float>(u10), static_cast<float>(v10) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z0), static_cast<float>(u11), static_cast<float>(v11) );
 	}
@@ -7635,16 +7692,16 @@ void TileRenderer::renderSouth( Tile* tt, double x, double y, double z, Icon *te
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z1), static_cast<float>(u00), static_cast<float>(v00) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z1), static_cast<float>(u10), static_cast<float>(v10) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y0), static_cast<float>(z1), static_cast<float>(u11), static_cast<float>(v11) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(z1), static_cast<float>(u01), static_cast<float>(v01) );
 	}
@@ -7753,16 +7810,16 @@ void TileRenderer::renderWest( Tile* tt, double x, double y, double z, Icon *tex
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z1), static_cast<float>(u01), static_cast<float>(v01) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z0), static_cast<float>(u00), static_cast<float>(v00) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z0), static_cast<float>(u10), static_cast<float>(v10) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z1), static_cast<float>(u11), static_cast<float>(v11) );
 	}
@@ -8105,6 +8162,56 @@ void TileRenderer::renderTile( Tile* tile, int data, float brightness, float fAl
 		t->normal(0, -1, 0);
 		tile->updateDefaultShape();
 		t->end();
+	}
+	else if (shape == Tile::SHAPE_SLIME)
+	{
+		tile->updateDefaultShape();
+		glTranslatef(-0.5f, -0.5f, -0.5f);
+
+		bool hadFixedTexture = hasFixedTexture();
+		Icon *savedFixedTexture = fixedTexture;
+
+		setFixedTexture(getTexture(Tile::slimeBlock));
+		setShape(3.0f / 16.0f, 3.0f / 16.0f, 3.0f / 16.0f, 13.0f / 16.0f, 13.0f / 16.0f, 13.0f / 16.0f);
+		t->begin();
+		t->normal(0.0f, -1.0f, 0.0f);
+		renderFaceDown(tile, 0, 0, 0, getTexture(tile, 0, data));
+		t->normal(0.0f, 1.0f, 0.0f);
+		renderFaceUp(tile, 0, 0, 0, getTexture(tile, 1, data));
+		t->normal(0.0f, 0.0f, -1.0f);
+		renderNorth(tile, 0, 0, 0, getTexture(tile, 2, data));
+		t->normal(0.0f, 0.0f, 1.0f);
+		renderSouth(tile, 0, 0, 0, getTexture(tile, 3, data));
+		t->normal(-1.0f, 0.0f, 0.0f);
+		renderWest(tile, 0, 0, 0, getTexture(tile, 4, data));
+		t->normal(1.0f, 0.0f, 0.0f);
+		renderEast(tile, 0, 0, 0, getTexture(tile, 5, data));
+		t->end();
+
+		setFixedTexture(getTexture(Tile::slimeBlock));
+		setShape(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+		glColor4f(brightness, brightness, brightness, fAlpha * 0.5f);
+		t->begin();
+		t->normal(0.0f, -1.0f, 0.0f);
+		renderFaceDown(tile, 0, 0, 0, getTexture(tile, 0, data));
+		t->normal(0.0f, 1.0f, 0.0f);
+		renderFaceUp(tile, 0, 0, 0, getTexture(tile, 1, data));
+		t->normal(0.0f, 0.0f, -1.0f);
+		renderNorth(tile, 0, 0, 0, getTexture(tile, 2, data));
+		t->normal(0.0f, 0.0f, 1.0f);
+		renderSouth(tile, 0, 0, 0, getTexture(tile, 3, data));
+		t->normal(-1.0f, 0.0f, 0.0f);
+		renderWest(tile, 0, 0, 0, getTexture(tile, 4, data));
+		t->normal(1.0f, 0.0f, 0.0f);
+		renderEast(tile, 0, 0, 0, getTexture(tile, 5, data));
+		t->end();
+
+		if (hadFixedTexture)
+			setFixedTexture(savedFixedTexture);
+		else
+			clearFixedTexture();
+
+		glColor4f(brightness, brightness, brightness, fAlpha);
 	}
 	else if ( shape == Tile::SHAPE_CACTUS )
 	{
@@ -8557,6 +8664,7 @@ bool TileRenderer::canRender( int renderShape )
 	if ( renderShape == Tile::SHAPE_BLOCK ) return true;
 	if ( renderShape == Tile::SHAPE_TREE ) return true;
 	if ( renderShape == Tile::SHAPE_QUARTZ) return true;
+	if ( renderShape == Tile::SHAPE_SLIME ) return true;
 	if ( renderShape == Tile::SHAPE_CACTUS ) return true;
 	if ( renderShape == Tile::SHAPE_STAIRS ) return true;
 	if ( renderShape == Tile::SHAPE_FENCE ) return true;

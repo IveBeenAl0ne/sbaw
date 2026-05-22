@@ -17,6 +17,7 @@ const unsigned int WallTile::COBBLE_NAMES[2] = { IDS_TILE_COBBLESTONE_WALL,
 
 WallTile::WallTile(int id, Tile *baseTile) : Tile(id, baseTile->material, isSolidRender())
 {
+	setLightBlock(0);
 	setDestroyTime(baseTile->destroySpeed);
 	setExplodeable(baseTile->explosionResistance / 3);
 	setSoundType(baseTile->soundType);

@@ -6,6 +6,7 @@
 
 BaseEntityTile::BaseEntityTile(int id, Material *material, bool isSolidRender /*= true*/) : Tile(id, material, isSolidRender)
 {
+	setLightBlock(0);
 	_isEntityTile = true;
 }
 

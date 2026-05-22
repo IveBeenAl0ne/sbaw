@@ -90,6 +90,7 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM_AUX(Tile::prismarine_Id,	PrismarineTile::TYPE_DEFAULT)
 		ITEM_AUX(Tile::prismarine_Id,	PrismarineTile::TYPE_BRICKS)
 		ITEM_AUX(Tile::prismarine_Id,	PrismarineTile::TYPE_DARK)
+		ITEM(Tile::slime_Id)
 		ITEM(Tile::fence_Id)
 
 		// TU25

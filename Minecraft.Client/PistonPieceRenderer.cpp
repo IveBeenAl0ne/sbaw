@@ -54,7 +54,18 @@ void PistonPieceRenderer::render(shared_ptr<TileEntity> _entity, double x, doubl
         }
 		else
 		{
-            tileRenderer->tesselateInWorldNoCulling(tile, entity->x, entity->y, entity->z, entity->getData(), entity);
+            if (tile == Tile::slimeBlock)
+            {
+                tileRenderer->setFixedTexture(tile->getTexture(0, entity->getData()));
+                tileRenderer->fixedTextureAlpha = 0.35f;
+                tileRenderer->tesselateInWorldNoCulling(Tile::glass, entity->x, entity->y, entity->z, entity->getData(), entity);
+                tileRenderer->fixedTextureAlpha = 1.0f;
+                tileRenderer->clearFixedTexture();
+            }
+            else
+            {
+                tileRenderer->tesselateInWorldNoCulling(tile, entity->x, entity->y, entity->z, entity->getData(), entity);
+            }
         }
         t->offset(0, 0, 0);
         t->end();

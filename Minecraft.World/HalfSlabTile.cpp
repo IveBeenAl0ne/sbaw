@@ -14,11 +14,15 @@ HalfSlabTile::HalfSlabTile(int id, Material *material)
 
 void HalfSlabTile::DerivedInit()
 {
-    
     if (!isFullSize())
+    {
+        setLightBlock(0);
         setShape(0.0f, 0.0f, 0.0f, 1.0f, 0.5f, 1.0f);
+    }
     else
+    {
         Tile::solid[id] = true;
+    }
 }
 
 void HalfSlabTile::updateDefaultShape()

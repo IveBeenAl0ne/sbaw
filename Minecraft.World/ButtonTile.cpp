@@ -11,6 +11,7 @@ ButtonTile::ButtonTile(int id, bool sensitive) : Tile(id, Material::decoration, 
 {
     this->setTicking(true);
     this->sensitive = sensitive;
+	setLightBlock(0);
 }
 
 Icon *ButtonTile::getTexture(int face, int data)
