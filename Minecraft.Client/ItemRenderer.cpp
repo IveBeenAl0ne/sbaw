@@ -101,7 +101,17 @@ void ItemRenderer::render(shared_ptr<Entity> _itemEntity, double x, double y, do
         }
 
         glScalef(s, s, s);
-        for (int i = 0; i < count; i++)
+		
+		bool bSlimeItem = (tile != nullptr && tile->id == Tile::slimeBlock->id);
+		if (bSlimeItem)
+		{
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glDisable(GL_ALPHA_TEST);
+			glEnable(GL_BLEND);
+			glDepthMask(false);
+		}
+
+		for (int i = 0; i < count; i++)
 		{
             glPushMatrix();
             if (i > 0)
@@ -116,6 +126,13 @@ void ItemRenderer::render(shared_ptr<Entity> _itemEntity, double x, double y, do
             tileRenderer->renderTile(tile, item->getAuxValue(), br);
             glPopMatrix();
         }
+
+		if (bSlimeItem)
+		{
+			glDepthMask(true);
+			glEnable(GL_ALPHA_TEST);
+			glDisable(GL_BLEND);
+		}
 	}
 	else if (item->getIconType() == Icon::TYPE_ITEM && item->getItem()->hasMultipleSpriteLayers())
 	{
