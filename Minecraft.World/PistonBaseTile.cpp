@@ -455,7 +455,7 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 							int destZ = adjZ - Facing::STEP_Z[facing];
 
 							stopSharingIfServer(level, destX, destY, destZ);
-							level->setTileAndData(destX, destY, destZ, Tile::pistonMovingPiece_Id, adjData, Tile::UPDATE_NONE);
+							level->setTileAndData(destX, destY, destZ, Tile::piston_extension_Id, adjData, Tile::UPDATE_NONE);
 							level->setTileEntity(destX, destY, destZ, PistonMovingPiece::newMovingPieceEntity(adjBlock, adjData, facing, false, false));
 
 							ignoreUpdate(false);
@@ -852,7 +852,7 @@ bool PistonBaseTile::createPush(Level *level, int sx, int sy, int sz, int facing
 			int dz = nz + Facing::STEP_Z[facing];
 
 			stopSharingIfServer(level, dx, dy, dz);
-			level->setTileAndData(dx, dy, dz, Tile::pistonMovingPiece_Id, data, Tile::UPDATE_NONE);
+			level->setTileAndData(dx, dy, dz, Tile::piston_extension_Id, data, Tile::UPDATE_NONE);
 			level->setTileEntity(dx, dy, dz, PistonMovingPiece::newMovingPieceEntity(block, data, facing, true, false));
 			level->removeTile(nx, ny, nz);
 			level->updateNeighborsAt(nx, ny, nz, block);

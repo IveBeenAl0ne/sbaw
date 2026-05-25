@@ -1790,7 +1790,6 @@ const int Tile::web_Id;
 const int Tile::tallgrass_Id;
 const int Tile::deadbush_Id;
 const int Tile::piston_Id;
-const int Tile::pistonMovingPiece_Id;
 const int Tile::wool_Id;
 const int Tile::piston_extension_Id;
 const int Tile::yellow_flower_Id;

@@ -33,7 +33,7 @@ void OreRecipies::_init()
 	ADD_OBJECT(map[7],new ItemInstance(Item::wheat, 9));
 
 	ADD_OBJECT(map[8],Tile::slimeBlock);
-	ADD_OBJECT(map[8],new ItemInstance(Item::slimeBall, 9));
+	ADD_OBJECT(map[8],new ItemInstance(Item::slime_ball, 9));
 }
 void OreRecipies::addRecipes(Recipes *r) 
 {

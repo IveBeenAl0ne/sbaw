@@ -4195,7 +4195,7 @@ bool TileRenderer::tesselateCrossInWorld( Tile* tt, int x, int y, int z )
 		zt += ((((seed >> 24) & 0xf) / 15.0f) - 0.5f) * 0.5f;
 	}
 
-	if (tt == Tile::tallgrass2)
+	if (tt == Tile::double_plant)
 	{
 		const int data = level->getData(x, y, z);
 		const bool isUpper = (data & TallGrass2::UPPER_BIT) != 0;
