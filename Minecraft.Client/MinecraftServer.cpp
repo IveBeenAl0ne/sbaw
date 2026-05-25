@@ -2017,7 +2017,11 @@ void MinecraftServer::run(int64_t seed, void *lpParameter)
                             QueryPerformanceCounter(&asAfterRules);
 #endif
 
+#ifdef MINECRAFT_SERVER_BUILD
+                            levels[0]->saveToDisc(nullptr, true);
+#else
                             levels[0]->saveToDisc(Minecraft::GetInstance()->progressRenderer, true);
+#endif
 
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
                             QueryPerformanceCounter(&asAfterFlush);

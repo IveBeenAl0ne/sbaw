@@ -155,7 +155,7 @@ write_client_launcher() {
 #!/usr/bin/env bash
 set -euo pipefail
 GAME_DIR="$INSTALL_DIR/client"
-PERSIST_DIR="\${MC_DATA_DIR:-\$HOME/.local/share/minecraft-lce-client}"
+PERSIST_DIR="\${MC_DATA_DIR:-\$HOME/.local/share/neoLegacy/client}"
 export WINEARCH=win64
 export WINEPREFIX="\${WINEPREFIX:-\$HOME/.local/share/minecraft-lce-client-prefix}"
 export WINEDLLOVERRIDES="winemenubuilder.exe=d"
@@ -183,7 +183,7 @@ set -euo pipefail
 GAME_DIR="$INSTALL_DIR/server"
 SERVER_PORT="\${MC_PORT:-25565}"
 SERVER_BIND_IP="\${MC_BIND:-0.0.0.0}"
-PERSIST_DIR="\${MC_DATA_DIR:-\$HOME/.local/share/minecraft-lce-server}"
+PERSIST_DIR="\${MC_DATA_DIR:-\$HOME/.local/share/neoLegacy/server}"
 export WINEARCH=win64
 export WINEPREFIX="\${WINEPREFIX:-\$HOME/.local/share/minecraft-lce-server-prefix}"
 export WINEDLLOVERRIDES="winemenubuilder.exe=d;winedbg.exe=d"
@@ -226,7 +226,7 @@ set -euo pipefail
 GAME_DIR="$INSTALL_DIR/fourkit"
 SERVER_PORT="\${MC_PORT:-25565}"
 SERVER_BIND_IP="\${MC_BIND:-0.0.0.0}"
-PERSIST_DIR="\${MC_DATA_DIR:-\$HOME/.local/share/minecraft-lce-fourkit}"
+PERSIST_DIR="\${MC_DATA_DIR:-\$HOME/.local/share/neoLegacy/fourkit}"
 export WINEARCH=win64
 export WINEPREFIX="\${WINEPREFIX:-\$HOME/.local/share/minecraft-lce-fourkit-prefix}"
 export WINEDLLOVERRIDES="winemenubuilder.exe=d;winedbg.exe=d"

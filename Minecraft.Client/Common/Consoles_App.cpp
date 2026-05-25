@@ -946,7 +946,9 @@ void CMinecraftApp::InitGameSettings()
 		memset(pProfileSettings,0,sizeof(C_4JProfile::PROFILESETTINGS));
 		SetDefaultOptions(pProfileSettings,i);
 		Win64_LoadSettings(GameSettingsA[i]);
+#ifndef MINECRAFT_SERVER_BUILD
 		ApplyGameSettingsChanged(i);
+#endif
 #elif defined __PS3__ || defined __ORBIS__ || defined _DURANGO  || defined __PSVITA__
 		C4JStorage::PROFILESETTINGS *pProfileSettings=StorageManager.GetDashboardProfileSettings(i);
 		// 4J-PB - don't cause an options write to happen here

@@ -163,7 +163,7 @@ void PistonPieceEntity::finalTick()
 		progressO = progress = 1;
 		level->removeTileEntity(x, y, z);
 		setRemoved();
-		if (level->getTile(x, y, z) == Tile::pistonMovingPiece_Id)
+		if (level->getTile(x, y, z) == Tile::piston_extension_Id)
 		{
 			level->setTileAndData(x, y, z, id, data, Tile::UPDATE_ALL);
 			level->neighborChanged(x, y, z, id);
@@ -180,7 +180,7 @@ void PistonPieceEntity::tick()
 		moveCollidedEntities(1, 4 / 16.f);
 		level->removeTileEntity(x, y, z);
 		setRemoved();
-		if (level->getTile(x, y, z) == Tile::pistonMovingPiece_Id)
+		if (level->getTile(x, y, z) == Tile::piston_extension_Id)
 		{
 			level->setTileAndData(x, y, z, id, data, Tile::UPDATE_ALL);
 			level->neighborChanged(x, y, z, id);
