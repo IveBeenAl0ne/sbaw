@@ -234,7 +234,7 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM_AUX(Tile::rose_Id, Rose::WHITE_TULIP)
 		ITEM_AUX(Tile::rose_Id, Rose::PINK_TULIP)
 		ITEM_AUX(Tile::rose_Id, Rose::OXEYE_DAISY)
-		// SUNFLOWER LOCATION
+		ITEM(Tile::tallgrass2_Id)
 		ITEM_AUX(Tile::tallgrass2_Id, TallGrass2::LILAC)
 		ITEM_AUX(Tile::tallgrass2_Id, TallGrass2::TALL_GRASS)
 		ITEM_AUX(Tile::tallgrass2_Id, TallGrass2::LARGE_FERN)

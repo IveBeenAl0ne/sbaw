@@ -9,9 +9,11 @@
 #include "../Minecraft.World/net.minecraft.world.level.material.h"
 #include "../Minecraft.World/net.minecraft.h"
 #include "../Minecraft.World/net.minecraft.world.h"
+#include "../Minecraft.World/JavaMath.h"
 #include "Tesselator.h"
 #include "EntityTileRenderer.h"
 #include "Options.h"
+#include "../Minecraft.World/TallGrass2.h"
 
 bool TileRenderer::fancy = true;
 
@@ -4193,6 +4195,87 @@ bool TileRenderer::tesselateCrossInWorld( Tile* tt, int x, int y, int z )
 		zt += ((((seed >> 24) & 0xf) / 15.0f) - 0.5f) * 0.5f;
 	}
 
+	if (tt == Tile::tallgrass2)
+	{
+		const int data = level->getData(x, y, z);
+		const bool isUpper = (data & TallGrass2::UPPER_BIT) != 0;
+		const int lowerData = isUpper ? level->getData(x, y - 1, z) : data;
+		const int variant = lowerData & ~TallGrass2::UPPER_BIT;
+
+		if (isUpper && variant == TallGrass2::SUNFLOWER)
+		{
+			// cut off stem height (i think thats how it was in the original LCE?)
+			tesselateCrossStemHeight(tt, data, xt, yt, zt, 0.875f);
+			TallGrass2* tallGrass = static_cast<TallGrass2*>(tt);
+			Icon* frontTex = tallGrass->getSunflowerHeadFrontIcon();
+			Icon* backTex = tallGrass->getSunflowerHeadBackIcon();
+			if (frontTex != nullptr && backTex != nullptr)
+			{
+				float fu0 = frontTex->getU0(true);
+				float fu1 = frontTex->getU1(true);
+				float fv0 = frontTex->getV0(true);
+				float fv1 = frontTex->getV1(true);
+
+				float bu0 = backTex->getU0(true);
+				float bu1 = backTex->getU1(true);
+				float bv0 = backTex->getV0(true);
+				float bv1 = backTex->getV1(true);
+
+				const float angle = 22.5f * (PI / 180.0f);
+				const float c = Mth::cos(angle);
+				const float s = Mth::sin(angle);
+				const float ox = xt + 0.5f;
+				const float oy = yt + 0.5f;
+				const float oz = zt + 0.5f;
+
+				auto rotateZ = [&](float &px, float &py)
+				{
+					float dx = px - ox;
+					float dy = py - oy;
+					px = ox + (dx * c - dy * s);
+					py = oy + (dx * s + dy * c);
+				};
+
+				const float z0 = zt + (1.0f / 16.0f);
+				const float z1 = zt + (15.0f / 16.0f);
+				const float y0 = yt - (1.0f / 16.0f);
+				const float y1 = yt + (15.0f / 16.0f);
+
+				const float xPlane = xt + (9.6f / 16.0f);
+				const float depth = 0.001f;
+
+				float fx0 = xPlane + depth, fy0 = y1, fz0 = z0;
+				float fx1 = xPlane + depth, fy1 = y0, fz1 = z0;
+				float fx2 = xPlane + depth, fy2 = y0, fz2 = z1;
+				float fx3 = xPlane + depth, fy3 = y1, fz3 = z1;
+				rotateZ(fx0, fy0);
+				rotateZ(fx1, fy1);
+				rotateZ(fx2, fy2);
+				rotateZ(fx3, fy3);
+
+				t->vertexUV(fx0, fy0, fz0, fu0, fv0);
+				t->vertexUV(fx1, fy1, fz1, fu0, fv1);
+				t->vertexUV(fx2, fy2, fz2, fu1, fv1);
+				t->vertexUV(fx3, fy3, fz3, fu1, fv0);
+
+				float bx0 = xPlane - depth, by0 = y1, bz0 = z0;
+				float bx1 = xPlane - depth, by1 = y0, bz1 = z0;
+				float bx2 = xPlane - depth, by2 = y0, bz2 = z1;
+				float bx3 = xPlane - depth, by3 = y1, bz3 = z1;
+				rotateZ(bx0, by0);
+				rotateZ(bx1, by1);
+				rotateZ(bx2, by2);
+				rotateZ(bx3, by3);
+
+				t->vertexUV(bx3, by3, bz3, bu0, bv0);
+				t->vertexUV(bx2, by2, bz2, bu0, bv1);
+				t->vertexUV(bx1, by1, bz1, bu1, bv1);
+				t->vertexUV(bx0, by0, bz0, bu1, bv0);
+			}
+			return true;
+		}
+	}
+
 	tesselateCrossTexture( tt, level->getData( x, y, z ), xt, yt, zt, 1 );
 	return true;
 }
@@ -4370,6 +4453,47 @@ void TileRenderer::tesselateCrossTexture( Tile* tt, int data, float x, float y, 
 	t->vertexUV( ( float )( x0 ), ( float )( y + 0 ), ( float )( z1 ), ( float )( u1 ), ( float )( v1 ) );
 	t->vertexUV( ( float )( x0 ), ( float )( y + scale ), ( float )( z1 ), ( float )( u1 ), ( float )( v0 ) );
 
+}
+
+void TileRenderer::tesselateCrossStemHeight( Tile* tt, int data, float x, float y, float z, float height )
+{
+	Tesselator* t = Tesselator::getInstance();
+
+	Icon *tex = getTexture(tt, 0, data);
+
+	if (hasFixedTexture()) tex = fixedTexture;
+	float u0 = tex->getU0(true);
+	float v0 = tex->getV0(true);
+	float u1 = tex->getU1(true);
+	float v1 = tex->getV(height * SharedConstants::WORLD_RESOLUTION, true);
+
+	float width = 0.45f;
+	float x0 = x + 0.5f - width;
+	float x1 = x + 0.5f + width;
+	float z0 = z + 0.5f - width;
+	float z1 = z + 0.5f + width;
+
+	float topY = y + height;
+
+	t->vertexUV( x0, topY, z0, u0, v0 );
+	t->vertexUV( x0, y + 0, z0, u0, v1 );
+	t->vertexUV( x1, y + 0, z1, u1, v1 );
+	t->vertexUV( x1, topY, z1, u1, v0 );
+
+	t->vertexUV( x1, topY, z1, u0, v0 );
+	t->vertexUV( x1, y + 0, z1, u0, v1 );
+	t->vertexUV( x0, y + 0, z0, u1, v1 );
+	t->vertexUV( x0, topY, z0, u1, v0 );
+
+	t->vertexUV( x0, topY, z1, u0, v0 );
+	t->vertexUV( x0, y + 0, z1, u0, v1 );
+	t->vertexUV( x1, y + 0, z0, u1, v1 );
+	t->vertexUV( x1, topY, z0, u1, v0 );
+
+	t->vertexUV( x1, topY, z0, u0, v0 );
+	t->vertexUV( x1, y + 0, z0, u0, v1 );
+	t->vertexUV( x0, y + 0, z1, u1, v1 );
+	t->vertexUV( x0, topY, z1, u1, v0 );
 }
 
 void TileRenderer::tesselateStemTexture( Tile* tt, int data, float h, float x, float y, float z )

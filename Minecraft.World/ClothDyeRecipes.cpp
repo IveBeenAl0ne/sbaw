@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "net.minecraft.world.item.h"
 #include "net.minecraft.world.level.tile.h"
+#include "Rose.h"
+#include "TallGrass2.h"
 #include "Recipy.h"
 #include "Recipes.h"
 #include "ClothDyeRecipes.h"
@@ -38,17 +40,65 @@ void ClothDyeRecipes::addRecipes(Recipes *r)
 	}
 
 	// some dye recipes
-	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 2, DyePowderItem::YELLOW),
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::YELLOW),
 		L"tg", 
 		Tile::flower,L'D');
 
-	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 2, DyePowderItem::RED),
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::RED),
 		L"tg", 
 		Tile::rose,L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::LIGHT_BLUE),
+		L"zg",
+		new ItemInstance(Tile::rose, 1, Rose::BLUE_ORCHID),L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::MAGENTA),
+		L"zg",
+		new ItemInstance(Tile::rose, 1, Rose::ALLIUM),L'D');
+		
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::SILVER),
+		L"zg",
+		new ItemInstance(Tile::rose, 1, Rose::AZURE_BLUET),L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::RED),
+		L"zg",
+		new ItemInstance(Tile::rose, 1, Rose::RED_TULIP),L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::ORANGE),
+		L"zg",
+		new ItemInstance(Tile::rose, 1, Rose::ORANGE_TULIP),L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::SILVER),
+		L"zg",
+		new ItemInstance(Tile::rose, 1, Rose::WHITE_TULIP),L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::PINK),
+		L"zg",
+		new ItemInstance(Tile::rose, 1, Rose::PINK_TULIP),L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 1, DyePowderItem::SILVER),
+		L"zg",
+		new ItemInstance(Tile::rose, 1, Rose::OXEYE_DAISY),L'D');
 
 	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 3, DyePowderItem::WHITE),
 		L"ig", 
 		Item::bone,L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 2, DyePowderItem::YELLOW),
+		L"zg",
+		new ItemInstance(Tile::tallgrass2, 1, TallGrass2::SUNFLOWER),L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 2, DyePowderItem::MAGENTA),
+		L"zg",
+		new ItemInstance(Tile::tallgrass2, 1, TallGrass2::LILAC),L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 2, DyePowderItem::RED), 
+		L"zg",
+		new ItemInstance(Tile::tallgrass2, 1, TallGrass2::ROSE_BUSH),L'D');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 2, DyePowderItem::PINK),
+		L"zg",
+		new ItemInstance(Tile::tallgrass2, 1, TallGrass2::PEONY),L'D');
 
 	r->addShapelessRecipy(new ItemInstance(Item::dye_powder, 2, DyePowderItem::PINK), //
 		L"zzg",

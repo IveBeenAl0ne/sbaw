@@ -17,7 +17,7 @@ UIComponent_Panorama::UIComponent_Panorama(int iPad, void *initData, UILayer *pa
 }
 
 wstring UIComponent_Panorama::getMoviePath()
-{
+{ 
 	switch( m_parentLayer->getViewport() )
 	{
 	case C4JRender::VIEWPORT_TYPE_SPLIT_TOP:

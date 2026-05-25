@@ -1078,6 +1078,10 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(20, 3, L"tallgrass2_rose_bush_upper");
 		ADD_ICON(21, 4, L"tallgrass2_lilac_lower");
 		ADD_ICON(20, 4, L"tallgrass2_lilac_upper");
+		ADD_ICON(21, 6, L"tallgrass2_sunflower_lower");
+		ADD_ICON(20, 6, L"tallgrass2_sunflower_upper");
+		ADD_ICON(21, 7, L"tallgrass2_sunflower_head_front"); // dont ask me why these are flipped
+		ADD_ICON(20, 7, L"tallgrass2_sunflower_head_back"); // probably something to do with my slop code - Fireblade
 
 	}
 }

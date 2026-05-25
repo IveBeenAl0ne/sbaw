@@ -296,6 +296,12 @@ public:
 
 	virtual Icon* getIcon(int auxValue) override
 	{
+		if (auxValue == TallGrass2::SUNFLOWER)
+		{
+			TallGrass2* tile = static_cast<TallGrass2*>(Tile::tiles[getTileId()]);
+			if (tile != nullptr)
+				return tile->getSunflowerHeadBackIcon();
+		}
 		return Tile::tiles[getTileId()]->getTexture(Facing::UP, auxValue);
 	}
 

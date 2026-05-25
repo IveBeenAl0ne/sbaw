@@ -30,7 +30,7 @@ static const int DESCRIPTION_IDS[TallGrass2::VARIANT_COUNT] = {
 
 
 static const wstring TEXTURE_BOTTOM[TallGrass2::VARIANT_COUNT] = {
-	L"tallgrass2_tall_grass_lower",		// Sunflower, not implemented yet
+	L"tallgrass2_sunflower_lower",
 	L"tallgrass2_lilac_lower",
 	L"tallgrass2_tall_grass_lower",
 	L"tallgrass2_large_fern_lower",
@@ -39,7 +39,25 @@ static const wstring TEXTURE_BOTTOM[TallGrass2::VARIANT_COUNT] = {
 };
 
 static const wstring TEXTURE_TOP[TallGrass2::VARIANT_COUNT] = {
-	L"tallgrass2_tall_grass_upper",		// Sunflower, not implemented yet
+	L"tallgrass2_sunflower_upper",
+	L"tallgrass2_lilac_upper",
+	L"tallgrass2_tall_grass_upper",
+	L"tallgrass2_large_fern_upper",
+	L"tallgrass2_rose_bush_upper",
+	L"tallgrass2_peony_upper"
+};
+
+static const wstring TEXTURE_HEAD_FRONT[TallGrass2::VARIANT_COUNT] = {
+	L"tallgrass2_sunflower_head_front",
+	L"tallgrass2_lilac_upper",
+	L"tallgrass2_tall_grass_upper",
+	L"tallgrass2_large_fern_upper",
+	L"tallgrass2_rose_bush_upper",
+	L"tallgrass2_peony_upper"
+};
+
+static const wstring TEXTURE_HEAD_BACK[TallGrass2::VARIANT_COUNT] = {
+	L"tallgrass2_sunflower_head_back",
 	L"tallgrass2_lilac_upper",
 	L"tallgrass2_tall_grass_upper",
 	L"tallgrass2_large_fern_upper",
@@ -79,9 +97,12 @@ void TallGrass2::registerIcons(IconRegister* iconRegister)
 	{
 		iconBottom[i] = iconRegister->registerIcon(TEXTURE_BOTTOM[i]);
 		iconTop[i] = iconRegister->registerIcon(TEXTURE_TOP[i]);
+		iconHeadFront[i] = iconRegister->registerIcon(TEXTURE_HEAD_FRONT[i]);
+		iconHeadBack[i] = iconRegister->registerIcon(TEXTURE_HEAD_BACK[i]);
 	}
 
-	icon = iconTop[TALL_GRASS];
+	// sunflower item
+	icon = iconHeadFront[SUNFLOWER] != nullptr ? iconHeadFront[SUNFLOWER] : iconTop[TALL_GRASS];
 }
 
 
@@ -151,6 +172,7 @@ bool TallGrass2::mayPlace(Level* level, int x, int y, int z)
 		&& level->getTile(x, y, z) == 0
 		&& level->getTile(x, y + 1, z) == 0;
 }
+
 void TallGrass2::finalizePlacement(Level* level, int x, int y, int z, int data)
 {
 	if ((data & UPPER_BIT) != 0) return;
@@ -168,7 +190,6 @@ void TallGrass2::onPlace(Level* level, int x, int y, int z)
 	level->setTileAndData(x, y + 1, z, id, variant | UPPER_BIT, Tile::UPDATE_ALL);
 	level->setTilesDirty(x - 1, y - 1, z - 1, x + 1, y + 2, z + 1);
 }
-
 
 bool TallGrass2::canSurvive(Level* level, int x, int y, int z)
 {

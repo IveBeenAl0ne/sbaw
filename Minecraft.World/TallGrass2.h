@@ -18,6 +18,8 @@ public:
 private:
 	Icon* iconBottom[VARIANT_COUNT];
 	Icon* iconTop[VARIANT_COUNT];
+	Icon* iconHeadFront[VARIANT_COUNT];
+	Icon* iconHeadBack[VARIANT_COUNT];
 
 protected:
 	TallGrass2(int id);
@@ -27,6 +29,8 @@ public:
 	virtual Icon* getTexture(int face, int data) override;
 	virtual Icon* getTexture(LevelSource* level, int x, int y, int z, int face) override;
 	virtual void         registerIcons(IconRegister* iconRegister) override;
+	Icon* getSunflowerHeadFrontIcon() const { return iconHeadFront[SUNFLOWER]; }
+	Icon* getSunflowerHeadBackIcon() const { return iconHeadBack[SUNFLOWER]; }
 	virtual int          getRenderShape() override;
 	virtual bool         blocksLight() override;
 	virtual bool         isSolidRender(bool isServerLevel = false) override;

@@ -149,6 +149,7 @@ private:
 	bool tesselateRowInWorld( Tile* tt, int x, int y, int z );
 	void tesselateTorch( Tile* tt, float x, float y, float z, float xxa, float zza, int data );
 	void tesselateCrossTexture( Tile* tt, int data, float x, float y, float z, float scale );
+	void tesselateCrossStemHeight( Tile* tt, int data, float x, float y, float z, float height );
 	void tesselateStemTexture( Tile* tt, int data, float h, float x, float y, float z );
 	bool tesselateLilypadInWorld(Tile *tt, int x, int y, int z);
 	void tesselateStemDirTexture( StemTile* tt, int data, int dir, float h, float x, float y, float z );

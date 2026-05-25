@@ -10,7 +10,6 @@
 SlimeTile::SlimeTile(int id) : HalfTransparentTile(id, L"slime", Material::clay, false)
 {
 	friction = 0.8f;
-    setLightBlock(0);
 }
 
 int SlimeTile::getRenderLayer()
