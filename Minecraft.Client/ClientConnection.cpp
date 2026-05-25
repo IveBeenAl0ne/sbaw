@@ -61,6 +61,8 @@
 #include "Windows64/Network/WinsockNetLayer.h"
 #endif
 
+#include "../Minecraft.World/Recipes.h"
+
 
 #ifdef _DURANGO
 #include "../Minecraft.World/DurangoStats.h"
@@ -136,6 +138,9 @@ ClientConnection::ClientConnection(Minecraft *minecraft, Socket *socket, int iUs
 	savedDataStorage = new SavedDataStorage(nullptr);
 	maxPlayers = 20;
 	m_isForkServer = false;
+
+	m_recivedRecipeRegistyUpdate = false;
+	m_recivedCreativeRegistyUpdate = false;
 
 	this->minecraft = minecraft;
 
@@ -245,6 +250,14 @@ INetworkPlayer *ClientConnection::getNetworkPlayer()
 void ClientConnection::handleLogin(shared_ptr<LoginPacket> packet)
 {
 	if (done) return;
+
+	if (!m_recivedRecipeRegistyUpdate) {
+		Recipes::getInstance()->loadFromLocal();
+	}
+
+	if (!m_recivedCreativeRegistyUpdate) {
+		IUIScene_CreativeMenu::loadFromLocal();
+	}
 
 	PlayerUID OnlineXuid;
 	ProfileManager.GetXUID(m_userIndex,&OnlineXuid,true); // online xuid
@@ -4042,6 +4055,16 @@ void ClientConnection::handleCustomPayload(shared_ptr<CustomPayloadPacket> custo
 				}
 			}
 		}
+	}
+	else if (CustomPayloadPacket::UPDATE_RECIPE_REGISTRY.compare(customPayloadPacket->identifier) == 0) {
+		this->m_recivedRecipeRegistyUpdate = true;
+
+		Recipes::getInstance()->loadFromPacket(customPayloadPacket->data);
+	}
+	else if (CustomPayloadPacket::UPDATE_CREATIVE_REGISTRY.compare(customPayloadPacket->identifier) == 0) {
+		this->m_recivedCreativeRegistyUpdate = true;
+
+		IUIScene_CreativeMenu::loadFromPacket(customPayloadPacket->data);
 	}
 }
 

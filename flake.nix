@@ -4,18 +4,34 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    fourjlibs = {
+      url = "github:Patoke/4JLibs";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      fourjlibs,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };
 
-        # Version info
-        version = "1.6.0560.0";
+        # Version derived from network protocol version in cmake/GenerateBuildVer.cmake
+        buildNumber = builtins.head (
+          builtins.match ".*set\\(BUILD_NUMBER ([0-9]+)\\).*" (
+            builtins.readFile ./cmake/GenerateBuildVer.cmake
+          )
+        );
+        version = "0.${buildNumber}.0";
 
         # Windows SDK downloaded via xwin (fixed-output derivation)
         windowsSdk = pkgs.stdenvNoCC.mkDerivation {
@@ -24,9 +40,13 @@
 
           outputHashAlgo = "sha256";
           outputHashMode = "recursive";
-          outputHash = "sha256-ksSytBUjv/tD3IJzHM9BkAzFjJ+JAGD353Pur0G4rQE=";
+          outputHash = "sha256-UFQjsFVBwcF/9e9tVFoG0Z1JySxyTnFqoaRwr/tUWzA=";
 
-          nativeBuildInputs = [ pkgs.xwin pkgs.cacert pkgs.rsync ];
+          nativeBuildInputs = [
+            pkgs.xwin
+            pkgs.cacert
+            pkgs.rsync
+          ];
 
           dontUnpack = true;
 
@@ -50,8 +70,45 @@
           dontFixup = true;
         };
 
-        # Helper to create case-insensitive symlinks for SDK headers/libs
-        sdkWithSymlinks = pkgs.runCommand "windows-sdk-symlinked" {} ''
+        # Pre fetch NuGet packages for FourKit (dotnet publish --self-contained needs win-x64 runtime)
+        fourkitNugetDeps = pkgs.stdenvNoCC.mkDerivation {
+          pname = "fourkit-nuget-deps";
+          version = "10.0";
+
+          outputHashAlgo = "sha256";
+          outputHashMode = "recursive";
+          outputHash = "sha256-eEkU0MugnFSNvVYvd5V5xLK4oNcLgZcXxMYSuiYMPbA=";
+
+          nativeBuildInputs = [ pkgs.cacert ];
+
+          dontUnpack = true;
+
+          buildPhase = ''
+            export HOME=$(mktemp -d)
+            export DOTNET_CLI_TELEMETRY_OPTOUT=1
+            export DOTNET_NOLOGO=1
+            export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+
+            # Use the unwrapped SDK to allow NuGet network access
+            DOTNET="${pkgs.dotnetCorePackages.sdk_10_0.passthru.unwrapped}/share/dotnet/dotnet"
+
+            # Copy csproj to writable location (dotnet needs to write obj/)
+            WORK=$(mktemp -d)
+            cp ${./.}/Minecraft.Server.FourKit/Minecraft.Server.FourKit.csproj "$WORK/"
+            cp ${./.}/global.json "$WORK/"
+
+            $DOTNET restore "$WORK/Minecraft.Server.FourKit.csproj" \
+              --runtime win-x64 \
+              --packages "$out" \
+              --source https://api.nuget.org/v3/index.json
+          '';
+
+          dontInstall = true;
+          dontFixup = true;
+        };
+
+        # Helper to make case insensitive symlinks for SDK headers/libs
+        sdkWithSymlinks = pkgs.runCommand "windows-sdk-symlinked" { } ''
           cp -r ${windowsSdk} $out
           chmod -R u+w $out
 
@@ -63,27 +120,6 @@
           ln -sf $out/sdk/lib/um/x86_64/ws2_32.lib $out/sdk/lib/um/x86_64/Ws2_32.lib 2>/dev/null || true
         '';
 
-        # CMake toolchain file for clang-cl cross-compilation
-        clangClToolchain = pkgs.writeText "clang-cl-toolchain.cmake" ''
-          set(CMAKE_SYSTEM_NAME Windows)
-          set(CMAKE_SYSTEM_PROCESSOR AMD64)
-
-          set(CMAKE_C_COMPILER clang-cl)
-          set(CMAKE_CXX_COMPILER clang-cl)
-          set(CMAKE_RC_COMPILER llvm-rc)
-          set(CMAKE_ASM_MASM_COMPILER llvm-ml)
-          set(CMAKE_AR llvm-lib)
-          set(CMAKE_LINKER lld-link)
-
-          set(CMAKE_CROSSCOMPILING TRUE)
-
-          set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_LINKER> <LINK_FLAGS> <OBJECTS> -out:<TARGET> <LINK_LIBRARIES>")
-          set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> <LINK_FLAGS> <OBJECTS> -out:<TARGET> <LINK_LIBRARIES>")
-
-          add_compile_options(-fms-compatibility -fms-extensions)
-          add_compile_definitions(_WIN64 _AMD64_ WIN32_LEAN_AND_MEAN)
-        '';
-
         # The main build derivation
         minecraft-lce-unwrapped = pkgs.stdenv.mkDerivation {
           pname = "minecraft-lce-unwrapped";
@@ -91,84 +127,79 @@
 
           src = pkgs.lib.cleanSourceWith {
             src = ./.;
-            filter = path: type:
+            filter =
+              path: type:
               let
                 baseName = baseNameOf path;
               in
               # Exclude build directories and other non-source files
-              !(baseName == "build" ||
-                baseName == "result" ||
-                baseName == ".git" ||
-                baseName == ".direnv" ||
-                pkgs.lib.hasPrefix "result-" baseName);
+              !(
+                baseName == "build"
+                || baseName == "result"
+                || baseName == ".git"
+                || baseName == ".direnv"
+                || pkgs.lib.hasPrefix "result-" baseName
+              );
           };
 
+          # Patch in the 4JLibs submodule (flakes don't fetch submodules)
+          postUnpack = ''
+            rm -rf source/Minecraft.Client/Windows64/4JLibs
+            cp -r ${fourjlibs} source/Minecraft.Client/Windows64/4JLibs
+            chmod -R u+w source/Minecraft.Client/Windows64/4JLibs
+          '';
+
           nativeBuildInputs = with pkgs; [
-            llvmPackages.clang-unwrapped  # provides clang-cl
-            llvmPackages.lld               # provides lld-link
-            llvmPackages.llvm              # provides llvm-rc, llvm-ml, llvm-lib, llvm-mt
+            llvmPackages.clang-unwrapped # provides clang-cl
+            llvmPackages.lld # provides lld-link
+            llvmPackages.llvm # provides llvm-rc, llvm-ml, llvm-lib, llvm-mt
             cmake
             ninja
             rsync
+            winePackage # needed to run fxc.exe during build
+            dotnetCorePackages.sdk_10_0 # needed for FourKit server
           ];
-
-          # Set up environment for clang-cl
-          WINSDK = sdkWithSymlinks;
 
           configurePhase = ''
             runHook preConfigure
 
-            export INCLUDE="$WINSDK/crt/include;$WINSDK/sdk/include/um;$WINSDK/sdk/include/ucrt;$WINSDK/sdk/include/shared"
-            export LIB="$WINSDK/crt/lib/x86_64;$WINSDK/sdk/lib/um/x86_64;$WINSDK/sdk/lib/ucrt/x86_64"
+            # Point build-linux.sh at the pre-downloaded Windows SDK
+            export XWIN_CACHE=$(mktemp -d)
+            ln -s ${sdkWithSymlinks} "$XWIN_CACHE/splat"
 
-            cmake -S . -B build \
-              -G Ninja \
-              -DCMAKE_BUILD_TYPE=Release \
-              -DCMAKE_TOOLCHAIN_FILE=${clangClToolchain} \
-              -DCMAKE_C_COMPILER=clang-cl \
-              -DCMAKE_CXX_COMPILER=clang-cl \
-              -DCMAKE_LINKER=lld-link \
-              -DCMAKE_RC_COMPILER=llvm-rc \
-              -DCMAKE_MT=llvm-mt \
-              -DPLATFORM_DEFINES="_WINDOWS64" \
-              -DPLATFORM_NAME="Windows64" \
-              -DIGGY_LIBS="iggy_w64.lib;iggyperfmon_w64.lib;iggyexpruntime_w64.lib" \
-              -DCMAKE_SYSTEM_NAME=Windows \
-              -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded \
-              -DCMAKE_C_FLAGS="/MT -fms-compatibility -fms-extensions --target=x86_64-pc-windows-msvc -imsvc $WINSDK/crt/include -imsvc $WINSDK/sdk/include/ucrt -imsvc $WINSDK/sdk/include/um -imsvc $WINSDK/sdk/include/shared" \
-              -DCMAKE_CXX_FLAGS="/MT -fms-compatibility -fms-extensions --target=x86_64-pc-windows-msvc -imsvc $WINSDK/crt/include -imsvc $WINSDK/sdk/include/ucrt -imsvc $WINSDK/sdk/include/um -imsvc $WINSDK/sdk/include/shared" \
-              -DCMAKE_ASM_MASM_FLAGS="-m64" \
-              -DCMAKE_EXE_LINKER_FLAGS="-libpath:$WINSDK/crt/lib/x86_64 -libpath:$WINSDK/sdk/lib/um/x86_64 -libpath:$WINSDK/sdk/lib/ucrt/x86_64"
+            # NuGet packages for FourKit dotnet publish
+            export NUGET_PACKAGES="${fourkitNugetDeps}"
+            export DOTNET_CLI_TELEMETRY_OPTOUT=1
+            export DOTNET_NOLOGO=1
+
+            # Configure build-linux.sh variables
+            export SOURCE_DIR=.
+            export BUILD_TYPE=Release
+            export INSTALL_PREFIX=$out
+
+            # Source the build script for its functions
+            source ./build-linux.sh
+
+            BUILD_DIR="$SOURCE_DIR/build/windows64-clang"
+            mkdir -p "$BUILD_DIR"
+
+            do_cmake_configure
+
+            # Patch shebangs in generated scripts (fxc wine wrapper)
+            patchShebangs "$BUILD_DIR/tools" 2>/dev/null || true
 
             runHook postConfigure
           '';
 
           buildPhase = ''
             runHook preBuild
-            cmake --build build --config Release -j $NIX_BUILD_CORES
+            do_build
             runHook postBuild
           '';
 
           installPhase = ''
             runHook preInstall
-
-            mkdir -p $out/{client,server}
-
-            # Install client
-            cp build/Minecraft.Client/Minecraft.Client.exe $out/client/
-            cp build/Minecraft.Client/iggy_w64.dll $out/client/ 2>/dev/null || true
-            cp -r build/Minecraft.Client/Common $out/client/ 2>/dev/null || true
-            cp -r build/Minecraft.Client/music $out/client/ 2>/dev/null || true
-            cp -r build/Minecraft.Client/Windows64 $out/client/ 2>/dev/null || true
-            cp -r build/Minecraft.Client/Windows64Media $out/client/ 2>/dev/null || true
-            cp -r build/Minecraft.Client/iggy* $out/client/ 2>/dev/null || true
-
-            # Install server
-            cp build/Minecraft.Server/Minecraft.Server.exe $out/server/
-            cp build/Minecraft.Server/iggy_w64.dll $out/server/ 2>/dev/null || true
-            cp -r build/Minecraft.Server/Common $out/server/ 2>/dev/null || true
-            cp -r build/Minecraft.Server/Windows64 $out/server/ 2>/dev/null || true
-
+            do_install
             runHook postInstall
           '';
 
@@ -209,40 +240,40 @@
             cat > $out/bin/minecraft-lce-client << 'WRAPPER'
             #!/usr/bin/env bash
             set -euo pipefail
-            
+
             GAME_DIR="@gameDir@"
             PERSIST_DIR="''${MC_DATA_DIR:-$HOME/.local/share/minecraft-lce-client}"
-            
+
             export WINEARCH=win64
             export WINEPREFIX="''${WINEPREFIX:-$HOME/@winePrefixBase@-client}"
-            
+
             # Wine performance settings
             export WINEDLLOVERRIDES="winemenubuilder.exe=d"
             export WINEESYNC=1
             export WINEFSYNC=1
             export DXVK_LOG_LEVEL=none
-            
+
             mkdir -p "$PERSIST_DIR"
             mkdir -p "$WINEPREFIX"
-            
+
             # Create working directory with symlinks to immutable store
             WORK_DIR="$(mktemp -d)"
             trap 'rm -rf "$WORK_DIR"' EXIT
-            
+
             cp -rs "$GAME_DIR"/* "$WORK_DIR/"
             chmod -R u+w "$WORK_DIR"
-            
+
             # Setup persistent data directory
             mkdir -p "$PERSIST_DIR/GameHDD"
             rm -rf "$WORK_DIR/Windows64/GameHDD" 2>/dev/null || true
             ln -sf "$PERSIST_DIR/GameHDD" "$WORK_DIR/Windows64/GameHDD"
-            
+
             cd "$WORK_DIR"
-            
+
             echo "[info] Starting Minecraft LCE client"
             echo "[info] Data directory: $PERSIST_DIR"
             echo "[info] Wine prefix: $WINEPREFIX"
-            
+
             exec wine "$WORK_DIR/Minecraft.Client.exe" "$@"
             WRAPPER
 
@@ -291,33 +322,33 @@
             cat > $out/bin/minecraft-lce-server << 'WRAPPER'
             #!/usr/bin/env bash
             set -euo pipefail
-            
+
             GAME_DIR="@gameDir@"
             SERVER_PORT="''${MC_PORT:-25565}"
             SERVER_BIND_IP="''${MC_BIND:-0.0.0.0}"
             PERSIST_DIR="''${MC_DATA_DIR:-$HOME/.local/share/minecraft-lce-server}"
-            
+
             export WINEARCH=win64
             export WINEPREFIX="''${WINEPREFIX:-$HOME/@winePrefixBase@-server}"
-            
+
             # Wine settings
             export WINEDLLOVERRIDES="winemenubuilder.exe=d"
             export WINEESYNC=1
             export WINEFSYNC=1
-            
+
             mkdir -p "$PERSIST_DIR"
             mkdir -p "$WINEPREFIX"
-            
+
             # Create working directory with symlinks to immutable store
             WORK_DIR="$(mktemp -d)"
             trap 'rm -rf "$WORK_DIR"' EXIT
-            
+
             cp -rs "$GAME_DIR"/* "$WORK_DIR/"
             chmod -R u+w "$WORK_DIR"
-            
+
             # Setup persistent data
             mkdir -p "$PERSIST_DIR/GameHDD"
-            
+
             for file in server.properties banned-players.json banned-ips.json; do
               if [[ ! -f "$PERSIST_DIR/$file" ]]; then
                 if [[ -f "$WORK_DIR/$file" ]]; then
@@ -328,12 +359,12 @@
               fi
               ln -sf "$PERSIST_DIR/$file" "$WORK_DIR/$file"
             done
-            
+
             rm -rf "$WORK_DIR/Windows64/GameHDD" 2>/dev/null || true
             ln -sf "$PERSIST_DIR/GameHDD" "$WORK_DIR/Windows64/GameHDD"
-            
+
             cd "$WORK_DIR"
-            
+
             # Start Xvfb if no display (server may require a virtual display)
             if [[ -z "''${DISPLAY:-}" ]]; then
               export DISPLAY=":99"
@@ -343,11 +374,11 @@
               sleep 1
               echo "[info] Started Xvfb on $DISPLAY"
             fi
-            
+
             echo "[info] Starting Minecraft LCE server on $SERVER_BIND_IP:$SERVER_PORT"
             echo "[info] Data directory: $PERSIST_DIR"
             echo "[info] Wine prefix: $WINEPREFIX"
-            
+
             exec wine "$WORK_DIR/Minecraft.Server.exe" -port "$SERVER_PORT" -bind "$SERVER_BIND_IP" "$@"
             WRAPPER
 
@@ -386,58 +417,10 @@
             rsync
             coreutils
             cacert
+            winePackage
           ];
           text = ''
-            set -euo pipefail
-
-            SOURCE_DIR="''${1:-.}"
-            BUILD_TYPE="''${2:-Release}"
-            XWIN_CACHE="''${XWIN_CACHE:-$HOME/.cache/xwin}"
-
-            export XWIN_CACHE
-
-            echo "[info] Checking Windows SDK cache at $XWIN_CACHE"
-
-            if [[ ! -d "$XWIN_CACHE/splat" ]]; then
-              echo "[info] Downloading Windows SDK and CRT via xwin..."
-              mkdir -p "$XWIN_CACHE"
-              xwin --accept-license splat --output "$XWIN_CACHE/splat"
-            else
-              echo "[info] Using cached Windows SDK"
-            fi
-
-            WINSDK="$XWIN_CACHE/splat"
-
-            export INCLUDE="$WINSDK/crt/include;$WINSDK/sdk/include/um;$WINSDK/sdk/include/ucrt;$WINSDK/sdk/include/shared"
-            export LIB="$WINSDK/crt/lib/x86_64;$WINSDK/sdk/lib/um/x86_64;$WINSDK/sdk/lib/ucrt/x86_64"
-
-            BUILD_DIR="$SOURCE_DIR/build/windows64-clang"
-            mkdir -p "$BUILD_DIR"
-
-            echo "[info] Configuring with CMake..."
-            cmake -S "$SOURCE_DIR" -B "$BUILD_DIR" \
-              -G Ninja \
-              -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
-              -DCMAKE_TOOLCHAIN_FILE="${clangClToolchain}" \
-              -DCMAKE_C_COMPILER=clang-cl \
-              -DCMAKE_CXX_COMPILER=clang-cl \
-              -DCMAKE_LINKER=lld-link \
-              -DCMAKE_RC_COMPILER=llvm-rc \
-              -DCMAKE_MT=llvm-mt \
-              -DPLATFORM_DEFINES="_WINDOWS64" \
-              -DPLATFORM_NAME="Windows64" \
-              -DIGGY_LIBS="iggy_w64.lib;iggyperfmon_w64.lib;iggyexpruntime_w64.lib" \
-              -DCMAKE_SYSTEM_NAME=Windows \
-              -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded \
-              -DCMAKE_C_FLAGS="/MT -fms-compatibility -fms-extensions --target=x86_64-pc-windows-msvc -imsvc $WINSDK/crt/include -imsvc $WINSDK/sdk/include/ucrt -imsvc $WINSDK/sdk/include/um -imsvc $WINSDK/sdk/include/shared" \
-              -DCMAKE_CXX_FLAGS="/MT -fms-compatibility -fms-extensions --target=x86_64-pc-windows-msvc -imsvc $WINSDK/crt/include -imsvc $WINSDK/sdk/include/ucrt -imsvc $WINSDK/sdk/include/um -imsvc $WINSDK/sdk/include/shared" \
-              -DCMAKE_ASM_MASM_FLAGS="-m64" \
-              -DCMAKE_EXE_LINKER_FLAGS="-libpath:$WINSDK/crt/lib/x86_64 -libpath:$WINSDK/sdk/lib/um/x86_64 -libpath:$WINSDK/sdk/lib/ucrt/x86_64"
-
-            echo "[info] Building..."
-            cmake --build "$BUILD_DIR" --config "$BUILD_TYPE" -j "$(nproc)"
-
-            echo "[info] Build complete! Output in $BUILD_DIR"
+            exec bash "${./build-linux.sh}" "$@"
           '';
         };
 
@@ -450,6 +433,9 @@
 
           # Unwrapped (just the Windows executables)
           unwrapped = minecraft-lce-unwrapped;
+
+          # NuGet deps for FourKit (for debugging)
+          fourkit-nuget-deps = fourkitNugetDeps;
 
           # Windows SDK (for debugging)
           windows-sdk = sdkWithSymlinks;
@@ -488,6 +474,9 @@
             xwin
             rsync
 
+            # .NET SDK for FourKit server
+            dotnetCorePackages.sdk_10_0
+
             # Wine for testing
             winePackage
             winetricks
@@ -500,8 +489,6 @@
             cacert
           ];
 
-          XWIN_CACHE = "$HOME/.cache/xwin";
-
           shellHook = ''
             echo "LCE-Revelations development shell"
             echo ""
@@ -510,13 +497,14 @@
             echo "  nix build .#server   # Build server package"
             echo ""
             echo "Development build (in-tree):"
-            echo "  minecraft-lce-build [source_dir] [Release|Debug]"
+            echo "  ./build-linux.sh [source_dir] [Release|Debug]"
             echo ""
             echo "Run:"
             echo "  nix run .#client"
             echo "  nix run .#server"
             echo ""
             echo "Environment variables:"
+            echo "  XWIN_CACHE  - Windows SDK cache (default: \$PWD/.xwin)"
             echo "  MC_PORT     - Server port (default: 25565)"
             echo "  MC_BIND     - Server bind address (default: 0.0.0.0)"
             echo "  MC_DATA_DIR - Persistent data directory"

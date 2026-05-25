@@ -5,6 +5,7 @@
 #include "UIScene.h"
 #include "UIControl_Slider.h"
 #include "UIControl_TexturePackList.h"
+#include "UIControl_CheckBox.h"
 #include "UIControl_AchievementsList.h"
 #include "UIScene_AchievementsMenu.h"
 #include "../../../Minecraft.World/StringHelpers.h"
@@ -976,6 +977,7 @@ void UIController::tickInput()
 		{
 #ifdef _WINDOWS64
             m_mouseClickConsumedByScene = false;
+			UIControl* currHitCtrl = NULL;
             if (!g_KBMInput.IsMouseGrabbed() && g_KBMInput.IsKBMActive())
             {
                 UIScene *pScene = nullptr;
@@ -1150,6 +1152,7 @@ void UIController::tickInput()
 										hitControlId = -1;
 										hitArea = INT_MAX;
 										hitCtrl = NULL;
+										hitCtrl = ctrl;
 										break; // ButtonList takes priority
 									}
 									if (type == UIControl::eAchievementList)
@@ -1162,6 +1165,7 @@ void UIController::tickInput()
 										hitControlId = -1;
 										hitArea = INT_MAX;
 										hitCtrl = NULL;
+										hitCtrl = ctrl;
 										break;
 									}
 									if (type == UIControl::eTexturePackList)
@@ -1210,6 +1214,8 @@ void UIController::tickInput()
 									}
 								}
 							}
+							currHitCtrl = hitCtrl;
+							UpdateCursorIcon(currHitCtrl);
 						}
 					}
 
@@ -1334,6 +1340,27 @@ void UIController::tickInput()
 			++m_accumulatedTicks;
 		}
 	}
+}
+
+void UIController::UpdateCursorIcon(UIControl *hitCtrl)
+{
+	// from WinUser.h
+	if (hitCtrl && (hitCtrl->getControlType() == UIControl::eButton || hitCtrl->getControlType() == UIControl::eButtonList))
+		g_KBMInput.SetCursorIcon(MAKEINTRESOURCEW(IDC_HAND));
+	else if (hitCtrl && (hitCtrl->getControlType() == UIControl::eSlider || hitCtrl->getControlType() == UIControl::eTexturePackList))
+		g_KBMInput.SetCursorIcon(MAKEINTRESOURCEW(IDC_SIZEWE));
+	else if (hitCtrl && hitCtrl->getControlType() == UIControl::eTextInput)
+		g_KBMInput.SetCursorIcon(MAKEINTRESOURCEW(IDC_IBEAM));
+	else if (hitCtrl && hitCtrl->getControlType() == UIControl::eCheckBox) // Show the cross sign shaped cursor only when the checkbox is disabled/grayed out
+	{
+		UIControl_CheckBox *pCheck = static_cast<UIControl_CheckBox *>(hitCtrl);
+		if (pCheck && !pCheck->IsEnabled())
+			g_KBMInput.SetCursorIcon(MAKEINTRESOURCEW(IDC_NO));
+		else
+			g_KBMInput.SetCursorIcon(MAKEINTRESOURCEW(IDC_HAND));
+	}
+	else
+		g_KBMInput.SetCursorIcon(MAKEINTRESOURCEW(IDC_ARROW));
 }
 
 void UIController::handleInput()
@@ -2218,6 +2245,7 @@ bool UIController::NavigateToScene(int iPad, EUIScene scene, void *initData, EUI
 	SetMenuDisplayed(menuDisplayedPad,true);
 	bool success = m_groups[static_cast<int>(group)]->NavigateToScene(iPad, scene, initData, layer);
 	if(success && group == eUIGroup_Fullscreen) setFullscreenMenuDisplayed(true);
+	UpdateCursorIcon(nullptr);
 	LeaveCriticalSection(&m_navigationLock);
 
 	timer.PrintElapsedTime(L"Navigate to scene");
@@ -2257,6 +2285,7 @@ bool UIController::NavigateBack(int iPad, bool forceUsePad, EUIScene eScene, EUI
 		navComplete = m_groups[static_cast<int>(eUIGroup_Fullscreen)]->NavigateBack(iPad, eScene, eLayer);
 		if(!m_groups[static_cast<int>(eUIGroup_Fullscreen)]->GetMenuDisplayed()) SetMenuDisplayed(XUSER_INDEX_ANY,false);
 	}
+	UpdateCursorIcon(nullptr);
 	return navComplete;
 }
 

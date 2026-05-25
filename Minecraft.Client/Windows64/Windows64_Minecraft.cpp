@@ -219,6 +219,7 @@ static Win64LaunchOptions ParseLaunchOptions()
 	Win64LaunchOptions options = {};
 	options.screenMode = 0;
 
+	g_Win64MultiplayerQuitOnDisconnect = false;
 	g_Win64MultiplayerJoin = false;
 	g_Win64MultiplayerPort = WIN64_NET_DEFAULT_PORT;
 
@@ -238,6 +239,10 @@ static Win64LaunchOptions ParseLaunchOptions()
 		if (_wcsicmp(argv[i], L"-name") == 0 && (i + 1) < argc)
 		{
 			CopyWideArgToAnsi(argv[++i], g_Win64Username, sizeof(g_Win64Username));
+		}
+		else if (_wcsicmp(argv[i], L"-quitondisconnect") == 0)
+		{
+			g_Win64MultiplayerQuitOnDisconnect = true;
 		}
 		else if (_wcsicmp(argv[i], L"-ip") == 0 && (i + 1) < argc)
 		{
@@ -1759,9 +1764,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		return 1;
 	}
 	g_bResizeReady = true;
-
-	ui.ReloadSkin();
-
+	
 	//app.TemporaryCreateGameStart();
 
 	//Sleep(10000);

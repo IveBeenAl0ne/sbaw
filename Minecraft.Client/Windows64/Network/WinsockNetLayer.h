@@ -227,6 +227,7 @@ public:
 
 extern bool g_Win64MultiplayerHost;
 extern bool g_Win64MultiplayerJoin;
+extern bool g_Win64MultiplayerQuitOnDisconnect;
 extern int g_Win64MultiplayerPort;
 extern char g_Win64MultiplayerIP[256];
 extern bool g_Win64DedicatedServer;

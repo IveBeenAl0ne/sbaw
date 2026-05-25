@@ -18,6 +18,22 @@
         "type": "github"
       }
     },
+    "fourjlibs": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777358628,
+        "narHash": "sha256-yV/ugauN5L4FFC88N4CJI01iTOKYBeim8UQ3Usy2vI0=",
+        "owner": "Patoke",
+        "repo": "4JLibs",
+        "rev": "8fb036f6d6ca5aa5aa2e20633638d6232a58d508",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Patoke",
+        "repo": "4JLibs",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1774106199,
@@ -37,6 +53,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "fourjlibs": "fourjlibs",
         "nixpkgs": "nixpkgs"
       }
     },

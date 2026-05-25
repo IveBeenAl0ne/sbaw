@@ -149,6 +149,7 @@ GameRenderer::GameRenderer(Minecraft *mc)
 
 #ifndef MINECRAFT_SERVER_BUILD
 	// 4J-PB - set up the local players iteminhand renderers here - needs to be done with lighting enabled so that the render geometry gets compiled correctly
+#ifndef MINECRAFT_SERVER_BUILD
 	glEnable(GL_LIGHTING);
 	mc->localitemInHandRenderers[0] = new ItemInHandRenderer(mc);//itemInHandRenderer;
 	mc->localitemInHandRenderers[1] = new ItemInHandRenderer(mc);

@@ -236,11 +236,12 @@ void TallGrass2::neighborChanged(Level* level, int x, int y, int z, int type)
 
 	if (!isUpper)
 	{
-		if (!canSurvive(level, x, y, z))
+		int upperTileId = level->getTile(x, y + 1, z);
+		if (!canSurvive(level, x, y, z) || (upperTileId != id))
 		{
 			spawnResources(level, x, y, z, data, 0);
 			level->setTileAndData(x, y, z, 0, 0, Tile::UPDATE_CLIENTS);
-			if (level->getTile(x, y + 1, z) == id)
+			if (upperTileId == id)
 				level->removeTile(x, y + 1, z);
 		}
 	}
@@ -258,11 +259,12 @@ void TallGrass2::tick(Level* level, int x, int y, int z, Random* random)
 
 	if (!isUpper)
 	{
-		if (!canSurvive(level, x, y, z))
+		int upperTileId = level->getTile(x, y + 1, z);
+		if (!canSurvive(level, x, y, z) || (upperTileId != id))
 		{
 			spawnResources(level, x, y, z, data, 0);
 			level->setTileAndData(x, y, z, 0, 0, Tile::UPDATE_CLIENTS);
-			if (level->getTile(x, y + 1, z) == id)
+			if (upperTileId == id)
 				level->removeTile(x, y + 1, z);
 		}
 	}
@@ -271,7 +273,6 @@ void TallGrass2::tick(Level* level, int x, int y, int z, Random* random)
 
 int TallGrass2::getResource(int data, Random* random, int playerBonusLevel)
 {
-
 	return -1;
 }
 
@@ -287,7 +288,6 @@ bool TallGrass2::isSilkTouchable()
 
 shared_ptr<ItemInstance> TallGrass2::getSilkTouchItemInstance(int data)
 {
-
 	if ((data & UPPER_BIT) != 0) return nullptr;
 	int variant = data & ~UPPER_BIT;
 	return std::make_shared<ItemInstance>(this, 1, variant);

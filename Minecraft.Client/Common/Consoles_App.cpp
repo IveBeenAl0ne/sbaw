@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "../../Minecraft.World/net.minecraft.world.entity.item.h"
 #include "../../Minecraft.World/net.minecraft.world.entity.player.h"
 #include "../../Minecraft.World/net.minecraft.world.level.tile.entity.h"
@@ -27,6 +27,9 @@
 #include "../GameMode.h"
 #include "../Xbox/Social/SocialManager.h"
 #include "Tutorial/TutorialMode.h"
+#ifdef _WINDOWS64
+#include "../Windows64/Network/WinsockNetLayer.h" // HUCKLE - added for quit on disconnect
+#endif
 #if defined _XBOX || defined _WINDOWS64
 #include "../Xbox/XML/ATGXmlParser.h"
 #include "../Xbox/XML/xmlFilesCallback.h"
@@ -450,7 +453,7 @@ void CMinecraftApp::SetAction(int iPad, eXuiAction action, LPVOID param)
 
 bool CMinecraftApp::IsAppPaused()
 {
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
+#if defined(_XBOX_ONE) || defined(__ORBIS__) || defined(_WINDOWS64)
 	bool paused = m_bIsAppPaused;
 	EnterCriticalSection(&m_saveNotificationCriticalSection);
 	if( g_NetworkManager.IsLocalGame() && g_NetworkManager.GetPlayerCount() == 1 )
@@ -3444,6 +3447,15 @@ void CMinecraftApp::HandleXuiActions(void)
 			case eAppAction_ExitWorld:
 
 				SetAction(i,eAppAction_Idle);
+
+				// HUCKLE - added for quit game on disconnect
+#ifdef _WINDOWS64
+				if(g_Win64MultiplayerQuitOnDisconnect == true)
+				{
+					app.ExitGame();
+					return;
+				}
+#endif
 
 				// If we're already leaving don't exit
 				if (g_NetworkManager.IsLeavingGame())
@@ -9670,8 +9682,9 @@ bool CMinecraftApp::DLCContentRetrieved(eDLCMarketplaceType eType)
 
 void CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, SKIN_BOX *SkinBoxA, DWORD dwSkinBoxC)
 {
-	EntityRenderer *renderer = EntityRenderDispatcher::instance->getRenderer(eTYPE_PLAYER);
-	Model *pModel = renderer->getModel();
+	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
+	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
+	Model *pModel = renderer ? renderer->getModel() : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 	vector<SKIN_BOX *> *pvSkinBoxes = new vector<SKIN_BOX *>;
 
@@ -9702,8 +9715,9 @@ void CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, SKIN_BOX *SkinBoxA, D
 
 vector<ModelPart *> * CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, vector<SKIN_BOX *> *pvSkinBoxA)
 {
-	EntityRenderer *renderer = EntityRenderDispatcher::instance->getRenderer(eTYPE_PLAYER);
-	Model *pModel = renderer->getModel();
+	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
+	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
+	Model *pModel = renderer ? renderer->getModel() : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 
 	EnterCriticalSection( &csAdditionalModelParts );

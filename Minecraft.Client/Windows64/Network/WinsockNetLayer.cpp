@@ -115,6 +115,7 @@ bool WinsockNetLayer::s_clientKeyStored = false;
 
 bool g_Win64MultiplayerHost = false;
 bool g_Win64MultiplayerJoin = false;
+bool g_Win64MultiplayerQuitOnDisconnect = false;
 int g_Win64MultiplayerPort = WIN64_NET_DEFAULT_PORT;
 char g_Win64MultiplayerIP[256] = "127.0.0.1";
 bool g_Win64DedicatedServer = false;

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 VERSION="0.0.0" # man we're using nightly :sob:
-SOURCE_DIR="${1:-.}"
+SOURCE_DIR="${SOURCE_DIR:-${1:-.}}"
 BUILD_CI="${BUILD_CI:-0}"
-BUILD_TYPE="${2:-Release}"
+BUILD_TYPE="${BUILD_TYPE:-${2:-Release}}"
 XWIN_CACHE="${XWIN_CACHE:-$PWD/.xwin}"
 INSTALL_DIR="${INSTALL_PREFIX:-$HOME/.local/share/neoLegacy}"
 RED='\033[0;31m'
@@ -83,6 +83,10 @@ do_cmake_configure() {
 -imsvc $winsdk/sdk/include/ucrt \
 -imsvc $winsdk/sdk/include/um \
 -imsvc $winsdk/sdk/include/shared"
+
+    if [[ "$BUILD_TYPE" == "Debug" ]]; then
+        c_flags="$c_flags -w"
+    fi
 
     local linker_flags="\
 -libpath:$winsdk/crt/lib/x86_64 \
@@ -259,15 +263,22 @@ LAUNCHER
     chmod +x "$INSTALL_DIR/minecraft-lce-fourkit"
 }
 
-BUILD_DIR="$SOURCE_DIR/build/windows64-clang"
-mkdir -p "$BUILD_DIR"
-info "neoLegacy v$VERSION build script"
-info "Source: $SOURCE_DIR | Type: $BUILD_TYPE"
-echo ""
-check_deps
-fetch_winsdk
-patch_winsdk_symlinks
-do_cmake_configure
-do_build
-do_install
+main() {
+    BUILD_DIR="$SOURCE_DIR/build/windows64-clang"
+    mkdir -p "$BUILD_DIR"
+    info "LegacyEvolved LCE v$VERSION build script"
+    info "Source: $SOURCE_DIR | Type: $BUILD_TYPE"
+    echo ""
+    check_deps
+    fetch_winsdk
+    patch_winsdk_symlinks
+    do_cmake_configure
+    do_build
+    do_install
+}
+
+# Do not run main when sourced (required for flake.nix)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
 
