@@ -1486,6 +1486,7 @@ void CMinecraftApp::ApplyGameSettingsChanged(int iPad)
 	ActionGameSettings(iPad,eGameSetting_ControlScheme	);
 	ActionGameSettings(iPad,eGameSetting_ControlInvertLook);
 	ActionGameSettings(iPad,eGameSetting_ControlSouthPaw);
+	ActionGameSettings(iPad,eGameSetting_ControlType);
 	ActionGameSettings(iPad,eGameSetting_SplitScreenVertical);
 	ActionGameSettings(iPad,eGameSetting_GamertagsVisible);
 

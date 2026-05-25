@@ -1510,6 +1510,7 @@ static Minecraft* InitialiseMinecraftRuntime()
 
 	app.InitGameSettings();
 	app.InitialiseTips();    
+	ui.ReloadSkin();
 
 	return pMinecraft;
 }

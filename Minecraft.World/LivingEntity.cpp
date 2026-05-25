@@ -164,7 +164,7 @@ void LivingEntity::checkFallDamage(double ya, bool onGround)
 		updateInWaterState();
 	}
 
-	if (onGround && fallDistance > 0)
+	if (onGround)
 	{
 		int xt = Mth::floor(x);
 		int yt = Mth::floor(y - 0.2f - heightOffset);
@@ -182,8 +182,11 @@ void LivingEntity::checkFallDamage(double ya, bool onGround)
 		Tile *tile = Tile::tiles[t];
 		if (t > 0 && tile != nullptr) // tu31 tutorial world fix
 		{
-			auto ent = shared_from_this();
-			Tile::tiles[t]->fallOn(level, xt, yt, zt, ent, fallDistance);
+			if (fallDistance > 0 || t == Tile::slimeBlock->id)
+			{
+				auto ent = shared_from_this();
+				Tile::tiles[t]->fallOn(level, xt, yt, zt, ent, fallDistance);
+			}
 		}
 	}
 

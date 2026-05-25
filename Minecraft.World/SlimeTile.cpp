@@ -45,6 +45,11 @@ void SlimeTile::fallOn(Level *level, int x, int y, int z,
     if (entity == nullptr)
         return;
 
+    entity->clearFallDamageQueue();
+
+	entity->fallDistance = 0.0f;
+	entity->onGround = false;
+
 	if (entity->isSneaking())
         return;
 
@@ -60,13 +65,15 @@ void SlimeTile::fallOn(Level *level, int x, int y, int z,
             entity->yd *= 0.8f;
         }
     }
-
-    entity->fallDistance = 0.0f;
-    entity->onGround = false;
 }
 
 void SlimeTile::stepOn(Level *level, int x, int y, int z, shared_ptr<Entity> entity)
 {
+    if (entity != nullptr)
+    {
+        entity->clearFallDamageQueue();
+    }
+
     if (entity != nullptr &&
         std::abs(entity->yd) < 0.1f &&
         !entity->isSneaking())

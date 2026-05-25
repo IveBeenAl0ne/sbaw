@@ -356,6 +356,8 @@ void Entity::_init(bool useSmallId, Level *level)
 
 	// 4J Added
 	m_ignoreVerticalCollisions = false;
+	m_clearFallDamageThisTick = false;
+	m_ignoreFallDamageUntilGround = false;
 	m_uiAnimOverrideBitmask = 0L;
 	m_ignorePortal = false;
 }
@@ -1036,6 +1038,24 @@ bool Entity::makeStepSound()
 
 void Entity::checkFallDamage(double ya, bool onGround)
 {
+	if (m_clearFallDamageThisTick)
+	{
+		m_clearFallDamageThisTick = false;
+		fallDistance = 0;
+		return;
+	}
+	if (m_ignoreFallDamageUntilGround)
+	{
+		if (ya < 0)
+		{
+			m_ignoreFallDamageUntilGround = false;
+			fallDistance = 0;
+		}
+		else
+		{
+			return;
+		}
+	}
 	if (onGround)
 	{
 		if (fallDistance > 0)
@@ -1066,6 +1086,13 @@ void Entity::burn(int dmg)
 bool Entity::isFireImmune()
 {
 	return fireImmune;
+}
+
+void Entity::clearFallDamageQueue()
+{
+	fallDistance = 0.0f;
+	m_clearFallDamageThisTick = true;
+	m_ignoreFallDamageUntilGround = true;
 }
 
 void Entity::causeFallDamage(float distance)
