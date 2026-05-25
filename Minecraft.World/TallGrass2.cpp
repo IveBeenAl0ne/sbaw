@@ -233,13 +233,17 @@ void TallGrass2::neighborChanged(Level* level, int x, int y, int z, int type)
 {
 	int data = level->getData(x, y, z);
 	bool isUpper = (data & UPPER_BIT) != 0;
+	int variant = data & ~UPPER_BIT;
 
 	if (!isUpper)
 	{
 		int upperTileId = level->getTile(x, y + 1, z);
 		if (!canSurvive(level, x, y, z) || (upperTileId != id))
 		{
-			spawnResources(level, x, y, z, data, 0);
+			if (variant != SUNFLOWER)
+			{
+				spawnResources(level, x, y, z, data, 0);
+			}
 			level->setTileAndData(x, y, z, 0, 0, Tile::UPDATE_CLIENTS);
 			if (upperTileId == id)
 				level->removeTile(x, y + 1, z);
@@ -273,12 +277,25 @@ void TallGrass2::tick(Level* level, int x, int y, int z, Random* random)
 
 int TallGrass2::getResource(int data, Random* random, int playerBonusLevel)
 {
+	(void)random;
+	(void)playerBonusLevel;
+
+	if ((data & ~UPPER_BIT) == SUNFLOWER)
+	{
+		return Tile::double_plant_Id;
+	}
+
 	return -1;
 }
 
 int TallGrass2::getResourceCountForLootBonus(int bonusLevel, Random* random)
 {
 	return 1;
+}
+
+int TallGrass2::getSpawnResourcesAuxValue(int data)
+{
+	return data & ~UPPER_BIT;
 }
 
 bool TallGrass2::isSilkTouchable()
@@ -295,6 +312,19 @@ shared_ptr<ItemInstance> TallGrass2::getSilkTouchItemInstance(int data)
 
 void TallGrass2::playerDestroy(Level* level, shared_ptr<Player> player, int x, int y, int z, int data)
 {
+	if ((data & ~UPPER_BIT) == SUNFLOWER)
+	{
+		if (!level->isClientSide && !player->abilities.instabuild)
+		{
+			player->awardStat(
+				GenericStats::blocksMined(id),
+				GenericStats::param_blocksMined(id, data, 1));
+
+			popResource(level, x, y, z, std::make_shared<ItemInstance>(this, 1, SUNFLOWER));
+		}
+		return;
+	}
+
 	if (!level->isClientSide
 		&& player->getSelectedItem() != nullptr
 		&& player->getSelectedItem()->id == Item::shears->id)

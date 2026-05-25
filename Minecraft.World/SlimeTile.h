@@ -11,7 +11,6 @@ public:
 	virtual bool shouldRenderFace(LevelSource *level, int x, int y, int z, int face);
 	virtual int getRenderShape();
 	virtual bool isSolidRender();
-	virtual int getResourceCount(Random *random);
 	virtual int getPistonPushReaction();
 
 	// slime block logic

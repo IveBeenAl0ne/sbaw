@@ -207,7 +207,7 @@ bool Creeper::mobInteract(shared_ptr<Player> player)
 {
 	shared_ptr<ItemInstance> item = player->inventory->getSelected();
 
-	if (item == nullptr || item->id != Item::flintAndSteel_Id)
+	if (item == nullptr || item->id != Item::flint_and_steel_Id)
 		return Mob::mobInteract(player);
 
 	playSound(eSoundType_FIRE_NEWIGNITE, 1, random->nextFloat() * 0.4f + 0.8f);

@@ -55,6 +55,7 @@ public:
 
 	virtual int          getResource(int data, Random* random, int playerBonusLevel) override;
 	virtual int          getResourceCountForLootBonus(int bonusLevel, Random* random) override;
+	virtual int          getSpawnResourcesAuxValue(int data) override;
 	virtual void         playerDestroy(Level* level, shared_ptr<Player> player, int x, int y, int z, int data) override;
 	virtual void         playerWillDestroy(Level* level, int x, int y, int z, int data, shared_ptr<Player> player) override;
 

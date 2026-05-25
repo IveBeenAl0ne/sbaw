@@ -82,14 +82,14 @@ void StructureRecipies::addRecipes(Recipes *r)
 		L"#Q", //
 		L"Q#", //
 
-		L'#', Tile::cobblestone, L'Q', Item::netherQuartz,
+		L'#', Tile::cobblestone, L'Q', Item::nether_quartz,
 		L'S');
 
 	r->addShapedRecipy(new ItemInstance(Tile::stone_Id, 1, StoneTile::GRANITE), //
 		L"sczcig",
 		L"#Q", //
 
-		L'#', new ItemInstance(Tile::stone_Id, 1, StoneTile::DIORITE), L'Q', Item::netherQuartz,
+		L'#', new ItemInstance(Tile::stone_Id, 1, StoneTile::DIORITE), L'Q', Item::nether_quartz,
 		L'S');
 
 	r->addShapedRecipy(new ItemInstance(Tile::stone_Id, 2, StoneTile::ANDESITE), //

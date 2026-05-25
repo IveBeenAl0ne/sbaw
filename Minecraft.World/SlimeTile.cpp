@@ -27,11 +27,6 @@ bool SlimeTile::shouldRenderFace(LevelSource *level, int x, int y, int z, int fa
 	return true;
 }
 
-int SlimeTile::getResourceCount(Random *random)
-{
-	return 0;
-}
-
 bool SlimeTile::isSolidRender()
 {
     return false;
