@@ -93,6 +93,8 @@ protected:
 	// TODO: This should be pure virtual in this class
 	virtual wstring getMoviePath();
 
+	void updateServerDescription();
+
 public:
 public:
 	// INPUT

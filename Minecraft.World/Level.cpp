@@ -1335,7 +1335,7 @@ int Level::getBrightness(LightLayer::variety layer, int x, int y, int z)
 
 	if( ( ix < 0 ) || ( ix >= chunkSourceXZSize ) ) return 0;
 	if( ( iz < 0 ) || ( iz >= chunkSourceXZSize ) ) return 0;
-	int idx = MultiPlayerChunkCache::wrapCoord(ix, LEVEL_MIN_WIDTH) * LEVEL_MIN_WIDTH + MultiPlayerChunkCache::wrapCoord(iz, LEVEL_MIN_WIDTH);
+	int idx = ix * chunkSourceXZSize + iz;
 	LevelChunk *c = chunkSourceCache[idx];
 
 	if( c == nullptr) return (int)layer;
@@ -1384,7 +1384,7 @@ void Level::getNeighbourBrightnesses(int *brightnesses, LightLayer::variety laye
 			return;
 		}
 
-		int idx = MultiPlayerChunkCache::wrapCoord(ix, LEVEL_MIN_WIDTH) * LEVEL_MIN_WIDTH + MultiPlayerChunkCache::wrapCoord(iz, LEVEL_MIN_WIDTH);
+		int idx = ix * chunkSourceXZSize + iz;
 		LevelChunk *c = chunkSourceCache[idx];
 
 		// 4J Stu - The java LightLayer was an enum class type with a member "surrounding" which is what we

@@ -82,6 +82,8 @@ UIScene_JoinMenu::UIScene_JoinMenu(int iPad, void *_initData, UILayer *parentLay
 							IggyValueSetBooleanRS(&path, visibleName, nullptr, false);
 						}
 					}
+
+					updateServerDescription();
 				}
 			}
 		}
@@ -129,46 +131,46 @@ void UIScene_JoinMenu::updateTooltips()
 
 void UIScene_JoinMenu::tick()
 {
-	if( !m_friendInfoRequestIssued )
+	if (!m_friendInfoRequestIssued)
 	{
 		ui.NavigateToScene(m_iPad, eUIScene_Timer);
 		g_NetworkManager.GetFullFriendSessionInfo(m_selectedSession, &friendSessionUpdated, this);
 		m_friendInfoRequestIssued = true;
 	}
 
-	if( m_friendInfoUpdatedOK )
+	if (m_friendInfoUpdatedOK)
 	{
 		m_friendInfoUpdatedOK = false;
 
-		m_buttonJoinGame.init(app.GetString(IDS_JOIN_GAME),eControl_JoinGame);
+		m_buttonJoinGame.init(app.GetString(IDS_JOIN_GAME), eControl_JoinGame);
 
 		m_buttonListPlayers.init(eControl_GamePlayers);
-		m_buttonListPlayers.setYPos( m_buttonListPlayers.getYPos() + 300 );
+		m_buttonListPlayers.setYPos(m_buttonListPlayers.getYPos() + 300);
 
 #if defined(__PS3__) || defined(__ORBIS__) || defined __PSVITA__
-		for( int i = 0; i < MINECRAFT_NET_MAX_PLAYERS; i++ )
+		for (int i = 0; i < MINECRAFT_NET_MAX_PLAYERS; i++)
 		{
-			if( m_selectedSession->data.players[i] != nullptr )
+			if (m_selectedSession->data.players[i] != nullptr)
 			{
-	#ifndef _CONTENT_PACKAGE
-				if(app.DebugSettingsOn() && (app.GetGameSettingsDebugMask()&(1L<<eDebugSetting_DebugLeaderboards)))
+#ifndef _CONTENT_PACKAGE
+				if (app.DebugSettingsOn() && (app.GetGameSettingsDebugMask() & (1L << eDebugSetting_DebugLeaderboards)))
 				{
 					m_buttonListPlayers.addItem(L"WWWWWWWWWWWWWWWW");
 				}
 				else
-	#endif
+#endif
 				{
 					string playerName(m_selectedSession->data.players[i].getOnlineID());
 
-	#ifndef __PSVITA__
+#ifndef __PSVITA__
 					// Append guest number (any players in an online game not signed into PSN are guests)
-					if( m_selectedSession->data.players[i].isSignedIntoPSN() == false )
+					if (m_selectedSession->data.players[i].isSignedIntoPSN() == false)
 					{
 						char suffix[5];
 						sprintf(suffix, " (%d)", m_selectedSession->data.players[i].getQuadrant() + 1);
 						playerName.append(suffix);
 					}
-	#endif
+#endif
 					m_buttonListPlayers.addItem(playerName);
 				}
 			}
@@ -179,9 +181,9 @@ void UIScene_JoinMenu::tick()
 			}
 		}
 #elif defined(_DURANGO)
-		for( int i = 0; i < MINECRAFT_NET_MAX_PLAYERS; i++ )
+		for (int i = 0; i < MINECRAFT_NET_MAX_PLAYERS; i++)
 		{
-			if ( m_selectedSession->searchResult.m_playerNames[i].size() )
+			if (m_selectedSession->searchResult.m_playerNames[i].size())
 			{
 				m_buttonListPlayers.addItem(m_selectedSession->searchResult.m_playerNames[i]);
 			}
@@ -214,74 +216,74 @@ void UIScene_JoinMenu::tick()
 		m_labelLabels[eLabel_FireOn].init(app.GetString(IDS_LABEL_FIRE_SPREADS));
 
 		unsigned int uiGameHostSettings = m_selectedSession->data.m_uiGameHostSettings;
-		switch(app.GetGameHostOption(uiGameHostSettings,eGameHostOption_Difficulty))
+		switch (app.GetGameHostOption(uiGameHostSettings, eGameHostOption_Difficulty))
 		{
 		case Difficulty::EASY:
-			m_labelValues[eLabel_Difficulty].init( app.GetString(IDS_DIFFICULTY_TITLE_EASY) );
+			m_labelValues[eLabel_Difficulty].init(app.GetString(IDS_DIFFICULTY_TITLE_EASY));
 			break;
 		case Difficulty::NORMAL:
-			m_labelValues[eLabel_Difficulty].init( app.GetString(IDS_DIFFICULTY_TITLE_NORMAL) );
+			m_labelValues[eLabel_Difficulty].init(app.GetString(IDS_DIFFICULTY_TITLE_NORMAL));
 			break;
 		case Difficulty::HARD:
-			m_labelValues[eLabel_Difficulty].init( app.GetString(IDS_DIFFICULTY_TITLE_HARD) );
+			m_labelValues[eLabel_Difficulty].init(app.GetString(IDS_DIFFICULTY_TITLE_HARD));
 			break;
 		case Difficulty::PEACEFUL:
 		default:
-			m_labelValues[eLabel_Difficulty].init( app.GetString(IDS_DIFFICULTY_TITLE_PEACEFUL) );
+			m_labelValues[eLabel_Difficulty].init(app.GetString(IDS_DIFFICULTY_TITLE_PEACEFUL));
 			break;
 		}
 
-		int option = app.GetGameHostOption(uiGameHostSettings,eGameHostOption_GameType);
-		if(option == GameType::CREATIVE->getId())
+		int option = app.GetGameHostOption(uiGameHostSettings, eGameHostOption_GameType);
+		if (option == GameType::CREATIVE->getId())
 		{
-			m_labelValues[eLabel_GameType].init( app.GetString(IDS_CREATIVE) );
+			m_labelValues[eLabel_GameType].init(app.GetString(IDS_CREATIVE));
 		}
-		else if(option == GameType::ADVENTURE->getId())
+		else if (option == GameType::ADVENTURE->getId())
 		{
-			m_labelValues[eLabel_GameType].init( app.GetString(IDS_ADVENTURE) );
+			m_labelValues[eLabel_GameType].init(app.GetString(IDS_ADVENTURE));
 		}
 		else
 		{
-			m_labelValues[eLabel_GameType].init( app.GetString(IDS_SURVIVAL) );
+			m_labelValues[eLabel_GameType].init(app.GetString(IDS_SURVIVAL));
 		}
 
-		if(app.GetGameHostOption(uiGameHostSettings,eGameHostOption_Gamertags))	m_labelValues[eLabel_GamertagsOn].init( app.GetString(IDS_ON) );
-		else m_labelValues[eLabel_GamertagsOn].init( app.GetString(IDS_OFF) );
+		if (app.GetGameHostOption(uiGameHostSettings, eGameHostOption_Gamertags))	m_labelValues[eLabel_GamertagsOn].init(app.GetString(IDS_ON));
+		else m_labelValues[eLabel_GamertagsOn].init(app.GetString(IDS_OFF));
 
-		if(app.GetGameHostOption(uiGameHostSettings,eGameHostOption_Structures)) m_labelValues[eLabel_Structures].init( app.GetString(IDS_ON) );
-		else m_labelValues[eLabel_Structures].init( app.GetString(IDS_OFF) );
+		if (app.GetGameHostOption(uiGameHostSettings, eGameHostOption_Structures)) m_labelValues[eLabel_Structures].init(app.GetString(IDS_ON));
+		else m_labelValues[eLabel_Structures].init(app.GetString(IDS_OFF));
 
-		if(app.GetGameHostOption(uiGameHostSettings,eGameHostOption_LevelType)) m_labelValues[eLabel_LevelType].init( app.GetString(IDS_LEVELTYPE_SUPERFLAT) );
-		else m_labelValues[eLabel_LevelType].init( app.GetString(IDS_LEVELTYPE_NORMAL) );
+		if (app.GetGameHostOption(uiGameHostSettings, eGameHostOption_LevelType)) m_labelValues[eLabel_LevelType].init(app.GetString(IDS_LEVELTYPE_SUPERFLAT));
+		else m_labelValues[eLabel_LevelType].init(app.GetString(IDS_LEVELTYPE_NORMAL));
 
-		if(app.GetGameHostOption(uiGameHostSettings,eGameHostOption_PvP))m_labelValues[eLabel_PVP].init( app.GetString(IDS_ON) );
-		else m_labelValues[eLabel_PVP].init( app.GetString(IDS_OFF) );
+		if (app.GetGameHostOption(uiGameHostSettings, eGameHostOption_PvP))m_labelValues[eLabel_PVP].init(app.GetString(IDS_ON));
+		else m_labelValues[eLabel_PVP].init(app.GetString(IDS_OFF));
 
-		if(app.GetGameHostOption(uiGameHostSettings,eGameHostOption_TrustPlayers)) m_labelValues[eLabel_Trust].init( app.GetString(IDS_ON) );
-		else m_labelValues[eLabel_Trust].init( app.GetString(IDS_OFF) );
+		if (app.GetGameHostOption(uiGameHostSettings, eGameHostOption_TrustPlayers)) m_labelValues[eLabel_Trust].init(app.GetString(IDS_ON));
+		else m_labelValues[eLabel_Trust].init(app.GetString(IDS_OFF));
 
-		if(app.GetGameHostOption(uiGameHostSettings,eGameHostOption_TNT)) m_labelValues[eLabel_TNTOn].init( app.GetString(IDS_ON) );
-		else m_labelValues[eLabel_TNTOn].init( app.GetString(IDS_OFF) );
+		if (app.GetGameHostOption(uiGameHostSettings, eGameHostOption_TNT)) m_labelValues[eLabel_TNTOn].init(app.GetString(IDS_ON));
+		else m_labelValues[eLabel_TNTOn].init(app.GetString(IDS_OFF));
 
-		if(app.GetGameHostOption(uiGameHostSettings,eGameHostOption_FireSpreads)) m_labelValues[eLabel_FireOn].init( app.GetString(IDS_ON) );
-		else m_labelValues[eLabel_FireOn].init( app.GetString(IDS_OFF) );
+		if (app.GetGameHostOption(uiGameHostSettings, eGameHostOption_FireSpreads)) m_labelValues[eLabel_FireOn].init(app.GetString(IDS_ON));
+		else m_labelValues[eLabel_FireOn].init(app.GetString(IDS_OFF));
 
 		m_bIgnoreInput = false;
 
 		// Alert the app the we want to be informed of ethernet connections
-		app.SetLiveLinkRequired( true );
+		app.SetLiveLinkRequired(true);
 
 		TelemetryManager->RecordMenuShown(m_iPad, eUIScene_JoinMenu, 0);
 
-		addTimer(UPDATE_PLAYERS_TIMER_ID,UPDATE_PLAYERS_TIMER_TIME);
+		addTimer(UPDATE_PLAYERS_TIMER_ID, UPDATE_PLAYERS_TIMER_TIME);
 	}
 
-	if( m_friendInfoUpdatedERROR )
+	if (m_friendInfoUpdatedERROR)
 	{
-		m_buttonJoinGame.init(app.GetString(IDS_JOIN_GAME),eControl_JoinGame);
+		m_buttonJoinGame.init(app.GetString(IDS_JOIN_GAME), eControl_JoinGame);
 
 		m_buttonListPlayers.init(eControl_GamePlayers);
-		m_buttonListPlayers.setYPos( m_buttonListPlayers.getYPos() + 300 );
+		m_buttonListPlayers.setYPos(m_buttonListPlayers.getYPos() + 300);
 
 		m_labelLabels[eLabel_Difficulty].init(app.GetString(IDS_LABEL_DIFFICULTY));
 		m_labelLabels[eLabel_GameType].init(app.GetString(IDS_LABEL_GAME_TYPE));
@@ -294,14 +296,14 @@ void UIScene_JoinMenu::tick()
 		m_labelLabels[eLabel_FireOn].init(app.GetString(IDS_LABEL_FIRE_SPREADS));
 
 		m_labelValues[eLabel_Difficulty].init(app.GetString(IDS_DIFFICULTY_TITLE_PEACEFUL));
-		m_labelValues[eLabel_GameType].init( app.GetString(IDS_CREATIVE) );
-		m_labelValues[eLabel_GamertagsOn].init( app.GetString(IDS_OFF) );
-		m_labelValues[eLabel_Structures].init( app.GetString(IDS_OFF) );
-		m_labelValues[eLabel_LevelType].init( app.GetString(IDS_LEVELTYPE_NORMAL) );
-		m_labelValues[eLabel_PVP].init( app.GetString(IDS_OFF) );
-		m_labelValues[eLabel_Trust].init( app.GetString(IDS_OFF) );
-		m_labelValues[eLabel_TNTOn].init( app.GetString(IDS_OFF) );
-		m_labelValues[eLabel_FireOn].init( app.GetString(IDS_OFF) );
+		m_labelValues[eLabel_GameType].init(app.GetString(IDS_CREATIVE));
+		m_labelValues[eLabel_GamertagsOn].init(app.GetString(IDS_OFF));
+		m_labelValues[eLabel_Structures].init(app.GetString(IDS_OFF));
+		m_labelValues[eLabel_LevelType].init(app.GetString(IDS_LEVELTYPE_NORMAL));
+		m_labelValues[eLabel_PVP].init(app.GetString(IDS_OFF));
+		m_labelValues[eLabel_Trust].init(app.GetString(IDS_OFF));
+		m_labelValues[eLabel_TNTOn].init(app.GetString(IDS_OFF));
+		m_labelValues[eLabel_FireOn].init(app.GetString(IDS_OFF));
 
 		m_friendInfoUpdatedERROR = false;
 
@@ -310,9 +312,9 @@ void UIScene_JoinMenu::tick()
 		UINT uiIDA[1];
 		uiIDA[0] = IDS_CONFIRM_OK;
 #ifdef _XBOX_ONE
-		ui.RequestErrorMessage( IDS_CONNECTION_FAILED, IDS_DISCONNECTED_SERVER_QUIT, uiIDA,1,m_iPad,ErrorDialogReturned,this);
+		ui.RequestErrorMessage(IDS_CONNECTION_FAILED, IDS_DISCONNECTED_SERVER_QUIT, uiIDA, 1, m_iPad, ErrorDialogReturned, this);
 #else
-		ui.RequestErrorMessage( IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, uiIDA,1,m_iPad,ErrorDialogReturned,this);
+		ui.RequestErrorMessage(IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, uiIDA, 1, m_iPad, ErrorDialogReturned, this);
 #endif
 	}
 
@@ -323,89 +325,94 @@ void UIScene_JoinMenu::tick()
 		{
 			IggyPlayerTickRS(s_movieServerDesc);
 
-			IggyValuePath *root = IggyPlayerRootPath(s_movieServerDesc);
-			if (root)
-			{
-				// scale the size before Iggy reads it
-				IggyValuePath textPath;
-				if (IggyValuePathMakeNameRef(&textPath, root, "HowToPlayText_0"))
-				{
-					IggyName nameX = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16 *)L"x", -1);
-					IggyName nameY = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16 *)L"y", -1);
-					IggyName nameW = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16 *)L"width", -1);
-					IggyName nameH = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16 *)L"height", -1);
-
-					if (m_loadedResolution == eSceneResolution_1080)
-					{
-						IggyValueSetF64RS(&textPath, nameX, nullptr, 333.0);// horizontal
-						IggyValueSetF64RS(&textPath, nameY, nullptr, 340.0);// vertical
-						IggyValueSetF64RS(&textPath, nameW, nullptr, 580.0);
-						IggyValueSetF64RS(&textPath, nameH, nullptr, 270.0);
-					}
-					else //720
-					{
-						IggyValueSetF64RS(&textPath, nameX, nullptr, 252.0);
-						IggyValueSetF64RS(&textPath, nameY, nullptr, 285.0);
-						IggyValueSetF64RS(&textPath, nameW, nullptr, 440.0);
-						IggyValueSetF64RS(&textPath, nameH, nullptr, 220.0);
-					}
-				}
-
-				// harcoded text for test it, later im gonna delete this and
-				// and convert it so that people can add their description when adding the server 
-				if (!s_textInjected && s_funcLoadPage != 0)
-				{
-					IggyDataValue result;
-					IggyDataValue args[2];
-					args[0].type = IGGY_DATATYPE_number;
-					args[0].number = 0; // 0 is the what's new page on howtoplay don't change it
-
-					wstring testText = L"\nNothing yet...";
-					IggyStringUTF16 iggyStr;
-					wstring formattedText = app.FormatChatMessage(testText); 
-					iggyStr.string = (IggyUTF16*)formattedText.c_str();
-					iggyStr.length = (unsigned int)formattedText.length();
-
-					args[1].type = IGGY_DATATYPE_string_UTF16;
-					args[1].string16 = iggyStr;
-
-					IggyResult res = IggyPlayerCallMethodRS(s_movieServerDesc, &result, root, s_funcLoadPage, 2, args);
-					if (res == IGGY_RESULT_SUCCESS)
-					{
-						s_textInjected = true;
-					}
-				}
-
-				// keeps the text fixed so it doesn't move from its place
-				IggyValuePath panelPath;
-				if (s_textInjected && IggyValuePathMakeNameRef(&panelPath, root, "DynamicHtmlText"))
-				{
-					IggyName nameX = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16 *)L"x", -1);
-					IggyName nameY = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16 *)L"y", -1);
-					IggyName nameW = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16 *)L"width", -1);
-					IggyName nameH = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16 *)L"height", -1);
-
-					if (m_loadedResolution == eSceneResolution_1080)
-					{
-						IggyValueSetF64RS(&panelPath, nameX, nullptr, 332.0);// horizontal
-						IggyValueSetF64RS(&panelPath, nameY, nullptr, 340.0);// vertical
-						IggyValueSetF64RS(&panelPath, nameW, nullptr, 580.0);
-						IggyValueSetF64RS(&panelPath, nameH, nullptr, 270.0);
-					}
-					else //720p 
-					{
-						IggyValueSetF64RS(&panelPath, nameX, nullptr, 250.0);
-						IggyValueSetF64RS(&panelPath, nameY, nullptr, 290.0);
-						IggyValueSetF64RS(&panelPath, nameW, nullptr, 400.0);
-						IggyValueSetF64RS(&panelPath, nameH, nullptr, 230.0);
-					}
-				}
-			}
+			updateServerDescription();
 		}
 	}
 #endif
 
 	UIScene::tick();
+}
+
+void UIScene_JoinMenu::updateServerDescription() {
+	IggyValuePath* root = IggyPlayerRootPath(s_movieServerDesc);
+	if (root)
+	{
+		// scale the size before Iggy reads it
+		IggyValuePath textPath;
+		if (IggyValuePathMakeNameRef(&textPath, root, "HowToPlayText_0"))
+		{
+			IggyName nameX = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16*)L"x", -1);
+			IggyName nameY = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16*)L"y", -1);
+			IggyName nameW = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16*)L"width", -1);
+			IggyName nameH = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16*)L"height", -1);
+
+			if (m_loadedResolution == eSceneResolution_1080)
+			{
+				IggyValueSetF64RS(&textPath, nameX, nullptr, 333.0);// horizontal
+				IggyValueSetF64RS(&textPath, nameY, nullptr, 340.0);// vertical
+				IggyValueSetF64RS(&textPath, nameW, nullptr, 580.0);
+				IggyValueSetF64RS(&textPath, nameH, nullptr, 270.0);
+			}
+			else //720
+			{
+				IggyValueSetF64RS(&textPath, nameX, nullptr, 252.0);
+				IggyValueSetF64RS(&textPath, nameY, nullptr, 285.0);
+				IggyValueSetF64RS(&textPath, nameW, nullptr, 440.0);
+				IggyValueSetF64RS(&textPath, nameH, nullptr, 220.0);
+			}
+		}
+
+		// harcoded text for test it, later im gonna delete this and
+		// and convert it so that people can add their description when adding the server 
+		if (s_funcLoadPage != 0)
+		{
+			IggyDataValue result;
+			IggyDataValue args[2];
+			args[0].type = IGGY_DATATYPE_number;
+			args[0].number = 0; // 0 is the what's new page on howtoplay don't change it
+
+			wstring testText = L"\nNothing yet...";
+			IggyStringUTF16 iggyStr;
+			wstring formattedText = app.EscapeHTMLString(testText);
+			formattedText = app.FormatChatMessage(formattedText);
+			iggyStr.string = (IggyUTF16*)formattedText.c_str();
+			iggyStr.length = (unsigned int)formattedText.length();
+
+			args[1].type = IGGY_DATATYPE_string_UTF16;
+			args[1].string16 = iggyStr;
+
+			IggyResult res = IggyPlayerCallMethodRS(s_movieServerDesc, &result, root, s_funcLoadPage, 2, args);
+			if (res == IGGY_RESULT_SUCCESS)
+			{
+				s_textInjected = true;
+			}
+		}
+
+		// keeps the text fixed so it doesn't move from its place
+		IggyValuePath panelPath;
+		if (s_textInjected && IggyValuePathMakeNameRef(&panelPath, root, "DynamicHtmlText"))
+		{
+			IggyName nameX = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16*)L"x", -1);
+			IggyName nameY = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16*)L"y", -1);
+			IggyName nameW = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16*)L"width", -1);
+			IggyName nameH = IggyPlayerCreateFastName(s_movieServerDesc, (IggyUTF16*)L"height", -1);
+
+			if (m_loadedResolution == eSceneResolution_1080)
+			{
+				IggyValueSetF64RS(&panelPath, nameX, nullptr, 332.0);// horizontal
+				IggyValueSetF64RS(&panelPath, nameY, nullptr, 340.0);// vertical
+				IggyValueSetF64RS(&panelPath, nameW, nullptr, 580.0);
+				IggyValueSetF64RS(&panelPath, nameH, nullptr, 270.0);
+			}
+			else //720p 
+			{
+				IggyValueSetF64RS(&panelPath, nameX, nullptr, 250.0);
+				IggyValueSetF64RS(&panelPath, nameY, nullptr, 290.0);
+				IggyValueSetF64RS(&panelPath, nameW, nullptr, 400.0);
+				IggyValueSetF64RS(&panelPath, nameH, nullptr, 230.0);
+			}
+		}
+	}
 }
 
 void UIScene_JoinMenu::friendSessionUpdated(bool success, void *pParam)

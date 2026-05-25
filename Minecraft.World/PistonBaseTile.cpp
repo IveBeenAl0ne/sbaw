@@ -30,21 +30,12 @@ DWORD PistonBaseTile::tlsIdx = TlsAlloc();
 // For us, that means that if we create a piston next to another one, then one of them gets two events to createPush, the second of which fails, leaving the
 // piston in a bad (simultaneously extended & not extended) state.
 // 4J - ignoreUpdate is a static in java, implementing as TLS here to make thread safe
-bool PistonBaseTile::ignoreUpdate()
-{
-	return (TlsGetValue(tlsIdx) != nullptr);
-}
 
-void PistonBaseTile::ignoreUpdate(bool set)
-{
-	TlsSetValue(tlsIdx,(LPVOID)(set?1:0));
-}
+//I removed the code for ignoreUpdate so the above comment no longer applies ^.^
 
 PistonBaseTile::PistonBaseTile(int id, bool isSticky) : Tile(id, Material::piston, isSolidRender() )
 {
 	// 4J - added initialiser
-	ignoreUpdate(false);
-
 	this->isSticky = isSticky;
 	setSoundType(SOUND_STONE);
 	setDestroyTime(0.5f);
@@ -158,7 +149,7 @@ void PistonBaseTile::setPlacedBy(Level *level, int x, int y, int z, shared_ptr<L
 {
 	int targetData = getNewFacing(level, x, y, z, dynamic_pointer_cast<Player>(by) );
 	level->setData(x, y, z, targetData, Tile::UPDATE_CLIENTS);
-	if (!level->isClientSide && !ignoreUpdate())
+	if (!level->isClientSide)
 	{
 		checkIfExtend(level, x, y, z);
 	}
@@ -166,7 +157,7 @@ void PistonBaseTile::setPlacedBy(Level *level, int x, int y, int z, shared_ptr<L
 
 void PistonBaseTile::neighborChanged(Level *level, int x, int y, int z, int type)
 {
-	if (!level->isClientSide && !ignoreUpdate())
+	if (!level->isClientSide)
 	{
 		checkIfExtend(level, x, y, z);
 	}
@@ -174,7 +165,7 @@ void PistonBaseTile::neighborChanged(Level *level, int x, int y, int z, int type
 
 void PistonBaseTile::onPlace(Level *level, int x, int y, int z)
 {
-	if (!level->isClientSide && level->getTileEntity(x, y, z) == nullptr && !ignoreUpdate())
+	if (!level->isClientSide && level->getTileEntity(x, y, z) == nullptr)
 	{
 		checkIfExtend(level, x, y, z);
 	}
@@ -239,7 +230,6 @@ bool PistonBaseTile::getNeighborSignal(Level *level, int x, int y, int z, int fa
 
 bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1, int facing)
 {
-	ignoreUpdate(true);
 
 	if (!level->isClientSide)
 	{
@@ -248,12 +238,10 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 		if (extend && param1 == TRIGGER_CONTRACT)
 		{
 			level->setData(x, y, z, facing | EXTENDED_BIT, UPDATE_CLIENTS);
-			ignoreUpdate(false);
 			return false;
 		}
 		else if (!extend && param1 == TRIGGER_EXTEND)
 		{
-			ignoreUpdate(false);
 			return false;
 		}
 	}
@@ -280,7 +268,6 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 			}
 			if (FourKitBridge::FirePistonExtend(level->dimension->id, x, y, z, facing, pushLength))
 			{
-				ignoreUpdate(false);
 				return false;
 			}
 		}
@@ -304,7 +291,6 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 		}
 		else
 		{
-			ignoreUpdate(false);
 			return false;
 		}
 		PIXEndNamedEvent();
@@ -315,7 +301,6 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 		if (FourKitBridge::FirePistonRetract(level->dimension->id, x, y, z, facing))
 		{
 			level->setData(x, y, z, facing | EXTENDED_BIT, UPDATE_CLIENTS);
-			ignoreUpdate(false);
 			return false;
 		}
 #endif
@@ -380,9 +365,7 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 				level->setTileAndData(x, y, z, Tile::piston_extension_Id, blockData, Tile::UPDATE_ALL);
 				level->setTileEntity(x, y, z, PistonMovingPiece::newMovingPieceEntity(block, blockData, facing, false, false));
 
-				ignoreUpdate(false);
 				level->removeTile(twoX, twoY, twoZ);
-				ignoreUpdate(true);
 
 				if (block == Tile::slimeBlock->id)
 				{
@@ -458,9 +441,7 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 							level->setTileAndData(destX, destY, destZ, Tile::piston_extension_Id, adjData, Tile::UPDATE_NONE);
 							level->setTileEntity(destX, destY, destZ, PistonMovingPiece::newMovingPieceEntity(adjBlock, adjData, facing, false, false));
 
-							ignoreUpdate(false);
 							level->removeTile(adjX, adjY, adjZ);
-							ignoreUpdate(true);
 							level->updateNeighborsAt(adjX, adjY, adjZ, adjBlock);
 
 							movedBlocks.push_back({ adjX, adjY, adjZ, adjBlock, adjData });
@@ -471,24 +452,18 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 			else if (!pistonPiece)
 			{
 				stopSharingIfServer(level, x + Facing::STEP_X[facing], y + Facing::STEP_Y[facing], z + Facing::STEP_Z[facing]);	// 4J added
-				ignoreUpdate(false);
 				level->removeTile(x + Facing::STEP_X[facing], y + Facing::STEP_Y[facing], z + Facing::STEP_Z[facing]);
-				ignoreUpdate(true);
 			}
 			PIXEndNamedEvent();
 		}
 		else
 		{
 			stopSharingIfServer(level, x + Facing::STEP_X[facing], y + Facing::STEP_Y[facing], z + Facing::STEP_Z[facing]);	// 4J added
-			ignoreUpdate(false);
 			level->removeTile(x + Facing::STEP_X[facing], y + Facing::STEP_Y[facing], z + Facing::STEP_Z[facing]);
-			ignoreUpdate(true);
 		}
 
 		level->playSound(x + 0.5, y + 0.5, z + 0.5, eSoundType_TILE_PISTON_IN, 0.5f, level->random->nextFloat() * 0.15f + 0.6f);
 	}
-
-	ignoreUpdate(false);
 
 	return true;
 }

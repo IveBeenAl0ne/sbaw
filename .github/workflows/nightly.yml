@@ -1,9 +1,8 @@
 ﻿name: Nightly Release
-
 on:
   push:
     branches:
-      - experimental
+      - main
   workflow_dispatch:
 
 permissions:
