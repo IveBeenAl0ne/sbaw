@@ -62,7 +62,7 @@ body:
   - type: input
     id: itsrevela
     attributes:
-      label: Is this reproducable in itsRevela/LCE-Revelations? (https://github.com/itsRevela/LCE-Revelations)
+      label: Is this reproducable in itsRevela/LCE-Revelations? (https://git.revela.dev/itsRevela/LCE-Revelations)
       description: If this was a "no idea" or similar, it will be rejected.
     validations:
       required: true
