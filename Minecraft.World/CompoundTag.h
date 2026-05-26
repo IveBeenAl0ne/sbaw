@@ -212,7 +212,7 @@ public:
 
 		Tag* tag = it->second;
 
-		if (!tag || tag->getId() != Tag::TAG_STRING)
+		if (!tag || tag->getId() != Tag::TAG_String)
 			return L"";
 
 		StringTag* stringTag = static_cast<StringTag*>(tag);

@@ -94,7 +94,12 @@ Tile::BlockState TallGrass2::getBlockState(int data)
 
 Tile::BlockState TallGrass2::getBlockState(LevelSource* level, int x, int y, int z)
 {
-	return Tile::BlockState(level->getData(x, y, z) & 0xF);
+	int data = level->getData(x, y, z) & 0xF;
+	if ((data & UPPER_BIT) != 0 && level->getTile(x, y - 1, z) == id)
+	{
+		data = (level->getData(x, y - 1, z) & ~UPPER_BIT) | UPPER_BIT;
+	}
+	return Tile::BlockState(data);
 }
 
 
@@ -147,7 +152,12 @@ Icon* TallGrass2::getTexture(LevelSource* level, int x, int y, int z, int face)
 {
 	int data = level->getData(x, y, z);
 	bool isUpper = (data & UPPER_BIT) != 0;
-	int variant = data & ~UPPER_BIT;
+	int variantData = data;
+	if (isUpper && level->getTile(x, y - 1, z) == id)
+	{
+		variantData = level->getData(x, y - 1, z);
+	}
+	int variant = variantData & ~UPPER_BIT;
 	if (variant < 0 || variant >= VARIANT_COUNT) variant = 0;
 	return isUpper ? iconTop[variant] : iconBottom[variant];
 }
@@ -157,7 +167,13 @@ int TallGrass2::getVariant(LevelSource* level, int x, int y, int z)
 {
 	int data = level->getData(x, y, z);
 	bool isUpper = (data & UPPER_BIT) != 0;
-	int lowerData = isUpper ? level->getData(x, y - 1, z) : data;
+	int lowerData = data;
+
+	if (isUpper && level->getTile(x, y - 1, z) == id)
+	{
+		lowerData = level->getData(x, y - 1, z);
+	}
+
 	int variant = lowerData & ~UPPER_BIT;
 	if (variant < 0 || variant >= VARIANT_COUNT) variant = 0;
 	return variant;
@@ -184,7 +200,12 @@ int TallGrass2::getColor(LevelSource* level, int x, int y, int z)
 
 int TallGrass2::getColor(LevelSource* level, int x, int y, int z, int data)
 {
-	int variant = data & ~UPPER_BIT;
+	int variantData = data;
+	if ((data & UPPER_BIT) != 0 && level->getTile(x, y - 1, z) == id)
+	{
+		variantData = level->getData(x, y - 1, z);
+	}
+	int variant = variantData & ~UPPER_BIT;
 	if (variant < 0 || variant >= VARIANT_COUNT) variant = 0;
 	if (!isGrassColored(variant)) return 0xFFFFFF;
 	return level->getBiome(x, z)->getGrassColor();
@@ -248,11 +269,29 @@ void TallGrass2::neighborChanged(Level* level, int x, int y, int z, int type)
 			if (upperTileId == id)
 				level->removeTile(x, y + 1, z);
 		}
+		else
+		{
+			int expectedUpperData = variant | UPPER_BIT;
+			int upperData = level->getData(x, y + 1, z) & 0xF;
+			if (upperData != expectedUpperData)
+			{
+				level->setData(x, y + 1, z, expectedUpperData, Tile::UPDATE_CLIENTS, true);
+			}
+		}
 	}
 	else
 	{
 		if (level->getTile(x, y - 1, z) != id)
 			level->removeTile(x, y, z);
+		else
+		{
+			int expectedUpperData = (level->getData(x, y - 1, z) & ~UPPER_BIT) | UPPER_BIT;
+			int selfData = data & 0xF;
+			if (selfData != expectedUpperData)
+			{
+				level->setData(x, y, z, expectedUpperData, Tile::UPDATE_CLIENTS, true);
+			}
+		}
 	}
 }
 
@@ -271,21 +310,35 @@ void TallGrass2::tick(Level* level, int x, int y, int z, Random* random)
 			if (upperTileId == id)
 				level->removeTile(x, y + 1, z);
 		}
+		else
+		{
+			int expectedUpperData = (data & ~UPPER_BIT) | UPPER_BIT;
+			int upperData = level->getData(x, y + 1, z) & 0xF;
+			if (upperData != expectedUpperData)
+			{
+				level->setData(x, y + 1, z, expectedUpperData, Tile::UPDATE_CLIENTS, true);
+			}
+		}
 	}
 }
 
 
 int TallGrass2::getResource(int data, Random* random, int playerBonusLevel)
 {
-	(void)random;
 	(void)playerBonusLevel;
 
-	if ((data & ~UPPER_BIT) == SUNFLOWER)
-	{
-		return Tile::double_plant_Id;
-	}
+	int variant = data & ~UPPER_BIT;
+	if (variant < 0 || variant >= VARIANT_COUNT) variant = 0;
 
-	return -1;
+	if (variant == TALL_GRASS)
+	{
+		if (random->nextInt(8) == 0)
+		{
+			return Item::wheat_seeds->id;
+		}
+		return -1;
+	}
+	return Tile::double_plant_Id;
 }
 
 int TallGrass2::getResourceCountForLootBonus(int bonusLevel, Random* random)

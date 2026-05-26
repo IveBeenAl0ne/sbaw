@@ -4199,7 +4199,11 @@ bool TileRenderer::tesselateCrossInWorld( Tile* tt, int x, int y, int z )
 	{
 		const int data = level->getData(x, y, z);
 		const bool isUpper = (data & TallGrass2::UPPER_BIT) != 0;
-		const int lowerData = isUpper ? level->getData(x, y - 1, z) : data;
+		int lowerData = data;
+		if (isUpper && level->getTile(x, y - 1, z) == Tile::double_plant_Id)
+		{
+			lowerData = level->getData(x, y - 1, z);
+		}
 		const int variant = lowerData & ~TallGrass2::UPPER_BIT;
 
 		if (isUpper && variant == TallGrass2::SUNFLOWER)
@@ -4274,6 +4278,15 @@ bool TileRenderer::tesselateCrossInWorld( Tile* tt, int x, int y, int z )
 			}
 			return true;
 		}
+
+		int renderData = data;
+		if (isUpper)
+		{
+			renderData = (lowerData & ~TallGrass2::UPPER_BIT) | TallGrass2::UPPER_BIT;
+		}
+
+		tesselateCrossTexture(tt, renderData, xt, yt, zt, 1);
+		return true;
 	}
 
 	tesselateCrossTexture( tt, level->getData( x, y, z ), xt, yt, zt, 1 );
