@@ -383,12 +383,13 @@ bool RedStoneDustTile::shouldConnectTo(LevelSource *level, int x, int y, int z, 
 	int t = level->getTile(x, y, z);
 	if (t == Tile::redstone_wire_Id) return true;
 	if (t == 0) return false;
+	Tile *tile = Tile::tiles[t];
 	if (Tile::unpowered_repeater->isSameDiode(t))
 	{
 		int data = level->getData(x, y, z);
 		return direction == (data & DiodeTile::DIRECTION_MASK) || direction == Direction::DIRECTION_OPPOSITE[data & DiodeTile::DIRECTION_MASK];
 	}
-	else if (Tile::tiles[t]->isSignalSource() && direction != Direction::UNDEFINED) return true;
+	else if (tile != nullptr && tile->isSignalSource() && direction != Direction::UNDEFINED) return true;
 
 	return false;
 }

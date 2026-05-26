@@ -205,8 +205,19 @@ public:
 
 	wstring getString(const wstring &name)
 	{
-		if (tags.find(name) == tags.end()) return wstring( L"" );
-		return static_cast<StringTag *>(tags[name])->data;
+		auto it = tags.find(name);
+
+		if (it == tags.end())
+			return L"";
+
+		Tag* tag = it->second;
+
+		if (!tag || tag->getId() != Tag::TAG_STRING)
+			return L"";
+
+		StringTag* stringTag = static_cast<StringTag*>(tag);
+
+		return stringTag->data;
 	}
 
 	byteArray getByteArray(const wstring &name)

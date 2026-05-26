@@ -48,7 +48,6 @@ void SlimeTile::fallOn(Level *level, int x, int y, int z,
     entity->clearFallDamageQueue();
 
 	entity->fallDistance = 0.0f;
-	entity->onGround = false;
 
 	if (entity->isSneaking())
         return;
