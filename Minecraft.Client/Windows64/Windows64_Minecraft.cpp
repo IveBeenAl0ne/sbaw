@@ -824,8 +824,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 	}
 
-	ShowWindow(g_hWnd, (nCmdShow != SW_HIDE) ? SW_SHOWMAXIMIZED : nCmdShow);
-	UpdateWindow(g_hWnd);
+	
 
 	return TRUE;
 }
@@ -1456,8 +1455,9 @@ void CleanupDevice()
 static Minecraft* InitialiseMinecraftRuntime()
 {
 	app.loadMediaArchive();
-
-	RenderManager.Initialise(g_pd3dDevice, g_pSwapChain);
+	// @CDevJoud: No need to call this method as it gets called once in `InitDevice()`
+	// Calling it again and it results of 20MB of memory leak!
+	//RenderManager.Initialise(g_pd3dDevice, g_pSwapChain);
 
 	app.loadStringTable();
 	ui.init(g_pd3dDevice, g_pImmediateContext, g_pRenderTargetView, g_pDepthStencilView, g_rScreenWidth, g_rScreenHeight);
@@ -1791,6 +1791,20 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		hr = XuiTimersRun();
 	}
 #endif
+
+	// @CDevJoud The window should only be shown after the engine/game
+	// initialization has fully completed.
+	//
+	// Showing the window too early especially on low end devices,
+	// may cause windows to display a "Not Responding" state while
+	// initialization is still in progress.
+	//
+	// This creates an unprofessional first impression for the player.
+	// Instead, initialize all engine systems first, then display the
+	// window once everything is ready.
+	ShowWindow(g_hWnd, (nCmdShow != SW_HIDE) ? SW_SHOWMAXIMIZED : nCmdShow);
+	UpdateWindow(g_hWnd);
+
 	MSG msg = {0};
 	while( WM_QUIT != msg.message && !app.m_bShutdown)
 	{

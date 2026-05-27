@@ -94,7 +94,7 @@ MultiPlayerChunkCache::MultiPlayerChunkCache(Level *level)
 	this->level = level;
 
 	this->cache = new LevelChunk *[XZSIZE * XZSIZE];
-	memset(this->cache, 0, sizeof(LevelChunk*) * XZSIZE * XZSIZE);
+	memset(this->cache, 0, XZSIZE * XZSIZE * sizeof(LevelChunk *));
 	InitializeCriticalSectionAndSpinCount(&m_csLoadCreate,4000);
 }
 
@@ -132,7 +132,7 @@ bool MultiPlayerChunkCache::reallyHasChunk(int x, int z)
 	int idx = ix * XZSIZE + iz;
 
 	LevelChunk *chunk = cache[idx];
-	if (chunk == nullptr)
+	if( chunk == nullptr )
 	{
 		return false;
 	}
@@ -145,8 +145,7 @@ void MultiPlayerChunkCache::drop(const int x, const int z)
 	const int iz = z + XZOFFSET;
 	if ((ix < 0) || (ix >= XZSIZE)) return;
 	if ((iz < 0) || (iz >= XZSIZE)) return;
-
-	int idx = ix * XZSIZE + iz;
+	const int idx = ix * XZSIZE + iz;
 	LevelChunk* chunk = cache[idx];
 
 	if (chunk != nullptr && !chunk->isEmpty())
@@ -170,7 +169,6 @@ LevelChunk *MultiPlayerChunkCache::create(int x, int z)
 	if( ( ix < 0 ) || ( ix >= XZSIZE ) ) return ( waterChunk ? waterChunk : emptyChunk );
 	if( ( iz < 0 ) || ( iz >= XZSIZE ) ) return ( waterChunk ? waterChunk : emptyChunk );
 	int idx = ix * XZSIZE + iz;
-
 	LevelChunk *chunk = cache[idx];
 	LevelChunk *lastChunk = chunk;
 

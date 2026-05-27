@@ -526,9 +526,10 @@ LevelStorageSource *Minecraft::getLevelSource()
 
 void Minecraft::setScreen(Screen *screen)
 {
-	if (this->screen != nullptr)
+	Screen *oldScreen = this->screen;
+	if (oldScreen != nullptr)
 	{
-		this->screen->removed();
+		oldScreen->removed();
 	}
 
 #ifdef _WINDOWS64
@@ -4438,6 +4439,8 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 	// 4J If we are setting the level to nullptr then we are exiting, so delete the levels
 	if( level == nullptr )
 	{
+		if (soundEngine) soundEngine->stopElytraSound();
+
 		if(levels[0]!=nullptr)
 		{
 			delete levels[0];
