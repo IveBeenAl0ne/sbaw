@@ -149,47 +149,57 @@ static void CopyWideArgToAnsi(LPCWSTR source, char* dest, size_t destSize)
 	dest[destSize - 1] = 0;
 }
 
-// ---------- Persistent options (options.txt next to exe) ----------
-static void GetOptionsFilePath(char *out, size_t outSize)
+// ---------- Persistent options (options.dat next to exe) ----------
+static void GetOptionsFilePath(char *out, DWORD outSize)
 {
-	GetModuleFileNameA(nullptr, out, static_cast<DWORD>(outSize));
-	char *p = strrchr(out, '\\');
-	if (p) *(p + 1) = '\0';
-	strncat_s(out, outSize, "options.txt", _TRUNCATE);
+    GetModuleFileNameA(nullptr, out, outSize);
+    char *p = strrchr(out, '\\');
+    if (p) *(p + 1) = '\0';
+    strncat_s(out, outSize, "settings.dat", _TRUNCATE);
 }
 
 static void SaveFullscreenOption(bool fullscreen)
 {
-	char path[MAX_PATH];
-	GetOptionsFilePath(path, sizeof(path));
-	FILE *f = nullptr;
-	if (fopen_s(&f, path, "w") == 0 && f)
-	{
-		fprintf(f, "fullscreen=%d\n", fullscreen ? 1 : 0);
-		fclose(f);
-	}
+    GAME_SETTINGS settings = {};
+    
+    char path[MAX_PATH] = {};
+    GetOptionsFilePath(path, MAX_PATH);
+    FILE *f = nullptr;
+    if (fopen_s(&f, path, "rb") == 0 && f)
+    {
+        fread(&settings, sizeof(GAME_SETTINGS), 1, f);
+        fclose(f);
+    }
+
+    if (fullscreen)
+        settings.uiBitmaskValues |= (1UL << 25);
+    else
+        settings.uiBitmaskValues &= ~(1UL << 25);
+
+	if (fopen_s(&f, path, "wb") == 0 && f)
+    {
+        fwrite(&settings, sizeof(GAME_SETTINGS), 1, f);
+        fclose(f);
+    }
 }
 
 static bool LoadFullscreenOption()
 {
-	char path[MAX_PATH];
+    char path[MAX_PATH] = {};
 	GetOptionsFilePath(path, sizeof(path));
-	FILE *f = nullptr;
-	if (fopen_s(&f, path, "r") == 0 && f)
-	{
-		char line[256];
-		while (fgets(line, sizeof(line), f))
-		{
-			int val = 0;
-			if (sscanf_s(line, "fullscreen=%d", &val) == 1)
-			{
-				fclose(f);
-				return val != 0;
-			}
-		}
-		fclose(f);
-	}
-	return false;
+    
+    FILE *f = nullptr;
+    if (fopen_s(&f, path, "rb") != 0 || !f)
+        return false;
+    
+    GAME_SETTINGS current = {};
+    bool ok = (fread(&current, sizeof(GAME_SETTINGS), 1, f) == 1);
+    fclose(f);
+    
+    if (!ok)
+        return false;
+
+    return (current.uiBitmaskValues & (1UL << 25)) != 0;
 }
 // ------------------------------------------------------------------
 
@@ -824,7 +834,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 	}
 
-	
+
 
 	return TRUE;
 }
@@ -1696,11 +1706,12 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		CleanupDevice();
 		return 0;
 	}
-
 	// Restore fullscreen state from previous session. Route through the
 	// deferred exclusive fullscreen path so the main loop applies it on the
 	// first tick (safer than transitioning during init).
-	if ((LoadFullscreenOption() && !g_isFullscreen) || launchOptions.fullscreen)
+
+	bool FullScreenEnabled = LoadFullscreenOption();
+	if (FullScreenEnabled && !g_isFullscreen)
 	{
 		g_bPendingExclusiveFullscreen = true;
 		g_bPendingExclusiveFullscreenValue = true;
@@ -1765,7 +1776,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		return 1;
 	}
 	g_bResizeReady = true;
-	
+
 	//app.TemporaryCreateGameStart();
 
 	//Sleep(10000);

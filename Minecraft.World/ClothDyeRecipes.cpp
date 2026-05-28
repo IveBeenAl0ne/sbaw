@@ -116,6 +116,9 @@ void ClothDyeRecipes::addRecipes(Recipes *r)
 		new ItemInstance(Item::dye, 1, DyePowderItem::RED),
 		new ItemInstance(Item::dye, 1, DyePowderItem::WHITE),L'D');
 
+
+
+
 	for (int i = 0; i < 16; i++)
 	{
 		r->addShapedRecipy(new ItemInstance(Tile::woolCarpet, 3, i),
