@@ -2,6 +2,9 @@
 #include "ItemRenderer.h"
 #include "TileRenderer.h"
 #include "EntityRenderDispatcher.h"
+#include "SkullTileRenderer.h"
+#include "../Minecraft.World/SkullItem.h"
+#include "../Minecraft.World/Facing.h"
 #include "../Minecraft.World/JavaMath.h"
 #include "../Minecraft.World/net.minecraft.world.entity.item.h"
 #include "../Minecraft.World/net.minecraft.world.item.h"
@@ -81,8 +84,17 @@ void ItemRenderer::render(shared_ptr<Entity> _itemEntity, double x, double y, do
     glEnable(GL_RESCALE_NORMAL);
 
 	Tile *tile = Tile::tiles[item->id];
+	if (dynamic_cast<SkullItem*>(item->getItem()) != nullptr && SkullTileRenderer::instance != nullptr)
+	{
+		std::wstring extra = L"";
+		if (item->hasTag() && item->getTag()->contains(L"SkullOwner"))
+			extra = item->getTag()->getString(L"SkullOwner");
 
-	if ((item->getIconType() == Icon::TYPE_TERRAIN && tile != nullptr && TileRenderer::canRender(tile->getRenderShape())) && item->id != Tile::barrier_Id)
+		glRotatef(spin, 0, 1, 0);
+		glScalef(0.5f, 0.5f, 0.5f);
+		SkullTileRenderer::instance->renderSkull(-0.5f, -0.25f, -0.5f, Facing::UP, 0.0f, item->getAuxValue(), extra);
+	}
+	else if ((item->getIconType() == Icon::TYPE_TERRAIN && tile != nullptr && TileRenderer::canRender(tile->getRenderShape())) && item->id != Tile::barrier_Id)
 	{
         glRotatef(spin, 0, 1, 0);
 
@@ -371,6 +383,25 @@ void ItemRenderer::renderGuiItem(Font *font, Textures *textures, shared_ptr<Item
 	int itemId = item->id;
 	int itemAuxValue = item->getAuxValue();
 	Icon *itemIcon = item->getIcon();
+
+	if (dynamic_cast<SkullItem*>(item->getItem()) != nullptr && SkullTileRenderer::instance != nullptr)
+	{
+		std::wstring extra = L"";
+		if (item->hasTag() && item->getTag()->contains(L"SkullOwner"))
+		{
+			extra = item->getTag()->getString(L"SkullOwner");
+		}
+
+		glPushMatrix();
+		glTranslatef(x, y, 0.0f);
+		glScalef(16.0f * fScaleX, 16.0f * fScaleY, 1.0f);
+		glTranslatef(0.5f, 0.725f, 0.0f);
+		glRotatef(180.0f - 30.0f, 1.0f, 0.0f, 0.0f);
+		glRotatef(-45.0f, 0.0f, 1.0f, 0.0f);
+		SkullTileRenderer::instance->renderSkull(-0.5f, 0.0f, -0.5f, Facing::UP, 0.0f, itemAuxValue, extra);
+		glPopMatrix();
+		return;
+	}
 
     if ((item->getIconType() == Icon::TYPE_TERRAIN && TileRenderer::canRender(Tile::tiles[itemId]->getRenderShape())) && itemId != Tile::barrier_Id)
 	{

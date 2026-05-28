@@ -228,7 +228,7 @@ void ItemInHandRenderer::renderItem(shared_ptr<LivingEntity> mob, shared_ptr<Ite
 {
 	// 4J - code borrowed from render method below, although not factoring in brightness as that should already be being taken into account
 	// by texture lighting. This is for colourising things held in 3rd person view.
-    if ( (setColor) && (item != nullptr) )
+	if ( (setColor) && (item != nullptr) )
 	{
         int col = Item::items[item->id]->getColor(item, layer);
         float red = ((col >> 16) & 0xff) / 255.0f;
@@ -240,15 +240,20 @@ void ItemInHandRenderer::renderItem(shared_ptr<LivingEntity> mob, shared_ptr<Ite
 
     glPushMatrix();
 
-	/*if (item->id == Item::skull_Id && SkullTileRenderer::instance != nullptr)
+	if (dynamic_cast<SkullItem*>(item->getItem()) != nullptr && SkullTileRenderer::instance != nullptr)
 	{
-		wstring extra = L"";
+		std::wstring extra = L"";
 		if (item->hasTag() && item->getTag()->contains(L"SkullOwner"))
 			extra = item->getTag()->getString(L"SkullOwner");
-		SkullTileRenderer::instance->renderSkull(-0.5f, 0.0f, -0.5f, Facing::UP, 0.0f, item->getAuxValue(), extra);
+		glRotatef(-45, 1, 1, 0);
+		glRotatef(-70, 0, 1, 0); // lower = rotate left
+		glRotatef(5, 1, 0, 0); 
+		glRotatef(-20, 0, 0, 1); 
+		SkullTileRenderer::instance->renderSkull(-1.0f, -0.9f, 0.0f, Facing::UP, 0.0f, item->getAuxValue(), extra);
+		glScalef(0.5f, 0.5f, 0.5f);
 		glPopMatrix();
 		return;
-	}*/
+	}
 
 	Tile *tile = Tile::tiles[item->id];
     if ((item->getIconType() == Icon::TYPE_TERRAIN && tile != nullptr && TileRenderer::canRender(tile->getRenderShape())) && item->id != AirTile::barrier_Id)
@@ -692,16 +697,18 @@ void ItemInHandRenderer::render(float a)
 
             renderItem(player, item, 1, false);
         }
-		//else if (item->id == Item::skull_Id && SkullTileRenderer::instance != nullptr)
-		//{
-		//	wstring extra = L"";
-		//	if (item->hasTag() && item->getTag()->contains(L"SkullOwner"))
-		//		extra = item->getTag()->getString(L"SkullOwner");
-		//	glEnable(GL_RESCALE_NORMAL);
-		//	glScalef(2.0f, 2.0f, 2.0f);
-		//	SkullTileRenderer::instance->renderSkull(-0.5f, 0.0f, -0.5f, Facing::UP, 0.0f, item->getAuxValue(), extra);
-		//	glDisable(GL_RESCALE_NORMAL);
-		//}
+		else if (item->id == Item::skull_Id && SkullTileRenderer::instance != nullptr)
+		{
+			std::wstring extra = L"";
+			if (item->hasTag() && item->getTag()->contains(L"SkullOwner"))
+				extra = item->getTag()->getString(L"SkullOwner");
+			glRotatef(-49.5f, 0.0f, 1.0f, 0.0f);
+			glRotatef(5.0f, 0.0f, 0.0f, 1.0f);
+			glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
+			SkullTileRenderer::instance->renderSkull(-1.0f, 0.26f, 0.35f, Facing::UP, 0.0f, item->getAuxValue(), extra);
+			glPopMatrix();
+			return;
+		}
 		else
 		{
             renderItem(player, item, 0, false);
