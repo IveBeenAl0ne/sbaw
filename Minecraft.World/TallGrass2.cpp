@@ -8,10 +8,9 @@
 #include "../Minecraft.Client/Minecraft.h"
 #include "net.minecraft.stats.h"
 
-
 // tranq please i beg you make sure the ids are correct so we dont get corrupted worlds from people
 static const int TILE_IDS[TallGrass2::VARIANT_COUNT] = {
-	IDS_TILE_SUNFLOWER,			  // 0 - Sunflower, not implemented yet
+	IDS_TILE_SUNFLOWER,			  // 0 - Sunflower
 	IDS_TILE_LILAC,				  // 1 - Lilac
 	IDS_TILE_DOUBLE_TALL_GRASS,   // 2 - Tall Grass
 	IDS_TILE_LARGE_FERN,		  // 3 - Large Fern
@@ -20,7 +19,7 @@ static const int TILE_IDS[TallGrass2::VARIANT_COUNT] = {
 };
 
 static const int DESCRIPTION_IDS[TallGrass2::VARIANT_COUNT] = {
-	IDS_DESC_SUNFLOWER,			  // 0 - Sunflower, not implemented yet
+	IDS_DESC_SUNFLOWER,			  // 0 - Sunflower
 	IDS_DESC_LILAC,				  // 1 - Lilac
 	IDS_DESC_DOUBLE_TALL_GRASS,   // 2 - Tall Grass
 	IDS_DESC_LARGE_FERN,		  // 3 - Large Fern
@@ -133,7 +132,7 @@ void TallGrass2::registerIcons(IconRegister* iconRegister)
 	}
 
 	// sunflower item
-	icon = iconHeadFront[SUNFLOWER] != nullptr ? iconHeadFront[SUNFLOWER] : iconTop[TALL_GRASS];
+	icon = iconHeadFront[SUNFLOWER] != nullptr ? iconHeadFront[SUNFLOWER] : iconTop[SUNFLOWER];
 }
 
 
@@ -326,11 +325,12 @@ void TallGrass2::tick(Level* level, int x, int y, int z, Random* random)
 int TallGrass2::getResource(int data, Random* random, int playerBonusLevel)
 {
 	(void)playerBonusLevel;
+	if ((data & UPPER_BIT) != 0) return -1;
 
 	int variant = data & ~UPPER_BIT;
 	if (variant < 0 || variant >= VARIANT_COUNT) variant = 0;
 
-	if (variant == TALL_GRASS)
+	if (variant == TALL_GRASS || variant == LARGE_FERN)
 	{
 		if (random->nextInt(8) == 0)
 		{
@@ -338,6 +338,7 @@ int TallGrass2::getResource(int data, Random* random, int playerBonusLevel)
 		}
 		return -1;
 	}
+	
 	return Tile::double_plant_Id;
 }
 
@@ -365,13 +366,16 @@ shared_ptr<ItemInstance> TallGrass2::getSilkTouchItemInstance(int data)
 
 void TallGrass2::playerDestroy(Level* level, shared_ptr<Player> player, int x, int y, int z, int data)
 {
-	if ((data & ~UPPER_BIT) == SUNFLOWER)
+	int resolvedVariant = getVariant(level, x, y, z);
+	int resolvedData = (data & UPPER_BIT) | resolvedVariant;
+
+	if (resolvedVariant == SUNFLOWER)
 	{
 		if (!level->isClientSide && !player->abilities.instabuild)
 		{
 			player->awardStat(
 				GenericStats::blocksMined(id),
-				GenericStats::param_blocksMined(id, data, 1));
+				GenericStats::param_blocksMined(id, resolvedData, 1));
 
 			popResource(level, x, y, z, std::make_shared<ItemInstance>(this, 1, SUNFLOWER));
 		}
@@ -384,18 +388,17 @@ void TallGrass2::playerDestroy(Level* level, shared_ptr<Player> player, int x, i
 	{
 		player->awardStat(
 			GenericStats::blocksMined(id),
-			GenericStats::param_blocksMined(id, data, 1));
+			GenericStats::param_blocksMined(id, resolvedData, 1));
 
-		if ((data & UPPER_BIT) == 0)
+		if ((resolvedData & UPPER_BIT) == 0)
 		{
-			int variant = data & ~UPPER_BIT;
-			popResource(level, x, y, z, std::make_shared<ItemInstance>(this, 1, variant));
+			popResource(level, x, y, z, std::make_shared<ItemInstance>(this, 1, resolvedVariant));
 		}
 	}
 	else
 	{
 
-		Tile::playerDestroy(level, player, x, y, z, data);
+		Tile::playerDestroy(level, player, x, y, z, resolvedData);
 	}
 }
 

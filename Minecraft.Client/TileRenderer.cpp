@@ -12,6 +12,7 @@
 #include "../Minecraft.World/JavaMath.h"
 #include "Tesselator.h"
 #include "EntityTileRenderer.h"
+#include "LevelRenderer.h"
 #include "Options.h"
 #include "../Minecraft.World/TallGrass2.h"
 
@@ -4199,6 +4200,10 @@ bool TileRenderer::tesselateCrossInWorld( Tile* tt, int x, int y, int z )
 	{
 		const int data = level->getData(x, y, z);
 		const bool isUpper = (data & TallGrass2::UPPER_BIT) != 0;
+		if (isUpper && level->getTile(x, y - 1, z) != Tile::double_plant_Id)
+		{
+			return true;
+		}
 		int lowerData = data;
 		if (isUpper && level->getTile(x, y - 1, z) == Tile::double_plant_Id)
 		{
@@ -4209,7 +4214,8 @@ bool TileRenderer::tesselateCrossInWorld( Tile* tt, int x, int y, int z )
 		if (isUpper && variant == TallGrass2::SUNFLOWER)
 		{
 			// cut off stem height (i think thats how it was in the original LCE?)
-			tesselateCrossStemHeight(tt, data, xt, yt, zt, 0.875f);
+			const int stemRenderData = (lowerData & ~TallGrass2::UPPER_BIT) | TallGrass2::UPPER_BIT;
+			tesselateCrossStemHeight(tt, stemRenderData, xt, yt, zt, 0.875f);
 			TallGrass2* tallGrass = static_cast<TallGrass2*>(tt);
 			Icon* frontTex = tallGrass->getSunflowerHeadFrontIcon();
 			Icon* backTex = tallGrass->getSunflowerHeadBackIcon();

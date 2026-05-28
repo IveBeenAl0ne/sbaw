@@ -18,6 +18,13 @@ TerrainParticle::TerrainParticle(Level *level, double x, double y, double z, dou
 shared_ptr<TerrainParticle> TerrainParticle::init(int x, int y, int z, int data)	// 4J - added data parameter
 {
     if (tile == nullptr) return nullptr; // tu31 tutorial world fix
+    // double check particle texture cause sunflowers are dysfunctional for whatever reason
+    Icon *resolvedIcon = tile->getTexture(level, x, y, z, 0);
+    if (resolvedIcon != nullptr)
+    {
+        setTex(Minecraft::GetInstance()->textures, resolvedIcon);
+    }
+
     if (tile == Tile::grass) return dynamic_pointer_cast<TerrainParticle>( shared_from_this() );
     int col = tile->getColor(level, x, y, z, data);	// 4J - added data parameter
     rCol *= ((col >> 16) & 0xff) / 255.0f;
