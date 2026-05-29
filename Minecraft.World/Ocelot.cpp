@@ -199,7 +199,7 @@ bool Ocelot::mobInteract(shared_ptr<Player> player)
 	}
 	else
 	{
-		if (temptGoal->isRunning() && item != nullptr && item->id == Item::fish_Id && player->distanceToSqr(shared_from_this()) < 3 * 3)
+		if (/*temptGoal->isRunning() &&*/ item != nullptr && item->id == Item::fish_Id && player->distanceToSqr(shared_from_this()) < 3 * 3)
 		{
 			// 4J-PB - don't lose the fish in creative mode
 			if (!player->abilities.instabuild) item->count--;
