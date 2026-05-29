@@ -182,17 +182,17 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 
 		if (!slim)
 		{
-			sleeve0->addHumanoidBox(-3, -2, -2, 4, 12, 4, g + 0.25); // Sleeve0
-			sleeve1->addHumanoidBox(-1, -2, -2, 4, 12, 4, g + 0.25); // Sleeve1
+			sleeve0->addHumanoidBox(-3, -2, -2, 4, 12, 4, g + 0.25f); // Sleeve0
+			sleeve1->addHumanoidBox(-1, -2, -2, 4, 12, 4, g + 0.25f); // Sleeve1
 		}
 		else if (slim)
 		{
-			sleeve0->addHumanoidBox(-2, -2, -2, 3, 12, 4, g + 0.25); // Sleeve0 Slim
-			sleeve1->addHumanoidBox(-1, -2, -2, 3, 12, 4, g + 0.25); // Sleeve1 Slim
+			sleeve0->addHumanoidBox(-2, -2, -2, 3, 12, 4, g + 0.25f); // Sleeve0 Slim
+			sleeve1->addHumanoidBox(-1, -2, -2, 3, 12, 4, g + 0.25f); // Sleeve1 Slim
 		}
 
 		jacket = new ModelPart(this, 16, 32);
-		jacket->addHumanoidBox(-4, 0, -2, 8, 12, 4, g + 0.25);
+		jacket->addHumanoidBox(-4, 0, -2, 8, 12, 4, g + 0.25f);
 		jacket->setPos(0, 0 + yOffset, 0);
 
 		sleeve0->setPos(-5, 2 + yOffset, 0);
@@ -259,11 +259,11 @@ void HumanoidModel::_init(float g, float yOffset, int texWidth, int texHeight, b
 		leg1 = new ModelPart(this, 16, 48);
 
 		pants0 = new ModelPart(this, 0, 32);
-		pants0->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25); // Pants0
+		pants0->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25f); // Pants0
 		pants0->setPos(-1.9, 12 + yOffset, 0);
 
 		pants1 = new ModelPart(this, 0, 48);
-		pants1->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25); // Pants1
+		pants1->addHumanoidBox(-2, 0, -2, 4, 12, 4, g + 0.25f); // Pants1
 		pants1->setPos(1.9, 12 + yOffset, 0);
 	}
 	else if (texHeight == 32)
@@ -784,200 +784,265 @@ void HumanoidModel::render(shared_ptr<Entity> entity, float time, float r, float
 // This code is similar to what's above, but allows skin offsets to work in the skin select menu - Langtanium
 void HumanoidModel::renderUI(float time, float r, float bob, float yRot, float xRot, float scale, bool usecompiled, vector<SKIN_OFFSET *> *skinOffsets)
 {
-	setupAnim(time, r, bob, yRot, xRot, scale, nullptr, m_uiAnimOverrideBitmask);
+	float headOffsets[3] = {0};
+	float bodyOffsets[3] = {0};
+	float arm0Offsets[3] = {0};
+	float arm1Offsets[3] = {0};
+	float leg0Offsets[3] = {0};
+	float leg1Offsets[3] = {0};
 
-	vector<float> headOffsets = {0, 0, 0};
-	vector<float> bodyOffsets = {0, 0, 0};
-	vector<float> arm0Offsets = {0, 0, 0};
-	vector<float> arm1Offsets = {0, 0, 0};
-	vector<float> leg0Offsets = {0, 0, 0};
-	vector<float> leg1Offsets = {0, 0, 0};
-	vector<SKIN_OFFSET *>* pSkinOffsets = nullptr;
 	if (skinOffsets != nullptr)
-		pSkinOffsets = skinOffsets;
-	if (pSkinOffsets != nullptr)
 	{
-		for( SKIN_OFFSET *pSkinOffset : *pSkinOffsets )
+		for( SKIN_OFFSET *pSkinOffset : *skinOffsets )
 		{
 			switch (pSkinOffset->ePart)
 			{
 			case eBodyOffset_Head:
-				if(pSkinOffset->fD == 1)
+				if (pSkinOffset->fD == 1 && head->translateX == 0)
+				{
+					head->translateX = pSkinOffset->fO / 16.0f;
+					hair->translateX = pSkinOffset->fO / 16.0f;
 					headOffsets[0] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 2)
+				}
+				else if (pSkinOffset->fD == 2 && head->translateY == 0)
+				{
+					head->translateY = pSkinOffset->fO / 16.0f;
+					hair->translateY = pSkinOffset->fO / 16.0f;
 					headOffsets[1] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 3)
+				}
+				else if (pSkinOffset->fD == 3 && head->translateZ == 0)
+				{
+					head->translateZ = pSkinOffset->fO / 16.0f;
+					hair->translateZ = pSkinOffset->fO / 16.0f;
 					headOffsets[2] = pSkinOffset->fO / 16.0f;
+				}
 				break;
 			case eBodyOffset_Body:
-				if(pSkinOffset->fD == 1)
+				if (pSkinOffset->fD == 1 && body->translateX == 0)
+				{
+					body->translateX = pSkinOffset->fO / 16.0f;
+					if (jacket)
+						jacket->translateX = pSkinOffset->fO / 16.0f;
+					if (bodyArmor)
+						bodyArmor->translateX = pSkinOffset->fO / 16.0f;
+					if (waist)
+						waist->translateX = pSkinOffset->fO / 16.0f;
+					if (belt)
+						belt->translateX = pSkinOffset->fO / 16.0f;
 					bodyOffsets[0] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 2)
+				}
+				else if (pSkinOffset->fD == 2 && body->translateY == 0)
+				{
+					body->translateY = pSkinOffset->fO / 16.0f;
+					if (jacket)
+						jacket->translateY = pSkinOffset->fO / 16.0f;
+					if (bodyArmor)
+						bodyArmor->translateY = pSkinOffset->fO / 16.0f;
+					if (waist)
+						waist->translateY = pSkinOffset->fO / 16.0f;
+					if (belt)
+						belt->translateY = pSkinOffset->fO / 16.0f;
 					bodyOffsets[1] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 3)
+				}
+				else if (pSkinOffset->fD == 3 && body->translateZ == 0)
+				{
+					body->translateZ = pSkinOffset->fO / 16.0f;
+					if (jacket)
+						jacket->translateZ = pSkinOffset->fO / 16.0f;
+					if (bodyArmor)
+						bodyArmor->translateZ = pSkinOffset->fO / 16.0f;
+					if (waist)
+						waist->translateZ = pSkinOffset->fO / 16.0f;
+					if (belt)
+						belt->translateZ = pSkinOffset->fO / 16.0f;
 					bodyOffsets[2] = pSkinOffset->fO / 16.0f;
+				}
 				break;
 			case eBodyOffset_Arm0:
-				if(pSkinOffset->fD == 1)
+				if (pSkinOffset->fD == 1 && arm0->translateX == 0)
+				{
+					arm0->translateX = pSkinOffset->fO / 16.0f;
+					if (sleeve0)
+						sleeve0->translateX = pSkinOffset->fO / 16.0f;
+					if (armArmor0)
+						armArmor0->translateX = pSkinOffset->fO / 16.0f;
 					arm0Offsets[0] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 2)
+				}
+				else if (pSkinOffset->fD == 2 && arm0->translateY == 0)
+				{
+					arm0->translateY = pSkinOffset->fO / 16.0f;
+					if (sleeve0)
+						sleeve0->translateY = pSkinOffset->fO / 16.0f;
+					if (armArmor0)
+						armArmor0->translateY = pSkinOffset->fO / 16.0f;
 					arm0Offsets[1] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 3)
+				}
+				else if (pSkinOffset->fD == 3 && arm0->translateZ == 0)
+				{
+					arm0->translateZ = pSkinOffset->fO / 16.0f;
+					if (sleeve0)
+						sleeve0->translateZ = pSkinOffset->fO / 16.0f;
+					if (armArmor0)
+						armArmor0->translateZ = pSkinOffset->fO / 16.0f;
 					arm0Offsets[2] = pSkinOffset->fO / 16.0f;
+				}
 				break;
 			case eBodyOffset_Arm1:
-				if(pSkinOffset->fD == 1)
+				if (pSkinOffset->fD == 1 && arm1->translateX == 0)
+				{
+					arm1->translateX = pSkinOffset->fO / 16.0f;
+					if (sleeve1)
+						sleeve1->translateX = pSkinOffset->fO / 16.0f;
+					if (armArmor1)
+						armArmor1->translateX = pSkinOffset->fO / 16.0f;
 					arm1Offsets[0] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 2)
+				}
+				else if (pSkinOffset->fD == 2 && arm1->translateY == 0)
+				{
+					arm1->translateY = pSkinOffset->fO / 16.0f;
+					if (sleeve1)
+						sleeve1->translateY = pSkinOffset->fO / 16.0f;
+					if (armArmor1)
+						armArmor1->translateY = pSkinOffset->fO / 16.0f;
 					arm1Offsets[1] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 3)
+				}
+				else if (pSkinOffset->fD == 3 && arm1->translateZ == 0)
+				{
+					arm1->translateZ = pSkinOffset->fO / 16.0f;
+					if (sleeve1)
+						sleeve1->translateZ = pSkinOffset->fO / 16.0f;
+					if (armArmor1)
+						armArmor1->translateZ = pSkinOffset->fO / 16.0f;
 					arm1Offsets[2] = pSkinOffset->fO / 16.0f;
+				}
 				break;
 			case eBodyOffset_Leg0:
-				if(pSkinOffset->fD == 1)
+				if (pSkinOffset->fD == 1 && leg0->translateX == 0)
+				{
+					leg0->translateX = pSkinOffset->fO / 16.0f;
+					if (pants0)
+						pants0->translateX = pSkinOffset->fO / 16.0f;
+					if (legging0)
+						legging0->translateX = pSkinOffset->fO / 16.0f;
+					if (sock0)
+						sock0->translateX = pSkinOffset->fO / 16.0f;
+					if (boot0)
+						boot0->translateX = pSkinOffset->fO / 16.0f;
 					leg0Offsets[0] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 2)
+				}
+				else if (pSkinOffset->fD == 2 && leg0->translateY == 0)
+				{
+					leg0->translateY = pSkinOffset->fO / 16.0f;
+					if (pants0)
+						pants0->translateY = pSkinOffset->fO / 16.0f;
+					if (legging0)
+						legging0->translateY = pSkinOffset->fO / 16.0f;
+					if (sock0)
+						sock0->translateY = pSkinOffset->fO / 16.0f;
+					if (boot0)
+						boot0->translateY = pSkinOffset->fO / 16.0f;
 					leg0Offsets[1] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 3)
+				}
+				else if (pSkinOffset->fD == 3 && leg0->translateZ == 0)
+				{
+					leg0->translateZ = pSkinOffset->fO / 16.0f;
+					if (pants0)
+						pants0->translateZ = pSkinOffset->fO / 16.0f;
+					if (legging0)
+						legging0->translateZ = pSkinOffset->fO / 16.0f;
+					if (sock0)
+						sock0->translateZ = pSkinOffset->fO / 16.0f;
+					if (boot0)
+						boot0->translateZ = pSkinOffset->fO / 16.0f;
 					leg0Offsets[2] = pSkinOffset->fO / 16.0f;
+				}
 				break;
 			case eBodyOffset_Leg1:
-				if(pSkinOffset->fD == 1)
+				if (pSkinOffset->fD == 1 && leg1->translateX == 0)
+				{
+					leg1->translateX = pSkinOffset->fO / 16.0f;
+					if (pants1)
+						pants1->translateX = pSkinOffset->fO / 16.0f;
+					if (legging1)
+						legging1->translateX = pSkinOffset->fO / 16.0f;
+					if (sock1)
+						sock1->translateX = pSkinOffset->fO / 16.0f;
+					if (boot1)
+						boot1->translateX = pSkinOffset->fO / 16.0f;
 					leg1Offsets[0] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 2)
+				}
+				else if (pSkinOffset->fD == 2 && leg1->translateY == 0)
+				{
+					leg1->translateY = pSkinOffset->fO / 16.0f;
+					if (pants1)
+						pants1->translateY = pSkinOffset->fO / 16.0f;
+					if (legging1)
+						legging1->translateY = pSkinOffset->fO / 16.0f;
+					if (sock1)
+						sock1->translateY = pSkinOffset->fO / 16.0f;
+					if (boot1)
+						boot1->translateY = pSkinOffset->fO / 16.0f;
 					leg1Offsets[1] = pSkinOffset->fO / 16.0f;
-				else if(pSkinOffset->fD == 3)
+				}
+				else if (pSkinOffset->fD == 3 && leg1->translateZ == 0)
+				{
+					leg1->translateZ = pSkinOffset->fO / 16.0f;
+					if (pants1)
+						pants1->translateZ = pSkinOffset->fO / 16.0f;
+					if (legging1)
+						legging1->translateZ = pSkinOffset->fO / 16.0f;
+					if (sock1)
+						sock1->translateZ = pSkinOffset->fO / 16.0f;
+					if (boot1)
+						boot1->translateZ = pSkinOffset->fO / 16.0f;
 					leg1Offsets[2] = pSkinOffset->fO / 16.0f;
+				}
 				break;
 			}
 		}
 	}
-		
-	glPushMatrix();
-	glTranslatef(headOffsets[0], headOffsets[1], headOffsets[2]);
+
+	setupAnim(time, r, bob, yRot, xRot, scale, nullptr, m_uiAnimOverrideBitmask);
+
 	head->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderHead))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorHead))>0||!m_isArmor));
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef(bodyOffsets[0], bodyOffsets[1], bodyOffsets[2]);
 	body->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderTorso))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorTorso))>0||!m_isArmor));
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef(arm0Offsets[0], arm0Offsets[1], arm0Offsets[2]);
 	arm0->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderArm0))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorArm0))>0||!m_isArmor));
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef(arm1Offsets[0], arm1Offsets[1], arm1Offsets[2]);
 	arm1->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderArm1))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorArm1))>0||!m_isArmor));
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef(leg0Offsets[0], leg0Offsets[1], leg0Offsets[2]);
 	leg0->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderLeg0))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorLeg0))>0||!m_isArmor));
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef(leg1Offsets[0], leg1Offsets[1], leg1Offsets[2]);
 	leg1->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderLeg1))>0&&(!(m_uiAnimOverrideBitmask&(1<<eAnim_RenderArmorLeg1))>0||!m_isArmor));
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef(headOffsets[0], headOffsets[1], headOffsets[2]);
 	hair->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderHair))>0);
-	glPopMatrix();
 	if (jacket != 0)
-	{
-		glPushMatrix();
-		glTranslatef(bodyOffsets[0], bodyOffsets[1], bodyOffsets[2]);
 		jacket->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderJacket))>0);
-		glPopMatrix();
-	}
 	if (sleeve0 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(arm0Offsets[0], arm0Offsets[1], arm0Offsets[2]);
 		sleeve0->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderSleeve0))>0);
-		glPopMatrix();
-	}
 	if (sleeve1 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(arm1Offsets[0], arm1Offsets[1], arm1Offsets[2]);
 		sleeve1->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderSleeve1))>0);
-		glPopMatrix();
-	}
 	if (pants0 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(leg0Offsets[0], leg0Offsets[1], leg0Offsets[2]);
 		pants0->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderPants0))>0);
-		glPopMatrix();
-	}
 	if (pants1 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(leg0Offsets[0], leg0Offsets[1], leg0Offsets[2]);
 		pants1->render(scale, usecompiled,(m_uiAnimOverrideBitmask&(1<<eAnim_DisableRenderPants1))>0);
-		glPopMatrix();
-	}
 	if (waist != 0)
 		waist->render(scale, usecompiled);
 	if (belt != 0)
-	{
-		glPushMatrix();
-		glTranslatef(bodyOffsets[0], bodyOffsets[1], bodyOffsets[2]);
 		belt->render(scale, usecompiled);
-		glPopMatrix();
-	}
 	if (bodyArmor != 0)
-	{
-		glPushMatrix();
-		glTranslatef(bodyOffsets[0], bodyOffsets[1], bodyOffsets[2]);
 		bodyArmor->render(scale, usecompiled);
-		glPopMatrix();
-	}
 	if (armArmor0 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(arm0Offsets[0], arm0Offsets[1], arm0Offsets[2]);
 		armArmor0->render(scale, usecompiled);
-		glPopMatrix();
-	}
 	if (armArmor1 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(arm1Offsets[0], arm1Offsets[1], arm1Offsets[2]);
 		armArmor1->render(scale, usecompiled);
-		glPopMatrix();
-	}
 	if (legging0 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(leg0Offsets[0], leg0Offsets[1], leg0Offsets[2]);
 		legging0->render(scale, usecompiled);
-		glPopMatrix();
-	}
 	if (legging1 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(leg1Offsets[0], leg1Offsets[1], leg1Offsets[2]);
 		legging1->render(scale, usecompiled);
-		glPopMatrix();
-	}
 	if (sock0 != 0)
 		sock0->render(scale, usecompiled);
 	if (sock1 != 0)
 		sock1->render(scale, usecompiled);
 	if (boot0 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(leg0Offsets[0], leg0Offsets[1], leg0Offsets[2]);
 		boot0->render(scale, usecompiled);
-		glPopMatrix();
-	}
 	if (boot1 != 0)
-	{
-		glPushMatrix();
-		glTranslatef(leg1Offsets[0], leg1Offsets[1], leg1Offsets[2]);
 		boot1->render(scale, usecompiled);
-		glPopMatrix();
-	}
 }
 
 void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float xRot, float scale, shared_ptr<Entity> entity, unsigned int uiBitmaskOverrideAnim)

@@ -399,12 +399,32 @@ void ItemInHandRenderer::renderItem3D(Tesselator *t, float u0, float v0, float u
 
 void ItemInHandRenderer::render(float a)
 {
-    float h = oHeight + (height - oHeight) * a;
-    shared_ptr<Player> player = minecraft->player;
+	float h = oHeight + (height - oHeight) * a;
+	shared_ptr<Player> player = minecraft->player;
 
 	if (player == nullptr)
 	{
 		return;
+	}
+
+	vector<SKIN_OFFSET *>* pSkinOffsets = nullptr;
+	pSkinOffsets = player->GetSkinOffsets();
+	if (pSkinOffsets != nullptr)
+	{
+		for( SKIN_OFFSET *pSkinOffset : *pSkinOffsets )
+		{
+			switch (pSkinOffset->ePart)
+			{
+			case eBodyOffset_Arm0:
+				if (pSkinOffset->fD == 2)
+					h += pSkinOffset->fO / 16.0f;
+				break;
+			case eBodyOffset_Tool0:
+				if (pSkinOffset->fD == 2)
+					h += pSkinOffset->fO / 16.0f;
+				break;
+			}
+		}
 	}
 
 	// 4J - added so we can adjust the position of the hands for horizontal & vertical split screens
@@ -900,8 +920,8 @@ void ItemInHandRenderer::renderFire(float a)
 	unsigned int col = Minecraft::GetInstance()->getColourTable()->getColor( eMinecraftColour_Fire_Overlay );
 	float aCol = ( (col>>24)&0xFF )/255.0f;
 	float rCol = ( (col>>16)&0xFF )/255.0f;
-	float gCol = ( (col>>8)&0xFF )/255.0;
-	float bCol = ( col&0xFF )/255.0;
+	float gCol = ( (col>>8)&0xFF )/255.0f;
+	float bCol = ( col&0xFF )/255.0f;
 
     glColor4f(rCol, gCol, bCol, aCol);
     glEnable(GL_BLEND);
