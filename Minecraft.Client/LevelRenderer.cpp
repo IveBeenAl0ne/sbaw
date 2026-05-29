@@ -166,9 +166,11 @@ LevelRenderer::LevelRenderer(Minecraft *mc, Textures *textures)
 	visibleLists_layer0 = nullptr;
 	visibleLists_layer1 = nullptr;
 	visibleLists_layer2 = nullptr;
+	visibleLists_layer3 = nullptr;
 	visibleCount_layer0 = 0;
 	visibleCount_layer1 = 0;
 	visibleCount_layer2 = 0;
+	visibleCount_layer3 = 0;
 
 	this->mc = mc;
 	this->textures = textures;
@@ -473,9 +475,11 @@ void LevelRenderer::allChanged(int playerIndex)
 	delete[] visibleLists_layer0;
 	delete[] visibleLists_layer1;
 	delete[] visibleLists_layer2;
+	delete[] visibleLists_layer3;
 	visibleLists_layer0 = nullptr;
 	visibleLists_layer1 = nullptr;
 	visibleLists_layer2 = nullptr;
+	visibleLists_layer3 = nullptr;
 
 	chunks[playerIndex] = ClipChunkArray(xChunks * yChunks * zChunks);
 	//	sortedChunks[playerIndex] = new vector<Chunk *>(xChunks * yChunks * zChunks);		// 4J - removed - not sorting our chunks anymore
@@ -514,9 +518,11 @@ void LevelRenderer::allChanged(int playerIndex)
 	visibleLists_layer0 = new int[totalChunkCount];
 	visibleLists_layer1 = new int[totalChunkCount];
 	visibleLists_layer2 = new int[totalChunkCount];
+	visibleLists_layer3 = new int[totalChunkCount];
 	visibleCount_layer0 = 0;
 	visibleCount_layer1 = 0;
 	visibleCount_layer2 = 0;
+	visibleCount_layer3 = 0;
 
 	if (level != nullptr)
 	{
@@ -810,6 +816,11 @@ void LevelRenderer::renderChunksDirect(int layer, double alpha)
 		lists = visibleLists_layer1;
 		numVisible = visibleCount_layer1;
 	}
+	else if (layer == 3)
+	{
+		lists = visibleLists_layer3;
+		numVisible = visibleCount_layer3;
+	}
 	bool first = true;
 	if (lists != nullptr)
 	{
@@ -908,6 +919,11 @@ int LevelRenderer::renderChunks(int from, int to, int layer, double alpha)
 	{
 		lists = visibleLists_layer1;
 		numVisible = visibleCount_layer1;
+	}
+	else if (layer == 3)
+	{
+		lists = visibleLists_layer3;
+		numVisible = visibleCount_layer3;
 	}
 	if (lists != nullptr)
 	{
@@ -2684,6 +2700,7 @@ void LevelRenderer::cull(Culler *culler, float a)
 	visibleCount_layer0 = 0;
 	visibleCount_layer1 = 0;
 	visibleCount_layer2 = 0;
+	visibleCount_layer3 = 0;
 
 	// Column-level frustum culling: test one AABB per XZ column before testing individual Y chunks.
 	// At dist 64 this reduces ~278K clip() calls to ~17K column tests + per-chunk tests only for visible columns.
@@ -2743,6 +2760,7 @@ void LevelRenderer::cull(Culler *culler, float a)
 					if (!((flags & CHUNK_FLAG_EMPTY1) == CHUNK_FLAG_EMPTY1))
 						visibleLists_layer1[visibleCount_layer1++] = list + 1;
 					visibleLists_layer2[visibleCount_layer2++] = list + 2;
+					visibleLists_layer3[visibleCount_layer3++] = list + 3;
 				}
 			}
 		}

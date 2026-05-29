@@ -325,12 +325,14 @@ void Chunk::rebuild()
 	if( empty )
 	{
 		// 4J - added - clear any renderer data associated with this
-		for (int currentLayer = 0; currentLayer < 2; currentLayer++)
+		for (int currentLayer = 0; currentLayer < LevelRenderer::CHUNK_RENDER_LAYERS; currentLayer++)
 		{
-			levelRenderer->setGlobalChunkFlag(this->x, this->y, this->z, level, LevelRenderer::CHUNK_FLAG_EMPTY0, currentLayer);
+			if (currentLayer < 2)
+			{
+				levelRenderer->setGlobalChunkFlag(this->x, this->y, this->z, level, LevelRenderer::CHUNK_FLAG_EMPTY0, currentLayer);
+			}
 			RenderManager.CBuffClear(lists + currentLayer);
 		}
-		RenderManager.CBuffClear(lists + 2);
 
 		delete region;
 		delete tileRenderer;
@@ -483,13 +485,26 @@ void Chunk::rebuild()
 		if((currentLayer==0)&&(!renderNextLayer))
 		{
 			levelRenderer->setGlobalChunkFlag(this->x, this->y, this->z, level, LevelRenderer::CHUNK_FLAG_EMPTY1);
-			RenderManager.CBuffClear(lists + 1);
-			RenderManager.CBuffClear(lists + 2);
+			for (int clearLayer = 1; clearLayer < LevelRenderer::CHUNK_RENDER_LAYERS; clearLayer++)
+			{
+				RenderManager.CBuffClear(lists + clearLayer);
+			}
 			break;
 		}
 		if((currentLayer==1)&&(!renderNextLayer))
 		{
-			RenderManager.CBuffClear(lists + 2);
+			for (int clearLayer = 2; clearLayer < LevelRenderer::CHUNK_RENDER_LAYERS; clearLayer++)
+			{
+				RenderManager.CBuffClear(lists + clearLayer);
+			}
+			break;
+		}
+		if((currentLayer==2)&&(!renderNextLayer))
+		{
+			for (int clearLayer = 3; clearLayer < LevelRenderer::CHUNK_RENDER_LAYERS; clearLayer++)
+			{
+				RenderManager.CBuffClear(lists + clearLayer);
+			}
 			break;
 		}
 	}
