@@ -209,16 +209,34 @@ BufferedImage::BufferedImage(DLCPack *dlcPack, const wstring& File, bool filenam
 		{
 			mipMapPath = L"MipMapLevel" + std::to_wstring(l+1);
 		}
+		wstring basePath;
 		if( filenameHasExtension )
 		{
-			name = L"res" + filePath.substr(0,filePath.length());
+			basePath = filePath;
 		}
 		else
 		{
-			name = L"res" + filePath.substr(0,filePath.length()-4) + mipMapPath + L".png";
+			basePath = filePath.substr(0,filePath.length()-4) + mipMapPath + L".png";
 		}
 
-		if(!dlcPack->doesPackContainFile(DLCManager::e_DLCType_All, name))
+		wstring candidates[2] =
+		{
+			L"res" + basePath,
+			L"x16Data/res" + basePath
+		};
+
+		bool found = false;
+		for (const auto &candidate : candidates)
+		{
+			if (dlcPack->doesPackContainFile(DLCManager::e_DLCType_All, candidate))
+			{
+				name = candidate;
+				found = true;
+				break;
+			}
+		}
+
+		if(!found)
 		{
 			// 4J - If we haven't loaded the non-mipmap version then exit the game
 			if( l == 0 )

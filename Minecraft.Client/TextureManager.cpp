@@ -191,12 +191,16 @@ wstring TextureManager::getTextureNameFromPath(const wstring &filename)
 
 bool TextureManager::isAnimation(const wstring &filename, TexturePack *texturePack)
 {
-	wstring dataFileName = L"/" + filename.substr(0, filename.find_last_of(L'.')) + L".txt";
-	bool hasOriginalImage = texturePack->hasFile(L"/" + filename, false);
+	File file(filename);
+	wstring textureName = file.getName();
+	size_t extensionPos = textureName.find_last_of(L'.');
+	if (extensionPos != wstring::npos)
+	{
+		textureName = textureName.substr(0, extensionPos);
+	}
 
-    
-
-	return texturePack->hasFile(dataFileName, !hasOriginalImage);
+	wstring path = filename.substr(0, filename.length() - file.getName().length());
+	return !texturePack->getAnimationString(textureName, path, true).empty();
 }
 
 Texture *TextureManager::createTexture(const wstring &name, int mode, int width, int height, int wrap, int format, int minFilter, int magFilter, bool mipmap, BufferedImage *image)

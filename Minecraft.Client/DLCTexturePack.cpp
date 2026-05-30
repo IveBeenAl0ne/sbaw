@@ -200,6 +200,11 @@ wstring DLCTexturePack::getAnimationString(const wstring &textureName, const wst
 		}
 	}
 
+	if(result.empty() && fallback != nullptr)
+	{
+		result = fallback->getAnimationString(textureName, path, true);
+	}
+
 	return result;
 }
 
