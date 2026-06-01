@@ -372,7 +372,7 @@ Entity::Entity(Level *level, bool useSmallId)	// 4J - added useSmallId parameter
 	// resetPos();
 	setPos(0, 0, 0);
 
-	if (level != nullptr)
+	if (level != nullptr && level->dimension != nullptr)
 	{
 		dimension = level->dimension->id;
 	}

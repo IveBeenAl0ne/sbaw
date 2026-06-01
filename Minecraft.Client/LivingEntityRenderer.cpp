@@ -227,6 +227,7 @@ void LivingEntityRenderer::render(shared_ptr<Entity> _mob, double x, double y, d
 			{
 				glColor4f(br, 0, 0, 0.4f);
 				resModel->render(mob, wp, ws, bob, headRot - bodyRot, headRotx, fScale, false);
+				/* removed in TU24 - Fireblade
 				for (int i = 0; i < MAX_ARMOR_LAYERS; i++)
 				{
 					if (prepareArmorOverlay(mob, i, a) >= 0)
@@ -235,6 +236,7 @@ void LivingEntityRenderer::render(shared_ptr<Entity> _mob, double x, double y, d
 						armor->render(mob, wp, ws, bob, headRot - bodyRot, headRotx, fScale, false);
 					}
 				}
+				*/
 			}
 
 			if (((overlayColor >> 24) & 0xff) > 0)
