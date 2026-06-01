@@ -173,6 +173,7 @@ set(_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_COMMANDS
   "${CMAKE_CURRENT_SOURCE_DIR}/CommandSender.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/CommandsEnum.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/PlayerSelector.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/PlayerSelector.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/net.minecraft.commands.h"
 )
 source_group("net/minecraft/commands" FILES ${_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_COMMANDS})
@@ -206,6 +207,8 @@ set(_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_COMMANDS_COMMON
   "${CMAKE_CURRENT_SOURCE_DIR}/net.minecraft.commands.common.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/EntityTypeMap.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/EntityTypeMap.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/MojangsonParser.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/MojangsonParser.h"
 )
 source_group("net/minecraft/commands/common" FILES ${_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_COMMANDS_COMMON})
 
