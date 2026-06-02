@@ -407,26 +407,6 @@ void ItemInHandRenderer::render(float a)
 		return;
 	}
 
-	vector<SKIN_OFFSET *>* pSkinOffsets = nullptr;
-	pSkinOffsets = player->GetSkinOffsets();
-	if (pSkinOffsets != nullptr)
-	{
-		for( SKIN_OFFSET *pSkinOffset : *pSkinOffsets )
-		{
-			switch (pSkinOffset->ePart)
-			{
-			case eBodyOffset_Arm0:
-				if (pSkinOffset->fD == 2)
-					h += pSkinOffset->fO / 16.0f;
-				break;
-			case eBodyOffset_Tool0:
-				if (pSkinOffset->fD == 2)
-					h += pSkinOffset->fO / 16.0f;
-				break;
-			}
-		}
-	}
-
 	// 4J - added so we can adjust the position of the hands for horizontal & vertical split screens
 	float fudgeX = 0.0f;
 	float fudgeY = 0.0f;
