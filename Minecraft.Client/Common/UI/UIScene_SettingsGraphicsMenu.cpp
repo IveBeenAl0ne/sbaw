@@ -89,24 +89,6 @@ UIScene_SettingsGraphicsMenu::UIScene_SettingsGraphicsMenu(int iPad, void *initD
 	// VSync and Exclusive Fullscreen are only available on PC
 	removeControl(&m_checkboxVSync, true);
 	removeControl(&m_checkboxExclusiveFullscreen, true);
-#else
-	// The SWF's original focus chain skips VSync, Fullscreen, and RenderDistance
-	// (CustomSkinAnim -> Gamma). Rewire the navigation so all controls are reachable:
-	// CustomSkinAnim -> VSync -> Fullscreen -> RenderDistance -> Gamma
-	{
-		IggyName navDown = registerFastName(L"m_objNavDown");
-		IggyName navUp   = registerFastName(L"m_objNavUp");
-
-		IggyValueSetStringUTF8RS(m_checkboxCustomSkinAnim.getIggyValuePath(), navDown, nullptr, "VSync", -1);
-
-		IggyValueSetStringUTF8RS(m_checkboxVSync.getIggyValuePath(), navUp, nullptr, "CustomSkinAnim", -1);
-		IggyValueSetStringUTF8RS(m_checkboxVSync.getIggyValuePath(), navDown, nullptr, "ExclusiveFullscreen", -1);
-
-		IggyValueSetStringUTF8RS(m_checkboxExclusiveFullscreen.getIggyValuePath(), navUp, nullptr, "VSync", -1);
-		IggyValueSetStringUTF8RS(m_checkboxExclusiveFullscreen.getIggyValuePath(), navDown, nullptr, "RenderDistance", -1);
-
-		IggyValueSetStringUTF8RS(m_sliderRenderDistance.getIggyValuePath(), navUp, nullptr, "ExclusiveFullscreen", -1);
-	}
 #endif
 
 	const bool bInGame=(Minecraft::GetInstance()->level!=nullptr);

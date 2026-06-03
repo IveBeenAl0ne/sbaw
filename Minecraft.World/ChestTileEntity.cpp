@@ -150,6 +150,7 @@ void ChestTileEntity::load(CompoundTag *base)
 				Tag *idTag = tag->get(L"id");
 				int idType = idTag != nullptr ? idTag->getId() : -1;
 				
+				/*
 				if (idType == Tag::TAG_String)
 				{
 					app.DebugPrintf("[ChestTileEntity] Missing chest item at %d,%d,%d slot=%u idType=%d idStr=%ls count=%d damage=%d\n", x, y, z, slot, idType, tag->getString(L"id").c_str(), tag->getByte(L"Count"), tag->getShort(L"Damage"));
@@ -162,6 +163,7 @@ void ChestTileEntity::load(CompoundTag *base)
 				{
 					app.DebugPrintf("[ChestTileEntity] Missing chest item at %d,%d,%d slot=%u idType=%d id=%d count=%d damage=%d\n", x, y, z, slot, idType, tag->getShort(L"id"), tag->getByte(L"Count"), tag->getShort(L"Damage"));
 				}
+				*/
 			}
 			(*items)[slot] = loadedItem;
 		}
