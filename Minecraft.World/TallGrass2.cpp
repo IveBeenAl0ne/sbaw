@@ -165,17 +165,14 @@ Icon* TallGrass2::getTexture(LevelSource* level, int x, int y, int z, int face)
 int TallGrass2::getVariant(LevelSource* level, int x, int y, int z)
 {
 	int data = level->getData(x, y, z);
-	bool isUpper = (data & UPPER_BIT) != 0;
-	int lowerData = data;
+	int variantData = data;
 
-	if (isUpper && level->getTile(x, y - 1, z) == id)
+	if ((data & UPPER_BIT) != 0 && level->getTile(x, y - 1, z) == id)
 	{
-		lowerData = level->getData(x, y - 1, z);
+		variantData = level->getData(x, y - 1, z);
 	}
 
-	int variant = lowerData & ~UPPER_BIT;
-	if (variant < 0 || variant >= VARIANT_COUNT) variant = 0;
-	return variant;
+	return variantData & 0xF;
 }
 
 
@@ -366,8 +363,8 @@ shared_ptr<ItemInstance> TallGrass2::getSilkTouchItemInstance(int data)
 
 void TallGrass2::playerDestroy(Level* level, shared_ptr<Player> player, int x, int y, int z, int data)
 {
-	int resolvedVariant = getVariant(level, x, y, z);
-	int resolvedData = (data & UPPER_BIT) | resolvedVariant;
+	int resolvedVariant = data & ~UPPER_BIT;
+	int resolvedData = data;
 
 	if (resolvedVariant == SUNFLOWER)
 	{
