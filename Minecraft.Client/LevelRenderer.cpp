@@ -2921,6 +2921,9 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 		lev =  mc->animateTickLevel;
 	}
 
+	if (lev == nullptr)
+		return nullptr;
+
 	if (particleLevel > 1)
 	{
 		// TODO: If any of the particles below are necessary even if

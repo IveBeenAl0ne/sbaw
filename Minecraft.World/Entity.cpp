@@ -894,7 +894,20 @@ void Entity::move(double xa, double ya, double za, bool noEntityCubes)   // 4J -
 	checkFallDamage(ya, onGround);
 
 	if (xaOrg != xa) xd = 0;
-	if (yaOrg != ya && yd < 0) yd = 0; // ONE LINE OF CODE??? REALLY?? THIS TOOK ME 4 HOURS YOUVE GOT TO BE KIDDING ME - A VERY ANGRY FIREBLADE
+	if (yaOrg != ya) {
+		// Fireblade - updated logic here cause previous check completely broke head hitter logic
+		bool isSlimeBlock = false;
+		if (level != nullptr) {
+			int blockBelowX = Mth::floor(x);
+			int blockBelowY = Mth::floor(y - 0.1f - heightOffset);
+			int blockBelowZ = Mth::floor(z);
+			int blockId = level->getTile(blockBelowX, blockBelowY, blockBelowZ);
+			isSlimeBlock = (blockId == Tile::slimeBlock->id);
+		}
+		if (!isSlimeBlock) {
+			yd = 0;
+		}
+	}
 	if (zaOrg != za) zd = 0;
 
 	double xm = x - xo;
@@ -1195,6 +1208,8 @@ void Entity::moveRelative(float xa, float za, float speed)
 // 4J - change brought forward from 1.8.2
 int Entity::getLightColor(float a)
 {
+	if (level == nullptr) return 0;
+
 	int xTile = Mth::floor(x);
 	int zTile = Mth::floor(z);
 
@@ -1210,6 +1225,8 @@ int Entity::getLightColor(float a)
 // 4J - changes brought forward from 1.8.2
 float Entity::getBrightness(float a)
 {
+	if (level == nullptr) return 0.0f;
+
 	int xTile = Mth::floor(x);
 	int zTile = Mth::floor(z);
 	if (level->hasChunkAt(xTile, 0, zTile))

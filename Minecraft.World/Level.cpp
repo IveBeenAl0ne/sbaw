@@ -891,12 +891,14 @@ bool Level::reallyHasChunksAt(int x0, int y0, int z0, int x1, int y1, int z1)
 
 bool Level::hasChunk(int x, int z)
 {
+	if (this->chunkSource == nullptr) return false;
 	return this->chunkSource->hasChunk(x, z);
 }
 
 // 4J added
 bool Level::reallyHasChunk(int x, int z)
 {
+	if (this->chunkSource == nullptr) return false;
 	return this->chunkSource->reallyHasChunk(x, z);
 }
 
