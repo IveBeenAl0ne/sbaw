@@ -4,11 +4,12 @@
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.level.tile.h"
 #include "FlowerPotTile.h"
+#include "FlowerPotTileEntity.h"
 
-FlowerPotTile::FlowerPotTile(int id) : Tile(id, Material::decoration, isSolidRender() )
+FlowerPotTile::FlowerPotTile(int id) : BaseEntityTile(id, Material::decoration, isSolidRender())
 {
-	updateDefaultShape();
-	sendTileData();
+    updateDefaultShape();
+    sendTileData();
 }
 
 void FlowerPotTile::updateDefaultShape()
@@ -33,57 +34,74 @@ bool FlowerPotTile::isCubeShaped()
 	return false;
 }
 
-bool FlowerPotTile::use(Level *level, int x, int y, int z, shared_ptr<Player> player, int clickedFace, float clickX, float clickY, float clickZ, bool soundOnly)
+bool FlowerPotTile::isValidPlant(int itemId, int aux)
 {
-	shared_ptr<ItemInstance> item = player->inventory->getSelected();
-	if (item == nullptr) return false;
-	if (level->getData(x, y, z) != 0) return false;
-	int type = getTypeFromItem(item);
-
-	if (type > 0)
-	{
-		level->setData(x, y, z, type, Tile::UPDATE_CLIENTS);
-
-		if (!player->abilities.instabuild)
-		{
-			if (--item->count <= 0)
-			{
-				player->inventory->setItem(player->inventory->selected, nullptr);
-			}
-		}
-
-		return true;
-	}
-
-	return false;
+    if (itemId == Tile::rose_Id || itemId == Tile::flower_Id)
+        return true;
+    if (itemId == Tile::sapling_Id && aux >= 0 && aux <= 6) return true;
+    if (itemId == Tile::mushroom_brown_Id || itemId == Tile::mushroom_red_Id) return true;
+    if (itemId == Tile::cactus_Id || itemId == Tile::deadBush_Id ||
+        (itemId == Tile::tallgrass_Id && aux == TallGrass::FERN))
+        return true;
+    return false;
 }
 
-int FlowerPotTile::cloneTileId(Level *level, int x, int y, int z)
+bool FlowerPotTile::use(Level* level, int x, int y, int z, shared_ptr<Player> player,
+                        int clickedFace, float clickX, float clickY, float clickZ, bool soundOnly)
 {
-	shared_ptr<ItemInstance> item = getItemFromType(level->getData(x, y, z));
+    auto held = player->inventory->getSelected();
+    if (!held) return false;
+    if (level->getData(x, y, z) != 0) return false;
+    int itemId = held->getItem()->id;
+    int aux = held->getAuxValue();
+    if (!isValidPlant(itemId, aux)) return false;
 
-	if (item == nullptr)
-	{
-		return Item::flowerPot_Id;
-	}
-	else
-	{
-		return item->id;
-	}
+    auto te = level->getTileEntity(x, y, z);
+    if (!te)
+    {
+        return false;
+    }
+    auto potTe = std::dynamic_pointer_cast<FlowerPotTileEntity>(te);
+    if (!potTe) return false;
+    potTe->setFlower(itemId, aux);
+    level->setData(x, y, z, 1, Tile::UPDATE_CLIENTS);
+
+    if (!player->abilities.instabuild)
+    {
+        if (--held->count <= 0)
+            player->inventory->setItem(player->inventory->selected, nullptr);
+    }
+    return true;
 }
 
-int FlowerPotTile::cloneTileData(Level *level, int x, int y, int z)
+int FlowerPotTile::cloneTileId(Level* level, int x, int y, int z)
 {
-	shared_ptr<ItemInstance> item = getItemFromType(level->getData(x, y, z));
+    auto te = level->getTileEntity(x, y, z);
+    if (te)
+    {
+        auto potTe = std::dynamic_pointer_cast<FlowerPotTileEntity>(te);
+        if (potTe && potTe->hasFlower())
+        {
+            auto item = potTe->getFlowerItem();
+            if (item) return item->id;
+        }
+    }
+    return Item::flowerPot_Id;
+}
 
-	if (item == nullptr)
-	{
-		return Item::flowerPot_Id;
-	}
-	else
-	{
-		return item->getAuxValue();
-	}
+int FlowerPotTile::cloneTileData(Level* level, int x, int y, int z)
+{
+    auto te = level->getTileEntity(x, y, z);
+    if (te)
+    {
+        auto potTe = std::dynamic_pointer_cast<FlowerPotTileEntity>(te);
+        if (potTe && potTe->hasFlower())
+        {
+            auto item = potTe->getFlowerItem();
+            if (item) return item->getAuxValue();
+        }
+    }
+    return 0;
 }
 
 bool FlowerPotTile::useOwnCloneData()
@@ -106,15 +124,19 @@ void FlowerPotTile::neighborChanged(Level *level, int x, int y, int z, int type)
 	}
 }
 
-void FlowerPotTile::spawnResources(Level *level, int x, int y, int z, int data, float odds, int playerBonusLevel)
+void FlowerPotTile::spawnResources(Level* level, int x, int y, int z, int data, float odds, int playerBonusLevel)
 {
-	Tile::spawnResources(level, x, y, z, data, odds, playerBonusLevel);
-
-	if (data > 0)
-	{
-		shared_ptr<ItemInstance> item = getItemFromType(data);
-		if (item != nullptr) popResource(level, x, y, z, item);
-	}
+    Tile::spawnResources(level, x, y, z, data, odds, playerBonusLevel);
+    auto te = level->getTileEntity(x, y, z);
+    if (te)
+    {
+        auto potTe = std::dynamic_pointer_cast<FlowerPotTileEntity>(te);
+        if (potTe && potTe->hasFlower())
+        {
+            auto flowerItem = potTe->getFlowerItem();
+            if (flowerItem) popResource(level, x, y, z, flowerItem);
+        }
+    }
 }
 
 int FlowerPotTile::getResource(int data, Random *random, int playerBonusLevel)
@@ -122,71 +144,7 @@ int FlowerPotTile::getResource(int data, Random *random, int playerBonusLevel)
 	return Item::flowerPot_Id;
 }
 
-shared_ptr<ItemInstance> FlowerPotTile::getItemFromType(int type)
+shared_ptr<TileEntity> FlowerPotTile::newTileEntity(Level *level)
 {
-	switch (type)
-	{
-	case TYPE_FLOWER_RED:
-		return std::make_shared<ItemInstance>(Tile::rose);
-	case TYPE_FLOWER_YELLOW:
-		return std::make_shared<ItemInstance>(Tile::flower);
-	case TYPE_CACTUS:
-		return std::make_shared<ItemInstance>(Tile::cactus);
-	case TYPE_MUSHROOM_BROWN:
-		return std::make_shared<ItemInstance>(Tile::mushroom_brown);
-	case TYPE_MUSHROOM_RED:
-		return std::make_shared<ItemInstance>(Tile::mushroom_red);
-	case TYPE_DEAD_BUSH:
-		return std::make_shared<ItemInstance>(Tile::deadBush);
-	case TYPE_SAPLING_DEFAULT:
-		return std::make_shared<ItemInstance>(Tile::sapling, 1, Sapling::TYPE_DEFAULT);
-	case TYPE_SAPLING_BIRCH:
-		return std::make_shared<ItemInstance>(Tile::sapling, 1, Sapling::TYPE_BIRCH);
-	case TYPE_SAPLING_EVERGREEN:
-		return std::make_shared<ItemInstance>(Tile::sapling, 1, Sapling::TYPE_EVERGREEN);
-	case TYPE_SAPLING_JUNGLE:
-		return std::make_shared<ItemInstance>(Tile::sapling, 1, Sapling::TYPE_JUNGLE);
-	case TYPE_FERN:
-		return std::make_shared<ItemInstance>(Tile::tallgrass, 1, TallGrass::FERN);
-	}
-
-	return nullptr;
-}
-
-int FlowerPotTile::getTypeFromItem(shared_ptr<ItemInstance> item)
-{
-	int id = item->getItem()->id;
-
-	if (id == Tile::rose_Id) return TYPE_FLOWER_RED;
-	if (id == Tile::flower_Id) return TYPE_FLOWER_YELLOW;
-	if (id == Tile::cactus_Id) return TYPE_CACTUS;
-	if (id == Tile::mushroom_brown_Id) return TYPE_MUSHROOM_BROWN;
-	if (id == Tile::mushroom_red_Id) return TYPE_MUSHROOM_RED;
-	if (id == Tile::deadBush_Id) return TYPE_DEAD_BUSH;
-
-	if (id == Tile::sapling_Id)
-	{
-		switch (item->getAuxValue())
-		{
-		case Sapling::TYPE_DEFAULT:
-			return TYPE_SAPLING_DEFAULT;
-		case Sapling::TYPE_BIRCH:
-			return TYPE_SAPLING_BIRCH;
-		case Sapling::TYPE_EVERGREEN:
-			return TYPE_SAPLING_EVERGREEN;
-		case Sapling::TYPE_JUNGLE:
-			return TYPE_SAPLING_JUNGLE;
-		}
-	}
-
-	if (id == Tile::tallgrass_Id)
-	{
-		switch (item->getAuxValue())
-		{
-		case TallGrass::FERN:
-			return TYPE_FERN;
-		}
-	}
-
-	return 0;
+    return std::make_shared<FlowerPotTileEntity>();
 }

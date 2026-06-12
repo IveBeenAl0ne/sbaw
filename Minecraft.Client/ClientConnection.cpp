@@ -3459,7 +3459,18 @@ void ClientConnection::handleTileEntityData(shared_ptr<TileEntityDataPacket> pac
 			{
 				dynamic_pointer_cast<SkullTileEntity>(te)->load(packet->tag);
 			}
+			else if (packet->type == TileEntityDataPacket::TYPE_FLOWER_POT && dynamic_pointer_cast<FlowerPotTileEntity>(te) != nullptr)
+            {
+                dynamic_pointer_cast<FlowerPotTileEntity>(te)->load(packet->tag);
+            }
 		}
+        else if (packet->type == TileEntityDataPacket::TYPE_FLOWER_POT)
+        {
+            auto newTe = std::make_shared<FlowerPotTileEntity>();
+            newTe->load(packet->tag);
+            newTe->setLevel(minecraft->level);
+            minecraft->level->setTileEntity(packet->x, packet->y, packet->z, newTe);
+        }
 	}
 }
 

@@ -105,6 +105,7 @@ public:
 	int getWorldZ(int x, int z);
 	int getOrientationData(int tile, int data);
 	virtual void placeBlock(Level *level, int block, int data, int x, int y, int z, BoundingBox *chunkBB);
+	void placeFlowerPot(Level *level, BoundingBox *chunkBB, int x, int y, int z, int flowerItemId, int aux);
 
 	/**
 	* The purpose of this method is to wrap the getTile call on Level, in order

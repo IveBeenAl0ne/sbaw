@@ -8,6 +8,7 @@
 #include "net.minecraft.world.level.levelgen.structure.h"
 #include "WeighedTreasure.h"
 #include "ScatteredFeaturePieces.h"
+#include "FlowerPotTileEntity.h"
 
 void ScatteredFeaturePieces::loadStatic()
 {
@@ -695,7 +696,7 @@ bool ScatteredFeaturePieces::SwamplandHut::postProcess(Level *level, Random *ran
 	placeBlock(level, 0, 0, 1, 3, 4, chunkBB);
 	placeBlock(level, 0, 0, 5, 3, 4, chunkBB);
 	placeBlock(level, 0, 0, 5, 3, 5, chunkBB);
-	placeBlock(level, Tile::flowerPot_Id, FlowerPotTile::TYPE_MUSHROOM_RED, 1, 3, 5, chunkBB);
+	placeFlowerPot(level, chunkBB, 1, 3, 5, Tile::mushroom_red_Id, 0);
 
 	// decoration
 	placeBlock(level, Tile::workBench_Id, 0, 3, 2, 6, chunkBB);

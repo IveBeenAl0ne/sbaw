@@ -12,6 +12,7 @@
 #include "Tesselator.h"
 #include "EntityTileRenderer.h"
 #include "Options.h"
+#include "../Minecraft.World/FlowerPotTileEntity.h"
 
 bool TileRenderer::fancy = true;
 
@@ -862,136 +863,133 @@ bool TileRenderer::tesselateCauldronInWorld(CauldronTile *tt, int x, int y, int 
 
 bool TileRenderer::tesselateFlowerPotInWorld(FlowerPotTile *tt, int x, int y, int z)
 {
-	// bounding box first
-	tesselateBlockInWorld(tt, x, y, z);
+    tesselateBlockInWorld(tt, x, y, z);
 
-	Tesselator *t = Tesselator::getInstance();
+    Tesselator *t = Tesselator::getInstance();
 
-	float br;
-	if (SharedConstants::TEXTURE_LIGHTING)
-	{
-		t->tex2(tt->getLightColor(level, x, y, z));
-		br = 1;
-	}
-	else
-	{
-		br = tt->getBrightness(level, x, y, z);
-	}
-	int col = tt->getColor(level, x, y, z);
-	Icon *tex = getTexture(tt, 0);
-	float r = ((col >> 16) & 0xff) / 255.0f;
-	float g = ((col >> 8) & 0xff) / 255.0f;
-	float b = ((col) & 0xff) / 255.0f;
+    float br;
+    if (SharedConstants::TEXTURE_LIGHTING)
+    {
+        t->tex2(tt->getLightColor(level, x, y, z));
+        br = 1;
+    }
+    else
+    {
+        br = tt->getBrightness(level, x, y, z);
+    }
+    int col = tt->getColor(level, x, y, z);
+    Icon *tex = getTexture(tt, 0);
+    float r = ((col >> 16) & 0xff) / 255.0f;
+    float g = ((col >> 8) & 0xff) / 255.0f;
+    float b = ((col) & 0xff) / 255.0f;
 
-	if (GameRenderer::anaglyph3d)
-	{
-		float cr = (r * 30 + g * 59 + b * 11) / 100;
-		float cg = (r * 30 + g * 70) / (100);
-		float cb = (r * 30 + b * 70) / (100);
+    if (GameRenderer::anaglyph3d)
+    {
+        float cr = (r * 30 + g * 59 + b * 11) / 100;
+        float cg = (r * 30 + g * 70) / (100);
+        float cb = (r * 30 + b * 70) / (100);
+        r = cr;
+        g = cg;
+        b = cb;
+    }
+    t->color(br * r, br * g, br * b);
 
-		r = cr;
-		g = cg;
-		b = cb;
-	}
-	t->color(br * r, br * g, br * b);
+    float halfWidth = (6.0f / 16.0f) / 2 - 0.001f;
+    renderEast(tt, x - 0.5f + halfWidth, y, z, tex);
+    renderWest(tt, x + 0.5f - halfWidth, y, z, tex);
+    renderSouth(tt, x, y, z - 0.5f + halfWidth, tex);
+    renderNorth(tt, x, y, z + 0.5f - halfWidth, tex);
+    renderFaceUp(tt, x, y - 0.5f + halfWidth + 3.0f / 16.0f, z, getTexture(Tile::dirt));
 
-	// render inside
+    bool hasPlant = false;
+    int plantItemId = 0;
+    int plantAux = 0;
 
-	float halfWidth = (6.0f / 16.0f) / 2 - 0.001f;
-	renderEast(tt, x - 0.5f + halfWidth, y, z, tex);
-	renderWest(tt, x + 0.5f - halfWidth, y, z, tex);
-	renderSouth(tt, x, y, z - 0.5f + halfWidth, tex);
-	renderNorth(tt, x, y, z + 0.5f - halfWidth, tex);
+    shared_ptr<TileEntity> te = level->getTileEntity(x, y, z);
+    if (te && te->GetType() == eTYPE_FLOWERPOTTILEENTITY)
+    {
+        FlowerPotTileEntity *potTe = (FlowerPotTileEntity*)te.get();
+        if (potTe->hasFlower())
+        {
+            hasPlant = true;
+            plantItemId = potTe->getItemId();
+            plantAux = potTe->getAux();
+        }
+    }
 
-	renderFaceUp(tt, x, y - 0.5f + halfWidth + 3.0f / 16.0f, z, getTexture(Tile::dirt));
+    if (!hasPlant)
+    {
+        int data = level->getData(x, y, z);
+        if (data != 0)
+        {
+            hasPlant = true;
+            switch (data)
+            {
+            case 1: plantItemId = Tile::rose_Id; plantAux = 0; break;
+            case 2: plantItemId = Tile::flower_Id; plantAux = 0; break;
+            case 3: plantItemId = Tile::sapling_Id; plantAux = Sapling::TYPE_DEFAULT; break;
+            case 4: plantItemId = Tile::sapling_Id; plantAux = Sapling::TYPE_EVERGREEN; break;
+            case 5: plantItemId = Tile::sapling_Id; plantAux = Sapling::TYPE_BIRCH; break;
+            case 6: plantItemId = Tile::sapling_Id; plantAux = Sapling::TYPE_JUNGLE; break;
+            case 7: plantItemId = Tile::mushroom_red_Id; plantAux = 0; break;
+            case 8: plantItemId = Tile::mushroom_brown_Id; plantAux = 0; break;
+            case 9: plantItemId = Tile::cactus_Id; plantAux = 0; break;
+            case 10: plantItemId = Tile::deadBush_Id; plantAux = 0; break;
+            case 11: plantItemId = Tile::tallgrass_Id; plantAux = TallGrass::FERN; break;
+            }
+        }
+    }
 
-	int type = level->getData(x, y, z);
+    if (hasPlant)
+    {
+        float xOff = 0;
+        float yOff = 4;
+        float zOff = 0;
+        t->addOffset(xOff / 16.0f, yOff / 16.0f, zOff / 16.0f);
 
-	if (type != 0)
-	{
-		float xOff = 0;
-		float yOff = 4;
-		float zOff = 0;
-		Tile *plant = nullptr;
+        if (plantItemId == Tile::rose_Id || plantItemId == Tile::flower_Id)
+        {
+            tesselateCrossTexture(Tile::tiles[plantItemId], plantAux, x, y, z, 0.75f);
+        }
+        else if (plantItemId == Tile::sapling_Id)
+        {
+            tesselateCrossTexture(Tile::sapling, plantAux, x, y, z, 0.75f);
+        }
+        else if (plantItemId == Tile::mushroom_red_Id || plantItemId == Tile::mushroom_brown_Id)
+        {
+            tesselateCrossTexture(Tile::tiles[plantItemId], 0, x, y, z, 0.75f);
+        }
+        else if (plantItemId == Tile::tallgrass_Id && plantAux == TallGrass::FERN)
+        {
+            col = Tile::tallgrass->getColor(level, x, y, z);
+            r = ((col >> 16) & 0xff) / 255.0f;
+            g = ((col >> 8) & 0xff) / 255.0f;
+            b = ((col) & 0xff) / 255.0f;
+            t->color(br * r, br * g, br * b);
+            tesselateCrossTexture(Tile::tallgrass, TallGrass::FERN, x, y, z, 0.75f);
+        }
+        else if (plantItemId == Tile::deadBush_Id)
+        {
+            tesselateCrossTexture(Tile::deadBush, 0, x, y, z, 0.75f);
+        }
+        else if (plantItemId == Tile::cactus_Id)
+        {
+            noCulling = true;
+            float halfSize = 0.25f / 2;
+            setShape(0.5f - halfSize, 0.0f, 0.5f - halfSize, 0.5f + halfSize, 0.25f, 0.5f + halfSize);
+            tesselateBlockInWorld(Tile::cactus, x, y, z);
+            setShape(0.5f - halfSize, 0.25f, 0.5f - halfSize, 0.5f + halfSize, 0.5f, 0.5f + halfSize);
+            tesselateBlockInWorld(Tile::cactus, x, y, z);
+            setShape(0.5f - halfSize, 0.5f, 0.5f - halfSize, 0.5f + halfSize, 0.75f, 0.5f + halfSize);
+            tesselateBlockInWorld(Tile::cactus, x, y, z);
+            noCulling = false;
+            setShape(0, 0, 0, 1, 1, 1);
+        }
 
-		switch (type)
-		{
-		case FlowerPotTile::TYPE_FLOWER_RED:
-			plant = Tile::rose;
-			break;
-		case FlowerPotTile::TYPE_FLOWER_YELLOW:
-			plant = Tile::flower;
-			break;
-		case FlowerPotTile::TYPE_MUSHROOM_BROWN:
-			plant = Tile::mushroom_brown;
-			break;
-		case FlowerPotTile::TYPE_MUSHROOM_RED:
-			plant = Tile::mushroom_red;
-			break;
-		}
+        t->addOffset(-xOff / 16.0f, -yOff / 16.0f, -zOff / 16.0f);
+    }
 
-		t->addOffset(xOff / 16.0f, yOff / 16.0f, zOff / 16.0f);
-
-		if (plant != nullptr)
-		{
-			tesselateInWorld(plant, x, y, z);
-		}
-		else
-		{
-			if (type == FlowerPotTile::TYPE_CACTUS)
-			{
-
-				// Force drawing of all faces else the cactus misses faces
-				// when a block is adjacent
-				noCulling = true;
-
-				float halfSize = 0.25f / 2;
-				setShape(0.5f - halfSize, 0.0f, 0.5f - halfSize, 0.5f + halfSize, 0.25f, 0.5f + halfSize);
-				tesselateBlockInWorld(Tile::cactus, x, y, z);
-				setShape(0.5f - halfSize, 0.25f, 0.5f - halfSize, 0.5f + halfSize, 0.5f, 0.5f + halfSize);
-				tesselateBlockInWorld(Tile::cactus, x, y, z);
-				setShape(0.5f - halfSize, 0.5f, 0.5f - halfSize, 0.5f + halfSize, 0.75f, 0.5f + halfSize);
-				tesselateBlockInWorld(Tile::cactus, x, y, z);
-
-				noCulling = false;
-
-				setShape(0, 0, 0, 1, 1, 1);
-			}
-			else if (type == FlowerPotTile::TYPE_SAPLING_DEFAULT)
-			{
-				tesselateCrossTexture(Tile::sapling, Sapling::TYPE_DEFAULT, x, y, z, 0.75f);
-			}
-			else if (type == FlowerPotTile::TYPE_SAPLING_BIRCH)
-			{
-				tesselateCrossTexture(Tile::sapling, Sapling::TYPE_BIRCH, x, y, z, 0.75f);
-			}
-			else if (type == FlowerPotTile::TYPE_SAPLING_EVERGREEN)
-			{
-				tesselateCrossTexture(Tile::sapling, Sapling::TYPE_EVERGREEN, x, y, z, 0.75f);
-			}
-			else if (type == FlowerPotTile::TYPE_SAPLING_JUNGLE)
-			{
-				tesselateCrossTexture(Tile::sapling, Sapling::TYPE_JUNGLE, x, y, z, 0.75f);
-			}
-			else if (type == FlowerPotTile::TYPE_FERN)
-			{
-				col = Tile::tallgrass->getColor(level, x, y, z);
-				r = ((col >> 16) & 0xff) / 255.0f;
-				g = ((col >> 8) & 0xff) / 255.0f;
-				b = ((col) & 0xff) / 255.0f;
-				t->color(br * r, br * g, br * b);
-				tesselateCrossTexture(Tile::tallgrass, TallGrass::FERN, x, y, z, 0.75f);
-			}
-			else if (type == FlowerPotTile::TYPE_DEAD_BUSH)
-			{
-				tesselateCrossTexture(Tile::deadBush, TallGrass::FERN, x, y, z, 0.75f);
-			}
-		}
-
-		t->addOffset(-xOff / 16.0f, -yOff / 16.0f, -zOff / 16.0f);
-	}
-
-	return true;
+    return true;
 }
 
 bool TileRenderer::tesselateAnvilInWorld(AnvilTile *tt, int x, int y, int z)

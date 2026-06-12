@@ -12,6 +12,7 @@ public:
 	static const int TYPE_ADV_COMMAND = 2;
 	static const int TYPE_BEACON = 3;
 	static const int TYPE_SKULL = 4;
+	static const int TYPE_FLOWER_POT = 5;
 
 	int x, y, z;
 	int type;

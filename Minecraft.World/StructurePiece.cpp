@@ -12,6 +12,7 @@
 #include "JavaMath.h"
 #include "Facing.h"
 #include "DoorItem.h"
+#include "FlowerPotTileEntity.h"
 
 /**
 *
@@ -553,6 +554,21 @@ void StructurePiece::placeBlock( Level* level, int block, int data, int x, int y
 	level->setTileAndData( worldX, worldY, worldZ, block, data, Tile::UPDATE_CLIENTS);
 }
 
+void StructurePiece::placeFlowerPot(Level *level, BoundingBox *chunkBB, int x, int y, int z, int flowerItemId, int aux)
+{
+    int worldX = getWorldX(x, z);
+    int worldY = getWorldY(y);
+    int worldZ = getWorldZ(x, z);
+    if (!chunkBB->isInside(worldX, worldY, worldZ)) return;
+
+    placeBlock(level, Tile::flowerPot_Id, 0, worldX, worldY, worldZ, chunkBB);
+    auto te = std::make_shared<FlowerPotTileEntity>();
+    te->setLevel(level);
+    te->x = worldX; te->y = worldY; te->z = worldZ;
+    te->setFlower(flowerItemId, aux);
+    level->setTileEntity(worldX, worldY, worldZ, te);
+    level->setData(worldX, worldY, worldZ, 1, Tile::UPDATE_CLIENTS);
+}
 
 /**
 * The purpose of this method is to wrap the getTile call on Level, in order

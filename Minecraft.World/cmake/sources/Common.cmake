@@ -2094,6 +2094,8 @@ set(_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_WORLD_LEVEL_TILE_ENTITY
   "${CMAKE_CURRENT_SOURCE_DIR}/TileEntity.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/TileEntity.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/net.minecraft.world.level.tile.entity.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/FlowerPotTileEntity.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/FlowerPotTileEntity.h"
 )
 source_group("net/minecraft/world/level/tile/entity" FILES ${_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_WORLD_LEVEL_TILE_ENTITY})
 

@@ -21,3 +21,4 @@
 #include "SkullTileEntity.h"
 #include "EnderChestTileEntity.h"
 #include "ItemFrame.h"
+#include "FlowerPotTileEntity.h"
