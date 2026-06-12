@@ -363,7 +363,13 @@ shared_ptr<ItemInstance> TallGrass2::getSilkTouchItemInstance(int data)
 
 void TallGrass2::playerDestroy(Level* level, shared_ptr<Player> player, int x, int y, int z, int data)
 {
-	int resolvedVariant = data & ~UPPER_BIT;
+    int resolvedVariant;
+    bool isUpper = (data & UPPER_BIT) != 0;
+    if (isUpper && level->getTile(x, y - 1, z) == id)
+        resolvedVariant = level->getData(x, y - 1, z) & ~UPPER_BIT;
+    else
+        resolvedVariant = data & ~UPPER_BIT;
+    if (resolvedVariant < 0 || resolvedVariant >= VARIANT_COUNT) resolvedVariant = 0;
 	int resolvedData = data;
 
 	if (resolvedVariant == SUNFLOWER)

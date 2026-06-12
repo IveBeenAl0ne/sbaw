@@ -1,5 +1,12 @@
 #pragma once
 #include "Tile.h"
+#include <vector>
+
+struct BlockPos3
+{
+	int x, y, z;
+	bool operator==(const BlockPos3 &o) const { return x == o.x && y == o.y && z == o.z; }
+};
 
 class PistonBaseTile : public Tile
 {
@@ -26,7 +33,6 @@ private:
 	Icon *iconPlatform;
 
 	static DWORD tlsIdx;
-	// 4J - was just a static but implemented with TLS for our version
 	//code removed so the above comment no longer applies
 
 public:
@@ -69,6 +75,18 @@ public:
 private:
 	static bool isPushable(int block, Level *level, int cx, int cy, int cz, bool allowDestroyable);
 	static bool canPush(Level *level, int sx, int sy, int sz, int facing);
+	static bool collectStructure(Level *level, int moveDir,
+		int startX, int startY, int startZ,
+		int skipX, int skipY, int skipZ,
+		int skip2X, int skip2Y, int skip2Z,
+		bool allowDestroy,
+		std::vector<BlockPos3> &toMove,
+		std::vector<BlockPos3> &toDestroy);
+	static void applyStructureMove(Level *level, int pistonX, int pistonY, int pistonZ,
+		int facing, int moveDir, bool isSticky,
+		std::vector<BlockPos3> &toMove,
+		std::vector<BlockPos3> &toDestroy,
+		bool isExtension);
 	static void stopSharingIfServer(Level *level, int x, int y, int z);			// 4J added
 
 	bool createPush(Level *level, int sx, int sy, int sz, int facing);
