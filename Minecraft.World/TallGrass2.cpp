@@ -7,6 +7,14 @@
 #include "net.minecraft.h"
 #include "../Minecraft.Client/Minecraft.h"
 #include "net.minecraft.stats.h"
+#include "net.minecraft.world.item.enchantment.h"
+#include "net.minecraft.world.food.h"
+#include <map>
+#include <tuple>
+
+// fireblade: somewhat of a hacky way to fix the tutorial world sunflowers
+// but essentially the sunflowers are incredibly glitchy and i have no way to fix them except by doing this
+static std::map<std::tuple<Level*, int, int, int>, int> s_tallGrass2DestroyCache;
 
 // tranq please i beg you make sure the ids are correct so we dont get corrupted worlds from people
 static const int TILE_IDS[TallGrass2::VARIANT_COUNT] = {
@@ -365,61 +373,128 @@ void TallGrass2::playerDestroy(Level* level, shared_ptr<Player> player, int x, i
 {
     int resolvedVariant;
     bool isUpper = (data & UPPER_BIT) != 0;
-    if (isUpper && level->getTile(x, y - 1, z) == id)
-        resolvedVariant = level->getData(x, y - 1, z) & ~UPPER_BIT;
+    int resolvedX = x;
+    int resolvedY = y;
+    int resolvedZ = z;
+    int resolvedData = data;
+
+    if (isUpper)
+    {
+        int lowerTileId = level->getTile(x, y - 1, z);
+        auto cacheKey = std::make_tuple(level, x, y, z);
+        auto cacheIt = s_tallGrass2DestroyCache.find(cacheKey);
+        if (lowerTileId == id)
+        {
+            resolvedVariant = level->getData(x, y - 1, z) & ~UPPER_BIT;
+            resolvedData = level->getData(x, y - 1, z) & ~UPPER_BIT;
+            resolvedY = y - 1;
+            if (cacheIt != s_tallGrass2DestroyCache.end())
+                s_tallGrass2DestroyCache.erase(cacheIt);
+        }
+        else if (cacheIt != s_tallGrass2DestroyCache.end())
+        {
+            resolvedVariant = cacheIt->second;
+            resolvedData = cacheIt->second;
+            resolvedY = y - 1;
+            s_tallGrass2DestroyCache.erase(cacheIt);
+        }
+        else
+        {
+            resolvedVariant = data & ~UPPER_BIT;
+            resolvedData = data & ~UPPER_BIT;
+        }
+    }
     else
+    {
         resolvedVariant = data & ~UPPER_BIT;
+    }
+
     if (resolvedVariant < 0 || resolvedVariant >= VARIANT_COUNT) resolvedVariant = 0;
-	int resolvedData = data;
 
-	if (resolvedVariant == SUNFLOWER)
-	{
-		if (!level->isClientSide && !player->abilities.instabuild)
-		{
-			player->awardStat(
-				GenericStats::blocksMined(id),
-				GenericStats::param_blocksMined(id, resolvedData, 1));
+    if (isUpper && resolvedVariant != SUNFLOWER)
+    {
+        return;
+    }
 
-			popResource(level, x, y, z, std::make_shared<ItemInstance>(this, 1, SUNFLOWER));
-		}
-		return;
-	}
+    if (resolvedVariant != TALL_GRASS && resolvedVariant != LARGE_FERN)
+    {
+        if (!level->isClientSide && !player->abilities.instabuild)
+        {
+            player->awardStat(
+                GenericStats::blocksMined(id),
+                GenericStats::param_blocksMined(id, resolvedData, 1));
+            popResource(level, resolvedX, resolvedY, resolvedZ, std::make_shared<ItemInstance>(this, 1, resolvedVariant));
+        }
+        return;
+    }
 
-	if (!level->isClientSide
-		&& player->getSelectedItem() != nullptr
-		&& player->getSelectedItem()->id == Item::shears->id)
-	{
-		player->awardStat(
-			GenericStats::blocksMined(id),
-			GenericStats::param_blocksMined(id, resolvedData, 1));
+    if (!level->isClientSide
+        && player->getSelectedItem() != nullptr
+        && player->getSelectedItem()->id == Item::shears->id)
+    {
+        player->awardStat(
+            GenericStats::blocksMined(id),
+            GenericStats::param_blocksMined(id, resolvedData, 1));
 
-		if ((resolvedData & UPPER_BIT) == 0)
-		{
-			popResource(level, x, y, z, std::make_shared<ItemInstance>(this, 1, resolvedVariant));
-		}
-	}
-	else
-	{
+        if ((resolvedData & UPPER_BIT) == 0)
+        {
+            popResource(level, resolvedX, resolvedY, resolvedZ, std::make_shared<ItemInstance>(this, 1, resolvedVariant));
+        }
+    }
+    else
+    {
+        player->awardStat(
+            GenericStats::blocksMined(id),
+            GenericStats::param_blocksMined(id, resolvedData, 1));
+        player->awardStat(GenericStats::totalBlocksMined(), GenericStats::param_noArgs());
+        player->causeFoodExhaustion(FoodConstants::EXHAUSTION_MINE);
 
-		Tile::playerDestroy(level, player, x, y, z, resolvedData);
-	}
+        if (id == Tile::log_Id || id == Tile::log2_Id)
+            player->awardStat(GenericStats::mineWood(), GenericStats::param_noArgs());
+
+        if (isSilkTouchable() && EnchantmentHelper::hasSilkTouch(player))
+        {
+            shared_ptr<ItemInstance> item = getSilkTouchItemInstance(resolvedData);
+            if (item != nullptr)
+            {
+                popResource(level, resolvedX, resolvedY, resolvedZ, item);
+            }
+        }
+        else
+        {
+            int playerBonusLevel = EnchantmentHelper::getDiggingLootBonus(player);
+            spawnResources(level, resolvedX, resolvedY, resolvedZ, resolvedData, playerBonusLevel);
+        }
+    }
 }
 
 void TallGrass2::playerWillDestroy(Level* level, int x, int y, int z, int data, shared_ptr<Player> player)
 {
-	if (player->abilities.instabuild)
-	{
-		if ((data & UPPER_BIT) != 0)
-		{
-			if (level->getTile(x, y - 1, z) == id)
-				level->removeTile(x, y - 1, z);
-		}
-		else
-		{
-			if (level->getTile(x, y + 1, z) == id)
-				level->removeTile(x, y + 1, z);
-		}
-	}
+    auto cacheKey = std::make_tuple(level, x, y, z);
+    s_tallGrass2DestroyCache.erase(cacheKey);
+
+    if ((data & UPPER_BIT) != 0)
+    {
+        if (level->getTile(x, y - 1, z) == id)
+        {
+            int lowerData = level->getData(x, y - 1, z) & ~UPPER_BIT;
+            s_tallGrass2DestroyCache[cacheKey] = lowerData;
+        }
+    }
+
+    if (player->abilities.instabuild)
+    {
+        if ((data & UPPER_BIT) != 0)
+        {
+            if (level->getTile(x, y - 1, z) == id)
+                level->removeTile(x, y - 1, z);
+        }
+        else
+        {
+            if (level->getTile(x, y + 1, z) == id)
+                level->removeTile(x, y + 1, z);
+        }
+    }
 }
 
 int TallGrass2::cloneTileData(Level* level, int x, int y, int z)

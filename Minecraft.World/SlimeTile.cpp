@@ -49,11 +49,11 @@ void SlimeTile::fallOn(Level *level, int x, int y, int z,
 
 	entity->fallDistance = 0.0f;
 
-	if (entity->isSneaking())
+	if (entity->isSneaking() || std::abs(entity->yd) < 0.1f)
+    {
+        entity->yd = 0.0f;
         return;
-
-    if (std::abs(entity->yd) < 0.1f)
-        return;
+    }
 
     if (entity->yd < 0.0f)
     {
