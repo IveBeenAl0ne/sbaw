@@ -1560,8 +1560,22 @@ void Minecraft::run_middle()
 								{
 									if (g_KBMInput.IsKeyPressed('1' + slot))
 									{
-										if (localplayers[i]->inventory)
+										if (localplayers[i]->inventory) {
 											localplayers[i]->inventory->selected = slot;
+											int iPad = localplayers[i]->GetXboxPad();
+
+											// use the same behaviour of scrolling the hotbar so keyboard numbers triggers the same functions.
+											if( gameMode != nullptr && gameMode->getTutorial() != nullptr )
+											{
+												gameMode->getTutorial()->onSelectedItemChanged(player->inventory->getSelected());
+											}
+
+											player->updateRichPresence();
+											wstring itemName = L"";
+											shared_ptr<ItemInstance> selectedItem = player->getSelectedItem();
+											if (selectedItem != nullptr) itemName = selectedItem->getHoverName();
+											ui.SetSelectedItem(iPad, itemName);
+										}
 									}
 								}
 							}
@@ -4137,7 +4151,21 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 				}
 
 				for (int i = 0; i < 9; i++) {
-					if (Keyboard.getEventKey() == Keyboard.KEY_1 + i) player->inventory.selected = i;
+					if (Keyboard.getEventKey() == Keyboard.KEY_1 + i) {
+						player->inventory.selected = i;
+
+						// use the same behaviour of scrolling the hotbar so keyboard numbers triggers the same functions.
+						if( gameMode != nullptr && gameMode->getTutorial() != nullptr )
+						{
+							gameMode->getTutorial()->onSelectedItemChanged(player->inventory->getSelected());
+						}
+
+						player->updateRichPresence();
+						wstring itemName = L"";
+						shared_ptr<ItemInstance> selectedItem = player->getSelectedItem();
+						if (selectedItem != nullptr) itemName = selectedItem->getHoverName();
+						ui.SetSelectedItem(iPad, itemName);
+					}
 				}
 				if (Keyboard.getEventKey() == options.keyFog.key) {
 					options.toggle(Options.Option.RENDER_DISTANCE, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? -1 : 1);
