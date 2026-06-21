@@ -286,6 +286,7 @@ enum eMinecraftColour
 	eMinecraftColour_Water_ExtremeHillsEdge,
 	eMinecraftColour_Water_Jungle,
 	eMinecraftColour_Water_JungleHills,
+	eMinecraftColour_Water_JungleEdge,
 	eMinecraftColour_Water_Mesa,
 
 	eMinecraftColour_Sky_Ocean,
@@ -311,6 +312,7 @@ enum eMinecraftColour
 	eMinecraftColour_Sky_ExtremeHillsEdge,
 	eMinecraftColour_Sky_Jungle,
 	eMinecraftColour_Sky_JungleHills,
+	eMinecraftColour_Sky_JungleEdge,
 
 	eMinecraftColour_Tile_RedstoneDust,
 	eMinecraftColour_Tile_RedstoneDustUnlit,

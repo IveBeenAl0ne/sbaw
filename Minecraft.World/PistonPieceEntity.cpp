@@ -147,6 +147,7 @@ void PistonPieceEntity::moveCollidedEntities(float progress, float amount)
 					{
 						it->yd = amount;
 					}
+					it->yd = it->yd * 1.25f;
 					it->onGround = false;
 					it->fallDistance = 0.0f;
 					it->hasImpulse = true;

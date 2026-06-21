@@ -87,6 +87,7 @@ public:
 		eMaterial_redstone,
 		eMaterial_coal,
 		eMaterial_paper,
+		eMaterial_slime,
 		eMaterial_book,
 		eMaterial_bookshelf,
 		eMaterial_wheat,

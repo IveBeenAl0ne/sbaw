@@ -87,6 +87,7 @@
   <colour name="Water_ExtremeHillsEdge" value="ffffff"/>
   <colour name="Water_Jungle" value="ffffff"/>
   <colour name="Water_JungleHills" value="ffffff"/>
+  <colour name="Water_JungleEdge" value="ffffff"/>
   <colour name="Water_Mesa" value="3f76e4"/>
 
   <!-- Sky colours -->  
@@ -113,6 +114,7 @@
   <colour name="Sky_ExtremeHillsEdge" value="7EA3FF"/>
   <colour name="Sky_Jungle" value="75ABFF"/>
   <colour name="Sky_JungleHills" value="75ABFF"/>
+  <colour name="Sky_JungleEdge" value="75ABFF"/>
 
   <colour name="Sky_Dawn_Dark" value="B23333"/>
   <colour name="Sky_Dawn_Bright" value="FFE533"/>

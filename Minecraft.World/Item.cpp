@@ -397,7 +397,7 @@ void Item::staticCtor()
 	Item::reeds = ( new TilePlanterItem(82, Tile::reeds) )				->setIconName(L"reeds")->setDescriptionId(IDS_ITEM_REEDS)->setUseDescriptionId(IDS_DESC_REEDS);
 	Item::paper = ( new Item(83) )										->setBaseItemTypeAndMaterial(Item::eBaseItemType_paper, Item::eMaterial_paper)->setIconName(L"paper")->setDescriptionId(IDS_ITEM_PAPER)->setUseDescriptionId(IDS_DESC_PAPER);
 	Item::book = ( new BookItem(84) )									->setBaseItemTypeAndMaterial(Item::eBaseItemType_paper, Item::eMaterial_book)->setIconName(L"book")->setDescriptionId(IDS_ITEM_BOOK)->setUseDescriptionId(IDS_DESC_BOOK);
-	Item::slime_ball = ( new Item(85) )									->setIconName(L"slimeball")->setDescriptionId(IDS_ITEM_SLIMEBALL)->setUseDescriptionId(IDS_DESC_SLIMEBALL);
+	Item::slime_ball = ( new Item(85) )									->setBaseItemTypeAndMaterial(Item::eBaseItemType_treasure, Item::eMaterial_slime)->setIconName(L"slimeball")->setDescriptionId(IDS_ITEM_SLIMEBALL)->setUseDescriptionId(IDS_DESC_SLIMEBALL);
 	Item::chest_minecart = ( new MinecartItem(86, Minecart::TYPE_CHEST) )	->setIconName(L"chest_minecart")->setDescriptionId(IDS_ITEM_MINECART_CHEST)->setUseDescriptionId(IDS_DESC_MINECARTWITHCHEST);
 	Item::furnace_minecart = ( new MinecartItem(87, Minecart::TYPE_FURNACE) )->setIconName(L"furnace_minecart")->setDescriptionId(IDS_ITEM_MINECART_FURNACE)->setUseDescriptionId(IDS_DESC_MINECARTWITHFURNACE);
 	Item::egg = ( new EggItem(88) )										->setIconName(L"egg")->setDescriptionId(IDS_ITEM_EGG)->setUseDescriptionId(IDS_DESC_EGG);
