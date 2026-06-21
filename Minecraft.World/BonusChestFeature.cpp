@@ -24,6 +24,12 @@ bool BonusChestFeature::place(Level *level, Random *random, int x, int y, int z)
 
 bool BonusChestFeature::place(Level *level, Random *random, int x, int y, int z, bool force)
 {
+	// check if level is corrupted first 	
+	if (level == nullptr || random == nullptr)
+	{
+		return false;
+	}
+	if (!level->isNew) return false;
 	//Will only spawn a bonus chest if the world is new and has never been saved.
 	if (level->isNew)
 	{
