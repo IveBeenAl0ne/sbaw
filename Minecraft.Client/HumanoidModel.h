@@ -15,8 +15,6 @@ public:
     float eating_swing;	
     bool elytraFlying;    
     bool elytraCrouching; 
-    bool m_isArmor;
-	bool m_is64x64;
     unsigned int m_uiAnimOverrideBitmask; 
     float m_fYOffset;
     enum animbits
