@@ -108,6 +108,30 @@ void UIScene_FullscreenProgress::handleDestroy()
 	}
 }
 
+bool UIScene_FullscreenProgress::needsReloaded()
+{
+	if(!hasMovie()) return true;
+
+	UIScene *topScene = ui.GetTopScene(m_iPad);
+	const bool isSettingsMenuActive = topScene && topScene->getSceneType() == eUIScene_SettingsUIMenu;
+	if(isSettingsMenuActive)
+	{
+		return false;
+	}
+
+	// refresh when resolution is updated due to dlc world behavior
+	const bool shouldUse1080 = UIScene::SceneShouldUse1080p(getMoviePath());
+	if(shouldUse1080 && m_loadedResolution != eSceneResolution_1080)
+	{
+		return true;
+	}
+	if(!shouldUse1080 && m_loadedResolution == eSceneResolution_1080)
+	{
+		return true;
+	}
+	return false;
+}
+
 void UIScene_FullscreenProgress::tick()
 {
 	UIScene::tick();

@@ -110,14 +110,37 @@ void DLCAudioFile::addParameter(EAudioType type, EAudioParameterType ptype, cons
 
 bool DLCAudioFile::processDLCDataFile(PBYTE pbData, DWORD dwLength)
 {
+	if(pbData == nullptr || dwLength < sizeof(unsigned int))
+	{
+		app.DebugPrintf("DLCAudioFile::processDLCDataFile: invalid data\n");
+		return false;
+	}
+
 	unordered_map<int, EAudioParameterType> parameterMapping;
 	unsigned int uiCurrentByte=0;
 
 	// File format defined in the AudioPacker
 	// File format: Version 1
 
-	unsigned int uiVersion=*(unsigned int *)pbData;
+	unsigned int uiVersion=DLCManager::readUInt32(pbData, false);
 	uiCurrentByte+=sizeof(int);
+
+	bool bSwapEndian = false;
+	unsigned int uiVersionSwapped = DLCManager::SwapInt32(uiVersion);
+	if(uiVersion >= 0 && uiVersion <= CURRENT_AUDIO_VERSION_NUM)
+	{
+		bSwapEndian = false;
+	}
+	else if(uiVersionSwapped >= 0 && uiVersionSwapped <= CURRENT_AUDIO_VERSION_NUM)
+	{
+		bSwapEndian = true;
+	}
+	else
+	{
+		if(pbData!=nullptr) delete [] pbData;
+		app.DebugPrintf("Unknown audio version %d\n", uiVersion);
+		return false;
+	}
 
 	if(uiVersion < CURRENT_AUDIO_VERSION_NUM)
 	{
@@ -126,14 +149,21 @@ bool DLCAudioFile::processDLCDataFile(PBYTE pbData, DWORD dwLength)
 		return false;
 	}
 	
-	unsigned int uiParameterTypeCount=*(unsigned int *)&pbData[uiCurrentByte];
+	unsigned int uiParameterTypeCount=DLCManager::readUInt32(&pbData[uiCurrentByte], bSwapEndian);
 	uiCurrentByte+=sizeof(int);
 	C4JStorage::DLC_FILE_PARAM *pParams = (C4JStorage::DLC_FILE_PARAM *)&pbData[uiCurrentByte];
 	
 	for(unsigned int i=0;i<uiParameterTypeCount;i++)
 	{
+		pParams->dwType = bSwapEndian ? DLCManager::SwapInt32(pParams->dwType) : pParams->dwType;
+		pParams->dwWchCount = bSwapEndian ? DLCManager::SwapInt32(pParams->dwWchCount) : pParams->dwWchCount;
+		char16_t* wchData = reinterpret_cast<char16_t*>(pParams->wchData);
+		if (bSwapEndian) {
+			DLCManager::SwapUTF16Bytes(wchData, pParams->dwWchCount);
+		}
+
 		// Map DLC strings to application strings, then store the DLC index mapping to application index
-		wstring parameterName(static_cast<WCHAR *>(pParams->wchData));
+		wstring parameterName(reinterpret_cast<WCHAR *>(pParams->wchData), pParams->dwWchCount);
 		EAudioParameterType type = getParameterType(parameterName);
 		if( type != e_AudioParamType_Invalid )
 		{
@@ -142,13 +172,14 @@ bool DLCAudioFile::processDLCDataFile(PBYTE pbData, DWORD dwLength)
 		uiCurrentByte+= sizeof(C4JStorage::DLC_FILE_PARAM)+(pParams->dwWchCount*sizeof(WCHAR));
 		pParams = (C4JStorage::DLC_FILE_PARAM *)&pbData[uiCurrentByte];
 	}
-	unsigned int uiFileCount=*(unsigned int *)&pbData[uiCurrentByte];
+	unsigned int uiFileCount=DLCManager::readUInt32(&pbData[uiCurrentByte], bSwapEndian);
 	uiCurrentByte+=sizeof(int);
 	C4JStorage::DLC_FILE_DETAILS *pFile = (C4JStorage::DLC_FILE_DETAILS *)&pbData[uiCurrentByte];
 
 	DWORD dwTemp=uiCurrentByte;
 	for(unsigned int i=0;i<uiFileCount;i++)
 	{
+		pFile->dwWchCount = bSwapEndian ? DLCManager::SwapInt32(pFile->dwWchCount) : pFile->dwWchCount;
 		dwTemp+=sizeof(C4JStorage::DLC_FILE_DETAILS)+pFile->dwWchCount*sizeof(WCHAR);
 		pFile = (C4JStorage::DLC_FILE_DETAILS *)&pbData[dwTemp];
 	}
@@ -157,6 +188,13 @@ bool DLCAudioFile::processDLCDataFile(PBYTE pbData, DWORD dwLength)
 
 	for(unsigned int i=0;i<uiFileCount;i++)
 	{
+		pFile->dwType = bSwapEndian ? DLCManager::SwapInt32(pFile->dwType) : pFile->dwType;
+		pFile->uiFileSize = bSwapEndian ? DLCManager::SwapInt32(pFile->uiFileSize) : pFile->uiFileSize;
+		char16_t* wchFile = reinterpret_cast<char16_t*>(pFile->wchFile);
+		if (bSwapEndian) {
+			DLCManager::SwapUTF16Bytes(wchFile, pFile->dwWchCount);
+		}
+
 		EAudioType type = static_cast<EAudioType>(pFile->dwType);
 
 		//Bounds Checking
@@ -167,11 +205,18 @@ bool DLCAudioFile::processDLCDataFile(PBYTE pbData, DWORD dwLength)
 			continue; 
 		}
 		// Params
-		unsigned int uiParameterCount=*(unsigned int *)pbTemp;
+		unsigned int uiParameterCount=DLCManager::readUInt32(pbTemp, bSwapEndian);
 		pbTemp+=sizeof(int);
 		pParams = (C4JStorage::DLC_FILE_PARAM *)pbTemp;
 		for(unsigned int j=0;j<uiParameterCount;j++)
 		{
+			pParams->dwType = bSwapEndian ? DLCManager::SwapInt32(pParams->dwType) : pParams->dwType;
+			pParams->dwWchCount = bSwapEndian ? DLCManager::SwapInt32(pParams->dwWchCount) : pParams->dwWchCount;
+			char16_t* wchData = reinterpret_cast<char16_t*>(pParams->wchData);
+			if (bSwapEndian) {
+				DLCManager::SwapUTF16Bytes(wchData, pParams->dwWchCount);
+			}
+
 			//EAudioParameterType paramType = e_AudioParamType_Invalid;
 
 			auto it = parameterMapping.find(pParams->dwType);
