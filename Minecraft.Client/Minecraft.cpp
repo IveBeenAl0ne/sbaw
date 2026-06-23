@@ -1508,10 +1508,10 @@ void Minecraft::run_middle()
 					{
 						if (g_KBMInput.IsKBMActive())
 						{
-							if(g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT))
+							if(g_KBMInput.IsMouseButtonPressed(g_KBMInput.GetMouseAction()))
 								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_ACTION;
 
-							if(g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_RIGHT))
+							if(g_KBMInput.IsMouseButtonPressed(g_KBMInput.GetMouseUse()))
 								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_USE;
 
 							bool isClosableByEitherKey = ui.IsSceneInStack(i, eUIScene_FurnaceMenu) ||
@@ -3659,8 +3659,8 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 			}
 
 #ifdef _WINDOWS64
-			bool actionPressed = InputManager.ButtonPressed(iPad, MINECRAFT_ACTION_ACTION) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT));
-			bool actionHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_ACTION) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT));
+			bool actionPressed = InputManager.ButtonPressed(iPad, MINECRAFT_ACTION_ACTION) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonPressed(g_KBMInput.GetMouseAction()));
+			bool actionHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_ACTION) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonDown(g_KBMInput.GetMouseUse()));
 #else
 			bool actionPressed = InputManager.ButtonPressed(iPad, MINECRAFT_ACTION_ACTION);
 			bool actionHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_ACTION);
@@ -3693,7 +3693,7 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 		}
 		*/
 #ifdef _WINDOWS64
-		bool useHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_RIGHT));
+		bool useHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonDown(g_KBMInput.GetMouseUse()));
 #else
 		bool useHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE);
 #endif

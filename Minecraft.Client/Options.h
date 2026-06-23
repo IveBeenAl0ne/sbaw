@@ -89,6 +89,11 @@ public:
 	static const int keyMappings_length = 14;
     KeyMapping *keyMappings[keyMappings_length];
 
+    static const int keyboardBindings_length = 24;
+    int keyboardBindings[keyboardBindings_length];
+
+    bool swapActionUse;
+
 protected:
 	Minecraft *minecraft;
 private:

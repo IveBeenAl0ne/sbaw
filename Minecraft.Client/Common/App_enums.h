@@ -181,6 +181,7 @@ enum eGameSetting
 	// PC
 	eGameSetting_VSync,
 	eGameSetting_ExclusiveFullscreen,
+	eGameSetting_KeyboardBinding,
 
 	//TU25
 	eGameSetting_ClassicCrafting,

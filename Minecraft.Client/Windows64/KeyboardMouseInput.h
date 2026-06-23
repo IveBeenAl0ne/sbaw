@@ -14,30 +14,38 @@ public:
 	static const int MOUSE_MIDDLE = 2;
 	static const int MAX_MOUSE_BUTTONS = 3;
 
-	static const int KEY_FORWARD = 'W';
-	static const int KEY_BACKWARD = 'S';
-	static const int KEY_LEFT = 'A';
-	static const int KEY_RIGHT = 'D';
-	static const int KEY_JUMP = VK_SPACE;
-	static const int KEY_SNEAK = VK_LSHIFT;
-	static const int KEY_SPRINT = VK_CONTROL;
-	static const int KEY_INVENTORY = 'E';
-	static const int KEY_DROP = 'Q';
-	static const int KEY_CRAFTING = 'C';
-	static const int KEY_CRAFTING_ALT = 'R';
-	static const int KEY_CHAT = 'T';
-	static const int KEY_CONFIRM = VK_RETURN;
-	static const int KEY_CANCEL = VK_ESCAPE;
-	static const int KEY_PAUSE = VK_ESCAPE;
-	static const int KEY_TOGGLE_HUD = VK_F1;
-	static const int KEY_DEBUG_INFO = VK_F3;
-	static const int KEY_DEBUG_MENU = VK_F4;
-    static const int KEY_CONTROL = VK_CONTROL;
-	static const int KEY_THIRD_PERSON = VK_F5;
-	static const int KEY_DEBUG_CONSOLE = VK_F6;
-	static const int KEY_HOST_SETTINGS = VK_TAB;
-	static const int KEY_FULLSCREEN = VK_F11;
-	static const int KEY_SCREENSHOT = VK_F2;
+	int GetMouseUse() const;
+	int GetMouseAction() const;
+	int GetMousePick() const;
+
+	void SetMouseUse(int button);
+	void SetMouseAction(int button);
+	void SetMousePick(int button);
+
+	static int KEY_FORWARD;
+	static int KEY_BACKWARD;
+	static int KEY_LEFT;
+	static int KEY_RIGHT;
+	static int KEY_JUMP;
+	static int KEY_SNEAK;
+	static int KEY_SPRINT;
+	static int KEY_INVENTORY;
+	static int KEY_DROP;
+	static int KEY_CRAFTING;
+	static int KEY_CRAFTING_ALT;
+	static int KEY_CHAT;
+	static int KEY_CONFIRM;
+	static int KEY_CANCEL;
+	static int KEY_PAUSE;
+	static int KEY_TOGGLE_HUD;
+	static int KEY_DEBUG_INFO;
+	static int KEY_DEBUG_MENU;
+	static int KEY_CONTROL;
+	static int KEY_THIRD_PERSON;
+	static int KEY_DEBUG_CONSOLE;
+	static int KEY_HOST_SETTINGS;
+	static int KEY_FULLSCREEN;
+	static int KEY_SCREENSHOT;
 
 	void Init();
 	void Tick();
@@ -107,6 +115,10 @@ public:
 	void SetCursorIcon(LPCWSTR cursorName);
 
 private:
+   	int m_MOUSE_ACTION = 0;
+	int m_MOUSE_USE = 1;
+	int m_MOUSE_PICK = 2;
+	
 	bool m_keyDown[MAX_KEYS];
 	bool m_keyDownPrev[MAX_KEYS];
 

@@ -137,6 +137,34 @@ void Options::init()
     keyPickItem = new KeyMapping(L"key.pickItem", -100 + 2);
     keyToggleFog = new KeyMapping(L"key.fog", Keyboard::KEY_F);
 
+    // same order as in KeyboardMouseInput.h
+	keyboardBindings[0] = g_KBMInput.KEY_FORWARD;
+	keyboardBindings[1] = g_KBMInput.KEY_BACKWARD;
+	keyboardBindings[2] = g_KBMInput.KEY_LEFT;
+	keyboardBindings[3] = g_KBMInput.KEY_RIGHT;
+	keyboardBindings[4] = g_KBMInput.KEY_JUMP;
+	keyboardBindings[5] = g_KBMInput.KEY_SNEAK;
+	keyboardBindings[6] = g_KBMInput.KEY_SPRINT;
+	keyboardBindings[7] = g_KBMInput.KEY_INVENTORY;
+	keyboardBindings[8] = g_KBMInput.KEY_DROP;
+	keyboardBindings[9] = g_KBMInput.KEY_CRAFTING;
+	keyboardBindings[10] = g_KBMInput.KEY_CRAFTING_ALT;
+	keyboardBindings[11] = g_KBMInput.KEY_CHAT;
+	keyboardBindings[12] = g_KBMInput.KEY_CONFIRM;
+	keyboardBindings[13] = g_KBMInput.KEY_CANCEL;
+	keyboardBindings[14] = g_KBMInput.KEY_PAUSE;
+	keyboardBindings[15] = g_KBMInput.KEY_TOGGLE_HUD;
+	keyboardBindings[16] = g_KBMInput.KEY_DEBUG_INFO;
+	keyboardBindings[17] = g_KBMInput.KEY_DEBUG_MENU;
+	keyboardBindings[18] = g_KBMInput.KEY_CONTROL;
+	keyboardBindings[19] = g_KBMInput.KEY_THIRD_PERSON;
+	keyboardBindings[20] = g_KBMInput.KEY_DEBUG_CONSOLE;
+	keyboardBindings[21] = g_KBMInput.KEY_HOST_SETTINGS;
+	keyboardBindings[22] = g_KBMInput.KEY_FULLSCREEN;
+	keyboardBindings[23] = g_KBMInput.KEY_SCREENSHOT;
+   
+	swapActionUse = false;
+    
 	keyMappings[0] = keyAttack;
 	keyMappings[1] = keyUse;
     keyMappings[2] = keyUp;
@@ -455,7 +483,8 @@ void Options::load()
 				if (cmds[0] == L"advancedTooltips") advancedTooltips = cmds[1]==L"false";
 				if (cmds[0] == L"skin") skin = cmds[1];
 				if (cmds[0] == L"lastServer") lastMpIp = cmds[1];
-
+				if (cmds[0] == L"swapActionUse") swapActionUse = cmds[1]==L"true";
+				
                 for (int i = 0; i < keyMappings_length; i++)
 				{
                     if (cmds[0] == (L"key_" + keyMappings[i]->name))
@@ -463,6 +492,13 @@ void Options::load()
                         keyMappings[i]->key = _fromString<int>(cmds[1]);
                     }
                 }
+                for (int i = 0; i < keyboardBindings_length; i++)
+				{
+                                if (cmds[0] == (L"keyBind_" + i))
+					{
+                                    keyboardBindings[i] = _fromString<int>(cmds[1]);
+                                }
+                            }
 //            } catch (Exception e) {
 //                System.out.println("Skipping bad option: " + line);
 //            }
@@ -513,11 +549,16 @@ void Options::save()
 		dos.writeChars(advancedTooltips ? L"advancedTooltips:true" : L"advancedTooltips:false");
 		dos.writeChars(L"skin:" + skin);
         dos.writeChars(L"lastServer:" + lastMpIp);
+        dos.writeChars(L"swapActionUse:" + wstring(swapActionUse ? L"true" : L"false") + L"\n");
 
         for (int i = 0; i < keyMappings_length; i++)
 		{
             dos.writeChars(L"key_" + keyMappings[i]->name + L":" + std::to_wstring(keyMappings[i]->key));
         }
+        for (int i = 0; i < keyboardBindings_length; i++)
+		{
+			dos.writeChars(L"keyBind_" + std::to_wstring(i) + L":" + std::to_wstring(keyboardBindings[i]));
+		}
 
         dos.close();
 //    } catch (Exception e) {

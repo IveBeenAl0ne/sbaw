@@ -9,6 +9,31 @@ KeyboardMouseInput g_KBMInput;
 
 extern HWND g_hWnd;
 
+int KeyboardMouseInput::KEY_FORWARD = 'W';
+int KeyboardMouseInput::KEY_BACKWARD = 'S';
+int KeyboardMouseInput::KEY_LEFT = 'A';
+int KeyboardMouseInput::KEY_RIGHT = 'D';
+int KeyboardMouseInput::KEY_JUMP = VK_SPACE;
+int KeyboardMouseInput::KEY_SNEAK = VK_LSHIFT;
+int KeyboardMouseInput::KEY_SPRINT = VK_CONTROL;
+int KeyboardMouseInput::KEY_INVENTORY = 'E';
+int KeyboardMouseInput::KEY_DROP = 'Q';
+int KeyboardMouseInput::KEY_CRAFTING = 'C';
+int KeyboardMouseInput::KEY_CRAFTING_ALT = 'R';
+int KeyboardMouseInput::KEY_CHAT = 'T';
+int KeyboardMouseInput::KEY_CONFIRM = VK_RETURN;
+int KeyboardMouseInput::KEY_CANCEL = VK_ESCAPE;
+int KeyboardMouseInput::KEY_PAUSE = VK_ESCAPE;
+int KeyboardMouseInput::KEY_TOGGLE_HUD = VK_F1;
+int KeyboardMouseInput::KEY_DEBUG_INFO = VK_F3;
+int KeyboardMouseInput::KEY_DEBUG_MENU = VK_F4;
+int KeyboardMouseInput::KEY_CONTROL = VK_CONTROL;
+int KeyboardMouseInput::KEY_THIRD_PERSON = VK_F5;
+int KeyboardMouseInput::KEY_DEBUG_CONSOLE = VK_F6;
+int KeyboardMouseInput::KEY_HOST_SETTINGS = VK_TAB;
+int KeyboardMouseInput::KEY_FULLSCREEN = VK_F11;
+int KeyboardMouseInput::KEY_SCREENSHOT = VK_F2;
+
 // Forward declaration
 static void ClipCursorToWindow(HWND hWnd);
 
@@ -427,6 +452,32 @@ void KeyboardMouseInput::ClearCharBuffer()
 {
 	m_charBufferHead = 0;
 	m_charBufferTail = 0;
+}
+
+int KeyboardMouseInput::GetMouseUse() const
+{
+	return m_MOUSE_USE;
+}
+int KeyboardMouseInput::GetMouseAction() const
+{
+	return m_MOUSE_ACTION;
+}
+int KeyboardMouseInput::GetMousePick() const
+{
+	return m_MOUSE_PICK;
+}
+
+void KeyboardMouseInput::SetMouseUse(int button)
+{
+	m_MOUSE_USE = button;
+}
+void KeyboardMouseInput::SetMouseAction(int button)
+{
+	m_MOUSE_ACTION = button;
+}
+void KeyboardMouseInput::SetMousePick(int button)
+{
+	m_MOUSE_PICK = button;
 }
 
 #endif // _WINDOWS64

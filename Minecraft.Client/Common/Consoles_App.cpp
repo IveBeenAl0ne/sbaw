@@ -75,6 +75,10 @@
 #include "../Common/Leaderboards/LeaderboardManager.h"
 #include <regex>
 
+#ifdef _WINDOWS64
+#include "Windows64/KeyboardMouseInput.h"
+#endif
+
 //CMinecraftApp app;
 unsigned int CMinecraftApp::m_uiLastSignInData = 0;
 
@@ -1504,6 +1508,7 @@ void CMinecraftApp::ApplyGameSettingsChanged(int iPad)
 
 	ActionGameSettings(iPad,eGameSetting_PS3_EULA_Read);
 	ActionGameSettings(iPad,eGameSetting_VSync);
+	ActionGameSettings(iPad,eGameSetting_KeyboardBinding);
 
 	//TU25
 	ActionGameSettings(iPad, eGameSetting_ClassicCrafting);
@@ -1757,6 +1762,47 @@ void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
 			SetExclusiveFullscreen(GetGameSettings(iPad, eGameSetting_ExclusiveFullscreen) != 0);
 		}
 #endif
+    case eGameSetting_KeyboardBinding:
+			if (!pMinecraft->options->swapActionUse)
+			{ // normal
+#ifdef _WINDOWS64
+				g_KBMInput.SetMouseAction(g_KBMInput.MOUSE_LEFT);
+				g_KBMInput.SetMouseUse(g_KBMInput.MOUSE_RIGHT);
+				g_KBMInput.SetMousePick(g_KBMInput.MOUSE_MIDDLE);
+#endif
+			} else { // inverted
+#ifdef _WINDOWS64
+				g_KBMInput.SetMouseAction(g_KBMInput.MOUSE_RIGHT);
+				g_KBMInput.SetMouseUse(g_KBMInput.MOUSE_LEFT);
+				g_KBMInput.SetMousePick(g_KBMInput.MOUSE_MIDDLE);
+#endif
+			}
+
+			g_KBMInput.KEY_FORWARD = pMinecraft->options->keyboardBindings[0];
+			g_KBMInput.KEY_BACKWARD = pMinecraft->options->keyboardBindings[1];
+			g_KBMInput.KEY_LEFT = pMinecraft->options->keyboardBindings[2];
+			g_KBMInput.KEY_RIGHT = pMinecraft->options->keyboardBindings[3];
+			g_KBMInput.KEY_JUMP = pMinecraft->options->keyboardBindings[4];
+			g_KBMInput.KEY_SNEAK = pMinecraft->options->keyboardBindings[5];
+			g_KBMInput.KEY_SPRINT = pMinecraft->options->keyboardBindings[6];
+			g_KBMInput.KEY_INVENTORY = pMinecraft->options->keyboardBindings[7];
+			g_KBMInput.KEY_DROP = pMinecraft->options->keyboardBindings[8];
+			g_KBMInput.KEY_CRAFTING = pMinecraft->options->keyboardBindings[9];
+			g_KBMInput.KEY_CRAFTING_ALT = pMinecraft->options->keyboardBindings[10];
+			g_KBMInput.KEY_CHAT = pMinecraft->options->keyboardBindings[11];
+			g_KBMInput.KEY_CONFIRM = pMinecraft->options->keyboardBindings[12];
+			g_KBMInput.KEY_CANCEL = pMinecraft->options->keyboardBindings[13];
+			g_KBMInput.KEY_PAUSE = pMinecraft->options->keyboardBindings[14];
+			g_KBMInput.KEY_TOGGLE_HUD = pMinecraft->options->keyboardBindings[15];
+			g_KBMInput.KEY_DEBUG_INFO = pMinecraft->options->keyboardBindings[16];
+			g_KBMInput.KEY_DEBUG_MENU = pMinecraft->options->keyboardBindings[17];
+			g_KBMInput.KEY_CONTROL = pMinecraft->options->keyboardBindings[18];
+			g_KBMInput.KEY_THIRD_PERSON = pMinecraft->options->keyboardBindings[19];
+			g_KBMInput.KEY_DEBUG_CONSOLE = pMinecraft->options->keyboardBindings[20];
+			g_KBMInput.KEY_HOST_SETTINGS = pMinecraft->options->keyboardBindings[21];
+			g_KBMInput.KEY_FULLSCREEN = pMinecraft->options->keyboardBindings[22];
+			g_KBMInput.KEY_SCREENSHOT = pMinecraft->options->keyboardBindings[23];
+			break;
 		break;
 	case eGameSetting_ClassicCrafting:
 		//nothing to do here
