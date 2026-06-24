@@ -212,8 +212,7 @@ void GameRenderer::tick(bool first)		// 4J - add bFirst
 	{
 		shared_ptr<Player> yBobPlayer = dynamic_pointer_cast<Player>(mc->cameraTargetPlayer);
 		float target = 0.0f;
-		if (yBobPlayer != nullptr && !yBobPlayer->onGround
-			&& !(yBobPlayer->abilities.mayfly && yBobPlayer->abilities.flying))
+	if (yBobPlayer != nullptr && yBobPlayer->isElytraFlying())
 		{
 
 			target = (float)(atan(-yBobPlayer->yd * 0.2) * 15.0);
