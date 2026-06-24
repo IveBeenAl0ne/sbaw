@@ -4,8 +4,99 @@
 #include "../../Minecraft.h"
 #include "../../MultiPlayerLocalPlayer.h"
 
+#include "../../Tesselator.h"
+#include "../../GuiComponent.h"
+#include "../../Options.h"
+#include "../Consoles_App.h"
+
+void fillRect(Tesselator *t, int x, int y, int w, int h, int r, int g, int b, int a)
+{
+    	t->begin();
+    	t->color(r, g, b, a);
+    	t->vertex(static_cast<float>(x), static_cast<float>(y), 0.0f);
+    	t->vertex(static_cast<float>(x), static_cast<float>(y + h), 0.0f);
+    	t->vertex(static_cast<float>(x + w), static_cast<float>(y + h), 0.0f);
+    	t->vertex(static_cast<float>(x + w), static_cast<float>(y), 0.0f);
+    	t->end();
+};
+
+void drawButton(GuiComponent gui, Font *font, int x, int y, wstring str)
+{
+    gui.fill(x, y, x + 256, y + 32, 0xFF000000);
+    glScalef(2, 2, 2);
+	gui.drawCenteredString(font, str, x/2 + 64, y/2 + 6, 0xFFFFFFFF);
+	glScalef(0.5, 0.5, 0.5);
+}
+
+void UIScene_ControlsMenu::render(S32 width, S32 height, C4JRender::eViewportType viewport)
+{
+    UIScene::render(width, height, viewport);
+#ifndef _WINDOWS64
+}
+#endif
+#ifdef _WINDOWS64
+    Minecraft *pMinecraft = Minecraft::GetInstance();
+
+    GuiComponent gui = GuiComponent();
+    
+    Tesselator *t = Tesselator::getInstance();
+
+	ui.setupCustomDrawGameState();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glTranslatef(0, 0, -2000);
+
+	// fillRect(t, width * 0.8, height * 0.5, 128, 64, 0, 0, 0, 255);
+	// pMinecraft->font->drawShadow(L"test string", 2, 2 + 9 * 0, 0xffffff);
+
+	drawButton(gui, pMinecraft->font, width * 0.8, height * 0.2, L"Keyboard Settings");
+
+	if(m_keybindGuiOpen)
+	{
+	    gui.fill(width * 0.2, height * 0.2, width * 0.8, height * 0.8, 0x7F000000);
+	    drawButton(gui, pMinecraft->font, width * 0.5 - 128, height * 0.2, L"Swap Action and Use");
+	}
+
+	m_width = width;
+	m_height = height;
+	
+	ui.endCustomDrawGameState();
+}
+
+bool UIScene_ControlsMenu::handleMouseClick(F32 x, F32 y)
+{   
+    Minecraft *pMinecraft = Minecraft::GetInstance();
+    
+    if(x > m_width * 0.8 && x < m_width * 0.8 + 256 && y > m_height * 0.2 && y < m_height * 0.2 + 32)
+    {
+        m_keybindGuiOpen = !m_keybindGuiOpen;
+        return true;
+    }
+    if(x > m_width * 0.5 && x < m_width * 0.5 + 256 && y > m_height * 0.2 && y < m_height * 0.2 + 32)
+    {
+        pMinecraft->options->swapActionUse = !pMinecraft->options->swapActionUse;
+        app.ActionGameSettings(m_iPad, eGameSetting_KeyboardBinding);
+    }
+    if(!m_keybindGuiOpen)
+    {
+        return UIScene::handleMouseClick(x, y);
+    }
+    for(const auto& button : buttons)
+    {
+        if(x > button.x && x < button.x + 256 && y > button.y && y < button.y + 32)
+        {
+            
+        }
+    }
+    
+    // always consume to prevent Iggy re-entry on empty space (idk thats what another file said to do)
+    return true;
+}
+#endif
+
 UIScene_ControlsMenu::UIScene_ControlsMenu(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
+    m_iPad = iPad;
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
 

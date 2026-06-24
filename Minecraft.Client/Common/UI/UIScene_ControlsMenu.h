@@ -2,6 +2,8 @@
 
 #include "UIScene.h"
 
+#include "../../Tesselator.h"
+
 class UIScene_ControlsMenu : public UIScene
 {
 private:
@@ -121,6 +123,7 @@ public:
 	
 	virtual void updateTooltips();
 	virtual void tick();
+	virtual void render(S32 width, S32 height, C4JRender::eViewportType viewport);
 
 protected:
 	// TODO: This should be pure virtual in this class
@@ -134,8 +137,30 @@ public:
 	virtual void handlePress(F64 controlId, F64 childId);
 	virtual void handleFocusChange(F64 controlId, F64 childId);
 
+#ifdef _WINDOWS64
+    virtual bool handleMouseClick(F32 x, F32 y);
+#endif
+
 private:
 	void PositionText(int iPad,int iTextID, unsigned char ucAction);
 	void PositionTextDirect(int iPad,int iTextID, int iControlDetailsIndex, bool bShow);
 	void PositionAllText(int iPad);
+
+	bool m_keybindGuiOpen = false;
+
+	int m_iPad;
+
+	int m_width = 0;
+	int m_height = 0;
+
+	struct Button {
+	    int x;
+		int y;
+		wstring str;
+		int key;
+	};
+
+	static const int buttons_length = 1;
+
+	Button buttons[buttons_length];
 };
