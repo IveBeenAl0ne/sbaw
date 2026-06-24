@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: write
   id-token: write
   attestations: write
@@ -17,281 +18,173 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-client:
-    name: Build Client
-    runs-on: windows-latest
+  build:
+    if: >
+      !gitea.event.head_commit ||
+      !contains(gitea.event.head_commit.message, '[skip ci]')
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
+          fetch-depth: 1
+          ref: ${{ gitea.event_name == 'workflow_dispatch' && inputs.branch || gitea.ref_name }}
           submodules: recursive
 
-      - name: Setup MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Setup CMake
-        uses: lukka/get-cmake@latest
-
-      - name: Run CMake
-        uses: lukka/run-cmake@v10
-        env:
-          VCPKG_ROOT: ""
-        with:
-          configurePreset: windows64
-          buildPreset: windows64-release
-          buildPresetAdditionalArgs: "['--target', 'Minecraft.Client']"
-
-      - name: Zip Build
-        shell: pwsh
+      - name: Install dependencies
         run: |
-          $source = "./build/windows64/Minecraft.Client/Release"
-          $zip = "neoLegacyWindows64.zip"
-          $topLevel = "neoLegacyWindows64"
-          
-          # Collect files, excluding unwanted extensions
-          $files = Get-ChildItem -Path $source -Recurse -File |
-            Where-Object { $_.Extension -notin '.pch', '.zip', '.ipdb', '.iobj' }
-          
-          Add-Type -AssemblyName System.IO.Compression
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
-          
-          $basePath = (Resolve-Path $source).Path
-          $fs = [System.IO.File]::Open($zip, [System.IO.FileMode]::Create)
-          try {
-            $archive = New-Object System.IO.Compression.ZipArchive($fs, [System.IO.Compression.ZipArchiveMode]::Create)
-            try {
-              # Add directories
-              Get-ChildItem -Path $basePath -Recurse -Directory | ForEach-Object {
-                $rel = $_.FullName.Substring($basePath.Length).TrimStart('\', '/')
-                $archive.CreateEntry("$topLevel/$($rel -replace '\\','/')/") | Out-Null
-              }
-              # Add files
-              foreach ($file in $files) {
-                $rel = $file.FullName.Substring($basePath.Length).TrimStart('\', '/')
-                $entryName = "$topLevel/$($rel -replace '\\','/')"
-                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-                  $archive, $file.FullName, $entryName,
-                  [System.IO.Compression.CompressionLevel]::Optimal
-                ) | Out-Null
-              }
-            } finally { $archive.Dispose() }
-          } finally { $fs.Dispose() }
-          
-          Write-Host "Created $zip"
+          sudo dpkg --add-architecture i386
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 21
+          sudo apt-get update -qq
+          sudo apt-get install -y wine
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build rsync zip util-linux \
+            clang-21 lld-21 llvm-21 clang-tools-21 jq
 
-      - name: Stage artifacts
-        shell: pwsh
+      - name: Install xwin (Binary)
         run: |
-          New-Item -ItemType Directory -Force -Path staging
-          Copy-Item neoLegacyWindows64.zip staging/
+          curl -L https://github.com/Jake-Shadle/xwin/releases/download/0.8.0/xwin-0.8.0-x86_64-unknown-linux-musl.tar.gz | tar xz
+          sudo mv xwin-*/xwin /usr/bin/
+          xwin --version
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+      - name: Create Tool Symlinks
+        run: |
+          sudo ln -sf /usr/bin/clang-cl-21 /usr/bin/clang-cl
+          sudo ln -sf /usr/bin/llvm-ml-21 /usr/bin/llvm-ml
+          sudo ln -sf /usr/bin/lld-link-21 /usr/bin/lld-link
+          sudo ln -sf /usr/bin/clang-21 /usr/bin/clang
+          sudo ln -sf /usr/bin/llvm-rc-21 /usr/bin/llvm-rc
+          sudo ln -sf /usr/bin/llvm-lib-21 /usr/bin/llvm-lib
+          sudo ln -sf /usr/bin/llvm-mt-21 /usr/bin/llvm-mt
+          clang-cl --version
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          name: client-build
+          dotnet-version: '10.0.x'
+          
+      - name: Build
+        run: |
+          export INSTALL_PREFIX=$PWD/result
+          taskset -c 1-3 ./build-linux.sh . Release
+
+      - name: Package artifacts
+        run: |
+          mkdir -p staging
+          cd result/client
+          zip -r ../../staging/neoLegacyWindows64.zip .
+          cd ../..
+          cd result/server
+          zip -r ../../staging/neoLegacyServerWindows64.zip .
+          cd ../..
+          cd result/fourkit
+          zip -r ../../staging/neoLegacyServerWindows64-FourKit.zip .
+          cd ../..
+
+      - name: Upload build artifacts
+        uses: christopherhx/gitea-upload-artifact@v4
+        with:
+          name: build-windows64
           path: staging/*
-  build-server:
-    name: Build Server
-    runs-on: windows-latest
+
+  release:
+    needs: build
+    if: >
+      !gitea.event.head_commit ||
+      !contains(gitea.event.head_commit.message, '[skip ci]')
+    runs-on: ubuntu-24.04
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v6
-      with:
-        submodules: recursive
-
-    - name: Setup MSVC
-      uses: ilammy/msvc-dev-cmd@v1
-
-    - name: Setup CMake
-      uses: lukka/get-cmake@latest
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        global-json-file: global.json
-
-    - name: Run CMake
-      uses: lukka/run-cmake@v10
-      env:
-        VCPKG_ROOT: ""
-      with:
-        configurePreset: windows64
-        buildPreset: windows64-release
-        buildPresetAdditionalArgs: "['--target', 'Minecraft.Server', '--target', 'Minecraft.Server.FourKit']"
-
-    - name: Zip Build (vanilla)
-      shell: pwsh
-      run: |
-        $source = "./build/windows64/Minecraft.Server/Release"
-        $zip = "neoLegacyServerWindows64.zip"
-        $topLevel = "neoLegacyServerWindows64"
-        $files = Get-ChildItem -Path $source -Recurse -File |
-          Where-Object { $_.Extension -notin '.pch', '.zip', '.ipdb', '.iobj' }
-
-        Add-Type -AssemblyName System.IO.Compression
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        $basePath = (Resolve-Path $source).Path
-        $fs = [System.IO.File]::Open($zip, [System.IO.FileMode]::Create)
-        try {
-          $archive = New-Object System.IO.Compression.ZipArchive($fs, [System.IO.Compression.ZipArchiveMode]::Create)
-          try {
-            Get-ChildItem -Path $basePath -Recurse -Directory | ForEach-Object {
-              $rel = $_.FullName.Substring($basePath.Length).TrimStart('\', '/')
-              $archive.CreateEntry("$topLevel/$($rel -replace '\\','/')/") | Out-Null
-            }
-            foreach ($file in $files) {
-              $rel = $file.FullName.Substring($basePath.Length).TrimStart('\', '/')
-              $entryName = "$topLevel/$($rel -replace '\\','/')"
-              [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-                $archive, $file.FullName, $entryName,
-                [System.IO.Compression.CompressionLevel]::Optimal
-              ) | Out-Null
-            }
-          } finally { $archive.Dispose() }
-        } finally { $fs.Dispose() }
-
-        Write-Host "Created $zip"
-
-    - name: Zip Build (FourKit)
-      shell: pwsh
-      run: |
-        $source = "./build/windows64/Minecraft.Server.FourKit/Release"
-        $zip = "neoLegacyServerWindows64-FourKit.zip"
-        $topLevel = "neoLegacyServerWindows64-FourKit"
-        $files = Get-ChildItem -Path $source -Recurse -File |
-          Where-Object { $_.Extension -notin '.pch', '.zip', '.ipdb', '.iobj' }
-
-        Add-Type -AssemblyName System.IO.Compression
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        $basePath = (Resolve-Path $source).Path
-        $fs = [System.IO.File]::Open($zip, [System.IO.FileMode]::Create)
-        try {
-          $archive = New-Object System.IO.Compression.ZipArchive($fs, [System.IO.Compression.ZipArchiveMode]::Create)
-          try {
-            Get-ChildItem -Path $basePath -Recurse -Directory | ForEach-Object {
-              $rel = $_.FullName.Substring($basePath.Length).TrimStart('\', '/')
-              $archive.CreateEntry("$topLevel/$($rel -replace '\\','/')/") | Out-Null
-            }
-            foreach ($file in $files) {
-              $rel = $file.FullName.Substring($basePath.Length).TrimStart('\', '/')
-              $entryName = "$topLevel/$($rel -replace '\\','/')"
-              [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-                $archive, $file.FullName, $entryName,
-                [System.IO.Compression.CompressionLevel]::Optimal
-              ) | Out-Null
-            }
-          } finally { $archive.Dispose() }
-        } finally { $fs.Dispose() }
-
-        Write-Host "Created $zip"
-
-    - name: Stage artifacts
-      shell: pwsh
-      run: |
-        New-Item -ItemType Directory -Force -Path staging
-        Copy-Item neoLegacyServerWindows64.zip staging/
-        Copy-Item neoLegacyServerWindows64-FourKit.zip staging/
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v6
-      with:
-        name: server-build
-        path: staging/*
-
-  release-server:
-    name: Release Server
-    needs: build-server
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v6
-
-    - name: Download server artifacts
-      uses: actions/download-artifact@v7
-      with:
-        name: server-build
-        path: artifacts
-
-    - name: Attest artifacts
-      uses: actions/attest-build-provenance@v2
-      with:
-        subject-path: |
-          artifacts/neoLegacyServerWindows64.zip
-          artifacts/neoLegacyServerWindows64-FourKit.zip
-
-    - name: Create tag
-      run: |
-        VERSION=v$(cat BUMP)
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git tag -f $VERSION-Dedicated-Server -m "$VERSION server"
-        git push origin $VERSION-Dedicated-Server --force
-
-    - name: Create release
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        VERSION=v$(cat BUMP)
-        gh release create $VERSION-Dedicated-Server artifacts/* \
-          --title "$VERSION Server" \
-          --notes "Dedicated Server runtime for Windows64.
-
-        Two flavours are attached:
-        - \`neoLegacyServerWindows64.zip\`: vanilla server, no plugin support, smallest download.
-        - \`neoLegacyServerWindows64-FourKit.zip\`: server with the FourKit plugin host, bundled .NET 10 runtime, and an empty \`plugins/\` folder ready for plugin authors to drop DLLs into.
-
-        Pick the flavour you want and extract it to a folder where you'd like to keep the server runtime." \
-          --latest=false
-
-  release-client:
-    name: Release Client
-    needs: [build-client, release-server]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Download client artifacts
-        uses: actions/download-artifact@v7
+      # putting this here instead
+      # cause apparently checkouts
+      # can replace artifact data??
+      - name: Minimal checkout
+        uses: actions/checkout@v4
         with:
-          name: client-build
+          fetch-depth: 1
+          sparse-checkout: |
+            BUMP
+            NOTES.md
+            
+      - name: Download build artifacts
+        uses: christopherhx/gitea-download-artifact@v4
+        with:
+          name: build-windows64
           path: artifacts
+            
+      - name: Fetch information
+        id: vars
+        run: |
+          VERSION="$(tr -d '\r\n' < BUMP)"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Attest artifacts
-        uses: actions/attest-build-provenance@v2
+          {
+            echo "description<<EOF"
+            cat NOTES.md
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish stable server release
+        uses: akkuman/gitea-release-action@v1
         with:
-          subject-path: |
-            artifacts/neoLegacyWindows64.zip
+          name: ${{ steps.vars.outputs.version }} Server
+          direction: upload
+          server_url: ${{ gitea.server_url }}
+          repository: ${{ gitea.repository }}
+          token: ${{ gitea.token }}
+          tag_name: ${{ steps.vars.outputs.version }}-Dedicated-Server
+          prerelease: false
+          # override: true
+          verbose: true
+          files: artifacts/neoLegacyServerWindows64*.zip 
+          body: |
+            Dedicated Server runtime for Windows64.
+            
+            Two flavours are attached:
+            - \`neoLegacyServerWindows64.zip\`: vanilla server, no plugin support, smallest download.
+            - \`neoLegacyServerWindows64-FourKit.zip\`: server with the FourKit plugin host, bundled .NET 10 runtime, and an empty \`plugins/\` folder ready for plugin authors to drop DLLs into.
 
-      - name: Create tag
-        run: |
-          VERSION=v$(cat BUMP)
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -f $VERSION -m "Stable release $VERSION"
-          git push origin $VERSION --force
+            Pick the flavour you want and extract it to a folder where you'd like to keep the server runtime.
 
-      - name: Create release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION=v$(cat BUMP)
-          gh release create $VERSION artifacts/* \
-            --title "$VERSION" \
-            --notes-file NOTES.md
-
+      - name: Publish stable client release
+        uses: akkuman/gitea-release-action@v1
+        with:
+          name: ${{ steps.vars.outputs.version }}
+          direction: upload
+          server_url: ${{ gitea.server_url }}
+          repository: ${{ gitea.repository }}
+          token: ${{ gitea.token }}
+          tag_name: ${{ steps.vars.outputs.version }}
+          prerelease: false
+          # override: true
+          verbose: true
+          files: artifacts/neoLegacyWindows64.zip
+          body: ${{ steps.vars.outputs.description }}
+            
   cleanup:
-    needs: [release-client, release-server]
+    needs: [build, release]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+
     steps:
-      - name: Cleanup artifacts
-        uses: geekyeggo/delete-artifact@v5
-        with:
-          name: |
-            client-build
-            server-build
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Delete build artifacts
+        env:
+          FORGE_TOKEN: ${{ gitea.token }}
+          REPO: ${{ gitea.repository }}
+          API: ${{ gitea.server_url }}/api/v1
+        run: |
+          AUTH="Authorization: token $FORGE_TOKEN"
+
+          ARTIFACTS=$(curl -s -H "$AUTH" \
+            "$API/repos/$REPO/actions/artifacts?name=build-windows64")
+
+          for ARTIFACT_ID in $(echo "$ARTIFACTS" | jq -r '.artifacts[].id // empty'); do
+            curl -s -X DELETE -H "$AUTH" \
+              "$API/repos/$REPO/actions/artifacts/$ARTIFACT_ID"
+          done
