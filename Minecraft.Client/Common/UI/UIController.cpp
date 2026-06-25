@@ -222,12 +222,23 @@ static wstring GetControlTypeSkinPath(int controlType, bool hd)
 		break;
 	}
 
-	if(hd)
-	{
-		return wstring(L"Graphics\\ControlType\\HD\\") + skinName + L"HD.swf";
-	}
+	if(skinName == L"windows") {
+		if (hd)
+		{
+			return L"skinHDWin.swf";
+		}
 
-	return wstring(L"Graphics\\ControlType\\") + skinName + L".swf";
+		return L"skinWin.swf";
+	}
+	else 
+	{
+		if(hd)
+		{
+			return wstring(L"Graphics\\ControlType\\HD\\") + skinName + L"HD.swf";
+		}
+
+		return wstring(L"Graphics\\ControlType\\") + skinName + L".swf";
+	}
 }
 #endif
 
