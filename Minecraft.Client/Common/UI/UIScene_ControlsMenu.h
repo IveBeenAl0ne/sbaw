@@ -141,26 +141,26 @@ public:
     virtual bool handleMouseClick(F32 x, F32 y);
 #endif
 
+    struct Button {
+	    float x = 0.25;
+		float y = 0;
+		wstring name = L"";
+	};
+
+	static const int buttons_length = 12;
+	Button buttons[buttons_length];
+
 private:
 	void PositionText(int iPad,int iTextID, unsigned char ucAction);
 	void PositionTextDirect(int iPad,int iTextID, int iControlDetailsIndex, bool bShow);
 	void PositionAllText(int iPad);
 
 	bool m_keybindGuiOpen = false;
+	bool m_waitingForKeypress = false;
+	int m_idToBind = 0;
 
 	int m_iPad;
 
 	int m_width = 0;
 	int m_height = 0;
-
-	struct Button {
-	    int x;
-		int y;
-		wstring str;
-		int key;
-	};
-
-	static const int buttons_length = 1;
-
-	Button buttons[buttons_length];
 };

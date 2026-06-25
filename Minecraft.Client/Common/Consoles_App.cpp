@@ -1761,21 +1761,16 @@ void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
 			extern void SetExclusiveFullscreen(bool enabled);
 			SetExclusiveFullscreen(GetGameSettings(iPad, eGameSetting_ExclusiveFullscreen) != 0);
 		}
-#endif
     case eGameSetting_KeyboardBinding:
 			if (!pMinecraft->options->swapActionUse)
 			{ // normal
-#ifdef _WINDOWS64
 				g_KBMInput.SetMouseAction(g_KBMInput.MOUSE_LEFT);
 				g_KBMInput.SetMouseUse(g_KBMInput.MOUSE_RIGHT);
 				g_KBMInput.SetMousePick(g_KBMInput.MOUSE_MIDDLE);
-#endif
 			} else { // inverted
-#ifdef _WINDOWS64
 				g_KBMInput.SetMouseAction(g_KBMInput.MOUSE_RIGHT);
 				g_KBMInput.SetMouseUse(g_KBMInput.MOUSE_LEFT);
 				g_KBMInput.SetMousePick(g_KBMInput.MOUSE_MIDDLE);
-#endif
 			}
 
 			g_KBMInput.KEY_FORWARD = pMinecraft->options->keyboardBindings[0];
@@ -1804,6 +1799,7 @@ void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
 			g_KBMInput.KEY_SCREENSHOT = pMinecraft->options->keyboardBindings[23];
 			break;
 		break;
+#endif
 	case eGameSetting_ClassicCrafting:
 		//nothing to do here
 		break;

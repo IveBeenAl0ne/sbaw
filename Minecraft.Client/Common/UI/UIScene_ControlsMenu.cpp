@@ -20,13 +20,15 @@ void fillRect(Tesselator *t, int x, int y, int w, int h, int r, int g, int b, in
     	t->end();
 };
 
-void drawButton(GuiComponent gui, Font *font, int x, int y, wstring str)
+void drawButton(GuiComponent gui, Font *font, int x, int y, wstring str, int color)
 {
-    gui.fill(x, y, x + 256, y + 32, 0xFF000000);
+    gui.fill(x, y, x + 256, y + 32, color);
     glScalef(2, 2, 2);
 	gui.drawCenteredString(font, str, x/2 + 64, y/2 + 6, 0xFFFFFFFF);
 	glScalef(0.5, 0.5, 0.5);
 }
+
+void drawButton(GuiComponent gui, Font *font, int x, int y, wstring str) { drawButton(gui, font, x, y, str, 0xFF000000); }
 
 void UIScene_ControlsMenu::render(S32 width, S32 height, C4JRender::eViewportType viewport)
 {
@@ -53,8 +55,30 @@ void UIScene_ControlsMenu::render(S32 width, S32 height, C4JRender::eViewportTyp
 
 	if(m_keybindGuiOpen)
 	{
-	    gui.fill(width * 0.2, height * 0.2, width * 0.8, height * 0.8, 0x7F000000);
-	    drawButton(gui, pMinecraft->font, width * 0.5 - 128, height * 0.2, L"Swap Action and Use");
+        gui.fill(width * 0.2, height * 0.2, width * 0.8, height * 0.8, 0x7F000000);
+        int color = 0xFF000000;
+	    if(pMinecraft->options->swapActionUse)
+		{
+		    color = 0xFF777777;
+		}
+	    drawButton(gui, pMinecraft->font, width * 0.25, height * 0.25, L"Swap Action and Use", color);
+
+		for(int i = 0; i < buttons_length; i++)
+        {
+            Button button = buttons[i];
+            wchar_t key = pMinecraft->options->keyboardBindings[i];
+            if(key == ' ')
+            {
+                drawButton(gui, pMinecraft->font, width * button.x, height * button.y, button.name + L" : Space");
+            } else {
+                drawButton(gui, pMinecraft->font, width * button.x, height * button.y, button.name + L" : " + key);
+            }
+        }
+
+        if(m_waitingForKeypress)
+        {
+            drawButton(gui, pMinecraft->font, width * 0.5 - 128, height * 0.75, L"Press any key...", 0x00000000);
+        }
 	}
 
 	m_width = width;
@@ -72,31 +96,80 @@ bool UIScene_ControlsMenu::handleMouseClick(F32 x, F32 y)
         m_keybindGuiOpen = !m_keybindGuiOpen;
         return true;
     }
-    if(x > m_width * 0.5 && x < m_width * 0.5 + 256 && y > m_height * 0.2 && y < m_height * 0.2 + 32)
-    {
-        pMinecraft->options->swapActionUse = !pMinecraft->options->swapActionUse;
-        app.ActionGameSettings(m_iPad, eGameSetting_KeyboardBinding);
-    }
     if(!m_keybindGuiOpen)
     {
         return UIScene::handleMouseClick(x, y);
     }
-    for(const auto& button : buttons)
+    if(x > m_width * 0.25 && x < m_width * 0.25 + 256 && y > m_height * 0.25 && y < m_height * 0.25 + 32)
     {
-        if(x > button.x && x < button.x + 256 && y > button.y && y < button.y + 32)
+        pMinecraft->options->swapActionUse = !pMinecraft->options->swapActionUse;
+        app.ActionGameSettings(m_iPad, eGameSetting_KeyboardBinding);
+        return true;
+    }
+    for(int i = 0; i < buttons_length; i++)
+    {
+        Button button = buttons[i];
+        if(x > m_width * button.x && x < m_width * button.x + 256 && y > m_height * button.y && y < m_height * button.y + 32 && !m_waitingForKeypress)
         {
-            
+            m_waitingForKeypress = true;
+            m_idToBind = i;
+            return true;
         }
     }
     
     // always consume to prevent Iggy re-entry on empty space (idk thats what another file said to do)
     return true;
 }
+
+void UIScene_ControlsMenu::tick()
+{
+    if(m_waitingForKeypress)
+    {
+        wchar_t ch;
+        m_waitingForKeypress = !g_KBMInput.ConsumeChar(ch);
+        
+        Minecraft *pMinecraft = Minecraft::GetInstance();
+
+        pMinecraft->options->keyboardBindings[m_idToBind] = toupper(ch);
+        app.ActionGameSettings(m_iPad, eGameSetting_KeyboardBinding);
+    }
+    
+    if(m_bLayoutChanged) PositionAllText(m_iPad);
+    UIScene::tick();
+}
 #endif
 
 UIScene_ControlsMenu::UIScene_ControlsMenu(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
     m_iPad = iPad;
+    
+    // all controls, autofills gui
+    buttons[0].y = 0.3;
+    buttons[0].name = L"Forward";
+    buttons[1].y = 0.35;
+    buttons[1].name = L"Backward";
+    buttons[2].y = 0.4;
+    buttons[2].name = L"Left";
+    buttons[3].y = 0.45;
+    buttons[3].name = L"Right";
+    buttons[4].y = 0.5;
+    buttons[4].name = L"Jump";
+    buttons[5].y = 2;
+    buttons[5].name = L"";
+    buttons[6].y = 2;
+    buttons[6].name = L"";
+    buttons[7].y = 0.55;
+    buttons[7].name = L"Inventory";
+    buttons[8].y = 0.6;
+    buttons[8].name = L"Drop";
+    buttons[9].y = 0.65;
+    buttons[9].name = L"Crafting";
+    buttons[10].y = 2;
+    buttons[10].name = L"";
+    buttons[11].x = 0.4;
+    buttons[11].y = 0.3;
+    buttons[11].name = L"Chat";
+
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
 
@@ -227,12 +300,6 @@ wstring UIScene_ControlsMenu::getMoviePath()
 void UIScene_ControlsMenu::updateTooltips()
 {
 	ui.SetTooltips( m_iPad, IDS_TOOLTIPS_SELECT,IDS_TOOLTIPS_BACK);
-}
-
-void UIScene_ControlsMenu::tick()
-{
-	if(m_bLayoutChanged) PositionAllText(m_iPad);
-	UIScene::tick();
 }
 
 void UIScene_ControlsMenu::handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled)
