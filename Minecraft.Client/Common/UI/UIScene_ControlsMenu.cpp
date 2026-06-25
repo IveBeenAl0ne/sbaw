@@ -45,9 +45,11 @@ void drawButton(GuiComponent gui, Font *font, int x, int y, wstring str, int col
 
 void drawButton(GuiComponent gui, Font *font, int x, int y, wstring str) { drawButton(gui, font, x, y, str, 0xFF000000); }
 
+#ifdef _WINDOWS64
+#ifdef CONTROLSMENU_GUI_TEST
+#define _CONTROLSMENU_GUI_TEST
 void UIScene_ControlsMenu::render(S32 width, S32 height, C4JRender::eViewportType viewport)
 {
-#ifdef _WINDOWS64
     Minecraft *pMinecraft = Minecraft::GetInstance();
 
     GuiComponent gui = GuiComponent();
@@ -154,6 +156,15 @@ void UIScene_ControlsMenu::tick()
         app.ActionGameSettings(m_iPad, eGameSetting_KeyboardBinding);
     }
     
+    if(m_bLayoutChanged) PositionAllText(m_iPad);
+    UIScene::tick();
+}
+#endif
+#endif
+
+#ifndef _CONTROLSMENU_GUI_TEST
+void UIScene_ControlsMenu::tick()
+{
     if(m_bLayoutChanged) PositionAllText(m_iPad);
     UIScene::tick();
 }

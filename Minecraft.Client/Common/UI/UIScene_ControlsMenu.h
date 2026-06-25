@@ -124,7 +124,6 @@ public:
 	
 	virtual void updateTooltips();
 	virtual void tick();
-	virtual void render(S32 width, S32 height, C4JRender::eViewportType viewport);
 
 protected:
 	// TODO: This should be pure virtual in this class
@@ -139,7 +138,10 @@ public:
 	virtual void handleFocusChange(F64 controlId, F64 childId);
 
 #ifdef _WINDOWS64
+#ifdef CONTROLSMENU_GUI_TEST
     virtual bool handleMouseClick(F32 x, F32 y);
+    virtual void render(S32 width, S32 height, C4JRender::eViewportType viewport);
+#endif
 #endif
 
     struct Button {
