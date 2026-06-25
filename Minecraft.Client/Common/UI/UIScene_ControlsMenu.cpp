@@ -9,6 +9,10 @@
 #include "../../Options.h"
 #include "../Consoles_App.h"
 
+#include "../../Textures.h"
+
+ResourceLocation UIScene_ControlsMenu::TN_GUI_GUI_LOCATION = ResourceLocation(TN_GUI_GUI);
+
 void fillRect(Tesselator *t, int x, int y, int w, int h, int r, int g, int b, int a)
 {
     	t->begin();
@@ -22,9 +26,20 @@ void fillRect(Tesselator *t, int x, int y, int w, int h, int r, int g, int b, in
 
 void drawButton(GuiComponent gui, Font *font, int x, int y, wstring str, int color)
 {
-    gui.fill(x, y, x + 256, y + 32, color);
+    // backing
+    gui.fill(x - 2, y - 2, x + 258, y + 50, color);
+
+    // frame
+    gui.fill(x, y, x + 256, y + 2, 0xFF757575);
+    gui.fill(x, y, x + 2, y + 48, 0xFF757575);
+    gui.fill(x, y + 46, x + 256, y + 48, 0xFF555555);
+    gui.fill(x + 254, y, x + 256, y + 48, 0xFF555555);
+    
+    // inner
+    gui.fill(x + 2, y + 2, x + 254, y + 46, 0xFF626262);
+    
     glScalef(2, 2, 2);
-	gui.drawCenteredString(font, str, x/2 + 64, y/2 + 6, 0xFFFFFFFF);
+	gui.drawCenteredString(font, str, x/2 + 64, y/2 + 7, 0xFFFFFFFF);
 	glScalef(0.5, 0.5, 0.5);
 }
 
@@ -32,10 +47,6 @@ void drawButton(GuiComponent gui, Font *font, int x, int y, wstring str) { drawB
 
 void UIScene_ControlsMenu::render(S32 width, S32 height, C4JRender::eViewportType viewport)
 {
-    UIScene::render(width, height, viewport);
-#ifndef _WINDOWS64
-}
-#endif
 #ifdef _WINDOWS64
     Minecraft *pMinecraft = Minecraft::GetInstance();
 
@@ -51,17 +62,22 @@ void UIScene_ControlsMenu::render(S32 width, S32 height, C4JRender::eViewportTyp
 	// fillRect(t, width * 0.8, height * 0.5, 128, 64, 0, 0, 0, 255);
 	// pMinecraft->font->drawShadow(L"test string", 2, 2 + 9 * 0, 0xffffff);
 
-	drawButton(gui, pMinecraft->font, width * 0.8, height * 0.2, L"Keyboard Settings");
+	drawButton(gui, pMinecraft->font, width * 0.82, height * 0.35, L"Keyboard Settings");
 
 	if(m_keybindGuiOpen)
 	{
-        gui.fill(width * 0.2, height * 0.2, width * 0.8, height * 0.8, 0x7F000000);
+	    // background
+		gui.fill(width * 0.2 - 4, height * 0.25 - 4, width * 0.8 + 4, height * 0.85 + 4, 0xFF000000);
+		gui.fill(width * 0.2, height * 0.25, width * 0.8 - 4, height * 0.85 - 4, 0xFFFFFFFF);
+		gui.fill(width * 0.2 + 4, height * 0.25 + 4, width * 0.8, height * 0.85, 0xFF545454);
+        gui.fill(width * 0.2 + 4, height * 0.25 + 4, width * 0.8 - 4, height * 0.85 - 4, 0xFFC5C5C5);
+        
         int color = 0xFF000000;
 	    if(pMinecraft->options->swapActionUse)
 		{
-		    color = 0xFF777777;
+		    color = 0xFFFFFF00;
 		}
-	    drawButton(gui, pMinecraft->font, width * 0.25, height * 0.25, L"Swap Action and Use", color);
+	    drawButton(gui, pMinecraft->font, width * 0.25, height * 0.3, L"Swap Action and Use", color);
 
 		for(int i = 0; i < buttons_length; i++)
         {
@@ -77,9 +93,13 @@ void UIScene_ControlsMenu::render(S32 width, S32 height, C4JRender::eViewportTyp
 
         if(m_waitingForKeypress)
         {
-            drawButton(gui, pMinecraft->font, width * 0.5 - 128, height * 0.75, L"Press any key...", 0x00000000);
+            glScalef(4, 4, 4);
+            gui.drawCenteredString(pMinecraft->font, L"Press any key...", width * 0.125, height * 0.2, 0xFFFFFFFF);
+            glScalef(0.25, 0.25, 0.25);
         }
-	}
+	} else {
+	    UIScene::render(width, height, viewport);
+    }
 
 	m_width = width;
 	m_height = height;
@@ -91,7 +111,7 @@ bool UIScene_ControlsMenu::handleMouseClick(F32 x, F32 y)
 {   
     Minecraft *pMinecraft = Minecraft::GetInstance();
     
-    if(x > m_width * 0.8 && x < m_width * 0.8 + 256 && y > m_height * 0.2 && y < m_height * 0.2 + 32)
+    if(x > m_width * 0.8 && x < m_width * 0.8 + 256 && y > m_height * 0.35 && y < m_height * 0.35 + 48)
     {
         m_keybindGuiOpen = !m_keybindGuiOpen;
         return true;
@@ -100,7 +120,7 @@ bool UIScene_ControlsMenu::handleMouseClick(F32 x, F32 y)
     {
         return UIScene::handleMouseClick(x, y);
     }
-    if(x > m_width * 0.25 && x < m_width * 0.25 + 256 && y > m_height * 0.25 && y < m_height * 0.25 + 32)
+    if(x > m_width * 0.25 && x < m_width * 0.25 + 256 && y > m_height * 0.3 && y < m_height * 0.3 + 48)
     {
         pMinecraft->options->swapActionUse = !pMinecraft->options->swapActionUse;
         app.ActionGameSettings(m_iPad, eGameSetting_KeyboardBinding);
@@ -109,7 +129,7 @@ bool UIScene_ControlsMenu::handleMouseClick(F32 x, F32 y)
     for(int i = 0; i < buttons_length; i++)
     {
         Button button = buttons[i];
-        if(x > m_width * button.x && x < m_width * button.x + 256 && y > m_height * button.y && y < m_height * button.y + 32 && !m_waitingForKeypress)
+        if(x > m_width * button.x && x < m_width * button.x + 256 && y > m_height * button.y && y < m_height * button.y + 48 && !m_waitingForKeypress)
         {
             m_waitingForKeypress = true;
             m_idToBind = i;
@@ -144,30 +164,29 @@ UIScene_ControlsMenu::UIScene_ControlsMenu(int iPad, void *initData, UILayer *pa
     m_iPad = iPad;
     
     // all controls, autofills gui
-    buttons[0].y = 0.3;
+    buttons[0].y = 0.35;
     buttons[0].name = L"Forward";
-    buttons[1].y = 0.35;
+    buttons[1].y = 0.4;
     buttons[1].name = L"Backward";
-    buttons[2].y = 0.4;
+    buttons[2].y = 0.45;
     buttons[2].name = L"Left";
-    buttons[3].y = 0.45;
+    buttons[3].y = 0.5;
     buttons[3].name = L"Right";
-    buttons[4].y = 0.5;
+    buttons[4].y = 0.55;
     buttons[4].name = L"Jump";
     buttons[5].y = 2;
     buttons[5].name = L"";
     buttons[6].y = 2;
     buttons[6].name = L"";
-    buttons[7].y = 0.55;
+    buttons[7].y = 0.6;
     buttons[7].name = L"Inventory";
-    buttons[8].y = 0.6;
+    buttons[8].y = 0.65;
     buttons[8].name = L"Drop";
-    buttons[9].y = 0.65;
+    buttons[9].y = 0.7;
     buttons[9].name = L"Crafting";
     buttons[10].y = 2;
     buttons[10].name = L"";
-    buttons[11].x = 0.4;
-    buttons[11].y = 0.3;
+    buttons[11].y = 0.75;
     buttons[11].name = L"Chat";
 
 	// Setup all the Iggy references we need for this scene

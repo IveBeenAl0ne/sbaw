@@ -3,6 +3,7 @@
 #include "UIScene.h"
 
 #include "../../Tesselator.h"
+#include "ResourceLocation.h"
 
 class UIScene_ControlsMenu : public UIScene
 {
@@ -154,6 +155,8 @@ private:
 	void PositionText(int iPad,int iTextID, unsigned char ucAction);
 	void PositionTextDirect(int iPad,int iTextID, int iControlDetailsIndex, bool bShow);
 	void PositionAllText(int iPad);
+
+	static ResourceLocation TN_GUI_GUI_LOCATION;
 
 	bool m_keybindGuiOpen = false;
 	bool m_waitingForKeypress = false;
