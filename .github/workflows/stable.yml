@@ -130,12 +130,12 @@ jobs:
       - name: Publish stable server release
         uses: akkuman/gitea-release-action@v1
         with:
-          name: ${{ steps.vars.outputs.version }} Server
+          name: v${{ steps.vars.outputs.version }} Server
           direction: upload
           server_url: ${{ gitea.server_url }}
           repository: ${{ gitea.repository }}
           token: ${{ gitea.token }}
-          tag_name: ${{ steps.vars.outputs.version }}-Dedicated-Server
+          tag_name: v${{ steps.vars.outputs.version }}-Dedicated-Server
           prerelease: false
           # override: true
           verbose: true
@@ -152,12 +152,12 @@ jobs:
       - name: Publish stable client release
         uses: akkuman/gitea-release-action@v1
         with:
-          name: ${{ steps.vars.outputs.version }}
+          name: v${{ steps.vars.outputs.version }}
           direction: upload
           server_url: ${{ gitea.server_url }}
           repository: ${{ gitea.repository }}
           token: ${{ gitea.token }}
-          tag_name: ${{ steps.vars.outputs.version }}
+          tag_name: v${{ steps.vars.outputs.version }}
           prerelease: false
           # override: true
           verbose: true
