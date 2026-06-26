@@ -374,7 +374,7 @@ void UIScene_JoinMenu::updateServerDescription() {
 			wstring testText = L"\nNothing yet...";
 			IggyStringUTF16 iggyStr;
 			wstring formattedText = app.EscapeHTMLString(testText);
-			formattedText = app.FormatChatMessage(formattedText);
+			formattedText = app.FormatColoredString(formattedText);
 			iggyStr.string = (IggyUTF16*)formattedText.c_str();
 			iggyStr.length = (unsigned int)formattedText.length();
 
