@@ -32,6 +32,17 @@ UIScene_HUD::UIScene_HUD(int iPad, void *initData, UILayer *parentLayer) : UISce
 		IggyValueSetBooleanRS(&labelPath, 0, "m_bUseHtmlText", true);
 	}
 
+	//enable colors for boss bar
+	{
+		IggyValuePath classPath;
+		IggyValuePathMakeNameRef(&classPath, m_rootPath, "m_DragonHealthBar");
+
+		IggyValuePath labelPath;
+		IggyValuePathMakeNameRef(&labelPath, &classPath, "m_DragonHealthLabel");
+
+		IggyValueSetBooleanRS(&labelPath, 0, "m_bUseHtmlText", true);
+	}
+
 	for(unsigned int i = 0; i < CHAT_LINES_COUNT; ++i)
 	{
 		m_labelChatText[i].init(L"");
@@ -281,6 +292,17 @@ void UIScene_HUD::handleReload()
 
 		IggyValuePath labelPath;
 		IggyValuePathMakeNameRef(&labelPath, &classPath, "Label");
+
+		IggyValueSetBooleanRS(&labelPath, 0, "m_bUseHtmlText", true);
+	}
+
+	//enable colors for boss bar
+	{
+		IggyValuePath classPath;
+		IggyValuePathMakeNameRef(&classPath, m_rootPath, "m_DragonHealthBar");
+
+		IggyValuePath labelPath;
+		IggyValuePathMakeNameRef(&labelPath, &classPath, "m_DragonHealthLabel");
 
 		IggyValueSetBooleanRS(&labelPath, 0, "m_bUseHtmlText", true);
 	}
@@ -591,11 +613,17 @@ void UIScene_HUD::SetDragonHealth(float health)
 
 void UIScene_HUD::SetDragonLabel(const wstring &label)
 {
+	wstring itemName = L"";
+	if (!label.empty()) {
+		itemName = app.EscapeHTMLString(label);
+		itemName = app.FormatColoredString(itemName);
+	}
+
 	IggyDataValue result;
 	IggyDataValue value[1];
 	IggyStringUTF16 stringVal;
-	stringVal.string = (IggyUTF16*)label.c_str();
-	stringVal.length = label.length();
+	stringVal.string = (IggyUTF16*)itemName.c_str();
+	stringVal.length = itemName.length();
 	value[0].type = IGGY_DATATYPE_string_UTF16;
 	value[0].string16 = stringVal;
 	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetDragonLabel , 1 , value );
