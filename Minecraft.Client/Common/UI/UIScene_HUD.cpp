@@ -21,6 +21,17 @@ UIScene_HUD::UIScene_HUD(int iPad, void *initData, UILayer *parentLayer) : UISce
 	SetDragonLabel( app.GetString( IDS_BOSS_ENDERDRAGON_HEALTH ) );
 	SetSelectedLabel(L"");
 
+	//enable colors for selected item text
+	{
+		IggyValuePath classPath;
+		IggyValuePathMakeNameRef(&classPath, m_rootPath, "SelectedLabel");
+
+		IggyValuePath labelPath;
+		IggyValuePathMakeNameRef(&labelPath, &classPath, "Label");
+
+		IggyValueSetBooleanRS(&labelPath, 0, "m_bUseHtmlText", true);
+	}
+
 	for(unsigned int i = 0; i < CHAT_LINES_COUNT; ++i)
 	{
 		m_labelChatText[i].init(L"");
@@ -262,6 +273,17 @@ void UIScene_HUD::handleReload()
 
     SetDragonLabel(BossMobGuiInfo::name[idx]);
 	SetSelectedLabel(L"");
+
+	//enable colors for selected item text
+	{
+		IggyValuePath classPath;
+		IggyValuePathMakeNameRef(&classPath, m_rootPath, "SelectedLabel");
+
+		IggyValuePath labelPath;
+		IggyValuePathMakeNameRef(&labelPath, &classPath, "Label");
+
+		IggyValueSetBooleanRS(&labelPath, 0, "m_bUseHtmlText", true);
+	}
 
 	for(unsigned int i = 0; i < CHAT_LINES_COUNT; ++i)
 	{
@@ -599,11 +621,17 @@ void UIScene_HUD::SetSelectedLabel(const wstring &label)
 	// 4J Stu - Timing here is kept the same as on Xbox360, even though we do it differently now and do the fade out in Flash rather than directly setting opacity
 	if(!label.empty()) m_uiSelectedItemOpacityCountDown = SharedConstants::TICKS_PER_SECOND * 3;
 
+	wstring itemName = L"";
+	if (!label.empty()) {
+		itemName = app.EscapeHTMLString(label);
+		itemName = app.FormatColoredString(itemName);
+	}
+
 	IggyDataValue result;
 	IggyDataValue value[1];
 	IggyStringUTF16 stringVal;
-	stringVal.string = (IggyUTF16*)label.c_str();
-	stringVal.length = label.length();
+	stringVal.string = (IggyUTF16*)itemName.c_str();
+	stringVal.length = itemName.length();
 	value[0].type = IGGY_DATATYPE_string_UTF16;
 	value[0].string16 = stringVal;
 	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetSelectedLabel , 1 , value );
