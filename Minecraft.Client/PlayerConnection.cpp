@@ -1651,9 +1651,10 @@ void PlayerConnection::handleTextureAndGeometry(shared_ptr<TextureAndGeometryPac
 			{
 				// we don't have the dlc skin, so retrieve the data from the app store
 				vector<SKIN_BOX *> *pvSkinBoxes = app.GetAdditionalSkinBoxes(packet->dwSkinID);
+				vector<SKIN_OFFSET *> *pvSkinOffsets = app.GetSkinOffsets(packet->dwSkinID);
 				unsigned int uiAnimOverrideBitmask= app.GetAnimOverrideBitmask(packet->dwSkinID);
 
-				send(std::make_shared<TextureAndGeometryPacket>(packet->textureName, pbData, dwTextureBytes, pvSkinBoxes, uiAnimOverrideBitmask));
+				send(std::make_shared<TextureAndGeometryPacket>(packet->textureName, pbData, dwTextureBytes, pvSkinBoxes, pvSkinOffsets, uiAnimOverrideBitmask));
 			}
 		}
 		else
@@ -1676,6 +1677,13 @@ void PlayerConnection::handleTextureAndGeometry(shared_ptr<TextureAndGeometryPac
 			wprintf(L"Adding skin boxes for skin id %X, box count %d\n",packet->dwSkinID,packet->dwBoxC);
 #endif
 			app.SetAdditionalSkinBoxes(packet->dwSkinID,packet->BoxDataA,packet->dwBoxC);
+		}// add the offsets to the app list
+		if(packet->dwOffsetC!=0)
+		{
+#ifndef _CONTENT_PACKAGE
+			wprintf(L"Adding skin offsets for skin id %X, offset count %d\n",packet->dwSkinID,packet->dwOffsetC);
+#endif
+			app.SetSkinOffsets(packet->dwSkinID,packet->OffsetDataA,packet->dwOffsetC);
 		}
 		// Add the anim override
 		app.SetAnimOverrideBitmask(packet->dwSkinID,packet->uiAnimOverrideBitmask);
@@ -1726,9 +1734,10 @@ void PlayerConnection::handleTextureAndGeometryReceived(const wstring &textureNa
 				// get the data from the app
 				DWORD dwSkinID = app.getSkinIdFromPath(textureName);
 				vector<SKIN_BOX *> *pvSkinBoxes = app.GetAdditionalSkinBoxes(dwSkinID);
+				vector<SKIN_OFFSET *> *pvSkinOffsets = app.GetSkinOffsets(dwSkinID);
 				unsigned int uiAnimOverrideBitmask= app.GetAnimOverrideBitmask(dwSkinID);
 
-				send(std::make_shared<TextureAndGeometryPacket>(textureName, pbData, dwTextureBytes, pvSkinBoxes, uiAnimOverrideBitmask));
+				send(std::make_shared<TextureAndGeometryPacket>(textureName, pbData, dwTextureBytes, pvSkinBoxes, pvSkinOffsets, uiAnimOverrideBitmask));
 			}
 			m_texturesRequested.erase(it);
 		}

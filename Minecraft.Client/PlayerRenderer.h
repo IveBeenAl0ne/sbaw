@@ -14,9 +14,9 @@ public:
 
 private:
 	HumanoidModel *humanoidModel;
+	HumanoidModel *humanoidModelWide;
 	HumanoidModel *humanoidModelSlim;
-	HumanoidModel *newHumanoidModel;
-	HumanoidModel *newHumanoidModelSlim;
+	HumanoidModel *resModel;
 
     HumanoidModel *armorParts1;
     HumanoidModel *armorParts2;
@@ -38,6 +38,7 @@ private:
 	static const wstring MATERIAL_NAMES[5];
 
 protected:
+	virtual void setModelType(shared_ptr<Player> player);
 	virtual int prepareArmor(shared_ptr<LivingEntity> _player, int layer, float a);
 	virtual void prepareSecondPassArmor(shared_ptr<LivingEntity> mob, int layer, float a);
 
