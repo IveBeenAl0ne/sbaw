@@ -4,6 +4,7 @@ VERSION="0.0.0" # man we're using nightly :sob:
 SOURCE_DIR="${SOURCE_DIR:-${1:-.}}"
 BUILD_CI="${BUILD_CI:-0}"
 BUILD_TYPE="${BUILD_TYPE:-${2:-Release}}"
+BUILD_TARGET="${BUILD_TARGET:-${3:-all}}"
 XWIN_CACHE="${XWIN_CACHE:-$PWD/.xwin}"
 INSTALL_DIR="${INSTALL_PREFIX:-$HOME/.local/share/neoLegacy}"
 RED='\033[0;31m'
@@ -123,7 +124,7 @@ do_build() {
         cores=3
     fi
     info "Building with ${cores} cores..."
-    cmake --build "${BUILD_DIR}" --config "${BUILD_TYPE}" -j "${cores}"
+    cmake --build "${BUILD_DIR}" --config "${BUILD_TYPE}" -j "${cores}" --target "${BUILD_TARGET}"
     success "Build complete"
 }
 
