@@ -24,16 +24,16 @@ const WCHAR *UIScene_SkinSelectMenu::wchDefaultNamesA[]=
 	L"Prisoner Steve",
 	L"Cyclist Steve",
 	L"Boxer Steve",
-	L"Developer Steve",
 	L"Alex",
-	L"Tuxedo Alex",
-	L"Boxer Alex",
-	L"Prisoner Alex",
 	L"Tennis Alex",
-	L"Cyclist Alex",
+	L"Tuxedo Alex",
 	L"Athlete Alex",
 	L"Swedish Alex",
+	L"Prisoner Alex",
+	L"Cyclist Alex",
+	L"Boxer Alex",
 	L"Developer Alex",
+	L"Developer Steve",
 };
 
 UIScene_SkinSelectMenu::UIScene_SkinSelectMenu(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
@@ -59,6 +59,7 @@ UIScene_SkinSelectMenu::UIScene_SkinSelectMenu(int iPad, void *initData, UILayer
 	m_selectedSkinPath = L"";
 	m_selectedCapePath = L"";
 	m_vAdditionalSkinBoxes = nullptr;
+	m_vSkinOffsets = nullptr;
 
 	m_bSlidingSkins = false;
 	m_bAnimatingMove = false;
@@ -662,6 +663,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 		m_selectedSkinPath = skinFile->getPath();
 		m_selectedCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
 		m_vAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
+		m_vSkinOffsets = skinFile->getOffsets();
 
 		skinName = skinFile->getParameterAsString( DLCManager::e_DLCParamType_DisplayName );
 		skinOrigin = skinFile->getParameterAsString( DLCManager::e_DLCParamType_ThemeName );
@@ -684,6 +686,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 		m_selectedSkinPath = L"";
 		m_selectedCapePath = L"";
 		m_vAdditionalSkinBoxes = nullptr;
+		m_vSkinOffsets = nullptr;
 
 		switch(m_packIndex)
 		{
@@ -726,6 +729,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 					m_selectedSkinPath = skinFile->getPath();
 					m_selectedCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
 					m_vAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
+					m_vSkinOffsets = skinFile->getOffsets();
 
 					skinName = skinFile->getParameterAsString( DLCManager::e_DLCParamType_DisplayName );
 					skinOrigin = skinFile->getParameterAsString( DLCManager::e_DLCParamType_ThemeName );
@@ -773,6 +777,17 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 			pAdditionalModelParts = app.SetAdditionalSkinBoxes(skinFile->getSkinID(),m_vAdditionalSkinBoxes);
 		}
 	}
+	
+	if(m_vSkinOffsets && m_vSkinOffsets->size()!=0)
+	{
+		// add the skin Offsets to the humanoid model, but only if we've not done this already
+
+		vector<SKIN_OFFSET *> *pSkinOffsets = app.GetSkinOffsets(skinFile->getSkinID());
+		if(pSkinOffsets==nullptr)
+		{
+			pSkinOffsets = app.SetSkinOffsets(skinFile->getSkinID(),m_vSkinOffsets);
+		}
+	}
 
 	if(skinFile!=nullptr)
 	{
@@ -790,6 +805,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 	wstring otherSkinPath = L"";
 	wstring otherCapePath = L"";
 	vector<SKIN_BOX *> *othervAdditionalSkinBoxes=nullptr;
+	vector<SKIN_OFFSET *> *othervSkinOffsets=nullptr;
 	wchar_t chars[256];
 
 	// turn off all displays
@@ -844,6 +860,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 				otherSkinPath = skinFile->getPath();
 				otherCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
 				othervAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
+				othervSkinOffsets = skinFile->getOffsets();
 				backupTexture = TN_MOB_CHAR;
 			}
 			else
@@ -851,6 +868,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 				otherSkinPath = L"";
 				otherCapePath = L"";
 				othervAdditionalSkinBoxes=nullptr;
+				othervSkinOffsets=nullptr;
 				switch(m_packIndex)
 				{
 				case SKIN_SELECT_PACK_DEFAULT:
@@ -870,6 +888,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 							otherSkinPath = skinFile->getPath();
 							otherCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
 							othervAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
+							othervSkinOffsets = skinFile->getOffsets();
 							backupTexture = TN_MOB_CHAR;
 						}
 					}
@@ -885,6 +904,14 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 				if(pAdditionalModelParts==nullptr)
 				{
 					pAdditionalModelParts = app.SetAdditionalSkinBoxes(skinFile->getSkinID(),othervAdditionalSkinBoxes);
+				}
+			}
+			if(othervSkinOffsets && othervSkinOffsets->size()!=0)
+			{
+				vector<SKIN_OFFSET *> *pSkinOffsets = app.GetSkinOffsets(skinFile->getSkinID());
+				if(pSkinOffsets==nullptr)
+				{
+					pSkinOffsets = app.SetSkinOffsets(skinFile->getSkinID(),othervSkinOffsets);
 				}
 			}
 			// 4J-PB - anim override needs set before SetTexture
@@ -915,6 +942,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 				otherSkinPath = skinFile->getPath();
 				otherCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
 				othervAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
+				othervSkinOffsets = skinFile->getOffsets();
 				backupTexture = TN_MOB_CHAR;
 			}
 			else
@@ -922,6 +950,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 				otherSkinPath = L"";
 				otherCapePath = L"";
 				othervAdditionalSkinBoxes=nullptr;
+				othervSkinOffsets=nullptr;
 				switch(m_packIndex)
 				{
 				case SKIN_SELECT_PACK_DEFAULT:
@@ -941,6 +970,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 							otherSkinPath = skinFile->getPath();
 							otherCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
 							othervAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
+							othervSkinOffsets = skinFile->getOffsets();
 							backupTexture = TN_MOB_CHAR;
 						}
 					}
@@ -956,6 +986,14 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 				if(pAdditionalModelParts==nullptr)
 				{
 					pAdditionalModelParts = app.SetAdditionalSkinBoxes(skinFile->getSkinID(),othervAdditionalSkinBoxes);
+				}
+			}
+			if(othervSkinOffsets && othervSkinOffsets->size()!=0)
+			{
+				vector<SKIN_OFFSET *> *pSkinOffsets = app.GetSkinOffsets(skinFile->getSkinID());
+				if(pSkinOffsets==nullptr)
+				{
+					pSkinOffsets = app.SetSkinOffsets(skinFile->getSkinID(),othervSkinOffsets);
 				}
 			}
 			// 4J-PB - anim override needs set before SetTexture
@@ -1004,34 +1042,34 @@ TEXTURE_NAME UIScene_SkinSelectMenu::getTextureId(int skinIndex)
 		texture = TN_MOB_CHAR7;
 		break;
 	case eDefaultSkins_Skin8:
-		texture = TN_MOB_CHAR8;
+		texture = TN_MOB_ALEX;
 		break;
 	case eDefaultSkins_Skin9:
-		texture = TN_MOB_CHAR9;
+		texture = TN_MOB_ALEX1;
 		break;
 	case eDefaultSkins_Skin10:
-		texture = TN_MOB_CHAR10;
+		texture = TN_MOB_ALEX2;
 		break;
 	case eDefaultSkins_Skin11:
-		texture = TN_MOB_CHAR11;
+		texture = TN_MOB_ALEX3;
 		break;
 	case eDefaultSkins_Skin12:
-		texture = TN_MOB_CHAR12;
+		texture = TN_MOB_ALEX4;
 		break;
 	case eDefaultSkins_Skin13:
-		texture = TN_MOB_CHAR13;
+		texture = TN_MOB_ALEX5;
 		break;
 	case eDefaultSkins_Skin14:
-		texture = TN_MOB_CHAR14;
+		texture = TN_MOB_ALEX6;
 		break;
 	case eDefaultSkins_Skin15:
-		texture = TN_MOB_CHAR15;
+		texture = TN_MOB_ALEX7;
 		break;
 	case eDefaultSkins_Skin16:
-		texture = TN_MOB_CHAR16;
+		texture = TN_MOB_DEVALEX;
 		break;
 	case eDefaultSkins_Skin17:
-		texture = TN_MOB_CHAR17;
+		texture = TN_MOB_DEVSTEVE;
 		break;
 	};
 

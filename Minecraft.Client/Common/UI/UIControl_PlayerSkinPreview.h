@@ -53,6 +53,7 @@ private:
 	ESkinPreviewAnimations m_currentAnimation;
 	//vector<Model::SKIN_BOX *> *m_pvAdditionalBoxes;
 	vector<ModelPart *> *m_pvAdditionalModelParts;
+	vector<SKIN_OFFSET *> *m_pvSkinOffsets;
 public:
 	enum ESkinPreviewFacing
 	{

@@ -24,6 +24,7 @@ const WCHAR *DLCManager::wchTypeNamesA[]=
 	L"ENCHANTTEXTFOCUSCOLOUR",
 	L"DATAPATH",
 	L"PACKVERSION",
+	L"OFFSET",
 };
 
 DLCManager::DLCManager()
