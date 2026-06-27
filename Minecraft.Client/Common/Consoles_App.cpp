@@ -205,6 +205,7 @@ CMinecraftApp::CMinecraftApp()
 	InitializeCriticalSection(&csTMSPPDownloadQueue);
 	InitializeCriticalSection(&csAdditionalModelParts);
 	InitializeCriticalSection(&csAdditionalSkinBoxes);
+	InitializeCriticalSection(&csSkinOffsets);
 	InitializeCriticalSection(&csAnimOverrideBitmask);
 	InitializeCriticalSection(&csMemFilesLock);
 	InitializeCriticalSection(&csMemTPDLock);
@@ -249,8 +250,7 @@ CMinecraftApp::CMinecraftApp()
 }
 
 
-void CMinecraftApp::GetSkinAdjustments(_SkinAdjustments* out,
-                                        unsigned int skinId)
+void CMinecraftApp::GetSkinAdjustments(_SkinAdjustments* out, unsigned int skinId)
 {
     _SkinAdjustments adj; 
 
@@ -268,8 +268,7 @@ void CMinecraftApp::GetSkinAdjustments(_SkinAdjustments* out,
     *out = adj;
 }
 
-void CMinecraftApp::SetSkinAdjustments(unsigned int skinId,
-                                        const _SkinAdjustments& adj)
+void CMinecraftApp::SetSkinAdjustments(unsigned int skinId, const _SkinAdjustments& adj)
 {
     EnterCriticalSection(&csAdditionalSkinBoxes);
 
@@ -9668,7 +9667,14 @@ void CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, SKIN_BOX *SkinBoxA, D
 {
 	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
 	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
-	Model *pModel = renderer ? renderer->getModel() : nullptr;
+	unsigned int m_uiAnimOverrideBitmask = GetAnimOverrideBitmask(dwSkinID);
+	Model *pModel;
+	if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_SlimModel))
+		pModel = renderer ? renderer->getModel(2) : nullptr;
+	else if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_WideModel))
+		pModel = renderer ? renderer->getModel(1) : nullptr;
+	else
+		pModel = renderer ? renderer->getModel(0) : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 	vector<SKIN_BOX *> *pvSkinBoxes = new vector<SKIN_BOX *>;
 
@@ -9701,7 +9707,14 @@ vector<ModelPart *> * CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, vect
 {
 	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
 	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
-	Model *pModel = renderer ? renderer->getModel() : nullptr;
+	unsigned int m_uiAnimOverrideBitmask = GetAnimOverrideBitmask(dwSkinID);
+	Model *pModel;
+	if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_SlimModel))
+		pModel = renderer ? renderer->getModel(2) : nullptr;
+	else if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_WideModel))
+		pModel = renderer ? renderer->getModel(1) : nullptr;
+	else
+		pModel = renderer ? renderer->getModel(0) : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 
 	EnterCriticalSection( &csAdditionalModelParts );
@@ -9724,6 +9737,44 @@ vector<ModelPart *> * CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, vect
 	LeaveCriticalSection( &csAdditionalSkinBoxes );
 	LeaveCriticalSection( &csAdditionalModelParts );
 	return pvModelPart;
+}
+
+void CMinecraftApp::SetSkinOffsets(DWORD dwSkinID, SKIN_OFFSET *SkinOffsetA, DWORD dwSkinOffsetC)
+{
+	vector<SKIN_OFFSET *> *pvSkinOffset = new vector<SKIN_OFFSET *>;
+
+	EnterCriticalSection( &csSkinOffsets );
+
+	app.DebugPrintf("*** SetSkinOffsets - Adding skin offsets for skin %d from array of Skin Offsets\n",dwSkinID&0x0FFFFFFF);
+
+	for(unsigned int i=0;i<dwSkinOffsetC;i++)
+	{
+		pvSkinOffset->push_back(&SkinOffsetA[i]);
+	}
+
+
+	m_SkinOffsets.insert( std::pair<DWORD, vector<SKIN_OFFSET *> *>(dwSkinID, pvSkinOffset) );
+
+	LeaveCriticalSection( &csSkinOffsets );
+
+}
+
+vector<SKIN_OFFSET *> * CMinecraftApp::SetSkinOffsets(DWORD dwSkinID, vector<SKIN_OFFSET *> *pvSkinOffsetA)
+{
+	vector<SKIN_OFFSET *> *pvSkinOffset = new vector<SKIN_OFFSET *>;
+
+	EnterCriticalSection( &csSkinOffsets );
+	app.DebugPrintf("*** SetSkinOffsets - Inserting skin offsets for skin %d from array of Skin Offsets\n",dwSkinID&0x0FFFFFFF);
+
+	for( auto& it : *pvSkinOffsetA )
+	{
+		pvSkinOffset->push_back(it);
+	}
+
+	m_SkinOffsets.emplace(dwSkinID, pvSkinOffsetA);
+
+	LeaveCriticalSection( &csSkinOffsets );
+	return pvSkinOffset;
 }
 
 
@@ -9759,6 +9810,23 @@ vector<SKIN_BOX *> *CMinecraftApp::GetAdditionalSkinBoxes(DWORD dwSkinID)
 
 	LeaveCriticalSection( &csAdditionalSkinBoxes );
 	return pvSkinBoxes;
+}
+
+vector<SKIN_OFFSET *> *CMinecraftApp::GetSkinOffsets(DWORD dwSkinID)
+{
+	EnterCriticalSection( &csSkinOffsets );
+	vector<SKIN_OFFSET *> *pvSkinOffsets=nullptr;
+	if(m_SkinOffsets.size()>0)
+	{
+		auto it = m_SkinOffsets.find(dwSkinID);
+		if(it!=m_SkinOffsets.end())
+		{
+			pvSkinOffsets = (*it).second;
+		}
+	}
+
+	LeaveCriticalSection( &csSkinOffsets );
+	return pvSkinOffsets;
 }
 
 unsigned int CMinecraftApp::GetAnimOverrideBitmask(DWORD dwSkinID)

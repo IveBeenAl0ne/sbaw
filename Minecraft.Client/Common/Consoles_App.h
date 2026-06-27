@@ -21,6 +21,7 @@ using namespace std;
 #include "./GameRules/ConsoleGameRulesConstants.h"
 #include "./GameRules/GameRuleManager.h"
 #include "../SkinBox.h"
+#include "../SkinOffset.h"
 #include "../ArchiveFile.h"
 #include "lce_filesystem/FolderFile.h"
 
@@ -848,6 +849,7 @@ private:
 	CRITICAL_SECTION csTMSPPDownloadQueue;
 	CRITICAL_SECTION csAdditionalModelParts;
 	CRITICAL_SECTION csAdditionalSkinBoxes;
+	CRITICAL_SECTION csSkinOffsets;
 	CRITICAL_SECTION csAnimOverrideBitmask;
 	bool m_bCorruptSaveDeleted;
 	wstring m_currentSaveFolderName; // 4J Added: for hardcore world deletion on Win64
@@ -870,6 +872,9 @@ public:
 	vector<ModelPart *> * SetAdditionalSkinBoxes(DWORD dwSkinID, vector<SKIN_BOX *> *pvSkinBoxA);
 	vector<ModelPart *> *GetAdditionalModelParts(DWORD dwSkinID);
 	vector<SKIN_BOX *> *GetAdditionalSkinBoxes(DWORD dwSkinID);
+	void SetSkinOffsets(DWORD dwSkinID, SKIN_OFFSET *SkinOffsetA, DWORD dwSkinOffsetC);
+	vector<SKIN_OFFSET *> * SetSkinOffsets(DWORD dwSkinID, vector<SKIN_OFFSET *> *pvSkinOffsetA);
+	vector<SKIN_OFFSET *> *GetSkinOffsets(DWORD dwSkinID);
 	void SetAnimOverrideBitmask(DWORD dwSkinID,unsigned int uiAnimOverrideBitmask);
 	unsigned int GetAnimOverrideBitmask(DWORD dwSkinID);
 
@@ -900,6 +905,7 @@ private:
 	// vector of additional skin model parts, indexed by the skin texture id
 	unordered_map<DWORD, vector<ModelPart *> *> m_AdditionalModelParts;
 	unordered_map<DWORD, vector<SKIN_BOX *> *> m_AdditionalSkinBoxes;
+	unordered_map<DWORD, vector<SKIN_OFFSET *> *> m_SkinOffsets;
 	unordered_map<DWORD, unsigned int> m_AnimOverrides;
 
 
