@@ -11,8 +11,6 @@
 
 #include "../../Textures.h"
 
-ResourceLocation UIScene_ControlsMenu::TN_GUI_GUI_LOCATION = ResourceLocation(TN_GUI_GUI);
-
 void fillRect(Tesselator *t, int x, int y, int w, int h, int r, int g, int b, int a)
 {
     	t->begin();
