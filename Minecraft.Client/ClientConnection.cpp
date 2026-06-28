@@ -2805,7 +2805,7 @@ void ClientConnection::handleTextureAndGeometry(shared_ptr<TextureAndGeometryPac
 			{
 				unsigned int uiAnimOverrideBitmask= app.GetAnimOverrideBitmask(packet->dwSkinID);
 
-				send(std::make_shared<TextureAndGeometryPacket>(packet->textureName, pbData, dwBytes, app.GetAdditionalSkinBoxes(packet->dwSkinID), uiAnimOverrideBitmask));
+				send(std::make_shared<TextureAndGeometryPacket>(packet->textureName, pbData, dwBytes, app.GetAdditionalSkinBoxes(packet->dwSkinID), app.GetSkinOffsets(packet->dwSkinID), uiAnimOverrideBitmask));
 			}
 		}
 	}
@@ -2821,6 +2821,11 @@ void ClientConnection::handleTextureAndGeometry(shared_ptr<TextureAndGeometryPac
 		if(packet->dwBoxC!=0)
 		{
 			app.SetAdditionalSkinBoxes(packet->dwSkinID,packet->BoxDataA,packet->dwBoxC);
+		}
+		// Add the offet data
+		if(packet->dwOffsetC!=0)
+		{
+			app.SetSkinOffsets(packet->dwSkinID,packet->OffsetDataA,packet->dwOffsetC);
 		}
 		// Add the anim override
 		app.SetAnimOverrideBitmask(packet->dwSkinID,packet->uiAnimOverrideBitmask);
@@ -4334,7 +4339,8 @@ void ClientConnection::handleSetPlayerTeamPacket(shared_ptr<SetPlayerTeamPacket>
 
 void ClientConnection::handleParticleEvent(shared_ptr<LevelParticlesPacket> packet)
 {
-	ePARTICLE_TYPE particleId = (ePARTICLE_TYPE)Integer::parseInt(packet->getName());
+    wstring particleName = packet->getName();
+    ePARTICLE_TYPE particleId = (ePARTICLE_TYPE)Integer::parseInt(particleName);
 
 	for (int i = 0; i < packet->getCount(); i++)
 	{

@@ -17,11 +17,13 @@ class LivingEntityRenderer : public EntityRenderer
 protected:
 	//Model *model; // 4J Stu - This shadows the one in EntityRenderer
 	Model *armor;
+	Model *resModel;
 
 public:
-	LivingEntityRenderer(Model *model, float shadow, bool slimHands = 0, bool createNewVar = 0);
+	LivingEntityRenderer(Model *model, float shadow, bool isPlayer = false);
 	virtual void render(shared_ptr<Entity> mob, double x, double y, double z, float rot, float a);
 	virtual void setArmor(Model *armor);
+	virtual void setPlayerModelType(Model *humanoidModel);
 
 private:
 	float rotlerp(float from, float to, float a);
