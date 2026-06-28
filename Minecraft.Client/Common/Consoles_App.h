@@ -575,7 +575,7 @@ public:
 	int GetHTMLFontSize(EHTMLFontSize size);
 	wstring FormatHTMLString(int iPad, const wstring& desc, int shadowColour = 0xFFFFFFFF, bool override = false);
 	wstring EscapeHTMLString(const wstring &desc);
-	wstring FormatChatMessage(const wstring& desc, bool applyStyling = true);
+	wstring FormatColoredString(const wstring& desc);
 	wstring GetActionReplacement(int iPad, unsigned char ucAction);
 	wstring GetVKReplacement(unsigned int uiVKey, bool override = false);
 	wstring GetIconReplacement(unsigned int uiIcon);
