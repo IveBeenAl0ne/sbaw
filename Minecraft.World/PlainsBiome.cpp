@@ -58,12 +58,8 @@ void PlainsBiome::decorate(Level* level, Random* rand, int xo, int zo)
 
         decorator->flowerCount = 4;
         decorator->grassCount = 10;
+
         DOUBLE_PLANT_GENERATOR->setPlantType(TallGrass2::TALL_GRASS);
-
-
-
-
-
         for (int i = 0; i < 7; ++i)
         {
             int x = xo + rand->nextInt(16) + 8;
@@ -76,11 +72,10 @@ void PlainsBiome::decorate(Level* level, Random* rand, int xo, int zo)
     if (_plains)
         {
             DOUBLE_PLANT_GENERATOR->setPlantType(TallGrass2::SUNFLOWER);
-
             for (int i1 = 0; i1 < 10; ++i1)
             {
-                int j1 = rand->nextInt(16) + 8;
-                int k1 = rand->nextInt(16) + 8;
+                int j1 = xo + rand->nextInt(16) + 8;
+                int k1 = zo + rand->nextInt(16) + 8;
                 int l1 = rand->nextInt(level->getHeightmap(j1, k1) + 32);
                 DOUBLE_PLANT_GENERATOR->place(level, rand, j1, l1, k1);
             }
