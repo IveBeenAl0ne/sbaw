@@ -201,7 +201,6 @@ CMinecraftApp::CMinecraftApp()
 	InitializeCriticalSection(&csTMSPPDownloadQueue);
 	InitializeCriticalSection(&csAdditionalModelParts);
 	InitializeCriticalSection(&csAdditionalSkinBoxes);
-	InitializeCriticalSection(&csSkinOffsets);
 	InitializeCriticalSection(&csAnimOverrideBitmask);
 	InitializeCriticalSection(&csMemFilesLock);
 	InitializeCriticalSection(&csMemTPDLock);
@@ -246,7 +245,8 @@ CMinecraftApp::CMinecraftApp()
 }
 
 
-void CMinecraftApp::GetSkinAdjustments(_SkinAdjustments* out, unsigned int skinId)
+void CMinecraftApp::GetSkinAdjustments(_SkinAdjustments* out,
+                                        unsigned int skinId)
 {
     _SkinAdjustments adj; 
 
@@ -264,13 +264,24 @@ void CMinecraftApp::GetSkinAdjustments(_SkinAdjustments* out, unsigned int skinI
     *out = adj;
 }
 
-void CMinecraftApp::SetSkinAdjustments(unsigned int skinId, const _SkinAdjustments& adj)
+void CMinecraftApp::SetSkinAdjustments(unsigned int skinId,
+                                        const _SkinAdjustments& adj)
 {
     EnterCriticalSection(&csAdditionalSkinBoxes);
 
     m_SkinAdjustmentsMap[skinId] = adj; 
 
     LeaveCriticalSection(&csAdditionalSkinBoxes);
+}
+
+FILE *s_debugLogFile = nullptr;
+static bool  s_debugLogOpened = false;
+
+static void OpenDebugLogFile()
+{
+    if (s_debugLogOpened) return;
+    s_debugLogOpened = true;
+    fopen_s(&s_debugLogFile, "debug.log", "w");
 }
 
 void CMinecraftApp::DebugPrintf(const char *szFormat, ...)
@@ -292,9 +303,12 @@ void CMinecraftApp::DebugPrintf(const char *szFormat, ...)
     vsnprintf(buf, sizeof(buf), szFormat, ap);
     va_end(ap);
     OutputDebugStringA(buf);
+    OpenDebugLogFile();
+    if (s_debugLogFile) { fputs(buf, s_debugLogFile); fflush(s_debugLogFile); }
 #endif
 
 }
+
 
 void CMinecraftApp::DebugPrintf(int user, const char *szFormat, ...)
 {
@@ -349,6 +363,8 @@ void CMinecraftApp::DebugPrintf(int user, const char *szFormat, ...)
     }
 #else
     OutputDebugStringA(buf);
+    OpenDebugLogFile();
+    if (s_debugLogFile) { fputs(buf, s_debugLogFile); fflush(s_debugLogFile); }
 #endif
 #ifndef _XBOX
     if(user == USER_UI)
@@ -358,6 +374,7 @@ void CMinecraftApp::DebugPrintf(int user, const char *szFormat, ...)
 #endif
 #endif
 }
+
 
 namespace
 {
@@ -4713,13 +4730,13 @@ void CMinecraftApp::loadStringTable()
 {
 #ifndef _XBOX
 
-	if(m_stringTable!=nullptr)
-	{
-		// we need to unload the current string table, this is a reload
-		delete m_stringTable;
-	}
 #ifdef _WINDOWS64
-	m_stringTable = nullptr;
+	// Build the new string table first into a local pointer.
+	// Only swap m_stringTable once the new table is fully ready —
+	// this eliminates the window where m_stringTable is nullptr or
+	// points to freed memory and concurrent GetString() calls crash.
+	StringTable *newTable = nullptr;
+
 	const wstring localisationCandidates[] =
 	{
 		L"Common\\Localization", // Fireblade - check multiple directories before resulting to .loc usage
@@ -4743,7 +4760,7 @@ void CMinecraftApp::loadStringTable()
 
 			if (hasKeyString || hasIndexString)
 			{
-			    m_stringTable = candidateTable;
+			    newTable = candidateTable;
 			    app.DebugPrintf("Loaded language data from '%ls'\n", localisationFolder.c_str());
 			    break;
 			}
@@ -4753,29 +4770,44 @@ void CMinecraftApp::loadStringTable()
 		}
 	}
 
-	if (m_stringTable == nullptr && m_mediaArchive != nullptr) // Fireblade - fallback to previous behavior
+	if (newTable == nullptr && m_mediaArchive != nullptr) // Fireblade - fallback to previous behavior
 	{
 		const wstring localisationFile = L"languages.loc";
 		if (m_mediaArchive->hasFile(localisationFile))
 		{
 			byteArray locFile = m_mediaArchive->getFile(localisationFile);
-			m_stringTable = new StringTable(locFile.data, locFile.length);
-			delete locFile.data;
+			newTable = new StringTable(locFile.data, locFile.length);
+			delete[] locFile.data;
 		}
 	}
 
-	if (m_stringTable == nullptr)
+	if (newTable == nullptr)
 	{
 		app.DebugPrintf("Failed to initialize language data\n");
 		assert(false);
 	}
+	else
+	{
+		// Atomically swap in the new table, then free the old one.
+		// The render thread may still be reading m_stringTable, but since
+		// we only delete AFTER the swap, it will either see the old valid
+		// table or the new valid table — never a nullptr or freed pointer.
+		StringTable *oldTable = m_stringTable;
+		m_stringTable = newTable;
+		delete oldTable;
+	}
 #else // Fireblade - other platforms keep same logic
+	if(m_stringTable!=nullptr)
+	{
+		delete m_stringTable;
+		m_stringTable = nullptr;
+	}
 	wstring localisationFile = L"languages.loc";
 	if (m_mediaArchive->hasFile(localisationFile))
 	{
 		byteArray locFile = m_mediaArchive->getFile(localisationFile);
 		m_stringTable = new StringTable(locFile.data, locFile.length);
-		delete locFile.data;
+		delete[] locFile.data;
 	}
 	else
 	{
@@ -6886,7 +6918,6 @@ wstring CMinecraftApp::EscapeHTMLString(const wstring& desc)
 		{L'&', L"&amp;"},
 		{L'<', L"&lt;"},
 		{L'>', L"&gt;"},
-		{L'\'', L"\u2019"},
 	};
 
 	wstring finalString = L"";
@@ -6901,102 +6932,74 @@ wstring CMinecraftApp::EscapeHTMLString(const wstring& desc)
 	return finalString;
 }
 
-eMinecraftColour GetColorFromCode(wchar_t _char) {
-	switch (_char) {
-	case L'0': return eHTMLColor_0;
-	case L'1': return eHTMLColor_1;
-	case L'2': return eHTMLColor_2;
-	case L'3': return eHTMLColor_3;
-	case L'4': return eHTMLColor_4;
-	case L'5': return eHTMLColor_5;
-	case L'6': return eHTMLColor_6;
-	case L'7': return eHTMLColor_7;
-	case L'8': return eHTMLColor_8;
-	case L'9': return eHTMLColor_9;
-	case L'a': return eHTMLColor_a;
-	case L'b': return eHTMLColor_b;
-	case L'c': return eHTMLColor_c;
-	case L'd': return eHTMLColor_d;
-	case L'e': return eHTMLColor_e;
-	case L'f': return eHTMLColor_f;
-	default: return eMinecraftColour_NOT_SET;
+wstring CMinecraftApp::FormatChatMessage(const wstring& desc, bool applyStyling)
+{
+	static std::wregex IDS_Pattern(LR"(\{\*IDS_(\d+)\*\})"); //maybe theres a better way to do translateable IDS
+	static std::wstring_view colorFormatString = L"<font color=\"#%08x\">";
+
+	wstring results = desc;
+	wchar_t replacements[64];
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_0), 0xFFFFFFFF);
+	results = replaceAll(results, L"§0", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_1), 0xFFFFFFFF);
+	results = replaceAll(results, L"§1", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_2), 0xFFFFFFFF);
+	results = replaceAll(results, L"§2", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_3), 0xFFFFFFFF);
+	results = replaceAll(results, L"§3", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_4), 0xFFFFFFFF);
+	results = replaceAll(results, L"§4", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_5), 0xFFFFFFFF);
+	results = replaceAll(results, L"§5", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_6), 0xFFFFFFFF);
+	results = replaceAll(results, L"§6", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_7), 0xFFFFFFFF);
+	results = replaceAll(results, L"§7", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_8), 0xFFFFFFFF);
+	results = replaceAll(results, L"§8", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_9), 0xFFFFFFFF);
+	results = replaceAll(results, L"§9", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_a), 0xFFFFFFFF);
+	results = replaceAll(results, L"§a", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_b), 0xFFFFFFFF);
+	results = replaceAll(results, L"§b", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_c), 0xFFFFFFFF);
+	results = replaceAll(results, L"§c", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_d), 0xFFFFFFFF);
+	results = replaceAll(results, L"§d", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_e), 0xFFFFFFFF);
+	results = replaceAll(results, L"§e", replacements);
+
+	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_f), 0xFFFFFFFF);
+	results = replaceAll(results, L"§f", replacements);
+	results = replaceAll(results, L"§r", replacements); //we only support color so reset is the same as white color
+
+	results = replaceAll(results, L"'", L"\u2019");
+
+	if (applyStyling) {
+		std::wsmatch match;
+		while (std::regex_search(results, match, IDS_Pattern)) {
+			results = replaceAll(results, match[0], app.GetString(std::stoi(match[1].str())));
+		}
 	}
-}
+	
 
-wstring CMinecraftApp::FormatColoredString(const wstring& string) {
-	static constexpr std::wstring_view colorFormatString = L"<font color=\"#%08x\">";
-
-	wstring result;
-
-	bool fontOpen = false;
-	bool italicOpen = false;
-
-	auto CloseItalic = [&]() {
-		if (italicOpen) {
-			result += L"</i>";
-			italicOpen = false;
-		}
-	};
-
-	auto CloseFont = [&]() {
-		if (fontOpen) {
-			result += L"</font>";
-			fontOpen = false;
-		}
-	};
-
-	wchar_t buffer[64];
-
-	for (size_t i = 0; i < string.length(); ++i) {
-		if (string[i] == L'\u00A7' && i + 1 < string.length()) {
-			wchar_t code = towlower(string[i + 1]);
-
-			if (GetColorFromCode(code) != eMinecraftColour_NOT_SET) {
-				bool restoreItalic = italicOpen;
-
-				CloseItalic();
-				CloseFont();
-
-				swprintf(buffer, _countof(buffer), colorFormatString.data(), GetHTMLColour(GetColorFromCode(code)));
-
-				result += buffer;
-				fontOpen = true;
-
-				if (restoreItalic) {
-					result += L"<i>";
-					italicOpen = true;
-				}
-
-				++i;
-				continue;
-			}
-
-			if (code == L'o') {
-				if (!italicOpen) {
-					result += L"<i>";
-					italicOpen = true;
-				}
-
-				++i;
-				continue;
-			}
-
-			if (code == L'r') {
-				CloseItalic();
-				CloseFont();
-
-				++i;
-				continue;
-			}
-		}
-
-		result += string[i];
-	}
-
-	CloseItalic();
-	CloseFont();
-
-	return result;
+	return results;
 }
 
 wstring CMinecraftApp::GetActionReplacement(int iPad, unsigned char ucAction)
@@ -9655,14 +9658,7 @@ void CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, SKIN_BOX *SkinBoxA, D
 {
 	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
 	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
-	unsigned int m_uiAnimOverrideBitmask = GetAnimOverrideBitmask(dwSkinID);
-	Model *pModel;
-	if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_SlimModel))
-		pModel = renderer ? renderer->getModel(2) : nullptr;
-	else if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_WideModel))
-		pModel = renderer ? renderer->getModel(1) : nullptr;
-	else
-		pModel = renderer ? renderer->getModel(0) : nullptr;
+	Model *pModel = renderer ? renderer->getModel() : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 	vector<SKIN_BOX *> *pvSkinBoxes = new vector<SKIN_BOX *>;
 
@@ -9695,14 +9691,7 @@ vector<ModelPart *> * CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, vect
 {
 	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
 	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
-	unsigned int m_uiAnimOverrideBitmask = GetAnimOverrideBitmask(dwSkinID);
-	Model *pModel;
-	if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_SlimModel))
-		pModel = renderer ? renderer->getModel(2) : nullptr;
-	else if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_WideModel))
-		pModel = renderer ? renderer->getModel(1) : nullptr;
-	else
-		pModel = renderer ? renderer->getModel(0) : nullptr;
+	Model *pModel = renderer ? renderer->getModel() : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 
 	EnterCriticalSection( &csAdditionalModelParts );
@@ -9725,44 +9714,6 @@ vector<ModelPart *> * CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, vect
 	LeaveCriticalSection( &csAdditionalSkinBoxes );
 	LeaveCriticalSection( &csAdditionalModelParts );
 	return pvModelPart;
-}
-
-void CMinecraftApp::SetSkinOffsets(DWORD dwSkinID, SKIN_OFFSET *SkinOffsetA, DWORD dwSkinOffsetC)
-{
-	vector<SKIN_OFFSET *> *pvSkinOffset = new vector<SKIN_OFFSET *>;
-
-	EnterCriticalSection( &csSkinOffsets );
-
-	app.DebugPrintf("*** SetSkinOffsets - Adding skin offsets for skin %d from array of Skin Offsets\n",dwSkinID&0x0FFFFFFF);
-
-	for(unsigned int i=0;i<dwSkinOffsetC;i++)
-	{
-		pvSkinOffset->push_back(&SkinOffsetA[i]);
-	}
-
-
-	m_SkinOffsets.insert( std::pair<DWORD, vector<SKIN_OFFSET *> *>(dwSkinID, pvSkinOffset) );
-
-	LeaveCriticalSection( &csSkinOffsets );
-
-}
-
-vector<SKIN_OFFSET *> * CMinecraftApp::SetSkinOffsets(DWORD dwSkinID, vector<SKIN_OFFSET *> *pvSkinOffsetA)
-{
-	vector<SKIN_OFFSET *> *pvSkinOffset = new vector<SKIN_OFFSET *>;
-
-	EnterCriticalSection( &csSkinOffsets );
-	app.DebugPrintf("*** SetSkinOffsets - Inserting skin offsets for skin %d from array of Skin Offsets\n",dwSkinID&0x0FFFFFFF);
-
-	for( auto& it : *pvSkinOffsetA )
-	{
-		pvSkinOffset->push_back(it);
-	}
-
-	m_SkinOffsets.emplace(dwSkinID, pvSkinOffsetA);
-
-	LeaveCriticalSection( &csSkinOffsets );
-	return pvSkinOffset;
 }
 
 
@@ -9798,23 +9749,6 @@ vector<SKIN_BOX *> *CMinecraftApp::GetAdditionalSkinBoxes(DWORD dwSkinID)
 
 	LeaveCriticalSection( &csAdditionalSkinBoxes );
 	return pvSkinBoxes;
-}
-
-vector<SKIN_OFFSET *> *CMinecraftApp::GetSkinOffsets(DWORD dwSkinID)
-{
-	EnterCriticalSection( &csSkinOffsets );
-	vector<SKIN_OFFSET *> *pvSkinOffsets=nullptr;
-	if(m_SkinOffsets.size()>0)
-	{
-		auto it = m_SkinOffsets.find(dwSkinID);
-		if(it!=m_SkinOffsets.end())
-		{
-			pvSkinOffsets = (*it).second;
-		}
-	}
-
-	LeaveCriticalSection( &csSkinOffsets );
-	return pvSkinOffsets;
 }
 
 unsigned int CMinecraftApp::GetAnimOverrideBitmask(DWORD dwSkinID)

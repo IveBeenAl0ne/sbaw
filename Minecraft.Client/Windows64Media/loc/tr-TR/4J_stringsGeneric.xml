@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<data name="IDS_NULL">
+		<value>Kullanılmıyor</value>
+	</data>
+
+	<data name="IDS_OK">
+		<value>Tamam</value>
+	</data>
+	<data name="IDS_BACK">
+		<value>Geri</value>
+	</data>
+	<data name="IDS_CANCEL">
+		<value>İptal</value>
+	</data>
+	<data name="IDS_YES">
+		<value>Evet</value>
+	</data>
+	<data name="IDS_NO">
+		<value>Hayır</value>
+	</data>
+	<data name="IDS_CORRUPTSAVE_TITLE">
+		<value>Bozuk Kayıt</value>
+	</data>
+	<data name="IDS_CORRUPTSAVE_TEXT">
+		<value>Kayıt verin bozulmuş gibi. Yeni bir kayıt oluşturup bozuk olanın üstüne yazmak istiyor musun?</value>
+	</data>
+	<data name="IDS_NOFREESPACE_TITLE">
+		<value>Boş Alan Yok</value>
+	</data>
+	<data name="IDS_NOFREESPACE_TEXT">
+		<value>Seçilen depolama aygıtında oyun kaydı oluşturmak için yeterli boş alan yok.</value>
+	</data>
+	<data name="IDS_SELECTAGAIN">
+		<value>Tekrar seçiliyor</value>
+	</data>
+	<data name="IDS_PLAYWITHOUTSAVING">
+		<value>Kaydetmeden oyna</value>
+	</data>
+	<data name="IDS_CREATEANEWSAVE">
+		<value>Yeni kayıt oluştur</value>
+	</data>
+	<data name="IDS_OVERWRITESAVE_TITLE">
+		<value>Kaydın üstüne yaz?</value>
+	</data>
+	<data name="IDS_OVERWRITESAVE_TEXT">
+		<value>Seçtiğiniz depolama aygıtında bu kayıt zaten mevcut. Üzerine yazılmasını onaylıyor musunuz?</value>
+	</data>
+	<data name="IDS_OVERWRITESAVE_NO">
+		<value>Hayır - üstüne yazma</value>
+	</data>
+	<data name="IDS_OVERWRITESAVE_YES">
+		<value>Üstüne yaz ve kaydet</value>
+	</data>
+	<data name="IDS_FAILED_TO_SAVE_TITLE">
+		<value>Kayıt başarısız</value>
+	</data>
+	<data name="IDS_STORAGEDEVICEPROBLEM_TITLE">
+		<value>Depolama Aygıtı Sorunu</value>
+	</data>
+	<data name="IDS_FAILED_TO_SAVE_TEXT">
+		<value>Depolama aygıtınız kullanılamıyor veya bir hata içeriyor</value>
+	</data>
+	<data name="IDS_FAILED_TO_LOADSAVE_TEXT">
+		<value>Depolama aygıtınız kullanılamıyor veya bir hata içeriyor. Lütfen yeni bir depolama aygıtı seçin.</value>
+	</data>
+	<data name="IDS_SELECTANEWDEVICE">
+		<value>Yeni bir depolama aygıtı seçin</value>
+	</data>
+	<data name="IDS_NODEVICE_TITLE">
+		<value>Depolama aygıtı seçilmedi</value>
+	</data>
+	<data name="IDS_NODEVICE_TEXT">
+		<value>Bir depolama aygıtı seçmezseniz, oyun kayıtları devre dışı bırakılacaktır.</value>
+	</data>
+	<data name="IDS_NODEVICE_ACCEPT">
+		<value>Depolama aygıtı seç</value>
+	</data>
+	<data name="IDS_NODEVICE_DECLINE">
+		<value>Kaydetmeden devam et</value>
+	</data>
+	<data name="IDS_DEVICEGONE_TEXT">
+		<value>Depolama aygıtınız çıkarıldı. Lütfen yenisini seçin.</value>
+	</data>
+	<data name="IDS_DEVICEGONE_TITLE">
+		<value>Yükleme başarısız</value>
+	</data>
+	<data name="IDS_KEYBOARDUI_SAVEGAME_TITLE">
+		<value>Kayda ad koy</value>
+	</data>
+	<data name="IDS_KEYBOARDUI_SAVEGAME_TEXT">
+		<value>Oyun kaydına bir ad ver</value>
+	</data>
+	<data name="IDS_WARNING_ARCADE_TITLE">
+		<value>Xbox Paneline Dön</value>
+	</data>
+	<data name="IDS_WARNING_ARCADE_TEXT">
+		<value>Oyundan çıkmak istediğinden emin misin?</value>
+	</data>
+	<data name="IDS_PRO_RETURNEDTOMENU_TITLE">
+		<value>Oturum kapatıldı</value>
+	</data>
+	<data name="IDS_PRO_RETURNEDTOTITLESCREEN_TEXT">
+		<value>Oyuncu profilinizden çıkış yapıldığı için başlık ekranına döndürüldünüz.</value>
+	</data>
+	<data name="IDS_PRO_RETURNEDTOMENU_TEXT">
+		<value>Bir oyuncu profilinden çıkış yapıldığı için karşılaşma sona erdi.</value>
+	</data>
+	<data name="IDS_PRO_RETURNEDTOMENU_ACCEPT">
+		<value>Oynamaya devam et</value>
+	</data>
+	<data name="IDS_PRO_NOTONLINE_TITLE">
+		<value>Oyuncu profili çevrimiçi değil</value>
+	</data>
+	<data name="IDS_PRO_NOTONLINE_TEXT">
+		<value>Bu oyunda, Xbox LIVE özellikli bir oyuncu profili gerektiren bazı özellikler var ancak şu anda çevrimdışısınız.</value>
+	</data>
+	<data name="IDS_PRO_XBOXLIVE_NOTIFICATION">
+		<value>Bu özellik, Xbox LIVE'da oturum açmış bir oyuncu profili gerektirir.</value>
+	</data>
+	<data name="IDS_PRO_NOTONLINE_ACCEPT">
+		<value>Connect to Xbox LIVE</value>
+	</data>
+	<data name="IDS_PRO_NOTONLINE_DECLINE">
+		<value>Çevrimdışı oynamaya devam et</value>
+	</data>
+	<data name="IDS_PRO_ACHIEVEMENTPROBLEM_TITLE">
+		<value>Başarım Ödülü Sorunu</value>
+	</data>
+	<data name="IDS_PRO_ACHIEVEMENTPROBLEM_TEXT">
+		<value> Oyuncu profilinize erişilirken bir sorun oluştu. Başarımınız şu anda verilemedi.</value>
+	</data>
+	<data name="IDS_PRO_NOPROFILE_TITLE">
+		<value>Oyuncu profili sorunu</value>
+	</data>
+	<data name="IDS_PRO_NOPROFILEOPTIONS_TEXT">
+		<value>Ayarların oyuncu profiline kaydedilmesi başarısız oldu.</value>
+	</data>
+	<data name="IDS_PRO_GUESTPROFILE_TITLE">
+		<value>Misafir Oyuncu</value>
+	</data>
+	<data name="IDS_PRO_GUESTPROFILE_TEXT">
+		<value>Misafir oyuncu "PSN" hesabına giremez.</value>
+	</data>
+	<data name="IDS_STO_SAVING_SHORT">
+		<value>Kaydediliyor...</value>
+	</data>
+	<data name="IDS_STO_SAVING_LONG">
+		<value>İçerik kaydediliyor. Lütfen sistemi kapatma.</value>
+	</data>
+	<data name="IDS_PRO_UNLOCKGAME_TITLE">
+		<value>Tam Oyunu Aç</value>
+	</data>
+	<data name="IDS_PRO_UNLOCKGAME_TEXT">
+		<value>Bu bir Minecraft deneme sürümüdür. Tam oyuna sahip olsaydınız, az önce bir başarım kazanmış olacaktınız! 
+Xbox LIVE aracılığıyla dünyanın her yerinden arkadaşlarınızla oynamak ve Minecraft keyfini tam anlamıyla yaşamak için tam oyunun kilidini açın.
+Tam oyunun kilidini açmak ister misiniz?</value>
+	</data>
+	<data name="IDS_PRO_PROFILEPROBLEM_TEXT">
+		<value>Profiliniz okunurken bir sorun oluştuğu için ana menüye döndürülüyorsunuz.</value>
+	</data>
+</root>

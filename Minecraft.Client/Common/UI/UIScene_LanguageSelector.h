@@ -35,11 +35,7 @@
 #define HAS_LANGUAGE_NB_NO(exp)	exp,
 #define HAS_LANGUAGE_EL_GR(exp) exp,
 
-#if defined(__ORBIS__) || defined(__PS3__) || defined(__PSVITA__)
 #define HAS_LANGUAGE_TR_TR(exp) exp,
-#else
-#define HAS_LANGUAGE_TR_TR(exp)		
-#endif
 
 class UIScene_LanguageSelector : public UIScene
 {

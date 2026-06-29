@@ -1,0 +1,536 @@
+IDS_DESC_TULIP_ORANGE|||Turuncu boya üretmek için kullanılabilen küçük turuncu bir çiçek.
+IDS_TILE_DARK_GATE|||Koyu Meşe Çit Kapısı
+IDS_ACHIEVE_NAME_THE_HAGGLER|||Sıkı Pazarlıkçı
+IDS_TILE_TULIP_WHITE|||Beyaz Lale
+IDS_DESC_DAYLIGHT_DETECTOR|||Güneş ışığına (veya güneş ışığının olmamasına) bağlı olarak Kızıltaş sinyali veren bir bloktur.
+IDS_TILE_STAINED_GLASS_SILVER|||Açık Gri Boyalı Cam
+IDS_DEATH_FELL_FINISH_ITEM|||{*PLAYER*} çok yüksekten düştü ve {*SOURCE*}, {*ITEM*} kullanarak onun işini bitirdi
+IDS_TILE_DOOR_ACACIA|||Akasya Kapı
+IDS_TOOLTIPS_NAME|||Ad
+IDS_CONTAINER_HOPPER|||Huni
+IDS_TUTORIAL_TASK_BEACON_MENU_ACTIVATION|||Fenerinizin güçlerini ayarlamak için ödeme yuvasına bir Zümrüt, Elmas, Altın veya Demir Külçe feda etmelisiniz. Bir kez ayarlandıktan sonra, güçler süresiz olarak Fenerden yayılacaktır.
+IDS_ACHIEVE_DESC_DISPENSE_WITH_THIS|||Bir fırlatıcı inşa et.
+IDS_TILE_LOG_ACACIA|||Akasya Odunu
+IDS_ITEM_GOLD_HORSE_ARMOR|||Altın At Zırhı
+IDS_DESC_RABBIT_STEW|||5{*ICON_SHANK_01*} yeniler.
+IDS_DESC_STAINED_GLASS_PANE|||Boyalı Camdan üretilmiştir
+IDS_DESC_EXITBOOK|||Bu kitaptan çıkmak ve yaptığınız değişiklikleri iptal etmek istediğinizden emin misiniz?
+IDS_TUTORIAL_TASK_FIREWORK_PURPOSE|||Havai fişekler, elle veya Fırlatıcılardan fırlatılabilen dekoratif eşyalardır. Kağıt, Barut ve isteğe bağlı olarak birkaç Havai Fişek Yıldızı kullanılarak üretilirler.
+IDS_TOOLTIPS_DISMOUNT|||İn
+IDS_ITEM_DOOR_DARK|||Koyu Meşe Kapı
+IDS_HOW_TO_PLAY_BEACONS|||{*T3*}NASIL OYNANIR : FENERLER{*ETW*}{*B*}{*B*}Aktif Fenerler gökyüzüne parlak bir ışık huzmesi yansıtır ve yakındaki oyunculara güçler verir.{*B*}Cam, Gözlemtaşı ve Nether Yıldızı ile üretilirler, bu da Wither'ı yenerek elde edilebilir.{*B*}{*B*}Fenerler, gün boyunca güneş ışığı alacak şekilde yerleştirilmelidir. Fenerler; Demir, Altın, Zümrüt veya Elmas piramitlerin üzerine yerleştirilmelidir.{*B*}Fenerin üzerine yerleştirildiği malzemenin Fenerin gücü üzerinde hiçbir etkisi yoktur.{*B*}{*B*}Fener menüsünde feneriniz için bir birincil güç seçebilirsiniz. Piramidinizin ne kadar çok katı varsa, o kadar çok güç arasından seçim yapabilirsiniz.{*B*}En az dört katlı bir piramit üzerindeki bir Fener, Yenilenme ikincil gücü veya daha güçlü bir birincil güç seçeneği de sunar.{*B*}{*B*}Fenerinizin güçlerini ayarlamak için ödeme yuvasına bir Zümrüt, Elmas, Altın veya Demir Külçe feda etmelisiniz.{*B*}Bir kez ayarlandıktan sonra, güçler süresiz olarak Fenerden yayılacaktır.{*B*}
+IDS_DESC_COMMAND_BLOCK|||Komutları çalıştırmak için kullanılır.
+IDS_TUTORIAL_TASK_FIREWORK_MENU_BASIC_HEIGHT|||Üretim ızgarasında Barut ile daha fazla yuva doldurmak, tüm Havai Fişek Yıldızlarının patlayacağı yüksekliği artıracaktır.
+IDS_TUTORIAL_TASK_BEACON_CHOOSING_POWERS|||Fenerin verdiği güçleri ayarlamak için Feneri kullanmayı deneyin, gerekli ödeme olarak sağlanan Demir Külçeleri kullanabilirsiniz.
+IDS_DESC_COMPARATOR|||Kızıltaş devrelerinde sinyal gücünü korumak, karşılaştırmak veya çıkarmak ya da belirli blok durumlarını ölçmek için kullanılır.
+IDS_TUTORIAL_TASK_DONKEY_OVERVIEW|||Bir Eşek buldunuz.
+IDS_DESC_SALMON_COOKED|||3{*ICON_SHANK_01*} yeniler. Fırında çiğ somon pişirilerek üretilir.
+IDS_TILE_STAINED_GLASS_GREEN|||Yeşil Boyalı Cam
+IDS_TILE_STAINED_CLAY|||Boyalı Kil
+IDS_TILE_ACACIA_GATE|||Akasya Çit Kapısı
+IDS_BAT|||Yarasa
+IDS_ACHIEVE_DESC_DIAMONDS|||Demir aletlerinle elmas elde et.
+IDS_TILE_SAPLING_ACACIA|||Akasya Fidanı
+IDS_FIREWORKS_CHARGE_BLACK|||Siyah
+IDS_FIREWORKS_CHARGE_PINK|||Pembe
+IDS_ITEM_MINECART_TNT|||TNT'li Vagon
+IDS_DESC_PODZOL|||Toprak Bloklarına benzer, ancak mantar yetiştirmek için çok iyidir.
+IDS_ACHIEVE_DESC_PLAY_100_DAYS|||100 gün boyunca oyna.
+IDS_TILE_WEIGHTED_PLATE_HEAVY|||Ağırlıklı Basınç Plakası (Ağır)
+IDS_ITEM_COMPARATOR|||Kızıltaş Karşılaştırıcı
+IDS_TILE_BEACON|||Fener
+IDS_ACHIEVE_NAME_DISPENSE_WITH_THIS|||Bununla Fırlat
+IDS_TUTORIAL_PROMPT_FIREWORK_MENU_OVERVIEW|||{*B*}Devam etmek için {*CONTROLLER_VK_A*} düğmesine basın.{*B*}Havai fişek arayüzünü zaten nasıl kullanacağınızı biliyorsanız {*CONTROLLER_VK_B*} düğmesine basın.
+IDS_TUTORIAL_TASK_FIREWORK_MENU_BASIC_START|||Bir Havai Fişek üretmek için, envanterinizin üzerinde gösterilen 3x3 üretim ızgarasına Barut ve Kağıt yerleştirin.
+IDS_TILE_RED_SAND|||Kırmızı Kum
+IDS_DESC_POLISHED_GRANITE|||Cilalı bir görünüm için granitten üretilebilir.
+IDS_DONKEY|||Eşek
+IDS_ITEM_PRISMARINE_DESC|||Okyanus Anıtlarında bulunabilen nadir dekoratif taş. Prizmarin parçacıklarından üretilebilir.
+IDS_TUTORIAL_TASK_BEACON_OVERVIEW|||Bu piramidin tepesinde aktif olmayan bir Fener var.
+IDS_TUTORIAL_TASK_HORSE_TAMING|||Atlar, Eşekler ve Katırlar kullanılmadan önce evcilleştirilmelidir. Bir at, üzerine binmeye çalışılarak ve at biniciyi üzerinden atmaya çalışırken üzerinde kalmayı başararak evcilleştirilir.
+IDS_HOW_TO_PLAY_MENU_BEACONS|||Fenerler
+IDS_TILE_STAINED_GLASS_PANE_CYAN|||Camgöbeği Boyalı Cam İnce
+IDS_TILE_HOUSTONIA|||Hüsnüyusuf
+IDS_DESC_MUTTON_RAW|||1{*ICON_SHANK_01*} yeniler veya fırında pişirilebilir.
+IDS_ACHIEVE_NAME_SNIPESKELETON|||Keskin Nişancı Düellosu
+IDS_ITEM_RABBIT_COOKED|||Pişmiş Tavşan
+IDS_FIREWORKS_CHARGE_FLICKER|||Pırıltı
+IDS_HOW_TO_PLAY_HOPPERS|||{*T3*}NASIL OYNANIR : HUNİLER{*ETW*}{*B*}{*B*}Huniler, kaplardan eşya yerleştirmek veya çıkarmak ve içlerine atılan eşyaları otomatik olarak toplamak için kullanılır.{*B*}Simya Stantlarını, Sandıkları, Fırlatıcıları, Bırakıcıları, Sandıklı Vagonları, Hunili Vagonları ve diğer Hunileri etkileyebilirler.{*B*}{*B*}Huniler, üzerlerine yerleştirilen uygun bir kaptan sürekli olarak eşya emmeye çalışacaktır. Ayrıca depolanan eşyaları bir çıkış kabına yerleştirmeye çalışacaklardır.{*B*}Bir Huni Kızıltaş tarafından etkinleştirilirse, aktif olmayacak ve hem emmeyi hem de eşya yerleştirmeyi durduracaktır.{*B*}{*B*}Bir Huni, eşyaları çıkarmaya çalıştığı yönü gösterir. Bir Huniyi belirli bir bloğa yönlendirmek için, eğilirken Huniyi o bloğa karşı yerleştirin.{*B*}
+IDS_ACHIEVE_NAME_WHEN_PIGS_FLY|||Domuzlar Uçtuğunda
+IDS_TILE_POLISHED_DIORITE|||Cilalı Diyorit
+IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_SHAPE|||Havai Fişek Yıldızının şekli; Ateş Yükü, Altın Parçası, Tüy veya Yaratık Kafası eklenerek belirlenir.
+IDS_TOOLTIPS_SADDLEBAGS|||Sandık Ekle
+IDS_ADVENTURE|||Macera
+IDS_ACHIEVE_NAME_ZOMBIE_DOCTOR|||Zombi Doktoru
+IDS_TUTORIAL_TASK_HOPPER_PURPOSE|||Huniler, kaplardan eşya yerleştirmek veya çıkarmak ve içlerine atılan eşyaları otomatik olarak toplamak için kullanılır.
+IDS_TILE_STAINED_GLASS_PANE_RED|||Kırmızı Boyalı Cam İnce
+IDS_TUTORIAL_TASK_HORSE_MENU_OVERVIEW|||Bu, at envanteri arayüzüdür.
+IDS_ACHIEVE_NAME_DIAMONDS|||ELMASLAR!
+IDS_ACHIEVE_DESC_WINGAME|||Ender Ejderhası'nı öldür.
+IDS_TOOLTIPS_ATTACH|||Tak
+IDS_ITEM_MUTTON_RAW|||Çiğ Koyun Eti
+IDS_ACHIEVE_DESC_BODYGUARD|||Demir Golem oluştur.
+IDS_FIREWORKS_CHARGE_FADE_TO|||Solma Rengi:
+IDS_ACHIEVE_NAME_ENCHANTMENTS|||Büyücü
+IDS_DESC_ROSE|||Kırmızı boya üretmek için kullanılabilen yaygın bir kırmızı çiçek.
+IDS_DESC_BLUE_ORCHID|||Açık mavi boya üretmek için kullanılabilen nadir bir mavi çiçek.
+IDS_ACHIEVE_DESC_DELICIOUS_FISH|||Balık yakala ve pişir!
+IDS_ACHIEVE_DESC_SNIPESKELETON|||50 metreden daha uzak bir mesafeden bir İskeleti Ok ile öldür.
+IDS_TILE_OXEYE_DAISY|||Kasımpatı
+IDS_GAMEOPTION_NATURAL_REGEN|||Devre dışı bırakıldığında, oyuncular doğal olarak can yenilemezler.
+IDS_ATTRIBUTE_NAME_GENERIC_KNOCKBACKRESISTANCE|||Geri Tepme Direnci
+IDS_HOW_TO_PLAY_MENU_DROPPERS|||Bırakıcılar
+IDS_TILE_STONESLAB_DARK_OAK|||Koyu Meşe Ahşap Basamak
+IDS_ACHIEVE_DESC_HAVE_A_SHEARFUL_DAY|||Bir Koyundan Yün elde etmek için Makas kullan.
+IDS_ACHIEVE_NAME_TIME_TO_MINE|||Madencilik Zamanı!
+IDS_TILE_DOOR_DARK|||Koyu Meşe Kapı
+IDS_TILE_STONESLAB_ACACIA|||Akasya Ahşap Basamak
+IDS_DEATH_FELL_ASSIST_ITEM|||{*PLAYER*}, {*SOURCE*} tarafından {*ITEM*} kullanılarak düşmeye mahkum edildi
+IDS_DESC_DROPPER|||Kızıltaş tetiklemesi aldığında eşyaları tutmak ve bırakmak veya eşyaları başka bir kaba itmek için kullanılır.
+IDS_DESC_HORSE|||Bu hayvanlar evcilleştirilebilir ve ardından üzerlerine binilebilir.
+IDS_ITEM_RABBIT_HIDE|||Tavşan Derisi
+IDS_ACHIEVE_NAME_TIME_TO_FARM|||Tarım Zamanı!
+IDS_DESC_RABBIT_HIDE|||Deri üretiminde kullanılır.
+IDS_HOW_TO_PLAY_MENU_FIREWORKS|||Havai Fişekler
+IDS_ACHIEVE_NAME_MOAR_TOOLS|||Daha Fazla Alet
+IDS_ACHIEVE_DESC_ENCHANTMENTS|||Bir Büyü Masası inşa et.
+IDS_DESC_NAME_TAG|||Dünyadaki yaratıkları adlandırmak için kullanılır.
+IDS_DESC_PEONY|||Pembe boya üretmek için kullanılabilen uzun yeşil ve pembe bir çiçek.
+IDS_ITEM_DOOR_ACACIA|||Akasya Kapı
+IDS_TUTORIAL_TASK_HORSE_TAMING2|||Evcilleştirildiklerinde etraflarında Aşk Kalpleri belirecek ve artık oyuncuyu üzerlerinden atmayacaklardır.
+IDS_TILE_SPRUCE_FENCE|||Ladin Çit
+IDS_ACHIEVEMENT_VIEW|||Görüntülemek için {*CONTROLLER_VK_Y*} basılı tutun
+IDS_TILE_STAINED_GLASS_PANE_PURPLE|||Mor Boyalı Cam İnce
+IDS_TILE_STAIRS_DARKWOOD|||Koyu Meşe Ahşap Merdiven
+IDS_DESC_ARMOR_STAND|||Zırhları ve yaratık kafaları gibi diğer dekoratif eşyaları sergilemek için donatılabilir.
+IDS_DAYLIGHT_CYCLE|||Gündüz Döngüsü
+IDS_TILE_STAINED_GLASS_PINK|||Pembe Boyalı Cam
+IDS_CONTAINER_BEACON_SECONDARY_POWER|||İkincil Güç
+IDS_ITEM_DIAMOND_HORSE_ARMOR|||Elmas At Zırhı
+IDS_DEATH_LAVA_PLAYER|||{*PLAYER*}, {*SOURCE*} adlı yaratıktan kaçarken lavda yüzmeye çalıştı
+IDS_TILE_DOUBLE_TALL_GRASS|||Çift Boylu Çimen
+IDS_TILE_STAIRS_ACACIAWOOD|||Akasya Ahşap Merdiven
+IDS_TILE_COAL|||Kömür Bloğu
+IDS_TUTORIAL_TASK_HORSE_AREA|||Buradaki Atları ve Eşekleri evcilleştirmeyi deneyebilirsiniz. Ayrıca buralardaki sandıklarda Atlar için Eyerler, At Zırhları ve diğer yararlı eşyalar da bulunmaktadır.
+IDS_MAX_BATS_SPAWNED|||Şu anda Canlandırma Yumurtası kullanılamaz. Dünyadaki maksimum Yarasa sayısına ulaşıldı.
+IDS_ACHIEVE_DESC_ITS_A_SIGN|||Bir tabela üret ve yerleştir.
+IDS_TOOLTIPS_FIREWORK_LAUNCH|||Fırlat
+IDS_ITEM_DOOR_JUNGLE|||Orman Ağacı Kapısı
+IDS_ITEM_MUTTON_COOKED|||Pişmiş Koyun Eti
+IDS_TITLE_EXITBOOK|||Kitaptan Çık
+IDS_TILE_DARK_OAK_PLANKS|||Koyu Meşe Tahta
+IDS_POTION_SATURATION_POSTFIX|||Doygunluk
+IDS_ACHIEVE_DESC_ADVENTURING_TIME|||Tüm biyomları keşfet.
+IDS_TILE_SUNFLOWER|||Ayçiçeği
+IDS_ACHIEVE_DESC_GHAST|||Bir Ghast'ı Ateş Topu ile yok et.
+IDS_ACHIEVE_DESC_GETTING_AN_UPGRADE|||Daha iyi bir kazma inşa et.
+IDS_ACHIEVE_DESC_STAYING_FROSTY|||Ateş Direnci etkisine sahipken Lavda yüz.
+IDS_DEATH_INFIRE_PLAYER|||{*PLAYER*}, {*SOURCE*} ile savaşırken ateşin içine yürüdü
+IDS_DEATH_FELL_ACCIDENT_VINES|||{*PLAYER*} sarmaşıklardan düştü
+IDS_DESC_MINECART_TNT|||Hareketli bir TNT bloğu görevi gören bir Vagon türüdür.
+IDS_TILE_DOOR_BIRCH|||Huş Kapı
+IDS_TUTORIAL_PROMPT_HORSE_OVERVIEW|||{*B*}Atlar, Eşekler ve Katırlar hakkında daha fazla bilgi edinmek için {*CONTROLLER_VK_A*} düğmesine basın. {*B*}Atlar, Eşekler ve Katırlar hakkında zaten bilginiz varsa {*CONTROLLER_VK_B*} düğmesine basın.
+IDS_DESC_COAL_BLOCK|||Kömürü depolamanın kompakt bir yoludur. Fırında yakıt olarak kullanılabilir.
+IDS_ITEM_PRISMARINE_SHARD_DESC|||Gardiyanlar ve Yaşlı Gardiyanlar tarafından düşürülür. Prizmarin ve Deniz Feneri üretiminde kullanılabilir.
+IDS_TUTORIAL_PROMPT_BEACON_OVERVIEW|||{*B*}Fenerler hakkında daha fazla bilgi edinmek için {*CONTROLLER_VK_A*} düğmesine basın.{*B*}Fenerler hakkında zaten bilginiz varsa {*CONTROLLER_VK_B*} düğmesine basın.
+IDS_TUTORIAL_TASK_FIREWORK_MENU_BASIC_STARS|||İsteğe bağlı olarak üretim ızgarasına birden fazla Havai Fişek Yıldızı yerleştirerek bunları havai fişeğe ekleyebilirsiniz.
+IDS_POTION_DESC_JUMPBOOST|||Etkilenen oyuncunun zıplama yüksekliğini artırır.
+IDS_DESC_COARSE_DIRT|||Üzerinde çimen büyümeyen özel bir toprak türüdür.
+IDS_FIREWORKS|||Havai Fişek Roketi
+IDS_DESC_DIORITE|||Diyorit toplamak için bir kazma ile kazılabilir.
+IDS_TILE_BARRIER|||Bariyer
+IDS_TILE_STAINED_GLASS_PANE_PINK|||Pembe Boyalı Cam İnce
+IDS_TILE_SAPLING_DARK_OAK|||Koyu Meşe Fidanı
+IDS_TILE_STAINED_GLASS_RED|||Kırmızı Boyalı Cam
+IDS_TILE_STAIRS_RED_SANDSTONE|||Kırmızı Kumtaşı Merdiven
+IDS_TILE_STAINED_CLAY_GRAY|||Gri Boyalı Kil
+IDS_CONTAINER_ANIMAL|||At
+IDS_ITEM_WRITINGBOOK|||Kitap ve Tüy
+IDS_ACHIEVE_NAME_PLAY_100_DAYS|||Zaman Geçerken
+IDS_TILE_STAINED_CLAY_ORANGE|||Turuncu Boyalı Kil
+IDS_TILE_STAINED_CLAY_PURPLE|||Mor Boyalı Kil
+IDS_TILE_STAINED_CLAY_CYAN|||Camgöbeği Boyalı Kil
+IDS_ACHIEVE_NAME_INTO_THE_NETHER|||Nether Kapısında
+IDS_DESC_ANDESITE|||Andezit toplamak için bir kazma ile kazılabilir.
+IDS_POTION_WITHER|||Wither
+IDS_DESC_IRON_HORSE_ARMOR|||Bir ata donatılabilen özel bir Zırh türüdür. 5 Zırh sağlar.
+IDS_DESC_DOUBLE_TALL_GRASS|||Bazen tohum düşürebilen çift boylu çimen.
+IDS_ACHIEVE_NAME_HOT_TOPIC|||Sıcak Konu
+IDS_FIREWORKS_CHARGE_RED|||Kırmızı
+IDS_ACHIEVE_NAME_POTION|||Yerel İmalathane
+IDS_TUTORIAL_TASK_HOPPER_CONTAINERS|||Simya Stantlarını, Sandıkları, Fırlatıcıları, Bırakıcıları, Sandıklı Vagonları, Hunili Vagonları ve diğer Hunileri etkileyebilirler.
+IDS_TOOLTIPS_ADDPAGE|||Sayfa Ekle
+IDS_ENDERMITE|||Endermite
+IDS_DESC_BAT|||Bu uçan yaratıklar mağaralarda veya diğer büyük kapalı alanlarda bulunur.
+IDS_DESC_TULIP_WHITE|||Açık gri boya üretmek için kullanılabilen küçük beyaz bir çiçek.
+IDS_TUTORIAL_TASK_HORSE_PURPOSE|||Tüm yetişkin Atlar, Eşekler ve Katırlar binilebilir. Ancak sadece Atlar zırh giyebilir ve sadece Eşekler ile Katırlar eşya taşımak için heybelerle donatılabilir.
+IDS_ATTRIBUTE_NAME_GENERIC_ATTACKDAMAGE|||Saldırı Hasarı
+IDS_WITCH|||Cadı
+IDS_ACHIEVE_DESC_WHEN_PIGS_FLY|||Bir Domuza binmek için Eyer kullan ve biniliyorken Domuzun düşme hasarı almasını sağla.
+IDS_TILE_WEIGHTED_PLATE_LIGHT|||Ağırlıklı Basınç Plakası (Hafif)
+IDS_FIREWORKS_CHARGE_TYPE_0|||Küçük Top
+IDS_TILE_STAINED_GLASS_PANE_YELLOW|||Sarı Boyalı Cam İnce
+IDS_ACHIEVE_DESC_LEADER_OF_THE_PACK|||Beş Kurt evcilleştir.
+IDS_CONTAINER_MINECART|||Vagon
+IDS_ACHIEVE_DESC_TIME_TO_STRIKE|||Kılıç yapmak için Tahta ve Çubuk kullan.
+IDS_DESC_WEIGHTED_PLATE_LIGHT|||Kızıltaş sinyali sağlar. Plaka üzerinde daha fazla eşya olduğunda sinyal daha güçlü olacaktır.
+IDS_CHECKBOX_CLASSICCRAFTING|||Klasik Üretim
+IDS_TILE_DARK_FENCE|||Koyu Meşe Çit
+IDS_TUTORIAL_TASK_BEACON_MENU_SECONDARY_POWER|||En az 4 katlı bir piramit üzerindeki bir Fener, Yenilenme ikincil gücü veya daha güçlü bir birincil güç seçeneği de sunar.
+IDS_DESC_WITCH|||Bu düşmanlar bataklıklarda bulunabilir ve size İksir fırlatarak saldırırlar. Öldürüldüklerinde İksir düşürürler.
+IDS_TILE_STAINED_GLASS_PANE_BLACK|||Siyah Boyalı Cam İnce
+IDS_HOW_TO_PLAY_FIREWORKS|||{*T3*}NASIL OYNANIR : HAVAİ FİŞEKLER{*ETW*}{*B*}{*B*}Havai fişekler, elle veya Fırlatıcılardan fırlatılabilen dekoratif eşyalardır. Kağıt, Barut ve isteğe bağlı olarak birkaç Havai Fişek Yıldızı kullanılarak üretilirler.{*B*}Havai Fişek Yıldızlarının renkleri, solması, şekli, boyutu ve efektleri (izler ve pırıltılar gibi) üretim sırasında ek malzemeler dahil edilerek özelleştirilebilir.{*B*}{*B*}Bir Havai Fişek üretmek için envanterinizin üzerinde gösterilen 3x3 üretim ızgarasına Barut ve Kağıt yerleştirin.{*B*}İsteğe bağlı olarak üretim ızgarasına birden fazla Havai Fişek Yıldızı yerleştirerek bunları havai fişeğe ekleyebilirsiniz.{*B*}Üretim ızgarasında Barut ile daha fazla yuva doldurmak, tüm Havai Fişek Yıldızlarının patlayacağı yüksekliği artıracaktır.{*B*}{*B*}Ardından üretilen Havai Fişeği çıktı yuvasından alabilirsiniz.{*B*}{*B*}Havai Fişek Yıldızları, üretim ızgarasına Barut ve Boya yerleştirilerek üretilebilir.{*B*} - Boya, Havai Fişek Yıldızının patlama rengini belirleyecektir.{*B*} - Havai Fişek Yıldızının şekli; Ateş Yükü, Altın Parçası, Tüy veya Yaratık Kafası eklenerek belirlenir.{*B*} - Elmas veya Işıldayan Taş Tozu kullanılarak bir iz veya pırıltı eklenebilir.{*B*}{*B*}Bir Havai Fişek Yıldızı üretildikten sonra, onu Boya ile üreterek Havai Fişek Yıldızının solma rengini ayarlayabilirsiniz.
+IDS_ITEM_PRISMARINE_DARK_DESC|||Okyanus Anıtlarında bulunabilen daha nadir bir Prizmarin türü. Prizmarin parçacıkları ve Mürekkep Kesesi ile üretilebilir.
+IDS_FIREWORKS_CHARGE_GRAY|||Gri
+IDS_TILE_BLUE_ORCHID|||Mavi Orkide
+IDS_DESC_RABBIT_FOOT|||İksir demlemek için bir malzeme olarak kullanılır.
+IDS_TOOLTIPS_LEASH|||Tasmalama
+IDS_ITEM_LEAD|||Tasma
+IDS_TUTORIAL_TASK_HOPPER_OUTPUT|||Bir Huni, eşyaları çıkarmaya çalıştığı yönü gösterir. Bir Huniyi belirli bir bloğa yönlendirmek için, eğilirken Huniyi o bloğa karşı yerleştirin.
+IDS_TILE_STAINED_GLASS_PANE_GRAY|||Gri Boyalı Cam İnce
+IDS_DEATH_INDIRECT_MAGIC_ITEM|||{*PLAYER*}, {*SOURCE*} tarafından {*ITEM*} kullanılarak öldürüldü
+IDS_ACHIEVE_NAME_THE_LIE|||Yalan
+IDS_ACHIEVE_DESC_ACQUIRE_HARDWARE|||Demir Külçe erit.
+IDS_DESC_REDSTONE_BLOCK|||Kızıltaş güç kaynağı olarak kullanılır. Tekrar Kızıltaşa dönüştürülebilir.
+IDS_DESC_LEAD|||Yaratıkları oyuncuya veya Çit direklerine tasmalayarak bağlamak için kullanılır.
+IDS_TILE_PLANKS|||Tahta (herhangi bir tür)
+IDS_ACHIEVE_DESC_MOAR_TOOLS|||Her alet türünden birer adet üret.
+IDS_TILE_ACACIA_FENCE|||Akasya Çit
+IDS_ITEM_ARMOR_STAND|||Zırh Askısı
+IDS_ATTRIBUTE_NAME_GENERIC_MOVEMENTSPEED|||Hız
+IDS_ITEM_RABBIT_FOOT|||Tavşan Ayağı
+IDS_ACHIEVE_DESC_POT_PLANTER|||Saksı üret ve yerleştir.
+IDS_TILE_STAINED_GLASS_WHITE|||Beyaz Boyalı Cam
+IDS_TILE_STAINED_GLASS_PANE_BLUE|||Mavi Boyalı Cam İnce
+IDS_ATTRIBUTE_NAME_HORSE_JUMPSTRENGTH|||At Zıplama Gücü
+IDS_ATTRIBUTE_NAME_GENERIC_FOLLOWRANGE|||Yaratık Takip Menzili
+IDS_TILE_GRANITE|||Granit
+IDS_TILE_STAINED_GLASS_PANE_WHITE|||Beyaz Boyalı Cam İnce
+IDS_TUTORIAL_TASK_HORSE_SADDLEBAGS|||Evcilleştirilmiş Eşekler ve Katırlar, bir Sandık takılarak heybelerle donatılabilir. Bu heybelere biniliyorken veya eğilirken erişilebilir.
+IDS_TILE_STAINED_GLASS_MAGENTA|||Eflatun Boyalı Cam
+IDS_ITEM_SALMON_RAW|||Çiğ Somon
+IDS_DESC_RABBIT|||Zararsız bir yaratık. Öldürüldüğünde tavşan derisi veya tavşan ayağı düşürebilir.
+IDS_ACHIEVE_NAME_ADVENTURING_TIME|||Macera Zamanı
+IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_FADE|||Bir Havai Fişek Yıldızı üretildikten sonra, onu Boya ile üreterek Havai Fişek Yıldızının solma rengini ayarlayabilirsiniz.
+IDS_DESC_HAY|||Atları, Eşekleri veya Katırları 10 Kalbe kadar iyileştirmek için beslenebilir. Tayların büyümesini hızlandırır.
+IDS_ACHIEVE_NAME_POT_PLANTER|||Saksıcı
+IDS_POTION_DESC_WATERBREATHING|||Etkilenen oyuncuların su altında normal şekilde nefes almasını sağlar.
+IDS_ACHIEVE_DESC_BAKE_BREAD|||Buğdayı Ekmeğe dönüştür.
+IDS_TILE_STAINED_GLASS_BROWN|||Kahverengi Boyalı Cam
+IDS_TILE_HAY|||Saman Balyası
+IDS_ITEM_MINECART_HOPPER|||Hunili Vagon
+IDS_DESC_MINECART_HOPPER|||Huniye benzer şekilde işleyen özel bir Vagon türüdür. Raylar üzerinde duran eşyaları ve üzerindeki kaplardan eşyaları toplayacaktır.
+IDS_DESC_LILAC|||Eflatun boya üretmek için kullanılabilen uzun mor bir çiçek.
+IDS_ACHIEVE_DESC_LION_TAMER|||Bir oselot evcilleştir.
+IDS_DESC_POLISHED_DIORITE|||Cilalı bir görünüm için diyoritten üretilebilir.
+IDS_TILE_STAINED_GLASS_PANE_MAGENTA|||Eflatun Boyalı Cam İnce
+IDS_TOOLTIPS_NEXTPAGE|||Sonraki Sayfa
+IDS_DESC_RED_SANDSTONE|||Kırmızı renkli Kumtaşı. Normal Kum gibi yerçekiminden etkilenmez.
+IDS_ACHIEVE_DESC_IRON_MAN|||Tam bir Demir Zırh takımı giy.
+IDS_DEATH_CACTUS_PLAYER|||{*PLAYER*}, {*SOURCE*} adlı yaratıktan kaçmaya çalışırken kaktüse çarptı
+IDS_TILE_STAINED_GLASS_YELLOW|||Sarı Boyalı Cam
+IDS_GAME_OPTIONS|||Oyun Seçenekleri
+IDS_TILE_STAINED_CLAY_BROWN|||Kahverengi Boyalı Kil
+IDS_TUTORIAL_TASK_HOPPER_REDSTONE|||Ancak bir Huni Kızıltaş tarafından etkinleştirilirse, aktif olmayacak ve hem emmeyi hem de eşya yerleştirmeyi durduracaktır.
+IDS_HARDCORE|||Zorlayıcı
+IDS_DESC_DONKEY|||Bu hayvanlar evcilleştirilebilir ve ardından üzerlerine binilebilir. Sandık takılabilirler.
+IDS_ACHIEVE_DESC_POTION|||Bir iksir demle.
+IDS_MOB_GRIEFING|||Yaratık Tahribatı
+IDS_DESC_RABBIT_COOKED|||2.5{*ICON_SHANK_01*} yeniler. Tavşan yahnisi pişirmek için kullanılır.
+IDS_ACHIEVE_NAME_IRON_MAN|||Demir Adam
+IDS_ITEM_RABBIT_STEW|||Tavşan Yahnisi
+IDS_DESC_SEA_LANTERN|||Okyanus Anıtlarında bulunabilen su altı ışık kaynakları. Prizmarin parçacıkları ve prizmarin kristalleri ile üretilebilir.
+IDS_TILE_STAINED_GLASS_PANE_GREEN|||Yeşil Boyalı Cam İnce
+IDS_GAMEOPTION_TILE_DROPS|||Devre dışı bırakıldığında, bloklar yok edildiğinde eşya düşürmez (örneğin, Taş bloklar Kırıktaş düşürmez).
+IDS_GAMEOPTION_MOB_SPAWNING|||Devre dışı bırakıldığında, yaratıklar doğal olarak canlanmaz.
+IDS_ITEM_PRISMARINE_CRYSTAL|||Prizmarin Kristali
+IDS_GUARDIAN|||Gardiyan
+IDS_ACHIEVE_DESC_CHESTFUL_OF_COBBLESTONE|||1.728 Kırıktaş çıkar ve onu bir Sandığa yerleştir.
+IDS_TILE_SPRUCE_GATE|||Ladin Çit Kapısı
+IDS_TILE_PEONY|||Şakayık
+IDS_ENCHANTMENT_LURE|||Yem
+IDS_ACHIEVE_NAME_BAKE_BREAD|||Ekmek Pişir
+IDS_TILE_RED_SANDSTONE_CHISELED|||Oymalı Kırmızı Kumtaşı
+IDS_DEATH_THROWN_ITEM|||{*PLAYER*}, {*SOURCE*} tarafından {*ITEM*} kullanılarak dövüldü
+IDS_ACHIEVE_NAME_MONSTER_HUNTER|||Canavar Avcısı
+IDS_TILE_DAYLIGHT_DETECTOR|||Gün Işığı Sensörü
+IDS_TILE_STAINED_CLAY_LIME|||Açık Yeşil Boyalı Kil
+IDS_ACHIEVE_DESC_RAINBOW_COLLECTION|||16 rengin tümünden Yün topla.
+IDS_TILE_STAINED_GLASS_PANE_ORANGE|||Turuncu Boyalı Cam İnce
+IDS_ACHIEVE_DESC_TIME_TO_MINE|||Kazma yapmak için Tahta ve Çubuk kullan.
+IDS_FIREWORKS_CHARGE_TRAIL|||İz
+IDS_ITEM_NAME_TAG|||İsim Etiketi
+IDS_DESC_WRITINGBOOK|||İçine yazı yazılabilen bir Kitap.
+IDS_TOOLTIPS_BACKPAGE|||Önceki Sayfa
+IDS_TILE_STAINED_CLAY_LIGHT_BLUE|||Açık Mavi Boyalı Kil
+IDS_POTION_EFFECTS_WHENDRANK|||Uygulandığında:
+IDS_NATURAL_REGEN|||Doğal Yenilenme
+IDS_ACHIEVE_NAME_GETTING_AN_UPGRADE|||Güncelleme Zamanı
+IDS_TUTORIAL_TASK_HORSE_MENU_LAYOUT|||At envanteri; Atınız, Eşeğiniz veya Katırınız arasında eşya aktarmanıza veya donatmanıza olanak tanır.
+IDS_DESC_HOPPER|||Eşyaları yakalamak veya eşyaları kapların içine ve dışına aktarmak için kullanılır.
+IDS_TUTORIAL_TASK_HORSE_MENU_EQUIPMENT|||Eyer yuvasına bir Eyer yerleştirerek Atınızı eyerleyin. Zırh yuvasına At Zırhı yerleştirerek Atlara zırh verilebilir.
+IDS_TILE_HARDENED_CLAY|||Sertleşmiş Kil
+IDS_DESC_WITHER|||Bunlar Wither Kafatasları ve Ruh Kumundan üretilir. Size patlayan kafatasları fırlatırlar.
+IDS_DESC_POLISHED_ANDESITE|||Cilalı bir görünüm için andezitten üretilebilir.
+IDS_TILE_TULIP_PINK|||Pembe Lale
+IDS_DEATH_ONFIRE_PLAYER|||{*PLAYER*}, {*SOURCE*} ile savaşırken yanarak kül oldu
+IDS_TUTORIAL_TASK_HORSE_SADDLES|||Bir atı yönlendirmek için eyer takılmalıdır, eyerler köylülerden satın alınabilir veya dünyada gizlenmiş sandıklarda bulunabilir.
+IDS_DEATH_EXPLOSION_PLAYER|||{*PLAYER*}, {*SOURCE*} tarafından havaya uçuruldu
+IDS_TILE_STAINED_GLASS_LIGHT_BLUE|||Açık Mavi Boyalı Cam
+IDS_MOB_SPAWNING|||Yaratık Canlanması
+IDS_CONTAINER_DROPPER|||Bırakıcı
+IDS_HOW_TO_PLAY_MENU_HORSES|||Atlar
+IDS_ACHIEVE_NAME_STAYING_FROSTY|||Soğukkanlı
+IDS_ACHIEVE_DESC_TIME_TO_FARM|||Çapa yap.
+IDS_DESC_HARDENED_CLAY|||Fırında Kil eritilerek oluşturulur.
+IDS_DEATH_DROWN_PLAYER|||{*PLAYER*}, {*SOURCE*} adlı yaratıktan kaçmaya çalışırken boğuldu
+IDS_TILE_STAINED_CLAY_BLACK|||Siyah Boyalı Kil
+IDS_TILE_REDSTONE_BLOCK|||Kızıltaş Bloğu
+IDS_TILE_STAINED_GLASS_PURPLE|||Mor Boyalı Cam
+IDS_ACHIEVE_DESC_ON_A_RAIL|||Başladığın noktadan tek bir yönde en az 500m uzağa Vagonla seyahat et.
+IDS_DESC_FIREWORKS|||Etkinleştirildiğinde renkli patlamalar oluşturur. Renk, efekt, şekil ve solma, Havai Fişek oluşturulurken kullanılan Havai Fişek Yıldızı tarafından belirlenir.
+IDS_FIREWORKS_CHARGE_TYPE_4|||Patlama
+IDS_ACHIEVE_NAME_WINGAME|||Son.
+IDS_GAMEOPTION_KEEP_INVENTORY|||Etkinleştirildiğinde, oyuncular öldüklerinde envanterlerini korurlar.
+IDS_DESC_LARGE_FERN|||Bazen tohum düşürebilen uzun bir eğrelti otu.
+IDS_FIREWORKS_CHARGE_CUSTOM|||Özel
+IDS_ACHIEVE_NAME_GHAST|||Sahibine İade
+IDS_GAMEOPTION_SEED|||Aynı araziyi tekrar üretmek için bir tohum girin. Rastgele bir dünya için boş bırakın.
+IDS_TILE_POLISHED_ANDESITE|||Cilalı Andezit
+IDS_TILE_COMPARATOR|||Kızıltaş Karşılaştırıcı
+IDS_TILE_COARSE_DIRT|||Kaba Toprak
+IDS_FIREWORKS_CHARGE_PURPLE|||Mor
+IDS_ACHIEVE_DESC_ZOMBIE_DOCTOR|||Bir Zombi Köylüyü iyileştir.
+IDS_HORSE|||At
+IDS_TUTORIAL_PROMPT_FIREWORK_OVERVIEW|||{*B*}Havai Fişekler hakkında daha fazla bilgi edinmek için {*CONTROLLER_VK_A*} düğmesine basın. {*B*}Havai Fişekler hakkında zaten bilginiz varsa {*CONTROLLER_VK_B*} düğmesine basın.
+IDS_FIREWORKS_CHARGE_CYAN|||Camgöbeği
+IDS_TUTORIAL_TASK_HOPPER_MECHANICS|||Huniler, üzerlerine yerleştirilen uygun bir kaptan sürekli olarak eşya emmeye çalışacaktır. Ayrıca depolanan eşyaları bir çıkış kabına yerleştirmeye çalışacaktır.
+IDS_ACHIEVE_NAME_LION_TAMER|||Aslan Terbiyecisi
+IDS_TILE_POLISHED_GRANITE|||Cilalı Granit
+IDS_TUTORIAL_TASK_MULE_OVERVIEW|||Bir Katır buldunuz.
+IDS_TILE_BIRCH_GATE|||Huş Çit Kapısı
+IDS_POTION_SATURATION|||Doygunluk
+IDS_TILE_STAINED_CLAY_GREEN|||Yeşil Boyalı Kil
+IDS_DESC_NETHER_STAR|||Wither tarafından düşürülür, Fener üretiminde kullanılır.
+IDS_ATTRIBUTE_NAME_GENERIC_MAXHEALTH|||Maksimum Sağlık
+IDS_DESC_MUTTON_COOKED|||3{*ICON_SHANK_01*} yeniler. Fırında çiğ koyun eti pişirilerek üretilir.
+IDS_ACHIEVE_DESC_BOOKCASE|||Büyü Masanı geliştirmek için birkaç Kitaplık inşa et.
+IDS_ACHIEVE_NAME_LEADER_OF_THE_PACK|||Sürünün Lideri
+IDS_ACHIEVE_NAME_RENEWABLE_ENERGY|||Yenilenebilir Enerji
+IDS_TILE_STAINED_CLAY_SILVER|||Açık Gri Boyalı Kil
+IDS_ACHIEVE_DESC_BENCHMARKING|||Dört blok Ahşap Tahta ile bir Çalışma Masası üret.
+IDS_TILE_WET_SPONGE|||Islak Sünger
+IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_COLOUR|||Boya, Havai Fişek Yıldızının patlama rengini belirleyecektir.
+IDS_ACHIEVE_DESC_RENEWABLE_ENERGY|||Daha fazla Odun Kömürü yapmak için Odun Kütüklerini Odun Kömürü kullanarak erit.
+IDS_FIREWORKS_CHARGE_LIME|||Açık Yeşil
+IDS_ACHIEVE_NAME_TAKING_INVENTORY|||Envanter Edinme
+IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_EFFECT|||Elmas veya Işıldayan Taş Tozu kullanılarak bir iz veya pırıltı eklenebilir.
+IDS_FIREWORKS_CHARGE_LIGHT_BLUE|||Açık Mavi
+IDS_ACHIEVE_NAME_BODYGUARD|||Koruma
+IDS_TILE_STAINED_GLASS_BLUE|||Mavi Boyalı Cam
+IDS_FIREWORKS_CHARGE_TYPE_2|||Yıldız Şekilli
+IDS_ACHIEVE_DESC_EAT_PORKCHOP|||Bir Domuz Pirzolası pişir ve ye.
+IDS_TILE_LILAC|||Leylak
+IDS_DESC_FIREWORKS_CHARGE|||Bir Havai Fişeğin rengini, efektini ve şeklini belirlemek için kullanılır.
+IDS_TILE_LEAVES_DARK_OAK|||Koyu Meşe Yaprakları
+IDS_MULE|||Katır
+IDS_DESC_RABBIT_RAW|||0.5{*ICON_SHANK_01*} yeniler veya fırında pişirilebilir.
+IDS_ACHIEVE_DESC_REPOPULATION|||İki İneği Buğday ile çiftleştir.
+IDS_FIREWORKS_CHARGE_TYPE_1|||Büyük Top
+IDS_TUTORIAL_TASK_HORSE_INTRO|||Atlar ve Eşekler esas olarak açık düzlüklerde bulunur. Katırlar, bir Eşek ve bir Atın çiftleşmesinden üretilebilir, ancak kendileri kısırdır.
+IDS_ACHIEVE_DESC_TAKING_INVENTORY|||Envanterini aç.
+IDS_FIREWORKS_CHARGE|||Havai Fişek Yıldızı
+IDS_GAMEOPTION_DAYLIGHT_CYCLE|||Devre dışı bırakıldığında, günün saati değişmez.
+IDS_ACHIEVE_NAME_THE_END|||Son mu?
+IDS_ITEM_IRON_HORSE_ARMOR|||Demir At Zırhı
+IDS_TILE_PRISMARINE_DARK|||Koyu Prizmarin
+IDS_DESC_PUFFERFISH|||0.5{*ICON_SHANK_01*} yeniler ancak zehirlidir. İksir demlemede bir malzeme olarak da kullanılabilir.
+IDS_ACHIEVE_NAME_ARROW_KILL_CREEPER|||Okçu
+IDS_DEATH_ARROW_ITEM|||{*PLAYER*}, {*SOURCE*} tarafından {*ITEM*} kullanılarak vuruldu
+IDS_DESC_MAP_EMPTY|||Kullanıldığında, içinde bulunduğunuz dünyanın bir haritası haline gelir ve siz keşfettikçe doldurulur.
+IDS_FIREWORKS_CHARGE_WHITE|||Beyaz
+IDS_DESC_GRANITE|||Granit toplamak için bir kazma ile kazılabilir.
+IDS_TILE_JUNGLE_FENCE|||Orman Ağacı Çiti
+IDS_GAMEOPTION_MOB_GRIEFING|||Devre dışı bırakıldığında, canavarların ve hayvanların blokları değiştirmesini (örneğin, Creeper patlamalarının blokları yok etmesini ve Koyunların Çimleri yok etmesini) veya eşyaları toplamasını engeller.
+IDS_ELDER_GUARDIAN|||Yaşlı Gardiyan
+IDS_ACHIEVE_NAME_IRON_BELLY|||Demir Mide
+IDS_ATTRIBUTE_NAME_ZOMBIE_SPAWNREINFORCEMENTS|||Zombi Takviyeleri
+IDS_TILE_STAINED_GLASS_PANE_LIME|||Açık Yeşil Boyalı Cam İnce
+IDS_TILE_PRISMARINE|||Prizmarin
+IDS_DEATH_FELL_ASSIST|||{*PLAYER*}, {*SOURCE*} tarafından düşmeye mahkum edildi
+IDS_TILE_SEA_LANTERN|||Deniz Feneri
+IDS_FIREWORKS_CHARGE_ORANGE|||Turuncu
+IDS_FIREWORKS_CHARGE_BLUE|||Mavi
+IDS_ITEM_SALMON_COOKED|||Pişmiş Somon
+IDS_FIREWORKS_CHARGE_TYPE|||Bilinmeyen Şekil
+IDS_DESC_TULIP_PINK|||Pembe boya üretmek için kullanılabilen küçük pembe bir çiçek.
+IDS_ACHIEVE_DESC_THE_END|||Bir End Portalına gir.
+IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_START|||Havai Fişek Yıldızları, üretim ızgarasına Barut ve Boya yerleştirilerek üretilebilir.
+IDS_ITEM_PRISMARINE_SHARD|||Prizmarin Parçacığı
+IDS_WITHER|||Wither
+IDS_TILE_STAINED_GLASS_PANE_LIGHT_BLUE|||Açık Mavi Boyalı Cam İnce
+IDS_TUTORIAL_TASK_FIREWORK_CRAFTING|||Sandıklardaki çeşitli malzemeleri kullanarak Çalışma Masasında bir Havai Fişek üretmeyi deneyin.
+IDS_TUTORIAL_TASK_FIREWORK_CUSTOMISE|||Havai Fişek Yıldızlarının renkleri, solması, şekli, boyutu ve efektleri (izler ve pırıltılar gibi) üretim sırasında ek malzemeler dahil edilerek özelleştirilebilir.
+IDS_MOB_LOOT|||Yaratık Ganimeti
+IDS_POTION_ABSORPTION|||Emilim
+IDS_POTION_HEALTHBOOST_POSTFIX|||Sağlık Artışı
+IDS_KEEP_INVENTORY|||Envanteri Koru
+IDS_TUTORIAL_TASK_FIREWORK_OVERVIEW|||Sandıkların içinde HAVAİ FİŞEK oluşturulmasında kullanılan çeşitli eşyalar bulunmaktadır!
+IDS_DESC_STAINED_GLASS|||Cam ve bir boyadan üretilmiştir.
+IDS_ITEM_PRISMARINE_BRICK_DESC|||Okyanus Anıtlarında bulunabilen dekoratif Prizmarin tuğlası. Prizmarin parçacıklarından üretilebilir.
+IDS_ITEM_CLOWNFISH|||Palyaço Balığı
+IDS_GAMEMODE_HARDCORE|||Oyun Modu: Zorlayıcı
+IDS_TILE_COMMAND_BLOCK|||Komut Bloğu
+IDS_ACHIEVE_DESC_INTO_THE_NETHER|||Bir Nether Portalı inşa et.
+IDS_DESC_STAINED_CLAY|||Sertleşmiş kilin boyanmasıyla üretilen renkli bloklar.
+IDS_ACHIEVE_NAME_CHESTFUL_OF_COBBLESTONE|||Bir Sandık Dolusu Kırıktaş
+IDS_TUTORIAL_TASK_BEACON_MENU_PRIMARY_POWERS|||Fener menüsünde feneriniz için 1 birincil güç seçebilirsiniz. Piramidinizin ne kadar çok katı varsa, o kadar çok güç arasından seçim yapabilirsiniz.
+IDS_DEATH_WITHER|||{*PLAYER*} eriyip gitti
+IDS_TUTORIAL_TASK_HORSE_OVERVIEW|||Bir At buldunuz.
+IDS_ACHIEVE_DESC_THE_HAGGLER|||30 Zümrüt çıkar veya satın al.
+IDS_TILE_STAINED_GLASS_PANE_BROWN|||Kahverengi Boyalı Cam İnce
+IDS_ACHIEVE_NAME_ITS_A_SIGN|||Bu Bir Tabela!
+IDS_FIREWORKS_CHARGE_YELLOW|||Sarı
+IDS_DESC_ACTIVATOR_RAIL|||Hunili Vagonları etkinleştirebilen veya devre dışı bırakabilen ve TNT'li Vagonları tetikleyebilen bir ray türü.
+IDS_HOW_TO_PLAY_MENU_HOPPERS|||Huniler
+IDS_TILE_STAINED_CLAY_WHITE|||Beyaz Boyalı Kil
+IDS_TILE_STAINED_CLAY_YELLOW|||Sarı Boyalı Kil
+IDS_TUTORIAL_PROMPT_HOPPER_OVERVIEW|||Huniler hakkında daha fazla bilgi edinmek için {*CONTROLLER_VK_A*} düğmesine basın. Huniler hakkında zaten bilginiz varsa {*CONTROLLER_VK_B*} düğmesine basın.
+IDS_WINDOWS_EXIT|||Minecraft'tan Çık
+IDS_ACHIEVE_NAME_REPOPULATION|||Nüfus Artışı
+IDS_FIREWORKS_CHARGE_SILVER|||Açık Gri
+IDS_ACHIEVE_DESC_DIAMONDS_TO_YOU|||Başka bir oyuncuya elmas fırlat.
+IDS_ACHIEVE_NAME_BLAZEROD|||Ateşin İçine
+IDS_DESC_OXEYE_DAISY|||Açık gri boya üretmek için kullanılabilen yaygın bir beyaz ve sarı çiçek.
+IDS_DEATH_PLAYER_ITEM|||{*PLAYER*}, {*SOURCE*} tarafından {*ITEM*} kullanılarak katledildi
+IDS_TILE_ROSE_BUSH|||Gül Çalısı
+IDS_TILE_DOOR_JUNGLE|||Orman Ağacı Kapısı
+IDS_TUTORIAL_TASK_HORSE_RIDE|||Şimdi bu ata binmeyi deneyin. Atın üzerine binmek için elinizde hiçbir eşya veya alet yokken {*CONTROLLER_ACTION_USE*} kullanın.
+IDS_CONTAINER_BEACON|||Fener
+IDS_DESC_SUNFLOWER|||Sarı boya üretmek için kullanılabilen uzun sarı bir çiçek.
+IDS_RABBIT|||Tavşan
+IDS_DESC_WEIGHTED_PLATE_HEAVY|||Kızıltaş sinyali sağlar. Plaka üzerinde daha fazla eşya olduğunda sinyal daha güçlü olacaktır. Hafif plakaya göre daha fazla ağırlık gerektirir.
+IDS_FIREWORKS_CHARGE_MAGENTA|||Eflatun
+IDS_TILE_TULIP_RED|||Kırmızı Lale
+IDS_TUTORIAL_PROMPT_HORSE_MENU_OVERVIEW|||{*B*}Devam etmek için {*CONTROLLER_VK_A*} düğmesine basın. {*B*}At envanterini nasıl kullanacağınızı zaten biliyorsanız {*CONTROLLER_VK_B*} düğmesine basın.
+IDS_TILE_STAINED_GLASS_CYAN|||Camgöbeği Boyalı Cam
+IDS_ACHIEVE_NAME_ON_A_RAIL|||Ray Üstünde
+IDS_TILE_STAINED_GLASS_ORANGE|||Turuncu Boyalı Cam
+IDS_DEATH_FELL_KILLER|||{*PLAYER*}, {*SOURCE*} tarafından düşmeye mahkum edildi
+IDS_DEATH_FIREBALL_ITEM|||{*PLAYER*}, {*SOURCE*} tarafından {*ITEM*} kullanılarak ateş topuna tutuldu
+IDS_ACHIEVE_NAME_OVERKILL|||Yüksek Hasar
+IDS_TILE_STAINED_CLAY_RED|||Kırmızı Boyalı Kil
+IDS_TILE_STONESLAB_REDSAND|||Kırmızı Kumtaşı Basamak
+IDS_TILE_ACTIVATOR_RAIL|||Aktivatör Rayı
+IDS_TILE_BIRCH_FENCE|||Huş Çiti
+IDS_TUTORIAL_TASK_FIREWORK_MENU_BASIC_CRAFT|||Ardından üretmek istediğinizde, üretilen Havai Fişeği çıktı yuvasından alabilirsiniz.
+IDS_TILE_DROPS|||Blok Düşmeleri
+IDS_TILE_ALLIUM|||Allium
+IDS_ITEM_PUFFERFISH|||Balon Balığı
+IDS_TILE_ACACIA_PLANKS|||Akasya Tahtası
+IDS_ACHIEVE_NAME_HAVE_A_SHEARFUL_DAY|||Kırpma Zamanı
+IDS_POTION_WITHER_POSTFIX|||Çürüme
+IDS_DESC_DIAMOND_HORSE_ARMOR|||Bir ata donatılabilen özel bir Zırh türüdür. 11 Zırh sağlar.
+IDS_DEATH_FELL_ACCIDENT_LADDER|||{*PLAYER*} merdivenden düştü
+IDS_TILE_RED_SANDSTONE|||Kırmızı Kumtaşı
+IDS_GAMEOPTION_MOB_LOOT|||Devre dışı bırakıldığında, canavarlar ve hayvanlar ganimet düşürmez (örneğin, Creeper'lar barut düşürmez).
+IDS_ITEM_DOOR_BIRCH|||Huş Kapı
+IDS_ACHIEVE_DESC_HOT_TOPIC|||Sekiz Kırıktaş bloğundan bir Fırın inşa et.
+IDS_ACHIEVE_DESC_MUSIC_TO_MY_EARS|||Bir Müzik Kutusu içinde Müzik Diski oynat.
+IDS_TILE_STAINED_GLASS_BLACK|||Siyah Boyalı Cam
+IDS_TILE_DIORITE|||Diyorit
+IDS_ACHIEVE_DESC_OVERKILL|||Tek bir vuruşta dokuz kalplik hasar ver.
+IDS_DESC_ALLIUM|||Eflatun boya üretmek için kullanılabilen nadir bir eflatun çiçek.
+IDS_HOW_TO_PLAY_DROPPERS|||{*T3*}NASIL OYNANIR : BIRAKICILAR{*ETW*}{*B*}{*B*}Kızıltaş tarafından tetiklendiğinde, Bırakıcılar içlerinde bulunan tek bir rastgele eşyayı yere bırakacaktır. Bırakıcıyı açmak için {*CONTROLLER_ACTION_USE*} kullanın ve ardından envanterinizden Bırakıcıya eşya yükleyebilirsiniz.{*B*}Bırakıcı bir Sandığa veya başka bir Kap türüne bakıyorsa, eşya bunun yerine onun içine yerleştirilecektir. Eşyaları bir mesafeye taşımak için uzun Bırakıcı zincirleri kurulabilir, ancak bunun çalışması için dönüşümlü olarak açılıp kapatılmaları gerekecektir.
+IDS_DESC_ROSE_BUSH|||Kırmızı boya üretmek için kullanılabilen uzun kırmızı bir çiçek.
+IDS_TILE_IRON_TRAPDOOR|||Demir Tuzak Kapısı
+IDS_ACHIEVE_NAME_EAT_PORKCHOP|||Pirzola
+IDS_TUTORIAL_TASK_BEACON_DESIGN|||Fenerler, gün boyunca güneş ışığı alacak şekilde yerleştirilmelidir. Fenerler; Demir, Altın, Zümrüt veya Elmas piramitlerin üzerine yerleştirilmelidir. Ancak malzeme seçimi fenerin gücü üzerinde hiçbir etkiye sahip değildir.
+IDS_TILE_JUNGLE_GATE|||Orman Ağacı Çit Kapısı
+IDS_TILE_LOG_DARK_OAK|||Koyu Meşe Odunu
+IDS_ACHIEVE_NAME_COW_TIPPER|||İnek Bükücü
+IDS_DESC_PRISMARINE|||Okyanus Anıtlarında bulunabilen nadir dekoratif taş. Prizmarin parçacıklarından üretilebilir.
+IDS_DESC_SALMON_RAW|||1{*ICON_SHANK_01*} yeniler veya fırında pişirilebilir. Evcilleştirmek için bir oselota beslenebilir.
+IDS_ACHIEVE_NAME_BOOKCASE|||Kütüphaneci
+IDS_DEATH_FELL_FINISH|||{*PLAYER*} çok yüksekten düştü ve {*SOURCE*} tarafından işi bitirildi
+IDS_ACHIEVE_DESC_MONSTER_HUNTER|||Bir canavara saldır ve onu yok et.
+IDS_POTION_HEALTHBOOST|||Sağlık Artışı
+IDS_ACHIEVE_NAME_BENCHMARKING|||Kıyaslama
+IDS_ENCHANTMENT_WATER_WALKER|||Derinlik Seyyahı
+IDS_FIREWORKS_CHARGE_TYPE_3|||Creeper Şekilli
+IDS_ZOMBIE_HORSE|||Zombi At
+IDS_TILE_RED_SANDSTONE_SMOOTH|||Pürüzsüz Kırmızı Kumtaşı
+IDS_TUTORIAL_TASK_HORSE_MENU_SADDLEBAGS|||Bu menüde kendi envanteriniz ile Eşekler ve Katırlara bağlanan heybeler arasında da eşya aktarabilirsiniz.
+IDS_TILE_TULIP_ORANGE|||Turuncu Lale
+IDS_TUTORIAL_TASK_HOPPER_AREA|||Bu odada görmeniz ve denemeniz için çeşitli yararlı Huni düzenleri bulunmaktadır.
+IDS_FIREWORKS_CHARGE_GREEN|||Yeşil
+IDS_TILE_PACKED_ICE|||Paketlenmiş Buz
+IDS_GAMEMODE_ADVENTURE|||Oyun Modu: Macera
+IDS_ACHIEVE_NAME_RAINBOW_COLLECTION|||Gökkuşağı Koleksiyonu
+IDS_TOOLTIPS_MOUNT|||Bin
+IDS_DESC_WRITTENBOOK|||Yazar tarafından imzalanmış bir kitap (içine yazı yazılamaz).
+IDS_TOOLTIPS_UNLEASH|||Çöz
+IDS_TILE_HOPPER|||Huni
+IDS_TILE_STAINED_CLAY_PINK|||Pembe Boyalı Kil
+IDS_SKELETON_HORSE|||İskelet At
+IDS_ACHIEVE_DESC_THE_LIE|||Şunları kullanarak bir Kek pişir: Buğday, Şeker, Süt ve Yumurta.
+IDS_TILE_STAINED_CLAY_MAGENTA|||Eflatun Boyalı Kil
+IDS_DESC_MULE|||Bir At ve Eşek çiftleştiğinde doğar. Bu hayvanlar evcilleştirilebilir ve ardından binilebilir ve sandık taşıyabilir.
+IDS_ITEM_DOOR_SPRUCE|||Ladin Kapı
+IDS_MAX_HORSES_BRED|||Bu hayvan Aşk Moduna giremez. Maksimum üreme atı sayısına ulaşıldı.
+IDS_ITEM_WRITTENBOOK|||Yazılı Kitap
+IDS_TILE_STAINED_GLASS|||Boyalı Cam
+IDS_DEATH_FELL_ACCIDENT_WATER|||{*PLAYER*} sudan düştü
+IDS_TILE_DOOR_SPRUCE|||Ladin Kapı
+IDS_ITEM_FIREWORKS_FLIGHT|||Uçuş Süresi:
+IDS_TUTORIAL_TASK_BEACON_PURPOSE|||Aktif Fenerler gökyüzüne parlak bir ışık huzmesi yansıtır ve yakındaki oyunculara güçler verir. Cam, Gözlemtaşı ve Nether Yıldızı ile üretilirler, bu da Wither'ı yenerek elde edilebilir.
+IDS_TILE_CHEST_TRAP|||Tuzaklı Sandık
+IDS_ACHIEVE_DESC_BLAZEROD|||Bir Blaze'i çubuğundan ayır.
+IDS_POTION_ABSORPTION_POSTFIX|||Emilim
+IDS_DESC_CLOWNFISH|||0.5{*ICON_SHANK_01*} yeniler.
+IDS_DESC_GOLD_HORSE_ARMOR|||Bir ata donatılabilen özel bir Zırh türüdür. 7 Zırh sağlar.
+IDS_ACHIEVE_NAME_MUSIC_TO_MY_EARS|||Kulağımın Pası Silindi
+IDS_ACHIEVE_NAME_DIAMONDS_TO_YOU|||Elmaslar Sana!
+IDS_TILE_STAINED_CLAY_BLUE|||Mavi Boyalı Kil
+IDS_TUTORIAL_TASK_FIREWORK_MENU_OVERVIEW|||Bu, Havai Fişekler ve Havai Fişek Yıldızları üretmek için kullanabileceğiniz Havai Fişek arayüzüdür.
+IDS_TILE_DROPPER|||Bırakıcı
+IDS_ACHIEVE_DESC_ARROW_KILL_CREEPER|||Oklarla bir Creeper öldür.
+IDS_TILE_STAINED_GLASS_GRAY|||Gri Boyalı Cam
+IDS_ACHIEVE_NAME_ACQUIRE_HARDWARE|||Demir Çağı
+IDS_TILE_STAINED_GLASS_PANE_SILVER|||Açık Gri Boyalı Cam İnce
+IDS_ACHIEVE_NAME_TIME_TO_STRIKE|||Saldırı Zamanı!
+IDS_LANGUAGE_SELECTOR|||Diller
+IDS_HOW_TO_PLAY_HORSES|||{*T3*}NASIL OYNANIR : ATLAR{*ETW*}{*B*}{*B*}Atlar ve Eşekler esas olarak açık düzlüklerde bulunur. Katırlar, bir Eşek ve bir Atın yavrusudur, ancak kendileri kısırdır.{*B*}Tüm yetişkin Atlar, Eşekler ve Katırlar binilebilir. Ancak sadece Atlar zırh giyebilir ve sadece Eşekler ile Katırlar eşya taşımak için heybelerle donatılabilir.{*B*}{*B*}Atlar, Eşekler ve Katırlar kullanılmadan önce evcilleştirilmelidir. Bir at, üzerine binmeye çalışılarak ve at biniciyi üzerinden atmaya çalışırken üzerinde kalmayı başararak evcilleştirilir.{*B*}Atın etrafında Aşk Kalpleri belirdiğinde evcilleştirilmiştir ve artık oyuncuyu üzerinden atmaya çalışmayacaktır. Bir atı yönlendirmek için, oyuncu ata bir Eyer takmalıdır.{*B*}{*B*}Eyerler köylülerden satın alınabilir veya dünyada gizlenmiş Sandıklarda bulunabilir.{*B*}Evcilleştirilmiş Eşekler ve Katırlar, bir Sandık takılarak heybelerle donatılabilir. Bu heybelere biniliyorken veya eğilirken erişilebilir.{*B*}{*B*}Atlar ve Eşekler (Katırlar değil), Altın Elma veya Altın Havuç kullanılarak diğer hayvanlar gibi üretilebilir.{*B*}Taylar zamanla yetişkin atlara dönüşecektir, ancak onları Buğday veya Samanla beslemek bunu hızlandıracaktır.
+IDS_NETHER_STAR|||Nether Yıldızı
+IDS_DESC_PACKED_ICE|||Üzerine nesneler yerleştirilebilen, erimeyen katı bir buz bloğu.
+IDS_TILE_ANDESITE|||Andezit
+IDS_CONTAINER_BEACON_PRIMARY_POWER|||Birincil Güç
+IDS_DESC_BARRIER|||Görünmez ama katı bir blok.
+IDS_FIREWORKS_CHARGE_BROWN|||Kahverengi
+IDS_TUTORIAL_PROMPT_BEACON_MENU_OVERVIEW|||{*B*}Devam etmek için {*CONTROLLER_VK_A*} düğmesine basın.{*B*}Fener arayüzünü zaten nasıl kullanacağınızı biliyorsanız {*CONTROLLER_VK_B*} düğmesine basın.
+IDS_DESC_WET_SPONGE|||Bir fırında kurutulabilir, bu da süngerin tekrar kullanılmasını sağlar.
+IDS_TILE_PODZOL|||Podzol
+IDS_TUTORIAL_TASK_BEACON_MENU_OVERVIEW|||Bu, Fenerinizin vermesini istediğiniz güçleri seçmek için kullanabileceğiniz Fener arayüzüdür.
+IDS_TILE_LARGE_FERN|||Büyük Eğrelti Otu
+IDS_ITEM_RABBIT_RAW|||Çiğ Tavşan
+IDS_ACHIEVE_NAME_DELICIOUS_FISH|||Nefis Balık
+IDS_HARDCORE_DEATH_MESSAGE|||öldü.
+IDS_ITEM_ELYTRA|||Elytra
+IDS_DEATH_FELL_ACCIDENT_GENERIC|||{*PLAYER*} yüksek bir yerden düştü
+IDS_DESC_BEACON|||Gökyüzüne bir ışık huzmesi yansıtır ve yakındaki oyunculara Durum Efektleri sağlayabilir.
+IDS_ACHIEVE_DESC_COW_TIPPER|||Deri topla.
+IDS_TUTORIAL_TASK_HOPPER_OVERVIEW|||Bu oda Huniler içermektedir
+IDS_TILE_PRISMARINE_BRICKS|||Prizmarin Tuğlası
+IDS_ENCHANTMENT_LUCK_OF_THE_SEA|||Deniz Şansı
+IDS_TILE_STAINED_GLASS_LIME|||Açık Yeşil Boyalı Cam
+IDS_ACHIEVE_DESC_IRON_BELLY|||Çürük et kullanarak açlığını gider.
+IDS_TILE_STAINED_GLASS_PANE|||Boyalı Cam İnce
+IDS_ITEM_MAP_EMPTY|||Boş Harita
+IDS_ACHIEVE_NAME_GETTING_WOOD|||Odun Edinmek
+IDS_ACHIEVE_DESC_GETTING_WOOD|||Bir ağacı odun bloğu düşene kadar yumrukla.
+IDS_DESC_CHEST_TRAP|||Blokları ve eşyaları içeride saklar. Çift kapasiteli daha büyük bir sandık oluşturmak için iki sandığı yan yana yerleştirin. Tuzaklı sandık açıldığında bir Kızıltaş sinyali de üretir.
+IDS_TUTORIAL_TASK_HORSE_BREEDING|||Atlar ve Eşekler (Katırlar değil), Altın Elma veya Altın Havuç kullanılarak diğer hayvanlar gibi üretilebilir. Taylar zamanla yetişkin atlara dönüşecektir, ancak onları Buğday veya Samanla beslemek bunu hızlandıracaktır.
+IDS_ITEM_PRISMARINE_CRYSTAL_DESC|||Deniz Fenerlerinden veya Gardiyanlar ve Yaşlı Gardiyanları yenerek elde edilir. Deniz Feneri üretiminde kullanılabilir.
+IDS_TILE_LEAVES_ACACIA|||Akasya Yaprakları
+IDS_DESC_TULIP_RED|||Kırmızı boya üretmek için kullanılabilen küçük kırmızı bir çiçek.
+IDS_DESC_HOUSTONIA|||Açık gri boya üretmek için kullanılabilen küçük beyaz bir çiçek.

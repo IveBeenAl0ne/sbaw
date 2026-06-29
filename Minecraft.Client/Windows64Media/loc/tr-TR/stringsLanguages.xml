@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<data name="IDS_LANG_SYSTEM">					<value>Sistem Dili</value>			</data>
+	<data name="IDS_LANG_ENGLISH">					<value>İngilizce</value>					</data>
+	
+	<data name="IDS_LANG_GERMAN">					<value>Almanca</value>					</data>
+	
+	<data name="IDS_LANG_SPANISH">					<value>İspanyolca</value>					</data>
+	<data name="IDS_LANG_SPANISH_SPAIN">			<value>İspanyolca (İspanya)</value>			</data>
+	<data name="IDS_LANG_SPANISH_LATIN_AMERICA">	<value>İspanyolca (Latin Amerika)</value>	</data>
+	
+	<data name="IDS_LANG_FRENCH">					<value>Fransızca</value>					</data>
+	
+	<data name="IDS_LANG_ITALIAN">					<value>İtalyanca</value>					</data>
+	
+	<data name="IDS_LANG_PORTUGUESE">				<value>Portekizce</value>				</data>
+	<data name="IDS_LANG_PORTUGUESE_PORTUGAL">		<value>Portekizce (Portekiz)</value>	</data>
+	<data name="IDS_LANG_PORTUGUESE_BRAZIL">		<value>Portekizce (Brezilya)</value>		</data>
+	
+	<data name="IDS_LANG_JAPANESE">					<value>Japonca</value>					</data>
+
+    <data name="IDS_LANG_KOREAN">					<value>Korece</value>					</data>
+
+	<data name="IDS_LANG_CHINESE_TRADITIONAL">		<value>Çince (Geleneksel)</value>	</data>
+	<data name="IDS_LANG_CHINESE_SIMPLIFIED">		<value>Çince (Basitleştirilmiş)</value>		</data>
+
+	<data name="IDS_LANG_DANISH">					<value>Danca</value>					</data>
+    <data name="IDS_LANG_FINISH">					<value>Fince</value>					</data>
+	
+	<data name="IDS_LANG_DUTCH">					<value>Felemenkçe</value>					</data>
+	
+    <data name="IDS_LANG_POLISH">					<value>Lehçe</value>					</data>
+    <data name="IDS_LANG_RUSSIAN">					<value>Rusça</value>					</data>
+    <data name="IDS_LANG_SWEDISH">					<value>İsveççe</value>					</data>
+    <data name="IDS_LANG_NORWEGIAN">				<value>Norveççe</value>				</data>
+	
+    <data name="IDS_LANG_GREEK">					<value>Yunanca</value>					</data>
+	
+	<data name="IDS_LANG_TURKISH">					<value>Türkçe</value>					</data>
+</root>

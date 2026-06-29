@@ -565,8 +565,24 @@ void XMemDestroyDecompressionContext(XMEMDECOMPRESSION_CONTEXT Context)
 
 //#ifndef __PS3__
 #if !(defined _DURANGO || defined __PS3__ || defined __ORBIS__ || defined __PSVITA__)
-DWORD XGetLanguage() { return 1; }
-DWORD XGetLocale() { return 0; }
+DWORD XGetLanguage()
+{
+	unsigned char ucLang = app.GetMinecraftLanguage(0);
+	if (ucLang != 0)
+	{
+		return (DWORD)ucLang;
+	}
+	return 1; // XC_LANGUAGE_ENGLISH
+}
+DWORD XGetLocale()
+{
+	unsigned char ucLocale = app.GetMinecraftLocale(0);
+	if (ucLocale != 0)
+	{
+		return (DWORD)ucLocale;
+	}
+	return 0;
+}
 DWORD XEnableGuestSignin(BOOL fEnable) { return 0; }
 #endif
 

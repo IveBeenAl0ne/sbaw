@@ -1,0 +1,14 @@
+<root>
+	<data name="IDS_INCREASE_WORLD_SIZE">
+		<value>Dünya Boyutunu Artır</value>
+	</data>	
+	<data name="IDS_INCREASE_WORLD_SIZE_OVERWRITE_EDGES">
+		<value>Kenarların Üzerine Yaz</value>
+	</data>	
+	<data name="IDS_GAMEOPTION_INCREASE_WORLD_SIZE">
+		<value>Dünya Boyutunu Artır</value>
+	</data>	
+	<data name="IDS_GAMEOPTION_INCREASE_WORLD_SIZE_OVERWRITE_EDGES">
+		<value>Kenarların Üzerine Yaz</value>
+	</data>	
+</root>

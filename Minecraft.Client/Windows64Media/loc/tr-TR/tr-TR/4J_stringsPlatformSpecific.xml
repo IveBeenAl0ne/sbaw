@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<data name="IDS_NOFREESPACE_TEXT">
+		<value>Sistem belleğinizin oyunu kaydedecek kadar boş alanı yok.</value>
+	</data>
+	<data name="IDS_OVERWRITESAVE_TEXT">
+		<value>Seçtiğiniz depolama aygıtında bu kayıt zaten mevcut. Üzerine yazılmasını onaylıyor musunuz?</value>
+	</data>
+	<data name="IDS_STORAGEDEVICEPROBLEM_TITLE">
+		<value>Depolama Aygıtı Sorunu</value>
+	</data>
+	<data name="IDS_FAILED_TO_SAVE_TEXT">
+		<value>Depolama aygıtınız kullanılamıyor veya bir hata içeriyor</value>
+	</data>
+	<data name="IDS_FAILED_TO_LOADSAVE_TEXT">
+		<value>Depolama aygıtınız kullanılamıyor veya bir hata içeriyor. Lütfen yeni bir depolama aygıtı seçin.</value>
+	</data>
+	<data name="IDS_SELECTANEWDEVICE">
+		<value>Yeni bir depolama aygıtı seçin</value>
+	</data>
+	<data name="IDS_NODEVICE_TITLE">
+		<value>Depolama aygıtı seçilmedi</value>
+	</data>
+	<data name="IDS_NODEVICE_TEXT">
+		<value>Bir depolama aygıtı seçmezseniz, oyun kayıtları devre dışı bırakılacaktır.</value>
+	</data>
+	<data name="IDS_NODEVICE_ACCEPT">
+		<value>Depolama aygıtı seç</value>
+	</data>
+	<data name="IDS_DEVICEGONE_TEXT">
+		<value>Depolama aygıtınız çıkarıldı. Lütfen yenisini seçin.</value>
+	</data>
+	<data name="IDS_WARNING_ARCADE_TITLE">
+		<value>Xbox Paneline Dön</value>
+	</data>
+	<data name="IDS_PRO_RETURNEDTOTITLESCREEN_TEXT">
+		<value>Ana ekrana döndün çünkü "PSN" hesabından çıktın.</value>
+	</data>
+	<data name="IDS_PRO_RETURNEDTOMENU_TEXT">
+		<value>"PSN" hesabından çıktığın için eşleşme sonlandı</value>
+	</data>
+	<data name="IDS_PRO_NOTONLINE_TITLE">
+		<value>Şu an giriş yapmadınız.</value>
+	</data>
+	<data name="IDS_PRO_NOTONLINE_TEXT">
+		<value>Bu oyunda "PSN" hesabına giriş yapmış olmanı gerektiren bazı özellikler var ancak şu anda çevrimdışısın.</value>
+	</data>
+	<data name="IDS_PRO_XBOXLIVE_NOTIFICATION">
+		<value>Bu özellik için "PSN" hesabına giriş yapmalısın.</value>
+	</data>
+	<data name="IDS_PRO_NOTONLINE_ACCEPT">
+		<value>"PSN" hesabına bağlan</value>
+	</data>
+	<data name="IDS_PRO_ACHIEVEMENTPROBLEM_TITLE">
+		<value>Kupa Sorunu</value>
+	</data>
+	<data name="IDS_PRO_ACHIEVEMENTPROBLEM_TEXT">
+		<value>Sony Entertainment Network hesabına giriş yapmakta sorun çıktı. Kupan bu sefer alınamayacak.</value>
+	</data>
+	<data name="IDS_PRO_NOPROFILE_TITLE">
+		<value>Sony Entertainment Network hesabı sorunu</value>
+	</data>
+	<data name="IDS_PRO_NOPROFILEOPTIONS_TEXT">
+		<value>Ayarları Sony Entertainment Network hesabına kaydetme başarısız oldu.</value>
+	</data>
+	<data name="IDS_PRO_GUESTPROFILE_TITLE">
+		<value>Konuk Oyuncu Profili</value>
+	</data>
+	<data name="IDS_PRO_GUESTPROFILE_TEXT">
+		<value>Konuk oyuncu profili bu özelliğe erişemez. Lütfen farklı bir oyuncu profili kullanın.</value>
+	</data>
+	<data name="IDS_PRO_UNLOCKGAME_TEXT">
+		<value>Bu oyun Minecraft: PlayStation®3 Edition deneme oyunudur. Eğer tam oyuna sahip olursanız, bir kupa kazanacaksınız! 
+Minecraft: PlayStation®3 Edition keyfini sürmek için tam oyunun kilidini açın ve "PSN" sayesinde dünyanın dört bir yanındaki arkadaşlarınızla oynayın.
+Tam sürüm oyunu açmak ister misiniz?</value>
+	</data>
+	<data name="IDS_SAVE_TRANSFER_WRONG_VERSION">
+		<value>Kayıt aktarım alanındaki kayıt dosyasının sürüm numarası, bu sürüm tarafından henüz desteklenmiyor.</value>
+	</data>
+	<data name="IDS_PRO_PROFILEPROBLEM_TEXT">
+		<value>Profiliniz okunurken bir sorun oluştuğu için ana menüye döndürülüyorsunuz.</value>
+	</data>
+</root>

@@ -41,8 +41,55 @@ bool equalsIgnoreCase(const wstring& a, const wstring& b)
 
 wstring convStringToWstring(const string& converting)
 {
-	wstring converted(converting.length(), L' ');
-	copy(converting.begin(), converting.end(), converted.begin());
+	wstring converted;
+	converted.reserve(converting.length());
+	for (size_t i = 0; i < converting.length(); )
+	{
+		unsigned char c = converting[i];
+		if (c < 0x80)
+		{
+			converted.push_back(c);
+			i += 1;
+		}
+		else if ((c & 0xE0) == 0xC0)
+		{
+			if (i + 1 < converting.length()) {
+				unsigned char c2 = converting[i+1];
+				converted.push_back(static_cast<wchar_t>(((c & 0x1F) << 6) | (c2 & 0x3F)));
+			}
+			i += 2;
+		}
+		else if ((c & 0xF0) == 0xE0)
+		{
+			if (i + 2 < converting.length()) {
+				unsigned char c2 = converting[i+1];
+				unsigned char c3 = converting[i+2];
+				converted.push_back(static_cast<wchar_t>(((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F)));
+			}
+			i += 3;
+		}
+		else if ((c & 0xF8) == 0xF0)
+		{
+			if (i + 3 < converting.length()) {
+				unsigned char c2 = converting[i+1];
+				unsigned char c3 = converting[i+2];
+				unsigned char c4 = converting[i+3];
+				uint32_t cp = ((c & 0x07) << 18) | ((c2 & 0x3F) << 12) | ((c3 & 0x3F) << 6) | (c4 & 0x3F);
+				if (sizeof(wchar_t) == 2) {
+					cp -= 0x10000;
+					converted.push_back(static_cast<wchar_t>((cp >> 10) + 0xD800));
+					converted.push_back(static_cast<wchar_t>((cp & 0x3FF) + 0xDC00));
+				} else {
+					converted.push_back(static_cast<wchar_t>(cp));
+				}
+			}
+			i += 4;
+		}
+		else
+		{
+			i += 1;
+		}
+	}
 	return converted;
 }
 

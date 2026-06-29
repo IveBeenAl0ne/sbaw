@@ -49,6 +49,7 @@ private:
 		eFont_SimpChinese,
 		eFont_TradChinese,
 		eFont_Korean,
+		eFont_Turkish,
 
 	};
 

@@ -364,6 +364,7 @@ UIController::EFont UIController::getFontForLanguage(int language)
 #endif
 	case XC_LANGUAGE_TCHINESE:	return eFont_TradChinese;
 	case XC_LANGUAGE_KOREAN:	return eFont_Korean;
+	// Turkish uses bitmap font (like Russian/Greek) to avoid TTF crash
 	default:					return eFont_Bitmap;
 	}
 }
@@ -402,12 +403,10 @@ void UIController::SetupFont()
 	// flag a language change to reload the string tables in the DLC
 	app.m_dlcManager.LanguageChanged();
 
-	app.loadStringTable(); // Switch to use new string table,
-
 	if (m_eTargetFont == m_eCurrentFont)
 	{
-		// 4J-JEV: If we're ingame, reload the font to update all the text.
-		if (app.GetGameStarted()) app.SetAction(ProfileManager.GetPrimaryPad(), eAppAction_ReloadFont);
+		// 4J-JEV: Reload the font to update all the text.
+		app.SetAction(ProfileManager.GetPrimaryPad(), eAppAction_ReloadFont);
 		return;
 	}
 
@@ -692,6 +691,7 @@ IggyLibrary UIController::loadSkin(const wstring &skinPath, const wstring &skinN
 
 void UIController::ReloadSkin()
 {
+	app.DebugPrintf("[ReloadSkin] Step 1: DestroyAll\n");
 	// Destroy all scene swf
 	for(unsigned int i = 0; i < eUIGroup_COUNT; ++i)
 	{
@@ -699,17 +699,25 @@ void UIController::ReloadSkin()
 		m_groups[i]->DestroyAll();
 	}
 
+	app.DebugPrintf("[ReloadSkin] Step 2: loadStringTable\n");
+	app.loadStringTable(); // Switch to use new string table,
+	app.DebugPrintf("[ReloadSkin] Step 3: loadStringTable done\n");
+
 	// Unload the current libraries
 	// Some libraries reference others, so we destroy in reverse order
 	for(int i = eLibrary_Count - 1; i >= 0; --i)
 	{
+		app.DebugPrintf("[ReloadSkin] IggyLibraryDestroy index %d\n", i);
 		if(m_iggyLibraries[i] != IGGY_INVALID_LIBRARY) IggyLibraryDestroy(m_iggyLibraries[i]);
 		m_iggyLibraries[i] = IGGY_INVALID_LIBRARY;
 	}
+	app.DebugPrintf("[ReloadSkin] Step 4: all libraries destroyed\n");
 
 #ifdef _WINDOWS64
 	// 4J Stu - Don't load on a thread on windows. I haven't investigated this in detail, so a quick fix
+	app.DebugPrintf("[ReloadSkin] Step 5: reloadSkinThreadProc\n");
 	reloadSkinThreadProc(this);
+	app.DebugPrintf("[ReloadSkin] Step 6: reloadSkinThreadProc done\n");
 #else
 
 	m_reloadSkinThread = new C4JThread(reloadSkinThreadProc, (void*)this, "Reload skin thread");
