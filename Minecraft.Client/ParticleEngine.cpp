@@ -34,9 +34,11 @@ ParticleEngine::~ParticleEngine()
 
 void ParticleEngine::add(shared_ptr<Particle> p)
 {
+    if (p == nullptr || p->level == nullptr || p->level->dimension == nullptr) return;
+    if (p->level != level) return;
+
     int t = p->getParticleTexture();
-	if (p->level == nullptr || p->level->dimension == nullptr) return; 
-	int l = p->level->dimension->id == 0 ? 0 : ( p->level->dimension->id == -1 ? 1 : 2);
+    int l = p->level->dimension->id == 0 ? 0 : ( p->level->dimension->id == -1 ? 1 : 2);
 	int maxParticles;
 	switch(p->GetType())
 	{
@@ -69,6 +71,13 @@ void ParticleEngine::tick()
 				for (unsigned int i = 0; i < particles[l][tt][list].size(); i++)
 				{
 					shared_ptr<Particle> p = particles[l][tt][list][i];
+					if (p == nullptr || p->level == nullptr || p->level != level || p->level->dimension == nullptr)
+					{
+						particles[l][tt][list][i] = particles[l][tt][list].back();
+						particles[l][tt][list].pop_back();
+						i--;
+						continue;
+					}
 					p->tick();
 					if (p->removed)
 					{
@@ -85,6 +94,10 @@ void ParticleEngine::tick()
 void ParticleEngine::render(shared_ptr<Entity> player, float a, int list)
 {
 	if (player == nullptr)
+	{
+		return;
+	}
+	if (level == nullptr || level->dimension == nullptr)
 	{
 		return;
 	}
@@ -195,19 +208,19 @@ void ParticleEngine::setLevel(Level *level)
 {
     this->level = level;
 	// 4J - we've now got a set of particle vectors for each dimension, and only clearing them when its game over & the level is set to nullptr
-	if( level == nullptr )
-	{
-		for( int l = 0; l < 3; l++ )
-		{
-			for (int tt = 0; tt < TEXTURE_COUNT; tt++)
-			{
-				for( int list = 0; list < LIST_COUNT; list++ )
-				{
-					particles[l][tt][list].clear();
-				}
-			}
-		}
-	}
+    if (level == nullptr)
+    {
+        for (int l = 0; l < 3; l++)
+        {
+            for (int tt = 0; tt < TEXTURE_COUNT; tt++)
+            {
+                for (int list = 0; list < LIST_COUNT; list++)
+                {
+                    particles[l][tt][list].clear();
+                }
+            }
+        }
+    }
 }
 
 void ParticleEngine::destroy(int x, int y, int z, int tid, int data)

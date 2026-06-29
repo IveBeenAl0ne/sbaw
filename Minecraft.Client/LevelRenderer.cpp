@@ -66,6 +66,7 @@
 #include "FrustumCuller.h"
 #include "../Minecraft.World/BasicTypeContainers.h"
 #include "Common/UI/UIScene_SettingsGraphicsMenu.h"	
+#include "ParticleUtils.h"
 #include <unordered_set>
 
 //#define DISABLE_SPU_CODE
@@ -2853,7 +2854,7 @@ void LevelRenderer::addParticle(ePARTICLE_TYPE eParticleType, double x, double y
 
 shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticleType, double x, double y, double z, double xa, double ya, double za)
 {
-	if (mc == nullptr || mc->cameraTargetPlayer == nullptr || mc->particleEngine == nullptr)
+	if (mc == nullptr || mc->cameraTargetPlayer == nullptr || mc->particleEngine == nullptr || mc->options == nullptr)
 	{
 		return nullptr;
 	}
@@ -2863,18 +2864,46 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 	if( Double::isNaN(x) ) return nullptr;
 	if( Double::isNaN(y) ) return nullptr;
 	if( Double::isNaN(z) ) return nullptr;
+	if( Double::isNaN(xa) ) return nullptr;
+	if( Double::isNaN(ya) ) return nullptr;
+	if( Double::isNaN(za) ) return nullptr;
 
 	int particleLevel = mc->options->particles;
 
-	Level *lev;
-	int playerIndex = mc->player->GetXboxPad();	// 4J added
-	lev = level[playerIndex];
+	Level *lev = nullptr;
+	int playerIndex = -1;
 
-	if (particleLevel == 1)
+	shared_ptr<LocalPlayer> sourcePlayer = mc->player;
+	if (sourcePlayer == nullptr && mc->cameraTargetPlayer != nullptr)
+	{
+		sourcePlayer = dynamic_pointer_cast<LocalPlayer>(mc->cameraTargetPlayer);
+	}
+	if (sourcePlayer != nullptr)
+	{
+		playerIndex = sourcePlayer->GetXboxPad();
+		if (playerIndex >= 0 && playerIndex < XUSER_MAX_COUNT && isReasonableLevelPointer(level[playerIndex]) && level[playerIndex]->dimension != nullptr)
+		{
+			lev = level[playerIndex];
+		}
+	}
+
+	if (lev == nullptr)
+	{
+		for (unsigned int i = 0; i < XUSER_MAX_COUNT; ++i)
+		{
+			if (mc->localplayers[i] != nullptr && isReasonableLevelPointer(mc->localplayers[i]->level) && mc->localplayers[i]->level->dimension != nullptr)
+			{
+				lev = mc->localplayers[i]->level;
+				break;
+			}
+		}
+	}
+
+	if (particleLevel == 1 && lev != nullptr)
 	{
 		// when playing at "decreased" particle level, randomly filter
 		// particles by setting the level to "minimal"
-		if (level[playerIndex]->random->nextInt(3) == 0)
+		if (lev->random->nextInt(3) == 0)
 		{
 			particleLevel = 2;
 		}
@@ -2922,6 +2951,39 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 	}
 
 	if (lev == nullptr)
+		return nullptr;
+
+	if (!isReasonableLevelPointer(lev) || !isReasonableDimensionPointer(lev->dimension))
+		return nullptr;
+
+	bool levIsKnown = false;
+	if (lev == mc->level || lev == mc->animateTickLevel)
+	{
+		levIsKnown = true;
+	}
+	else
+	{
+		for (unsigned int i = 0; i < XUSER_MAX_COUNT && !levIsKnown; ++i)
+		{
+			if (mc->localplayers[i] != nullptr && mc->localplayers[i]->level == lev && isReasonableLevelPointer(mc->localplayers[i]->level) && mc->localplayers[i]->level->dimension != nullptr)
+			{
+				levIsKnown = true;
+			}
+		}
+		for (int i = 0; i < 4 && !levIsKnown; ++i)
+		{
+			if (this->level[i] == lev && isReasonableLevelPointer(this->level[i]) && this->level[i]->dimension != nullptr)
+			{
+				levIsKnown = true;
+			}
+		}
+	}
+	if (!levIsKnown)
+	{
+		return nullptr;
+	}
+
+	if (lev->dimension == nullptr)
 		return nullptr;
 
 	if (particleLevel > 1)

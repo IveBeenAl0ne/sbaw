@@ -1,10 +1,50 @@
 #include "stdafx.h"
 #include "Particle.h"
 #include "Tesselator.h"
+#include "../Minecraft.Client/Minecraft.h"
+#include "../Minecraft.Client/MultiPlayerLevel.h"
+#include "../Minecraft.Client/MultiPlayerLocalPlayer.h"
+#include "../Minecraft.World/Level.h"
+#include "../Minecraft.World/net.minecraft.world.level.dimension.h"
 #include "../Minecraft.World/Random.h"
 #include "../Minecraft.World/Mth.h"
 #include "../Minecraft.World/JavaMath.h"
 #include "../Minecraft.World/net.minecraft.world.h"
+#include "ParticleUtils.h"
+
+static bool isKnownParticleLevel(Level *lev, Minecraft *mc)
+{
+	if (lev == nullptr || mc == nullptr)
+		return false;
+
+	if (lev == mc->level || lev == mc->animateTickLevel || lev == mc->oldLevel)
+		return true;
+
+	for (unsigned int i = 0; i < XUSER_MAX_COUNT; ++i)
+	{
+		if (mc->localplayers[i] != nullptr && mc->localplayers[i]->level == lev)
+			return true;
+	}
+
+	return false;
+}
+
+static Level *safeParticleLevel(Level *level)
+{
+	Minecraft *mc = Minecraft::GetInstance();
+
+	if (level != nullptr && isReasonableLevelPointer(level) && isKnownParticleLevel(level, mc) && isReasonableDimensionPointer(level->dimension))
+	{
+		return level;
+	}
+
+	if (mc != nullptr && mc->level != nullptr && isReasonableLevelPointer(mc->level) && isReasonableDimensionPointer(mc->level->dimension))
+	{
+		return static_cast<Level *>(mc->level);
+	}
+
+	return nullptr;
+}
 
 /*
     protected int tex;
@@ -42,14 +82,36 @@ void Particle::_init(Level *level, double x, double y, double z)
 	texY = 0;
 }
 
-Particle::Particle(Level *level, double x, double y, double z) : Entity(level, false)
+Particle::Particle(Level *level, double x, double y, double z) : Entity(nullptr, false)
 {
 	_init(level,x,y,z);
+
+	Level *safeLevel = safeParticleLevel(level);
+	if (safeLevel != nullptr && isReasonableDimensionPointer(safeLevel->dimension))
+	{
+		this->level = safeLevel;
+		dimension = safeLevel->dimension->id;
+	}
+	else
+	{
+		this->level = nullptr;
+	}
 }
 
-Particle::Particle(Level *level, double x, double y, double z, double xa, double ya, double za) : Entity(level, false)
+Particle::Particle(Level *level, double x, double y, double z, double xa, double ya, double za) : Entity(nullptr, false)
 {
 	_init(level,x,y,z);
+
+	Level *safeLevel = safeParticleLevel(level);
+	if (safeLevel != nullptr && isReasonableDimensionPointer(safeLevel->dimension))
+	{
+		this->level = safeLevel;
+		dimension = safeLevel->dimension->id;
+	}
+	else
+	{
+		this->level = nullptr;
+	}
 
     xd = xa + static_cast<float>(Math::random() * 2 - 1) * 0.4f;
     yd = ya + static_cast<float>(Math::random() * 2 - 1) * 0.4f;
