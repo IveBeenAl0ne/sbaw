@@ -494,11 +494,11 @@ void Options::load()
                 }
                 for (int i = 0; i < keyboardBindings_length; i++)
 				{
-                                if (cmds[0] == (L"keyBind_" + i))
+                    if (cmds[0] == (L"keyBind_" + i))
 					{
-                                    keyboardBindings[i] = _fromString<int>(cmds[1]);
-                                }
-                            }
+                        keyboardBindings[i] = _fromString<int>(cmds[1]);
+                    }
+                }
 //            } catch (Exception e) {
 //                System.out.println("Skipping bad option: " + line);
 //            }
@@ -549,7 +549,7 @@ void Options::save()
 		dos.writeChars(advancedTooltips ? L"advancedTooltips:true" : L"advancedTooltips:false");
 		dos.writeChars(L"skin:" + skin);
         dos.writeChars(L"lastServer:" + lastMpIp);
-        dos.writeChars(L"swapActionUse:" + wstring(swapActionUse ? L"true" : L"false") + L"\n");
+        dos.writeChars(L"swapActionUse:" + wstring(swapActionUse ? L"true" : L"false"));
 
         for (int i = 0; i < keyMappings_length; i++)
 		{
