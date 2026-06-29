@@ -494,7 +494,7 @@ void Options::load()
                 }
                 for (int i = 0; i < keyboardBindings_length; i++)
 				{
-                    if (cmds[0] == (L"keyBind_" + i))
+                    if (cmds[0] == (L"keyBind_" + std::to_wstring(i)))
 					{
                         keyboardBindings[i] = _fromString<int>(cmds[1]);
                     }

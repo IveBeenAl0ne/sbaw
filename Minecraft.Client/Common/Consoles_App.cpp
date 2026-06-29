@@ -903,6 +903,47 @@ static void Win64_GetSettingsPath(char *outPath, DWORD size)
     if (lastSlash) *(lastSlash + 1) = '\0';
     strncat_s(outPath, size, "settings.dat", _TRUNCATE);
 }
+static void Win64_SetDefaultKeyboardBindings(unsigned char *keyboardBindings)
+{
+    if (!keyboardBindings) return;
+
+    keyboardBindings[0] = 'W';
+    keyboardBindings[1] = 'S';
+    keyboardBindings[2] = 'A';
+    keyboardBindings[3] = 'D';
+    keyboardBindings[4] = VK_SPACE;
+    keyboardBindings[5] = VK_LSHIFT;
+    keyboardBindings[6] = VK_CONTROL;
+    keyboardBindings[7] = 'E';
+    keyboardBindings[8] = 'Q';
+    keyboardBindings[9] = 'C';
+    keyboardBindings[10] = 'R';
+    keyboardBindings[11] = 'T';
+    keyboardBindings[12] = VK_RETURN;
+    keyboardBindings[13] = VK_ESCAPE;
+    keyboardBindings[14] = VK_ESCAPE;
+    keyboardBindings[15] = VK_F1;
+    keyboardBindings[16] = VK_F3;
+    keyboardBindings[17] = VK_F4;
+    keyboardBindings[18] = VK_CONTROL;
+    keyboardBindings[19] = VK_F5;
+    keyboardBindings[20] = VK_F6;
+    keyboardBindings[21] = VK_TAB;
+    keyboardBindings[22] = VK_F11;
+    keyboardBindings[23] = VK_F2;
+}
+static bool Win64_HasStoredKeyboardBindings(const GAME_SETTINGS *gs)
+{
+    if (!gs) return false;
+
+    for (int i = 0; i < 24; ++i)
+    {
+        if (gs->ucKeyboardBindings[i] != 0)
+            return true;
+    }
+
+    return false;
+}
 static void Win64_SaveSettings(GAME_SETTINGS *gs)
 {
     if (!gs) return;
@@ -1066,6 +1107,9 @@ int CMinecraftApp::SetDefaultOptions(C_4JProfile::PROFILESETTINGS *pSettings,con
 		GameSettingsA[iPad]->ucLanguage = MINECRAFT_LANGUAGE_DEFAULT; // use the system language
 		GameSettingsA[iPad]->ucLocale = MINECRAFT_LANGUAGE_DEFAULT; // use the system locale
 	}
+
+	GameSettingsA[iPad]->ucSwapActionUse = 0;
+	Win64_SetDefaultKeyboardBindings(GameSettingsA[iPad]->ucKeyboardBindings);
 
 	//#endif
 
@@ -1474,6 +1518,24 @@ int CMinecraftApp::OldProfileVersionCallback(LPVOID pParam,unsigned char *pucDat
 
 void CMinecraftApp::ApplyGameSettingsChanged(int iPad)
 {
+#ifdef _WINDOWS64
+	if (GameSettingsA[iPad] != nullptr)
+	{
+		Minecraft *pMinecraft = Minecraft::GetInstance();
+		if (!Win64_HasStoredKeyboardBindings(GameSettingsA[iPad]))
+		{
+			Win64_SetDefaultKeyboardBindings(GameSettingsA[iPad]->ucKeyboardBindings);
+		}
+		if (pMinecraft != nullptr && pMinecraft->options != nullptr)
+		{
+			pMinecraft->options->swapActionUse = (GameSettingsA[iPad]->ucSwapActionUse == 1);
+			for (int i = 0; i < 24; ++i)
+			{
+				pMinecraft->options->keyboardBindings[i] = GameSettingsA[iPad]->ucKeyboardBindings[i];
+			}
+		}
+	}
+#endif
 	ActionGameSettings(iPad,eGameSetting_MusicVolume	);
 	ActionGameSettings(iPad,eGameSetting_SoundFXVolume	);
 	ActionGameSettings(iPad,eGameSetting_RenderDistance	);
@@ -1761,6 +1823,26 @@ void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
 			SetExclusiveFullscreen(GetGameSettings(iPad, eGameSetting_ExclusiveFullscreen) != 0);
 		}
     case eGameSetting_KeyboardBinding:
+#ifdef _WINDOWS64
+		if (GameSettingsA[iPad] != nullptr)
+		{
+			const unsigned char oldSwapActionUse = GameSettingsA[iPad]->ucSwapActionUse;
+			unsigned char oldKeyboardBindingsA[24];
+			memcpy(oldKeyboardBindingsA, GameSettingsA[iPad]->ucKeyboardBindings, sizeof(oldKeyboardBindingsA));
+			
+			GameSettingsA[iPad]->ucSwapActionUse = minecraft->options->swapActionUse ? 1 : 0;
+			
+			for (int i = 0; i < 24; ++i)
+            {
+                GameSettingsA[iPad]->ucKeyboardBindings[i] = static_cast<unsigned char>(minecraft->options->keyboardBindings[i]);
+            }
+			
+			if (GameSettingsA[iPad]->ucSwapActionUse != oldSwapActionUse || memcmp(GameSettingsA[iPad]->ucKeyboardBindings, oldKeyboardBindingsA, sizeof(oldKeyboardBindingsA)) != 0)
+			{
+				GameSettingsA[iPad]->bSettingsChanged = true;
+			}
+		}
+#endif
 		if (!pMinecraft->options->swapActionUse)
 		{ // normal
 			g_KBMInput.SetMouseAction(g_KBMInput.MOUSE_LEFT);

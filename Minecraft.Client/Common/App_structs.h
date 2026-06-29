@@ -104,6 +104,9 @@ typedef struct
 			// 29/Oct/2014 - Language selector.
 			unsigned char ucLocale;
 
+			unsigned char ucSwapActionUse;
+			unsigned char ucKeyboardBindings[24];
+
 			// 4J Stu - See comment for GAME_SETTINGS_PROFILE_DATA_BYTES below
 			// was 192
 			//unsigned char ucUnused[192-TUTORIAL_PROFILE_STORAGE_BYTES-sizeof(DWORD)-sizeof(char)-sizeof(char)-sizeof(char)-sizeof(char)-sizeof(LONG)-sizeof(LONG)-sizeof(DWORD)];
