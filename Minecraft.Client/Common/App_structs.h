@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Options.h"
+
 typedef struct  
 {
 	wchar_t *wchFilename;
@@ -103,9 +105,10 @@ typedef struct
 
 			// 29/Oct/2014 - Language selector.
 			unsigned char ucLocale;
-
+			
+			// keybinds
 			unsigned char ucSwapActionUse;
-			unsigned char ucKeyboardBindings[24];
+			unsigned char ucKeyboardBindings[Options::keyboardBindings_length];
 
 			// 4J Stu - See comment for GAME_SETTINGS_PROFILE_DATA_BYTES below
 			// was 192

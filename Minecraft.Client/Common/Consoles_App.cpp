@@ -1827,14 +1827,14 @@ void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
 		if (GameSettingsA[iPad] != nullptr)
 		{
 			const unsigned char oldSwapActionUse = GameSettingsA[iPad]->ucSwapActionUse;
-			unsigned char oldKeyboardBindingsA[24];
+			unsigned char oldKeyboardBindingsA[Options::keyboardBindings_length];
 			memcpy(oldKeyboardBindingsA, GameSettingsA[iPad]->ucKeyboardBindings, sizeof(oldKeyboardBindingsA));
 			
-			GameSettingsA[iPad]->ucSwapActionUse = minecraft->options->swapActionUse ? 1 : 0;
+			GameSettingsA[iPad]->ucSwapActionUse = pMinecraft->options->swapActionUse ? 1 : 0;
 			
-			for (int i = 0; i < 24; ++i)
+			for (int i = 0; i < Options::keyboardBindings_length; ++i)
             {
-                GameSettingsA[iPad]->ucKeyboardBindings[i] = static_cast<unsigned char>(minecraft->options->keyboardBindings[i]);
+                GameSettingsA[iPad]->ucKeyboardBindings[i] = static_cast<unsigned char>(pMinecraft->options->keyboardBindings[i]);
             }
 			
 			if (GameSettingsA[iPad]->ucSwapActionUse != oldSwapActionUse || memcmp(GameSettingsA[iPad]->ucKeyboardBindings, oldKeyboardBindingsA, sizeof(oldKeyboardBindingsA)) != 0)

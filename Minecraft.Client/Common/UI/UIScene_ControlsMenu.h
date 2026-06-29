@@ -138,36 +138,9 @@ public:
 	virtual void handleCheckboxToggled(F64 controlId, bool selected);	
 	virtual void handlePress(F64 controlId, F64 childId);
 	virtual void handleFocusChange(F64 controlId, F64 childId);
-
-#ifdef _WINDOWS64
-#ifdef CONTROLSMENU_GUI_TEST
-    virtual bool handleMouseClick(F32 x, F32 y);
-    virtual void render(S32 width, S32 height, C4JRender::eViewportType viewport);
-#endif
-#endif
-
-    struct Button {
-	    float x = 0.25;
-		float y = 0;
-		wstring name = L"";
-	};
-
-	static const int buttons_length = 12;
-	Button buttons[buttons_length];
-
+	
 private:
 	void PositionText(int iPad,int iTextID, unsigned char ucAction);
 	void PositionTextDirect(int iPad,int iTextID, int iControlDetailsIndex, bool bShow);
 	void PositionAllText(int iPad);
-
-	static ResourceLocation TN_GUI_GUI_LOCATION;
-
-	bool m_keybindGuiOpen = false;
-	bool m_waitingForKeypress = false;
-	int m_idToBind = 0;
-
-	int m_iPad;
-
-	int m_width = 0;
-	int m_height = 0;
 };
