@@ -217,10 +217,6 @@ def build_split_save_entries(parsed, src_payload, src_endian, dst_endian):
         prefix, region_x, region_z = region_info
         region_chunks = parse_region_chunks(data, src_endian)
         for chunk in region_chunks:
-            # fireblade: if youre reading this pls fix non-dlc worlds
-            # like if you dont do the --dlc argument then the center chunk
-            # is always gonna be corrupted for some reason
-            # (i genuinely have no clue towards why this happens)
             chunk_x = region_x * 32 + chunk["local_x"]
             chunk_z = region_z * 32 + chunk["local_z"]
 
@@ -388,9 +384,9 @@ def convert_region_file(region_data, src_endian, dst_endian):
             continue
 
         chunk_offset = sector_start * REGION_SECTOR_BYTES
-        chunk_limit = chunk_offset + (sector_count * REGION_SECTOR_BYTES)
-        if chunk_limit > len(src):
-            continue
+
+        # only skip if 8 byte chunk header is unreadable
+        # sector_aligned chunk limit skips the goofy chunk in the center of the world 
         if chunk_offset + 8 > len(src):
             continue
 
@@ -399,8 +395,6 @@ def convert_region_file(region_data, src_endian, dst_endian):
 
         rle_flag = stored_length & 0x80000000
         payload_length = stored_length & 0x7FFFFFFF
-        if chunk_offset + 8 + payload_length > chunk_limit:
-            continue
 
         write_u32(dst, chunk_offset, rle_flag | payload_length, dst_endian)
         write_u32(dst, chunk_offset + 4, decomp_length, dst_endian)
@@ -575,14 +569,14 @@ def main():
         return 1
 
     print("Converted save successfully!")
-    print(f"  Mode: {result["mode"]}")
-    print(f"  DLC Split Save: {result["split_saves"]}")
-    print(f"  Source Endian: {result["source_endian"]}")
-    print(f"  Target Endian: {result["target_endian"]}")
-    print(f"  Entry Count: {result["entry_count"]}")
-    print(f"  Versions: {result["original_version"]} -> {result["current_version"]}")
-    print(f"  Decompressed Size: {result["decompressed_size"]}")
-    print(f"  Output Size: {result["compressed_size"]}")
+    print(f"  Mode: {result['mode']}")
+    print(f"  DLC Split Save: {result['split_saves']}")
+    print(f"  Source Endian: {result['source_endian']}")
+    print(f"  Target Endian: {result['target_endian']}")
+    print(f"  Entry Count: {result['entry_count']}")
+    print(f"  Versions: {result['original_version']} -> {result['current_version']}")
+    print(f"  Decompressed Size: {result['decompressed_size']}")
+    print(f"  Output Size: {result['compressed_size']}")
     print(f"  Output Path: {output_path}")
     return 0
 
