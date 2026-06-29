@@ -35,6 +35,7 @@ ParticleEngine::~ParticleEngine()
 void ParticleEngine::add(shared_ptr<Particle> p)
 {
     int t = p->getParticleTexture();
+	if (p->level == nullptr || p->level->dimension == nullptr) return; 
 	int l = p->level->dimension->id == 0 ? 0 : ( p->level->dimension->id == -1 ? 1 : 2);
 	int maxParticles;
 	switch(p->GetType())
