@@ -7,16 +7,11 @@ UIScene_SettingsAudioMenu::UIScene_SettingsAudioMenu(int iPad, void *initData, U
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
 
-	WCHAR TempString[256];	
-	swprintf( (WCHAR *)TempString, 256, L"%ls: %d%%", app.GetString( IDS_SLIDER_MUSIC ),app.GetGameSettings(m_iPad,eGameSetting_MusicVolume));	
-	m_sliderMusic.init(TempString,eControl_Music,0,100,app.GetGameSettings(m_iPad,eGameSetting_MusicVolume));
-	
-	swprintf( (WCHAR *)TempString, 256, L"%ls: %d%%", app.GetString( IDS_SLIDER_SOUND ),app.GetGameSettings(m_iPad,eGameSetting_SoundFXVolume));	
-	m_sliderSound.init(TempString,eControl_Sound,0,100,app.GetGameSettings(m_iPad,eGameSetting_SoundFXVolume));
-
-	m_checkboxCaveSounds.init(L"Cave Sounds",eControl_CaveSounds,(app.GetGameSettings(m_iPad,eGameSetting_CaveSounds)!=0));
-
-	m_checkboxMinecartSounds.init(L"Minecart Sounds",eControl_MinecartSounds,(app.GetGameSettings(m_iPad,eGameSetting_MinecartSounds)!=0));
+	m_bNeedsMultiListPopulate = true;
+	m_bInitialPopulateDone = false;
+	m_bPendingSliderUpdate = false;
+	m_iPendingSliderId = 0;
+	m_iPendingSliderValue = 0;
 
 	doHorizontalResizeCheck();
 
@@ -36,12 +31,72 @@ wstring UIScene_SettingsAudioMenu::getMoviePath()
 {
 	if(app.GetLocalPlayerCount() > 1)
 	{
-		return L"SettingsAudioMenuSplit";
+		return L"MultilistMenuSplit";
 	}
 	else
 	{
-		return L"SettingsAudioMenu";
+		return L"MultilistMenu";
 	}
+}
+
+void UIScene_SettingsAudioMenu::tick()
+{
+	if(m_bNeedsMultiListPopulate)
+	{
+		m_bNeedsMultiListPopulate = false;
+		m_multiList.setupControl(this, m_rootPath, "MultiList");
+		m_multiList.init(eControl_MultiList);
+
+		WCHAR TempString[256];
+		int musicVol = app.GetGameSettings(m_iPad, eGameSetting_MusicVolume);
+		int soundVol = app.GetGameSettings(m_iPad, eGameSetting_SoundFXVolume);
+		bool caveSounds = app.GetGameSettings(m_iPad, eGameSetting_CaveSounds) != 0;
+		bool minecartSounds = app.GetGameSettings(m_iPad, eGameSetting_MinecartSounds) != 0;
+		bool gameChat = app.GetGameSettings(m_iPad, eGameSetting_GameChat) != 0;
+
+		swprintf(TempString, 256, L"%ls: %d%%", app.GetString(IDS_SLIDER_MUSIC), musicVol);
+		m_multiList.AddNewSlider(TempString, eControl_Music, 0, 100, 1, musicVol);
+
+		swprintf(TempString, 256, L"%ls: %d%%", app.GetString(IDS_SLIDER_SOUND), soundVol);
+		m_multiList.AddNewSlider(TempString, eControl_Sound, 0, 100, 1, soundVol);
+		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_CAVE_SOUNDS), eControl_CaveSounds, caveSounds);
+		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_MINECART_SOUNDS), eControl_MinecartSounds, minecartSounds);
+		m_multiList.AddNewCheckbox(L"Game Chat", eControl_GameChat, gameChat);
+		m_multiList.EnableItem(eControl_GameChat, false);
+
+		IggyName funcDoVert = registerFastName(L"DoVerticalResizeCheck");
+		IggyName funcHideDesc = registerFastName(L"HideDescription");
+		IggyDataValue result;
+		IggyPlayerCallMethodRS(getMovie(), &result, m_rootPath, funcDoVert, 0, nullptr);
+		doHorizontalResizeCheck();
+		IggyPlayerCallMethodRS(getMovie(), &result, m_rootPath, funcHideDesc, 0, nullptr);
+		m_multiList.HighlightItem(eControl_Sound);
+		m_multiList.HighlightItem(eControl_Music);
+	}
+
+	if(m_bPendingSliderUpdate)
+	{
+		m_bPendingSliderUpdate = false;
+		m_multiList.SetSliderValue(m_iPendingSliderId, m_iPendingSliderValue);
+
+		WCHAR TempString[256];
+		switch(m_iPendingSliderId)
+		{
+		case eControl_Music:
+			app.SetGameSettings(m_iPad, eGameSetting_MusicVolume, m_iPendingSliderValue);
+			swprintf(TempString, 256, L"%ls: %d%%", app.GetString(IDS_SLIDER_MUSIC), m_iPendingSliderValue);
+			m_multiList.SetSliderLabel(eControl_Music, TempString);
+			break;
+		case eControl_Sound:
+			app.SetGameSettings(m_iPad, eGameSetting_SoundFXVolume, m_iPendingSliderValue);
+			swprintf(TempString, 256, L"%ls: %d%%", app.GetString(IDS_SLIDER_SOUND), m_iPendingSliderValue);
+			m_multiList.SetSliderLabel(eControl_Sound, TempString);
+			break;
+		}
+	}
+
+	UIScene::tick();
+	m_bInitialPopulateDone = true;
 }
 
 void UIScene_SettingsAudioMenu::updateTooltips()
@@ -76,6 +131,7 @@ void UIScene_SettingsAudioMenu::handleInput(int iPad, int key, bool repeat, bool
 	case ACTION_MENU_CANCEL:
 		if(pressed)
 		{
+			setGameSettings();
 			navigateBack();
 		}
 		break;
@@ -96,31 +152,27 @@ void UIScene_SettingsAudioMenu::handleInput(int iPad, int key, bool repeat, bool
 
 void UIScene_SettingsAudioMenu::handleSliderMove(F64 sliderId, F64 currentValue)
 {
-	WCHAR TempString[256];
+	int sliderIdInt = static_cast<int>(sliderId);
 	int value = static_cast<int>(currentValue);
-	switch(static_cast<int>(sliderId))
+
+	ui.PlayUISFX(eSFX_Scroll);
+
+	switch(sliderIdInt)
 	{
 	case eControl_Music:
-		m_sliderMusic.handleSliderMove(value);
-		
-		app.SetGameSettings(m_iPad,eGameSetting_MusicVolume,value);	
-		swprintf( (WCHAR *)TempString, 256, L"%ls: %d%%", app.GetString( IDS_SLIDER_MUSIC ),value);	
-		m_sliderMusic.setLabel(TempString);
-
-		break;
 	case eControl_Sound:
-		m_sliderSound.handleSliderMove(value);
-		
-		app.SetGameSettings(m_iPad,eGameSetting_SoundFXVolume,value);
-		swprintf( (WCHAR *)TempString, 256, L"%ls: %d%%", app.GetString( IDS_SLIDER_SOUND ),value);
-		m_sliderSound.setLabel(TempString);
-
+		m_bPendingSliderUpdate = true;
+		m_iPendingSliderId = sliderIdInt;
+		m_iPendingSliderValue = value;
 		break;
 	}
 }
 
 void UIScene_SettingsAudioMenu::handleCheckboxToggled(F64 controlId, bool selected)
 {
+	if(m_bInitialPopulateDone)
+		ui.PlayUISFX(eSFX_Press);
+
 	switch(static_cast<int>(controlId))
 	{
 	case eControl_CaveSounds:
@@ -129,5 +181,28 @@ void UIScene_SettingsAudioMenu::handleCheckboxToggled(F64 controlId, bool select
 	case eControl_MinecartSounds:
 		app.SetGameSettings(m_iPad, eGameSetting_MinecartSounds, selected ? 1 : 0);
 		break;
+	}
+}
+
+void UIScene_SettingsAudioMenu::handlePress(F64 controlId, F64 childId)
+{
+	ui.PlayUISFX(eSFX_Press);
+}
+
+void UIScene_SettingsAudioMenu::setGameSettings()
+{
+	app.SetGameSettings(m_iPad, eGameSetting_MusicVolume, m_multiList.GetSliderValue(eControl_Music));
+	app.SetGameSettings(m_iPad, eGameSetting_SoundFXVolume, m_multiList.GetSliderValue(eControl_Sound));
+	app.SetGameSettings(m_iPad, eGameSetting_CaveSounds, m_multiList.GetCheckboxValue(eControl_CaveSounds) ? 1 : 0);
+	app.SetGameSettings(m_iPad, eGameSetting_MinecartSounds, m_multiList.GetCheckboxValue(eControl_MinecartSounds) ? 1 : 0);
+	app.SetGameSettings(m_iPad, eGameSetting_GameChat, m_multiList.GetCheckboxValue(eControl_GameChat) ? 1 : 0);
+}
+
+void UIScene_SettingsAudioMenu::handleGainFocus(bool navBack)
+{
+	if(navBack)
+	{
+		m_bNeedsMultiListPopulate = true;
+		m_bInitialPopulateDone = false;
 	}
 }

@@ -1515,6 +1515,8 @@ void CMinecraftApp::ApplyGameSettingsChanged(int iPad)
 	ActionGameSettings(iPad, eGameSetting_CaveSounds);
 	ActionGameSettings(iPad, eGameSetting_MinecartSounds);
 	ActionGameSettings(iPad, eGameSetting_HideSaveSizeBar);
+	ActionGameSettings(iPad, eGameSetting_SafeCam);
+	ActionGameSettings(iPad, eGameSetting_Swap);
 }
 
 void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
@@ -1770,6 +1772,18 @@ void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
 		break;
 	case eGameSetting_HideSaveSizeBar:
 		//nothing to do here
+		break;
+	case eGameSetting_SafeCam:
+		{
+			int iVal = GetGameSettings(iPad, eGameSetting_SafeCam);
+			InputManager.SetButtonSwapEnabled(iPad, 0, iVal != 0);
+		}
+		break;
+	case eGameSetting_Swap:
+		{
+			int iVal = GetGameSettings(iPad, eGameSetting_Swap);
+			InputManager.SetButtonSwapEnabled(iPad, 1, iVal != 0);
+		}
 		break;
 	}
 }
@@ -2581,6 +2595,36 @@ void CMinecraftApp::SetGameSettings(int iPad,eGameSetting eVal,unsigned char ucV
 			GameSettingsA[iPad]->bSettingsChanged = true;
 		}
 		break;
+	case eGameSetting_SafeCam:
+		if ((GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_SAFECAM) != ((unsigned int)(ucVal & 0x01) << 30))
+		{
+			if (ucVal == 1)
+			{
+				GameSettingsA[iPad]->uiBitmaskValues |= GAMESETTING_SAFECAM;
+			}
+			else
+			{
+				GameSettingsA[iPad]->uiBitmaskValues &= ~GAMESETTING_SAFECAM;
+			}
+			ActionGameSettings(iPad, eVal);
+			GameSettingsA[iPad]->bSettingsChanged = true;
+		}
+		break;
+	case eGameSetting_Swap:
+		if ((GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_SWAP) != ((unsigned int)(ucVal & 0x01) << 31))
+		{
+			if (ucVal == 1)
+			{
+				GameSettingsA[iPad]->uiBitmaskValues |= GAMESETTING_SWAP;
+			}
+			else
+			{
+				GameSettingsA[iPad]->uiBitmaskValues &= ~GAMESETTING_SWAP;
+			}
+			ActionGameSettings(iPad, eVal);
+			GameSettingsA[iPad]->bSettingsChanged = true;
+		}
+		break;
 	}
 }
 
@@ -2740,6 +2784,12 @@ unsigned char CMinecraftApp::GetGameSettings(int iPad,eGameSetting eVal)
 		return (GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_EXCLUSIVEFULLSCREEN)>>25;
 	case eGameSetting_ControlType:
 		return (GameSettingsA[iPad]->uiBitmaskValues & 0x00070000) >> 16;
+
+	case eGameSetting_SafeCam:
+		return (GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_SAFECAM) >> 30;
+
+	case eGameSetting_Swap:
+		return (GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_SWAP) >> 31;
 
 	}
 	return 0;

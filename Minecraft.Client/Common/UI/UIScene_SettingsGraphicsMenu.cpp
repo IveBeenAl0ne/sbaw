@@ -60,58 +60,15 @@ UIScene_SettingsGraphicsMenu::UIScene_SettingsGraphicsMenu(int iPad, void *initD
 {
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
-	Minecraft* pMinecraft = Minecraft::GetInstance();
-	
-	m_bNotInGame=(Minecraft::GetInstance()->level==nullptr);
 
-	m_checkboxClouds.init(app.GetString(IDS_CHECKBOX_RENDER_CLOUDS),eControl_Clouds,(app.GetGameSettings(m_iPad,eGameSetting_Clouds)!=0));
-	m_checkboxBedrockFog.init(app.GetString(IDS_CHECKBOX_RENDER_BEDROCKFOG),eControl_BedrockFog,(app.GetGameSettings(m_iPad,eGameSetting_BedrockFog)!=0));
-	m_checkboxCustomSkinAnim.init(app.GetString(IDS_CHECKBOX_CUSTOM_SKIN_ANIM),eControl_CustomSkinAnim,(app.GetGameSettings(m_iPad,eGameSetting_CustomSkinAnim)!=0));
-	m_checkboxVSync.init(L"VSync",eControl_VSync,(app.GetGameSettings(m_iPad,eGameSetting_VSync)!=0));
-	m_checkboxExclusiveFullscreen.init(L"Fullscreen",eControl_ExclusiveFullscreen,(app.GetGameSettings(m_iPad,eGameSetting_ExclusiveFullscreen)!=0));
-
-	WCHAR TempString[256];
-
-	swprintf(TempString, 256, L"Render Distance: %d",app.GetGameSettings(m_iPad,eGameSetting_RenderDistance));	
-	m_sliderRenderDistance.init(TempString,eControl_RenderDistance,0,3,DistanceToLevel(app.GetGameSettings(m_iPad,eGameSetting_RenderDistance)));
-	
-	swprintf( TempString, 256, L"%ls: %d%%", app.GetString( IDS_SLIDER_GAMMA ),app.GetGameSettings(m_iPad,eGameSetting_Gamma));	
-	m_sliderGamma.init(TempString,eControl_Gamma,0,100,app.GetGameSettings(m_iPad,eGameSetting_Gamma));
-
-    const int initialFovSlider = app.GetGameSettings(m_iPad, eGameSetting_FOV);
-	const int initialFovDeg = sliderValueToFov(initialFovSlider);
-	swprintf(TempString, 256, L"FOV: %d", initialFovDeg);
-	m_sliderFOV.init(TempString, eControl_FOV, 0, FOV_SLIDER_MAX, initialFovSlider);
+	m_bNotInGame = (Minecraft::GetInstance()->level == nullptr);
+	m_bNeedsMultiListPopulate = true;
+	m_bInitialPopulateDone = false;
+	m_bPendingSliderUpdate = false;
+	m_iPendingSliderId = 0;
+	m_iPendingSliderValue = 0;
 
 	doHorizontalResizeCheck();
-
-#ifndef _WINDOWS64
-	// VSync and Exclusive Fullscreen are only available on PC
-	removeControl(&m_checkboxVSync, true);
-	removeControl(&m_checkboxExclusiveFullscreen, true);
-#endif
-
-	const bool bInGame=(Minecraft::GetInstance()->level!=nullptr);
-	const bool bIsPrimaryPad=(ProfileManager.GetPrimaryPad()==m_iPad);
-	// if we're not in the game, we need to use basescene 0
-	if(bInGame)
-	{
-#ifndef _WINDOWS64
-		// Console splitscreen: non-host and non-primary players can't change world-level settings
-		if(bIsPrimaryPad)
-		{
-			if(!g_NetworkManager.IsHost())
-			{
-				removeControl(&m_checkboxBedrockFog, true);
-			}
-		}
-		else
-		{
-			removeControl(&m_checkboxBedrockFog, true);
-			removeControl(&m_checkboxCustomSkinAnim, true);
-		}
-#endif
-	}
 
 	if(app.GetLocalPlayerCount()>1)
 	{
@@ -129,12 +86,93 @@ wstring UIScene_SettingsGraphicsMenu::getMoviePath()
 {
 	if(app.GetLocalPlayerCount() > 1)
 	{
-		return L"SettingsGraphicsMenuSplit";
+		return L"MultilistMenuSplit";
 	}
 	else
 	{
-		return L"SettingsGraphicsMenu";
+		return L"MultilistMenu";
 	}
+}
+
+void UIScene_SettingsGraphicsMenu::tick()
+{
+	if (m_bNeedsMultiListPopulate)
+	{
+		m_bNeedsMultiListPopulate = false;
+		m_multiList.setupControl(this, m_rootPath, "MultiList");
+		m_multiList.init(eControl_MultiList);
+
+		WCHAR TempString[256];
+
+		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_RENDER_CLOUDS), eControl_Clouds, (app.GetGameSettings(m_iPad, eGameSetting_Clouds) != 0));
+		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_CUSTOM_SKIN_ANIM), eControl_CustomSkinAnim, (app.GetGameSettings(m_iPad, eGameSetting_CustomSkinAnim) != 0));
+		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_RENDER_BEDROCKFOG), eControl_BedrockFog, (app.GetGameSettings(m_iPad, eGameSetting_BedrockFog) != 0));
+
+#ifdef _WINDOWS64
+		m_multiList.AddNewCheckbox(L"VSync", eControl_VSync, (app.GetGameSettings(m_iPad, eGameSetting_VSync) != 0));
+		m_multiList.AddNewCheckbox(L"Fullscreen", eControl_ExclusiveFullscreen, (app.GetGameSettings(m_iPad, eGameSetting_ExclusiveFullscreen) != 0));
+#endif
+
+		int gammaVal = app.GetGameSettings(m_iPad, eGameSetting_Gamma);
+		swprintf(TempString, 256, L"%ls: %d%%", app.GetString(IDS_SLIDER_GAMMA), gammaVal);
+		m_multiList.AddNewSlider(TempString, eControl_Gamma, 0, 100, 1, gammaVal);
+
+		int renderDistLevel = DistanceToLevel(app.GetGameSettings(m_iPad, eGameSetting_RenderDistance));
+		swprintf(TempString, 256, L"Render Distance: %d", LevelToDistance(renderDistLevel));
+		m_multiList.AddNewSlider(TempString, eControl_RenderDistance, 0, 3, 1, renderDistLevel);
+
+		int fovSlider = app.GetGameSettings(m_iPad, eGameSetting_FOV);
+		int fovDeg = sliderValueToFov(fovSlider);
+		swprintf(TempString, 256, L"FOV: %d", fovDeg);
+		m_multiList.AddNewSlider(TempString, eControl_FOV, 0, FOV_SLIDER_MAX, 1, fovSlider);
+
+		IggyName funcDoVert = registerFastName(L"DoVerticalResizeCheck");
+		IggyName funcHideDesc = registerFastName(L"HideDescription");
+		IggyDataValue result;
+		IggyPlayerCallMethodRS(getMovie(), &result, m_rootPath, funcDoVert, 0, nullptr);
+		doHorizontalResizeCheck();
+		IggyPlayerCallMethodRS(getMovie(), &result, m_rootPath, funcHideDesc, 0, nullptr);
+		m_multiList.HighlightItem(eControl_Clouds);
+	}
+
+	if (m_bPendingSliderUpdate)
+	{
+		m_bPendingSliderUpdate = false;
+		m_multiList.SetSliderValue(m_iPendingSliderId, m_iPendingSliderValue);
+
+		WCHAR TempString[256];
+		switch (m_iPendingSliderId)
+		{
+		case eControl_RenderDistance:
+		{
+			int dist = LevelToDistance(m_iPendingSliderValue);
+			app.SetGameSettings(m_iPad, eGameSetting_RenderDistance, dist);
+			Minecraft *pMinecraft = Minecraft::GetInstance();
+			pMinecraft->options->viewDistance = 3 - m_iPendingSliderValue;
+			swprintf(TempString, 256, L"Render Distance: %d", dist);
+			m_multiList.SetSliderLabel(eControl_RenderDistance, TempString);
+			break;
+		}
+		case eControl_Gamma:
+			app.SetGameSettings(m_iPad, eGameSetting_Gamma, m_iPendingSliderValue);
+			swprintf(TempString, 256, L"%ls: %d%%", app.GetString(IDS_SLIDER_GAMMA), m_iPendingSliderValue);
+			m_multiList.SetSliderLabel(eControl_Gamma, TempString);
+			break;
+		case eControl_FOV:
+		{
+			int fovDeg = sliderValueToFov(m_iPendingSliderValue);
+			Minecraft *pMinecraft = Minecraft::GetInstance();
+			pMinecraft->gameRenderer->SetFovVal(static_cast<float>(fovDeg));
+			app.SetGameSettings(m_iPad, eGameSetting_FOV, m_iPendingSliderValue);
+			swprintf(TempString, 256, L"FOV: %d", fovDeg);
+			m_multiList.SetSliderLabel(eControl_FOV, TempString);
+			break;
+		}
+		}
+	}
+
+	UIScene::tick();
+	m_bInitialPopulateDone = true;
 }
 
 void UIScene_SettingsGraphicsMenu::updateTooltips()
@@ -144,7 +182,7 @@ void UIScene_SettingsGraphicsMenu::updateTooltips()
 
 void UIScene_SettingsGraphicsMenu::updateComponents()
 {
-	const bool bNotInGame=(Minecraft::GetInstance()->level==nullptr);
+	bool bNotInGame=(Minecraft::GetInstance()->level==nullptr);
 	if(bNotInGame)
 	{
 		m_parentLayer->showComponent(m_iPad,eUIComponent_Panorama,true);
@@ -168,19 +206,8 @@ void UIScene_SettingsGraphicsMenu::handleInput(int iPad, int key, bool repeat, b
 	case ACTION_MENU_CANCEL:
 		if(pressed)
 		{
-			// check the checkboxes
-			app.SetGameSettings(m_iPad,eGameSetting_Clouds,m_checkboxClouds.IsChecked()?1:0);
-			app.SetGameSettings(m_iPad,eGameSetting_BedrockFog,m_checkboxBedrockFog.IsChecked()?1:0);
-			app.SetGameSettings(m_iPad,eGameSetting_CustomSkinAnim,m_checkboxCustomSkinAnim.IsChecked()?1:0);
-			app.SetGameSettings(m_iPad,eGameSetting_VSync,m_checkboxVSync.IsChecked()?1:0);
-			app.SetGameSettings(m_iPad,eGameSetting_ExclusiveFullscreen,m_checkboxExclusiveFullscreen.IsChecked()?1:0);
-#ifdef _WINDOWS64
-			g_bVSync = m_checkboxVSync.IsChecked();
-			SetExclusiveFullscreen(m_checkboxExclusiveFullscreen.IsChecked());
-#endif
-
+			setGameSettings();
 			navigateBack();
-			handled = true;
 		}
 		break;
 	case ACTION_MENU_OK:
@@ -200,44 +227,56 @@ void UIScene_SettingsGraphicsMenu::handleInput(int iPad, int key, bool repeat, b
 
 void UIScene_SettingsGraphicsMenu::handleSliderMove(F64 sliderId, F64 currentValue)
 {
-	WCHAR TempString[256];
-	const int value = static_cast<int>(currentValue);
-	switch(static_cast<int>(sliderId))
+	int sliderIdInt = static_cast<int>(sliderId);
+	int value = static_cast<int>(currentValue);
+
+	ui.PlayUISFX(eSFX_Scroll);
+
+	switch (sliderIdInt)
 	{
 	case eControl_RenderDistance:
-		{
-			m_sliderRenderDistance.handleSliderMove(value);
-
-			const int dist = LevelToDistance(value);
-
-			app.SetGameSettings(m_iPad,eGameSetting_RenderDistance,dist);
-
-			const Minecraft* mc = Minecraft::GetInstance();
-			mc->options->viewDistance = 3 - value;
-			swprintf(TempString,256,L"Render Distance: %d",dist);
-			m_sliderRenderDistance.setLabel(TempString);
-		}
-		break;
-
 	case eControl_Gamma:
-		m_sliderGamma.handleSliderMove(value);
-		
-		app.SetGameSettings(m_iPad,eGameSetting_Gamma,value);
-		swprintf( TempString, 256, L"%ls: %d%%", app.GetString( IDS_SLIDER_GAMMA ),value);
-		m_sliderGamma.setLabel(TempString);
-
-		break;
-
 	case eControl_FOV:
-		{
-			m_sliderFOV.handleSliderMove(value);
-			const Minecraft* pMinecraft = Minecraft::GetInstance();
-			const int fovValue = sliderValueToFov(value);
-			pMinecraft->gameRenderer->SetFovVal(static_cast<float>(fovValue));
-			app.SetGameSettings(m_iPad, eGameSetting_FOV, value);
-			swprintf(TempString, 256, L"FOV: %d", fovValue);
-			m_sliderFOV.setLabel(TempString);
-		}
+		m_bPendingSliderUpdate = true;
+		m_iPendingSliderId = sliderIdInt;
+		m_iPendingSliderValue = value;
 		break;
+	}
+}
+
+void UIScene_SettingsGraphicsMenu::handleCheckboxToggled(F64 controlId, bool selected)
+{
+	if (m_bInitialPopulateDone)
+		ui.PlayUISFX(eSFX_Press);
+}
+
+void UIScene_SettingsGraphicsMenu::handlePress(F64 controlId, F64 childId)
+{
+	ui.PlayUISFX(eSFX_Press);
+}
+
+void UIScene_SettingsGraphicsMenu::setGameSettings()
+{
+	app.SetGameSettings(m_iPad, eGameSetting_Clouds, m_multiList.GetCheckboxValue(eControl_Clouds) ? 1 : 0);
+	app.SetGameSettings(m_iPad, eGameSetting_BedrockFog, m_multiList.GetCheckboxValue(eControl_BedrockFog) ? 1 : 0);
+	app.SetGameSettings(m_iPad, eGameSetting_CustomSkinAnim, m_multiList.GetCheckboxValue(eControl_CustomSkinAnim) ? 1 : 0);
+	app.SetGameSettings(m_iPad, eGameSetting_RenderDistance, LevelToDistance(m_multiList.GetSliderValue(eControl_RenderDistance)));
+	app.SetGameSettings(m_iPad, eGameSetting_Gamma, m_multiList.GetSliderValue(eControl_Gamma));
+	app.SetGameSettings(m_iPad, eGameSetting_FOV, m_multiList.GetSliderValue(eControl_FOV));
+
+#ifdef _WINDOWS64
+	app.SetGameSettings(m_iPad, eGameSetting_VSync, m_multiList.GetCheckboxValue(eControl_VSync) ? 1 : 0);
+	app.SetGameSettings(m_iPad, eGameSetting_ExclusiveFullscreen, m_multiList.GetCheckboxValue(eControl_ExclusiveFullscreen) ? 1 : 0);
+	g_bVSync = m_multiList.GetCheckboxValue(eControl_VSync);
+	SetExclusiveFullscreen(m_multiList.GetCheckboxValue(eControl_ExclusiveFullscreen));
+#endif
+}
+
+void UIScene_SettingsGraphicsMenu::handleGainFocus(bool navBack)
+{
+	if (navBack)
+	{
+		m_bNeedsMultiListPopulate = true;
+		m_bInitialPopulateDone = false;
 	}
 }

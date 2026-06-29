@@ -61,16 +61,32 @@ UIScene_MainMenu::UIScene_MainMenu(int iPad, void *initData, UILayer *parentLaye
 	m_buttons[(int)eControl_XboxHelp].init(IDS_XBOX_HELP_APP, eControl_XboxHelp);
 #endif
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	// Not allowed to exit from a PS3 game from the game - have to use the PS button
-	removeControl( &m_buttons[(int)eControl_Exit], false );
+	removeControl( &m_buttons[(int)eControl_MiniGames], false );
+	int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+	if (controlType == 3 || controlType == 4)
+	{
+		// ps3, ps4
+		removeControl( &m_buttons[(int)eControl_Exit], false );
 	// We don't have a way to display trophies/achievements, so remove the button
-	removeControl( &m_buttons[(int)eControl_Achievements], false );
+		removeControl( &m_buttons[(int)eControl_Achievements], false );
+	}
+	else if (controlType == 1)
+	{
+		// xbox one
+		removeControl( &m_buttons[(int)eControl_Achievements], false );
+	}
+	else if (controlType == 5)
+	{
+		// wiiU
+		removeControl( &m_buttons[(int)eControl_Leaderboards], false );
+	}
+
+#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
 	m_bLaunchFullVersionPurchase=false;
 #endif
 #ifdef _DURANGO
 	// Allowed to not have achievements in the menu
-	removeControl( &m_buttons[(int)eControl_Achievements], false );
+	//removeControl( &m_buttons[(int)eControl_Achievements], false );
 	// Not allowed to exit from a Xbox One game from the game - have to use the Home button
 	//removeControl( &m_buttons[(int)eControl_Exit], false );
 	m_bWaitingForDLCInfo=false;
@@ -151,6 +167,7 @@ void UIScene_MainMenu::updateComponents()
 void UIScene_MainMenu::handleGainFocus(bool navBack)
 {
 	UIScene::handleGainFocus(navBack);
+	handleReload();
 	ui.ShowPlayerDisplayname(false);
 	m_bIgnorePress=false;
 	
@@ -233,16 +250,25 @@ wstring UIScene_MainMenu::getMoviePath()
 
 void UIScene_MainMenu::handleReload()
 {
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	// Not allowed to exit from a PS3 game from the game - have to use the PS button
-	removeControl( &m_buttons[(int)eControl_Exit], false );
+	removeControl( &m_buttons[(int)eControl_MiniGames], false );
+	int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+	if (controlType == 3 || controlType == 4)
+	{
+		// ps3, ps4
+		removeControl( &m_buttons[(int)eControl_Exit], false );
 	// We don't have a way to display trophies/achievements, so remove the button
-	removeControl( &m_buttons[(int)eControl_Achievements], false );
-#endif
-#ifdef _DURANGO
-	// Allowed to not have achievements in the menu
-	removeControl( &m_buttons[(int)eControl_Achievements], false );
-#endif
+		removeControl( &m_buttons[(int)eControl_Achievements], false );
+	}
+	else if (controlType == 1)
+	{
+		// xbox one
+		removeControl( &m_buttons[(int)eControl_Achievements], false );
+	}
+	else if (controlType == 5)
+	{
+		// wiiu
+		removeControl( &m_buttons[(int)eControl_Leaderboards], false );
+	}
 }
 
 void UIScene_MainMenu::handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled)

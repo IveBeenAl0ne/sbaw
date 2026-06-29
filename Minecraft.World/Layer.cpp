@@ -71,7 +71,7 @@ LayerArray Layer::getDefaultLayers(int64_t seed, LevelType* levelType, void* sup
     riverLayerFinal = make_shared<SmoothLayer>(seed, riverLayerFinal, 0x3E8);
 
     shared_ptr<Layer> biomeLayer = make_shared<BiomeInitLayer>(seed, baseLayer, 0xC8, levelType, superflatConfig);
-    biomeLayer = ZoomLayer::zoom(seed, biomeLayer, 0x3E8, 2);
+    biomeLayer = ZoomLayer::zoom(seed, biomeLayer, 0x3E8, 0);
     biomeLayer = make_shared<BiomeEdgeLayer>(seed, biomeLayer, 0x3E8);
     biomeLayer = make_shared<RegionHillsLayer>(seed, biomeLayer, hillsNoise, 0x3E8);
     biomeLayer = make_shared<RareBiomeSpotLayer>(seed, biomeLayer, 0x3E9);

@@ -9626,4 +9626,12 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 	<data name="IDS_DESC_RABBIT_STEW">
 		<value>Restores 5{*ICON_SHANK_01*}.</value>
 	</data>
+
+	<data name="IDS_SAFE_SPRINT">
+		<value>Safe Sprint</value>]
+	</data>
+
+	<data name="IDS_SWAP">
+		<value>Swap</value>
+	</data>
 </root>

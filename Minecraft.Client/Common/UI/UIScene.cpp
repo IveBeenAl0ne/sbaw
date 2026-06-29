@@ -829,7 +829,15 @@ void UIScene::customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iP
 {
 	if (item!= nullptr)
 	{
-		if(m_cacheSlotRenders)
+		bool useCommandBuffers = false;
+#ifdef _XBOX_ONE
+		useCommandBuffers = true;
+
+		m_needsCacheRendered = true;
+#endif
+
+		bool shouldCacheSlotRender = m_cacheSlotRenders && (m_needsCacheRendered || useCommandBuffers);
+		if(shouldCacheSlotRender)
 		{
 			if( (m_cachedSlotDraw.size() + 1) == m_expectedCachedSlotCount)
 			{
@@ -847,14 +855,6 @@ void UIScene::customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iP
 				ui.setupCustomDrawGameState();
 
 				int list = m_parentLayer->m_parentGroup->getCommandBufferList();
-
-				bool useCommandBuffers = false;
-#ifdef _XBOX_ONE
-				useCommandBuffers = true;
-
-				// 4J Stu - Temporary until we fix the glint animation which needs updated if we are just replaying a command buffer
-				m_needsCacheRendered = true;
-#endif
 
 				if(!useCommandBuffers || m_needsCacheRendered)
 				{
@@ -1308,15 +1308,15 @@ void UIScene::externalCallback(IggyExternalFunctionCallUTF16 * call)
 	}
 	else if(wcscmp((wchar_t *)call->function_name.string,L"handleCheckboxToggled")==0)
 	{
-		if(call->num_arguments != 2)
+		if(call->num_arguments < 2 || call->num_arguments > 3)
 		{
-			app.DebugPrintf("Callback for handleCheckboxToggled did not have the correct number of arguments\n");
+			app.DebugPrintf("Callback for handleCheckboxToggled did not have the correct number of arguments (%d)\n", call->num_arguments);
 #ifndef _CONTENT_PACKAGE
 			DEBUG_BREAK();
 #endif
 			return;
 		}
-		if(call->arguments[0].type != IGGY_DATATYPE_number || call->arguments[1].type != IGGY_DATATYPE_boolean)
+		if(call->arguments[0].type != IGGY_DATATYPE_number)
 		{
 			app.DebugPrintf("Arguments for handleCheckboxToggled were not of the correct type\n");
 #ifndef _CONTENT_PACKAGE
@@ -1324,19 +1324,31 @@ void UIScene::externalCallback(IggyExternalFunctionCallUTF16 * call)
 #endif
 			return;
 		}
-		handleCheckboxToggled(call->arguments[0].number, call->arguments[1].boolval);
-	}
-	else if(wcscmp((wchar_t *)call->function_name.string,L"handleSliderMove")==0)
-	{
-		if(call->num_arguments != 2)
+		int selArg = (call->num_arguments == 3) ? 2 : 1;
+		if(call->arguments[selArg].type != IGGY_DATATYPE_boolean && call->arguments[selArg].type != IGGY_DATATYPE_number)
 		{
-			app.DebugPrintf("Callback for handleSliderMove did not have the correct number of arguments\n");
+			app.DebugPrintf("Arguments for handleCheckboxToggled were not of the correct type\n");
 #ifndef _CONTENT_PACKAGE
 			DEBUG_BREAK();
 #endif
 			return;
 		}
-		if(call->arguments[0].type != IGGY_DATATYPE_number || call->arguments[1].type != IGGY_DATATYPE_number)
+		bool selected = (call->arguments[selArg].type == IGGY_DATATYPE_boolean)
+			? call->arguments[selArg].boolval
+			: (call->arguments[selArg].number != 0);
+		handleCheckboxToggled(call->arguments[0].number, selected);
+	}
+	else if(wcscmp((wchar_t *)call->function_name.string,L"handleSliderMove")==0)
+	{
+		if(call->num_arguments < 2 || call->num_arguments > 3)
+		{
+			app.DebugPrintf("Callback for handleSliderMove did not have the correct number of arguments (%d)\n", call->num_arguments);
+#ifndef _CONTENT_PACKAGE
+			DEBUG_BREAK();
+#endif
+			return;
+		}
+		if(call->arguments[0].type != IGGY_DATATYPE_number)
 		{
 			app.DebugPrintf("Arguments for handleSliderMove were not of the correct type\n");
 #ifndef _CONTENT_PACKAGE
@@ -1344,7 +1356,18 @@ void UIScene::externalCallback(IggyExternalFunctionCallUTF16 * call)
 #endif
 			return;
 		}
-		handleSliderMove(call->arguments[0].number, call->arguments[1].number);
+		int idArg = 0;
+		int valArg = (call->num_arguments == 3) ? 2 : 1;
+		if(call->num_arguments == 3) idArg = 1;
+		if(call->arguments[valArg].type != IGGY_DATATYPE_number)
+		{
+			app.DebugPrintf("Arguments for handleSliderMove were not of the correct type\n");
+#ifndef _CONTENT_PACKAGE
+			DEBUG_BREAK();
+#endif
+			return;
+		}
+		handleSliderMove(call->arguments[idArg].number, call->arguments[valArg].number);
 	}
 	else if(wcscmp((wchar_t *)call->function_name.string,L"handleAnimationEnd")==0)
 	{

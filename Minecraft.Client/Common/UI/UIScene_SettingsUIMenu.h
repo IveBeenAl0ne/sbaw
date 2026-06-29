@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIScene.h"
+#include "UIControl_MultiList.h"
 
 class UIScene_SettingsUIMenu : public UIScene
 {
@@ -9,52 +10,44 @@ protected:
 private:
 	enum EControls
 	{
-		eControl_DisplayHUD,
-		eControl_DisplayHand,
-		eControl_SensitivityInMenu,
-		eControl_InterfaceOpacity,
-		eControl_ShowTooltips,
-		eControl_DisplayAnimatedCharacter,
-		eControl_InGameGamertags,
-		eControl_ShowSplitscreenGamertags,
-		eControl_ShowClassicCrafting,
-		eControl_HideSaveSizeBar,
-		eControl_UISize,
-		eControl_UISizeSplitscreen,
-		eControl_ControlType,
+		eControl_MultiList = 0,
+		eControl_DisplayHUD = 1,
+		eControl_DisplayHand = 2,
+		eControl_ShowTooltips = 3,
+		eControl_DisplayAnimatedCharacter = 4,
+		eControl_InGameGamertags = 5,
+		eControl_ShowSplitscreenGamertags = 6,
+		eControl_ShowClassicCrafting = 7,
+		eControl_HideSaveSizeBar = 8,
+		eControl_InterfaceOpacity = 9,
+		eControl_SensitivityInMenu = 10,
+		eControl_UISize = 11,
+		eControl_UISizeSplitscreen = 12,
+		eControl_ControlType = 13,
 	};
 
-	UIControl_CheckBox m_checkboxDisplayHUD, m_checkboxDisplayHand, m_checkboxDisplayAnimatedCharacter, m_checkboxShowSplitscreenGamertags, m_checkboxShowClassicCrafting, m_checkboxShowTooltips, m_checkboxInGameGamertags, m_checkboxHideLoadCreateJoinSaveSizeBar; // Checkboxes
-	UIControl_Slider m_sliderInterfaceOpacity, m_sliderSensitivityInMenu, m_sliderUISize, m_sliderUISizeSplitscreen, m_sliderControlType; // Sliders
+	UIControl_MultiList m_multiList;
+	bool m_bNeedsMultiListPopulate;
+	bool m_bInitialPopulateDone;
+	bool m_bPendingSliderUpdate;
+	int m_iPendingSliderId;
+	int m_iPendingSliderValue;
 	bool m_bControlTypeChanged;
+	bool m_bNotInGame;
+
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
-		UI_MAP_ELEMENT( m_checkboxDisplayHUD, "DisplayHUD")
-		UI_MAP_ELEMENT( m_checkboxDisplayHand, "DisplayHand")
-		UI_MAP_ELEMENT( m_sliderInterfaceOpacity, "InterfaceOpacity")
-
-		UI_MAP_ELEMENT( m_checkboxShowTooltips, "ShowTooltips")
-		UI_MAP_ELEMENT( m_checkboxDisplayAnimatedCharacter, "DisplayAnimatedCharacter")
-		UI_MAP_ELEMENT( m_sliderSensitivityInMenu, "SensitivityInMenu")
-		
-		UI_MAP_ELEMENT( m_checkboxInGameGamertags, "InGameGamertags")
-		UI_MAP_ELEMENT( m_checkboxShowSplitscreenGamertags, "ShowSplitscreenGamertags")
-		UI_MAP_ELEMENT(m_checkboxShowClassicCrafting, "ShowClassicCrafting")
-		UI_MAP_ELEMENT(m_checkboxHideLoadCreateJoinSaveSizeBar, "LoadCreateJoinSaveSizeBar")
-
-		UI_MAP_ELEMENT( m_sliderUISize, "UISize")
-		UI_MAP_ELEMENT( m_sliderUISizeSplitscreen, "UISizeSplitscreen")
-		UI_MAP_ELEMENT( m_sliderControlType, "ControlType")
 	UI_END_MAP_ELEMENTS_AND_NAMES()
 
-	bool m_bNotInGame;
 public:
 	UIScene_SettingsUIMenu(int iPad, void *initData, UILayer *parentLayer);
 	virtual ~UIScene_SettingsUIMenu();
 
 	virtual EUIScene getSceneType() { return eUIScene_SettingsUIMenu;}
-	
+
+	virtual void tick();
 	virtual void updateTooltips();
 	virtual void updateComponents();
+	virtual void handleGainFocus(bool navBack);
 
 protected:
 	// TODO: This should be pure virtual in this class
@@ -65,4 +58,8 @@ public:
 	virtual void handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled);
 
 	virtual void handleSliderMove(F64 sliderId, F64 currentValue);
+	virtual void handleCheckboxToggled(F64 controlId, bool selected);
+	virtual void handlePress(F64 controlId, F64 childId);
+
+	void setGameSettings();
 };

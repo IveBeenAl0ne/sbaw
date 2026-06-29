@@ -83,6 +83,7 @@ private:
 	static const unsigned int m_uiHTPButtonNameA[eLanguageSelector_MAX];
 
 	UIControl_DynamicButtonList m_buttonListHowTo;
+	bool m_bNeedsLanguageReload;
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
 		UI_MAP_ELEMENT( m_buttonListHowTo, "HowToList")
 	UI_END_MAP_ELEMENTS_AND_NAMES()
@@ -92,6 +93,7 @@ public:
 
 	virtual EUIScene getSceneType() { return eUIScene_LanguageSelector; }
 	
+	virtual void tick();
 	virtual void updateTooltips();
 	virtual void updateComponents();
 
