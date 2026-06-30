@@ -181,6 +181,8 @@ set(_MINECRAFT_CLIENT_WINDOWS_COMMON_UI_SCENES_FRONTEND_MENU_SCREENS
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_SaveMessage.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_TrialExitUpsell.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_TrialExitUpsell.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIControl_MultiList.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIControl_MultiList.h"
 )
 source_group("Common/UI/Scenes/Frontend Menu screens" FILES ${_MINECRAFT_CLIENT_WINDOWS_COMMON_UI_SCENES_FRONTEND_MENU_SCREENS})
 
