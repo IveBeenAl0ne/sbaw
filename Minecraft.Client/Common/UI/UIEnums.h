@@ -142,6 +142,7 @@ enum EUIScene
 	eUIScene_DebugSetCamera,
 #endif
 
+    eUIScene_KeyboardSettings,
 	eUIScene_COUNT,
 };
 

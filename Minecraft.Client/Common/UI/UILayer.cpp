@@ -438,6 +438,9 @@ bool UILayer::NavigateToScene(int iPad, EUIScene scene, void *initData)
 	case eUIScene_Timer:
 		newScene = new UIScene_Timer(iPad, initData, this);
 		break;
+	case eUIScene_KeyboardSettings:
+	    newScene = new UIScene_KeyboardSettings(iPad, initData, this);
+		break;
 	};
 
 	if(newScene == nullptr)

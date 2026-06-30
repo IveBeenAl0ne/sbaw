@@ -211,6 +211,7 @@ set(_MINECRAFT_SERVER_COMMON_ROOT
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_FurnaceMenu.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_HUD.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_HelpAndOptionsMenu.cpp"
+  "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_KeyboardSettings.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_HopperMenu.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_HorseInventoryMenu.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_HowToPlay.cpp"

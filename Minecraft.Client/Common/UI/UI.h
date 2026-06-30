@@ -92,6 +92,7 @@
 #include "UIScene_HowToPlay.h"
 #include "UIScene_ControlsMenu.h"
 #include "UIScene_Credits.h"
+#include "UIScene_KeyboardSettings.h"
 
 #include "UIScene_PauseMenu.h"
 

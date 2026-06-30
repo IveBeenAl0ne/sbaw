@@ -2,11 +2,6 @@
 
 #include "UIScene.h"
 
-#include "../../Tesselator.h"
-#include "ResourceLocation.h"
-
-#define CONTROLSMENU_GUI_TEST
-
 class UIScene_ControlsMenu : public UIScene
 {
 private:

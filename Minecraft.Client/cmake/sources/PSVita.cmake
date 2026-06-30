@@ -197,6 +197,8 @@ set(_MINECRAFT_CLIENT_PSVITA_COMMON_UI_SCENES_HELP__OPTIONS
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_Credits.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_HelpAndOptionsMenu.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_HelpAndOptionsMenu.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_KeyboardSettings.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_KeyboardSettings.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_HowToPlay.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_HowToPlay.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_HowToPlayMenu.cpp"

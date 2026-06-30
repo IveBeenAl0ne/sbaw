@@ -2658,6 +2658,9 @@ void CMinecraftApp::SetGameSettings(int iPad,eGameSetting eVal,unsigned char ucV
 			GameSettingsA[iPad]->bSettingsChanged = true;
 		}
 		break;
+	case eGameSetting_KeyboardBinding:
+        ActionGameSettings(iPad, eVal);
+        break;
 	}
 }
 
