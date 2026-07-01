@@ -7513,6 +7513,10 @@ Would you like to install the mash-up pack or texture pack now?</value>
 		<value>View Bobbing</value>
 	</data>	
 
+	<data name="IDS_SWAP_AU">
+		<value>Swap Action and Use</value>
+	</data>	
+
 	<data name="IDS_HINTS">
 		<value>Hints</value>
 	</data>	

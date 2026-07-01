@@ -1196,7 +1196,7 @@
     #endif
 
     #ifndef F64_DEFINED
-    #define F64_DEFINED
+    _DEFINED
     typedef RAD_F64 F64;
     #endif
 

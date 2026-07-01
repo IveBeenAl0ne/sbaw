@@ -30,6 +30,9 @@ UIScene_HelpAndOptionsMenu::UIScene_HelpAndOptionsMenu(int iPad, void *initData,
 	if(!app.DebugSettingsOn()) removeControl( &m_buttons[BUTTON_HAO_DEBUG], false);
 #endif
 
+    // Controls menu is broken when in game for some reason
+    if(!m_bNotInGame) { removeControl( &m_buttons[BUTTON_HAO_KEYBOARD], false); m_buttons[BUTTON_HAO_KEYBOARD].setVisible(false); }
+
 #ifdef _XBOX_ONE
 	// 4J-PB - in order to buy the skin packs, we need the signed offer ids for them, which we get in the availability info
 	// we need to retrieve this info though, so do it here
