@@ -61,7 +61,8 @@ LayerArray Layer::getDefaultLayers(int64_t seed, LevelType* levelType, void* sup
         zoomLevel = 6;
 
 
-    shared_ptr<Layer> riverInit = make_shared<RiverInitLayer>(seed, baseLayer, 0x64);
+    shared_ptr<Layer> riverBase = ZoomLayer::zoom(seed, baseLayer, 0x3E8, 0);
+    shared_ptr<Layer> riverInit = make_shared<RiverInitLayer>(seed, riverBase, 0x64);
 
     shared_ptr<Layer> hillsNoise = ZoomLayer::zoom(seed, riverInit, 0x3E8, 2);
 

@@ -9634,4 +9634,16 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 	<data name="IDS_SWAP">
 		<value>Swap</value>
 	</data>
+
+	<data name="IDS_COPYSAVE">
+		<value>Copy Save</value>
+	</data>
+	
+	<data name="IDS_TEXT_COPY_SAVE">
+		<value>Are you sure you want to copy this save game?</value>
+	</data>
+
+	<data name="IDS_PROGRESS_COPYING_SAVE">
+		<value>Copying Save</value>
+	</data>
 </root>

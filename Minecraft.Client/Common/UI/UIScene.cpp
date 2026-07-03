@@ -123,7 +123,10 @@ void UIScene::reloadMovie(bool force)
 	value[0].type = IGGY_DATATYPE_number;
 	value[0].number = m_iFocusControl;
 
-	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetFocus , 1 , value );
+	if(swf && m_funcSetFocus)
+	{
+		IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetFocus , 1 , value );
+	}
 
 	m_needsCacheRendered = true;
 	m_bIsReloading = false;
@@ -238,6 +241,8 @@ void UIScene::updateSafeZone()
 
 void UIScene::setSafeZone(S32 safeTop, S32 safeBottom, S32 safeLeft, S32 safeRight)
 {
+	if(!swf) return;
+
 	IggyDataValue result;
 	IggyDataValue value[4];
 
@@ -254,8 +259,12 @@ void UIScene::setSafeZone(S32 safeTop, S32 safeBottom, S32 safeLeft, S32 safeRig
 
 void UIScene::initialiseMovie()
 {
-	loadMovie();
-	mapElementsAndNames();
+	wstring moviePath = getMoviePath();
+	if(!moviePath.empty())
+	{
+		loadMovie();
+		mapElementsAndNames();
+	}
 
 	updateSafeZone();
 

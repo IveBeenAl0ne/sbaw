@@ -5,14 +5,15 @@
 class UIComponent_Panorama : public UIScene
 {
 private:
-	bool m_bSplitscreen;
 	bool m_bShowingDay;
-
-protected:
-	IggyName m_funcShowPanoramaDay;
-	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
-		UI_MAP_NAME(m_funcShowPanoramaDay, L"ShowPanoramaDay");
-	UI_END_MAP_ELEMENTS_AND_NAMES()
+	void EnsurePanoramaTexturesLoaded();
+	void DrawPanoramaBackgroundQuad(S32 width, S32 height);
+	int m_texPanoramaDay = -1;
+	int m_texPanoramaNight = -1;
+	bool m_bPanoramaTexturesLoaded = false;
+	wstring m_panoramaTextureRoot;
+	float m_panoramaAspect = 1.0f;
+	float m_panoramaScroll = 0.0f;
 
 public:
 	UIComponent_Panorama(int iPad, void *initData, UILayer *parentLayer);
@@ -23,6 +24,8 @@ protected:
 
 public:
 	virtual EUIScene getSceneType() { return eUIComponent_Panorama;}
+	virtual bool isPanoramaOverrideScene() { return true; }
+	virtual bool isPanoramaDayOverride() { return m_bShowingDay; }
 
 	// Returns true if this scene handles input
 	virtual bool stealsFocus() { return false; }

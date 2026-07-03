@@ -396,7 +396,7 @@ private:
 	static int CrossSaveUploadFinishedCallback(void *pParam,int iPad,C4JStorage::EMessageResult result);
 #endif
 
-#if defined _XBOX_ONE || defined __ORBIS__
+#if defined _XBOX_ONE || defined __ORBIS__ || defined(_WINDOWS64)
 	static int CopySaveDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
 	static int CopySaveThreadProc( LPVOID lpParameter );
 	static int CopySaveDataReturned( LPVOID lpParameter, bool success, C4JStorage::ESaveGameState state );

@@ -35,3 +35,4 @@
 //TU31
 #include "SavannaBiome.h"
 #include "MesaBiome.h"
+#include "StoneBeachBiome.h"
