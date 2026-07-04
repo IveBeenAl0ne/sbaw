@@ -59,6 +59,7 @@ void UIScene_SettingsUIMenu::tick()
 	{
 		m_bNeedsMultiListPopulate = false;
 		m_multiList.setupControl(this, m_rootPath, "MultiList");
+		m_multiList.clearList();
 		m_multiList.init(eControl_MultiList);
 
 		bool bPrimaryPlayer = (ProfileManager.GetPrimaryPad() == m_iPad);

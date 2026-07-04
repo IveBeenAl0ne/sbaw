@@ -12,7 +12,7 @@ private:
 	static const int LOOK_LEFT_EXTENT = 45;
 	static const int LOOK_RIGHT_EXTENT = -45;
 
-	static const int CHANGING_SKIN_FRAMES = 15;
+	static const int CHANGING_SKIN_FRAMES = 8;
 
 	enum ESkinPreviewAnimations
 	{
@@ -76,6 +76,7 @@ public:
 	void DecrementXRotation() { m_xRot = (m_xRot-2); if(m_xRot < -22) m_xRot = -22; }
 	void SetAutoRotate(bool autoRotate) { m_bAutoRotate = autoRotate; }
 	void SetFacing(ESkinPreviewFacing facing, bool bAnimate = false);
+	bool IsAnimatingToFacing() const { return m_bAnimatingToFacing; }
 
 	void CycleNextAnimation();
 	void CyclePreviousAnimation();

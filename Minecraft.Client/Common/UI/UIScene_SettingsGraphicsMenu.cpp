@@ -100,6 +100,7 @@ void UIScene_SettingsGraphicsMenu::tick()
 	{
 		m_bNeedsMultiListPopulate = false;
 		m_multiList.setupControl(this, m_rootPath, "MultiList");
+		m_multiList.clearList();
 		m_multiList.init(eControl_MultiList);
 
 		WCHAR TempString[256];

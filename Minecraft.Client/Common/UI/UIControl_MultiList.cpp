@@ -32,6 +32,7 @@ bool UIControl_MultiList::setupControl(UIScene *scene, IggyValuePath *parent, co
 	m_funcEnableItem            = registerFastName(L"EnableItem");
 	m_funcCheckElementExists    = registerFastName(L"CheckElementExists");
 	m_funcSetTouchFocus          = registerFastName(L"SetTouchFocus");
+	m_removeAllItemsFunc         = registerFastName(L"removeAllItems");
 
 	return success;
 }
@@ -314,6 +315,17 @@ void UIControl_MultiList::EnableItem(int id, bool bEnable, bool bImmediate)
 
 	IggyPlayerCallMethodRS(m_parentScene->getMovie(), &result,
 		getIggyValuePath(), m_funcEnableItem, 2, value);
+}
+
+void UIControl_MultiList::clearList()
+{
+	IggyDataValue result;
+	IggyResult out = IggyPlayerCallMethodRS(m_parentScene->getMovie(), &result,
+		getIggyValuePath(), m_removeAllItemsFunc, 0, nullptr);
+
+	m_itemIds.clear();
+	m_itemCount = 0;
+	m_iCurrentSelection = 0;
 }
 
 bool UIControl_MultiList::CheckElementExists(int id)

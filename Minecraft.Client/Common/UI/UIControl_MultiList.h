@@ -24,6 +24,7 @@ protected:
 	IggyName m_funcEnableItem;
 	IggyName m_funcCheckElementExists;
 	IggyName m_funcSetTouchFocus;
+	IggyName m_removeAllItemsFunc;
 
 	// stores caller-defined ids in insertion order (label = -1)
 	// iggy uses positional index; getListIndex() converts id to index.
@@ -50,6 +51,7 @@ public:
 	void SetSliderLabel(int id, const wstring &label, bool bImmediate = true);
 	void HighlightItem(int id, bool animate = false);
 	void EnableItem(int id, bool bEnable, bool bImmediate = true);
+	void clearList();
 	bool CheckElementExists(int id);
 	int getCurrentSelection() const { return m_iCurrentSelection; }
 	void updateChildFocus(int iChild) { m_iCurrentSelection = iChild; }

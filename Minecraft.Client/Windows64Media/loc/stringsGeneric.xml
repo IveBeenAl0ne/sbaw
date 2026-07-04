@@ -9646,4 +9646,20 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 	<data name="IDS_PROGRESS_COPYING_SAVE">
 		<value>Copying Save</value>
 	</data>
+	
+	<data name="IDS_TEXTURE_PACK">
+		<value>Texture Pack</value>
+	</data>
+	
+	<data name="IDS_SKIN_PACK">
+		<value>Skin Pack</value>
+	</data>
+
+	<data name="IDS_TOOLTIPS_ADD_FAVORITE">
+		<value>Add Favorite</value>
+	</data>
+
+    <data name="IDS_TOOLTIPS_REMOVE_FAVORITE">
+		<value>Remove Favorite</value>
+	</data>
 </root>

@@ -57,6 +57,7 @@ void UIScene_SettingsOptionsMenu::tick()
 	{
 		m_bNeedsMultiListPopulate = false;
 		m_multiList.setupControl(this, m_rootPath, "MultiList");
+		m_multiList.clearList();
 		m_multiList.init(eControl_MultiList);
 
 		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_VERTICAL_SPLIT_SCREEN), eControl_VerticalSplitscreen, (app.GetGameSettings(m_iPad,eGameSetting_SplitScreenVertical)!=0));
