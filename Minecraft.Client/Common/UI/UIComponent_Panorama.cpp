@@ -41,7 +41,7 @@ static wstring GetPanoramaTexturePath()
 					wstring path(buf);
 					path += L"\\Windows64Media\\DLC\\";
 					path += packName;
-					path += L"\\Data\\Panorama\\";
+					path += L"\\Data\\ControlType\\Panorama\\";
 					wstring sampleDay = path + L"Panorama_S.png";
 					wstring sampleNight = path + L"Panorama_N.png";
 					if(GetFileAttributesW(sampleDay.c_str()) != INVALID_FILE_ATTRIBUTES ||
@@ -56,8 +56,8 @@ static wstring GetPanoramaTexturePath()
 
 	const char *mountedPanoramaRoots[] =
 	{
-		"TPACK:Data/Panorama/",
-		"WPACK:Data/Panorama/",
+		"TPACK:Data/ControlType/Panorama/",
+		"WPACK:Data/ControlType/Panorama/",
 	};
 
 	for(const char *mountedRoot : mountedPanoramaRoots)
@@ -254,8 +254,19 @@ void UIComponent_Panorama::tick()
 		setPanorama(true);
 	}
 
-	// scroll forever
-	m_panoramaScroll += 0.000035f;
+	// fix: tick rate affected by user framerate
+	const DWORD nowMs = GetTickCount();
+	if(m_lastScrollTickMs != 0)
+	{
+		const DWORD kMaxElapsedMs = 250;
+		const float kScrollPerMs = 0.0001f / 16.6667f;
+		DWORD elapsedMs = nowMs - m_lastScrollTickMs;
+
+		if(elapsedMs > kMaxElapsedMs) elapsedMs = kMaxElapsedMs;
+		m_panoramaScroll += kScrollPerMs * static_cast<float>(elapsedMs);
+	}
+	m_lastScrollTickMs = nowMs;
+
 	LeaveCriticalSection(&pMinecraft->m_setLevelCS);
 
 	m_hasTickedOnce = true;
