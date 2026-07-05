@@ -453,15 +453,8 @@ void BiomeSource::getFracs(intArray indices, float *fracs, float *groupFracs)
 bool BiomeSource::getIsMatch(float *fracs, float *groupFracs)
 {
     if (fracs[0] + fracs[24] > 0.15f) return false;
-
     int varietyCount = 0;
     for (int i = 0; i < 8; i++)
-    {
-        if (groupFracs[i] > 0.0f)
-        {
-            varietyCount++;
-        }
-    }
-
+        if (groupFracs[i] > 0.0f) varietyCount++;
     return varietyCount >= 5;
 }

@@ -120,7 +120,7 @@ void UIControl_PlayerSkinPreview::tick()
 		++m_framesAnimatingRotation;
 		m_yRot = m_fOriginalRotation + m_framesAnimatingRotation * ( (m_fTargetRotation - m_fOriginalRotation) / CHANGING_SKIN_FRAMES );
 
-		//if(m_framesAnimatingRotation == CHANGING_SKIN_FRAMES) m_bAnimatingToFacing = false;
+		if(m_framesAnimatingRotation == CHANGING_SKIN_FRAMES) m_bAnimatingToFacing = false;
 	}
 	else
 	{

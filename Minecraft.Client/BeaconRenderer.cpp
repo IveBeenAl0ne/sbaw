@@ -113,7 +113,7 @@ void BeaconRenderer::render(shared_ptr<TileEntity> _beacon, double x, double y, 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
     glDepthMask(true);
 
-    double currentYBase = 0;
+    double currentYBase = 1;
     for (const auto& seg : segments) {
         int r = (int)(seg.r * 255);
         int g = (int)(seg.g * 255);
@@ -163,7 +163,7 @@ void BeaconRenderer::render(shared_ptr<TileEntity> _beacon, double x, double y, 
     
     glDepthMask(false);
 
-    currentYBase = 0;
+    currentYBase = 1;
     for (const auto& seg : segments) {
         int r = (int)(seg.r * 255);
         int g = (int)(seg.g * 255);

@@ -158,6 +158,7 @@ set(_MINECRAFT_SERVER_COMMON_ROOT
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_Book.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_Button.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_ButtonList.cpp"
+  "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_MultiList.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_CheckBox.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_Cursor.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_DLCList.cpp"

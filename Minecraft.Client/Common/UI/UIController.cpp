@@ -222,12 +222,23 @@ static wstring GetControlTypeSkinPath(int controlType, bool hd)
 		break;
 	}
 
-	if(hd)
-	{
-		return wstring(L"Graphics\\ControlType\\HD\\") + skinName + L"HD.swf";
-	}
+	if(skinName == L"windows") {
+		if (hd)
+		{
+			return L"skinHDWin.swf";
+		}
 
-	return wstring(L"Graphics\\ControlType\\") + skinName + L".swf";
+		return L"skinWin.swf";
+	}
+	else 
+	{
+		if(hd)
+		{
+			return wstring(L"Graphics\\ControlType\\HD\\") + skinName + L"HD.swf";
+		}
+
+		return wstring(L"Graphics\\ControlType\\") + skinName + L".swf";
+	}
 }
 #endif
 
@@ -1090,6 +1101,9 @@ void UIController::tickInput()
 						panelOffsetY = pMainPanel->getYPos();
 					}
 
+					bool leftPressed = g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT);
+					bool leftDown = leftPressed || g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT);
+
 					// Mouse hover — hit test against C++ control bounds.
 					// Simple controls use SetFocusToElement; list controls
 					// use their own SetTouchFocus for Flash-side hit testing.
@@ -1139,16 +1153,34 @@ void UIController::tickInput()
 									{
 										// ButtonList manages focus internally via Flash —
 										// pass mouse coords so it can highlight the right item.
-										S32 adjustedMouseY = static_cast<S32>(sceneMouseY);
-										if (pScene->getSceneType() == eUIScene_LoadCreateJoinMenu)
+											S32 adjustedMouseY = static_cast<S32>(sceneMouseY);
+											if (pScene->getSceneType() == eUIScene_LoadCreateJoinMenu)
+											{
+												const S32 visibleRows = 7;
+												const S32 rowHeight = (visibleRows > 0) ? (ch / visibleRows) : 0;
+												if (rowHeight > 0)
+													adjustedMouseY -= rowHeight;
+											}
+										UIControl_MultiList *pMulti = dynamic_cast<UIControl_MultiList*>(ctrl);
+										if (pMulti)
 										{
-											const S32 visibleRows = 7;
-											const S32 rowHeight = (visibleRows > 0) ? (ch / visibleRows) : 0;
-											if (rowHeight > 0)
-												adjustedMouseY -= rowHeight;
+											S32 adjustedY = static_cast<S32>(sceneMouseY);
+											if (pScene->getSceneType() == eUIScene_LoadMenu)
+											{
+												const S32 visibleRows = 7;
+												const S32 rowHeight = (visibleRows > 0) ? (ch / visibleRows) : 0;
+												if (rowHeight > 0)
+													adjustedY -= (rowHeight * 2);
+											}
+
+											S32 localX = static_cast<S32>(sceneMouseX) - cx;
+											pMulti->SetTouchFocus(localX, adjustedY, leftDown);
 										}
+										else
+										{
 										static_cast<UIControl_ButtonList*>(ctrl)->SetTouchFocus(
-											static_cast<S32>(sceneMouseX), adjustedMouseY, false);
+											static_cast<S32>(sceneMouseX), adjustedMouseY, leftDown);
+										}
 										hitControlId = -1;
 										hitArea = INT_MAX;
 										hitCtrl = NULL;
@@ -1218,9 +1250,6 @@ void UIController::tickInput()
 							UpdateCursorIcon(currHitCtrl);
 						}
 					}
-
-					bool leftPressed = g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT);
-					bool leftDown = leftPressed || g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT);
 
 					if (m_mouseDraggingSliderScene != eUIScene_COUNT && m_mouseDraggingSliderScene != pScene->getSceneType())
 					{
@@ -1297,8 +1326,8 @@ void UIController::tickInput()
 									break;
 								}
 							}
+							}
 						}
-					}
 
 					if (leftDown && m_mouseDraggingSliderScene == pScene->getSceneType() && m_mouseDraggingSliderId >= 0)
 					{
@@ -2158,10 +2187,10 @@ void UIController::unregisterSubstitutionTexture(const wstring &textureName, boo
 bool UIController::NavigateToScene(int iPad, EUIScene scene, void *initData, EUILayer layer, EUIGroup group)
 {
 	static bool bSeenUpdateTextThisSession = false;
-	#if 0 // Disable since we don't use this
+	#if 1 // Disable since we don't use this
 	// If you're navigating to the multigamejoinload, and the player hasn't seen the updates message yet, display it now
 	// display this message the first 3 times
-	if((scene==eUIScene_LoadOrJoinMenu) && (bSeenUpdateTextThisSession==false) && ( app.GetGameSettings(ProfileManager.GetPrimaryPad(),eGameSetting_DisplayUpdateMessage)!=0))
+	if((scene==eUIScene_LoadCreateJoinMenu) && (bSeenUpdateTextThisSession==false) && ( app.GetGameSettings(ProfileManager.GetPrimaryPad(),eGameSetting_DisplayUpdateMessage)!=0))
 	{
 		scene=eUIScene_NewUpdateMessage;
 		bSeenUpdateTextThisSession=true;

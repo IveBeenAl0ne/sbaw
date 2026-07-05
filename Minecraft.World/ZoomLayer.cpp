@@ -11,8 +11,8 @@ intArray ZoomLayer::getArea(int xo, int yo, int w, int h)
 {
 	int px = xo >> 1;
 	int py = yo >> 1;
-	int pw = (w >> 1) + 3;
-	int ph = (h >> 1) + 3;
+	int pw = (w >> 1) + 2;
+	int ph = (h >> 1) + 2;
 	intArray p = parent->getArea(px, py, pw, ph);
 
 	intArray tmp = IntCache::allocate((pw * 2) * (ph * 2));

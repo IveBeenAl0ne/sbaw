@@ -189,6 +189,10 @@ enum eGameSetting
 	eGameSetting_ControlType,
 	// if enabled hides the save size bar in loadcreatejoinmenu (load tab)
 	eGameSetting_HideSaveSizeBar,
+	// TU31
+	eGameSetting_SafeCam, //safe cam is safe sprint 
+	eGameSetting_Swap,
+    eGameSetting_GameChat,
 };
 
 

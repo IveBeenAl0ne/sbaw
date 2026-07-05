@@ -192,7 +192,7 @@ void PistonBaseTile::checkIfExtend(Level *level, int x, int y, int z)
 	}
 	else if (!extend && isExtended(data))
 	{
-		level->setData(x, y, z, facing, UPDATE_CLIENTS);
+		// level->setData(x, y, z, facing, UPDATE_CLIENTS);
 		level->tileEvent(x, y, z, id, TRIGGER_CONTRACT, facing);
 	}
 }
@@ -381,6 +381,27 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 					{
 						applyStructureMove(level, x, y, z, facing, pullDir, isSticky,
 							toMove, toDestroy, false);
+					}
+					else if (block > 0 && Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_SLIME)
+					{
+						std::vector<BlockPos3> fallbackMove;
+						std::vector<BlockPos3> fallbackDestroy;
+						bool fallbackOk = collectStructure(level, pullDir,
+							twoX, twoY, twoZ,
+							x, y, z,
+							armX, armY, armZ,
+							true,
+							fallbackMove, fallbackDestroy);
+						if (fallbackOk && !fallbackMove.empty())
+						{
+							applyStructureMove(level, x, y, z, facing, pullDir, isSticky,
+								fallbackMove, fallbackDestroy, false);
+						}
+						else
+						{
+							stopSharingIfServer(level, armX, armY, armZ);
+							level->removeTile(armX, armY, armZ);
+						}
 					}
 					else
 					{
@@ -623,9 +644,13 @@ bool PistonBaseTile::collectStructure(Level *level, int moveDir,
 			for (int d = 0; d < 6; d++)
 			{
 				if (d == moveDir) continue;
-				queue.push_back({pos.x + Facing::STEP_X[d],
-				                 pos.y + Facing::STEP_Y[d],
-				                 pos.z + Facing::STEP_Z[d]});
+				int nx = pos.x + Facing::STEP_X[d];
+				int ny = pos.y + Facing::STEP_Y[d];
+				int nz = pos.z + Facing::STEP_Z[d];
+				int neighborBlock = level->getTile(nx, ny, nz);
+				if (neighborBlock == 0) continue;
+				if (!isPushable(neighborBlock, level, nx, ny, nz, false)) continue;
+				queue.push_back({nx, ny, nz});
 			}
 		}
 	}
@@ -652,7 +677,22 @@ void PistonBaseTile::applyStructureMove(Level *level,
 	}
 
 	int n = (int)toMove.size();
-	if (n == 0) return;
+	int armX = pistonX + Facing::STEP_X[facing];
+	int armY = pistonY + Facing::STEP_Y[facing];
+	int armZ = pistonZ + Facing::STEP_Z[facing];
+
+	if (n == 0)
+	{
+		if (isExtension)
+		{
+			int armData = facing | (sticky ? PistonExtensionTile::STICKY_BIT : 0);
+			stopSharingIfServer(level, armX, armY, armZ);
+			level->setTileAndData(armX, armY, armZ, Tile::piston_extension_Id, armData, Tile::UPDATE_NONE);
+			level->setTileEntity(armX, armY, armZ,
+				PistonMovingPiece::newMovingPieceEntity(Tile::piston_head_Id, armData, facing, true, false));
+		}
+		return;
+	}
 
 	std::vector<int> savedBlocks(n), savedDatas(n);
 	for (int i = 0; i < n; i++)
@@ -686,10 +726,6 @@ void PistonBaseTile::applyStructureMove(Level *level,
 		level->setTileEntity(destX, destY, destZ,
 			PistonMovingPiece::newMovingPieceEntity(savedBlocks[i], savedDatas[i], facing, isExtension, false));
 	}
-
-	int armX = pistonX + Facing::STEP_X[facing];
-	int armY = pistonY + Facing::STEP_Y[facing];
-	int armZ = pistonZ + Facing::STEP_Z[facing];
 
 	if (isExtension)
 	{
