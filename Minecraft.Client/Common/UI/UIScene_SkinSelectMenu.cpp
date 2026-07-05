@@ -592,7 +592,7 @@ void UIScene_SkinSelectMenu::customDraw(IggyCustomDrawCallbackRegion *region)
 {
 	int characterId = -1;
 	swscanf(static_cast<wchar_t *>(region->name),L"Character%d",&characterId);
-	if (characterId == -1 || characterId >= eCharacter_COUNT || characterId == 3 || characterId == 4)
+	if (characterId == -1 || characterId >= eCharacter_COUNT)
 	{
 		app.DebugPrintf("Invalid character to render found\n");
 	}
@@ -600,6 +600,15 @@ void UIScene_SkinSelectMenu::customDraw(IggyCustomDrawCallbackRegion *region)
 	{
 		// Setup GDraw, normal game render states and matrices
 		CustomDrawData *customDrawRegion = ui.setupCustomDraw(this,region);
+
+		// don't draw hidden characters
+		if(!m_characters[characterId].isVisible())
+		{
+			ui.endCustomDraw(region);
+			delete customDrawRegion;
+			return;
+		}
+
 		delete customDrawRegion;
 
 		//app.DebugPrintf("Scissor x0= %d, y0= %d, x1= %d, y1= %d\n", region->scissor_x0, region->scissor_y0, region->scissor_x1, region->scissor_y1);
@@ -677,13 +686,13 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 			{
 				skinName = app.GetString(IDS_DEFAULT_SKINS);
 			}
-			else
-			{			
-				skinName = wchDefaultNamesA[m_skinIndex];
-			}
-
-			if( m_originalSkinId == m_skinIndex )
-			{
+            else if (m_skinIndex < eDefaultSkins_Count)
+            {
+                skinName = wchDefaultNamesA[m_skinIndex];
+            }
+            else
+            {
+                skinName = L"";
 				setCharacterSelected(true);
 			}
 			setCharacterLocked(false);
@@ -743,13 +752,13 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 					{
 						skinName = app.GetString(IDS_DEFAULT_SKINS);
 					}
-					else
-					{
-						skinName = wchDefaultNamesA[defaultSkinIndex];
-					}
-
-					if( m_originalSkinId == defaultSkinIndex )
-					{
+                    else if (defaultSkinIndex < eDefaultSkins_Count)
+                    {
+                        skinName = wchDefaultNamesA[defaultSkinIndex];
+                    }
+                    else
+                    {
+                        skinName = L"";
 						setCharacterSelected(true);
 					}
 					setCharacterLocked(false);
@@ -789,6 +798,7 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 		app.SetAnimOverrideBitmask(skinFile->getSkinID(),skinFile->getAnimOverrideBitmask());
 	}
 
+	// printf("[SkinSelectMenu] Setting current character skin: path='%ls' pack=%d skinIndex=%d\n", m_selectedSkinPath.c_str(), m_packIndex, m_skinIndex);
 	m_characters[eCharacter_Current].SetTexture(m_selectedSkinPath, backupTexture);
 	m_characters[eCharacter_Current].SetCapeTexture(m_selectedCapePath);
 
@@ -868,19 +878,31 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 					break;
 				case SKIN_SELECT_PACK_FAVORITES:
 					if(uiCurrentFavoriteC>0)
-					{				
-						// get the pack number from the skin id
-						swprintf(chars, 256, L"dlcskin%08d.png", GET_DLC_SKIN_ID_FROM_BITMASK(app.GetPlayerFavoriteSkin(m_iPad,nextIndex)));
+					{
+						unsigned int favSkinIdNext = app.GetPlayerFavoriteSkin(m_iPad,nextIndex);
+						if(GET_IS_DLC_SKIN_FROM_BITMASK(favSkinIdNext))
+						{
+							// get the pack number from the skin id
+							swprintf(chars, 256, L"dlcskin%08d.png", GET_DLC_SKIN_ID_FROM_BITMASK(favSkinIdNext));
 
-						Pack=app.m_dlcManager.getPackContainingSkin(chars);	
-						if(Pack)
-						{				
-							skinFile = Pack->getSkinFile(chars);
+							Pack=app.m_dlcManager.getPackContainingSkin(chars);	
+							if(Pack)
+							{				
+								skinFile = Pack->getSkinFile(chars);
 
-							otherSkinPath = skinFile->getPath();
-							otherCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
-							othervAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
-							backupTexture = TN_MOB_CHAR;
+								otherSkinPath = skinFile->getPath();
+								otherCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
+								othervAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
+								backupTexture = TN_MOB_CHAR;
+							}
+						}
+						else
+						{
+							// default skin favorite
+							backupTexture = getTextureId(favSkinIdNext);
+							otherSkinPath = L"";
+							otherCapePath = L"";
+							othervAdditionalSkinBoxes = nullptr;
 						}
 					}
 					break;
@@ -909,15 +931,16 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 		nextIndex = getNextSkinIndex(nextIndex);
 	}
 
-
+	static const ECharacters s_previousSlots[2] = { eCharacter_Previous1, eCharacter_Previous2 };
 
 	for(BYTE i = 0; i < sidePreviewControlsL; ++i)
 	{
 		if(showPrevious)
 		{
-			skinFile=nullptr;
-			
-			m_characters[eCharacter_Previous1 + i].setVisible(true);
+			skinFile = nullptr;
+			ECharacters slot = s_previousSlots[i];
+
+			m_characters[slot].setVisible(true);
 
 			if( m_currentPack != nullptr )
 			{
@@ -939,19 +962,31 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 					break;
 				case SKIN_SELECT_PACK_FAVORITES:
 					if(uiCurrentFavoriteC>0)
-					{	
-						// get the pack number from the skin id
-						swprintf(chars, 256, L"dlcskin%08d.png", GET_DLC_SKIN_ID_FROM_BITMASK(app.GetPlayerFavoriteSkin(m_iPad,previousIndex)));
-
-						Pack=app.m_dlcManager.getPackContainingSkin(chars);	
-						if(Pack)
+					{
+						unsigned int favSkinIdPrev = app.GetPlayerFavoriteSkin(m_iPad,previousIndex);
+						if(GET_IS_DLC_SKIN_FROM_BITMASK(favSkinIdPrev))
 						{
-							skinFile = Pack->getSkinFile(chars);
+							// get the pack number from the skin id
+							swprintf(chars, 256, L"dlcskin%08d.png", GET_DLC_SKIN_ID_FROM_BITMASK(favSkinIdPrev));
 
-							otherSkinPath = skinFile->getPath();
-							otherCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
-							othervAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
-							backupTexture = TN_MOB_CHAR;
+							Pack=app.m_dlcManager.getPackContainingSkin(chars);	
+							if(Pack)
+							{
+								skinFile = Pack->getSkinFile(chars);
+
+								otherSkinPath = skinFile->getPath();
+								otherCapePath = skinFile->getParameterAsString(DLCManager::e_DLCParamType_Cape);
+								othervAdditionalSkinBoxes = skinFile->getAdditionalBoxes();
+								backupTexture = TN_MOB_CHAR;
+							}
+						}
+						else
+						{
+							// default skin favorite
+							backupTexture = getTextureId(favSkinIdPrev);
+							otherSkinPath = L"";
+							otherCapePath = L"";
+							othervAdditionalSkinBoxes = nullptr;
 						}
 					}
 
@@ -973,8 +1008,8 @@ void UIScene_SkinSelectMenu::handleSkinIndexChanged()
 			{
 				app.SetAnimOverrideBitmask(skinFile->getSkinID(),skinFile->getAnimOverrideBitmask());
 			}			
-			m_characters[eCharacter_Previous1 + i].SetTexture(otherSkinPath, backupTexture);
-			m_characters[eCharacter_Previous1 + i].SetCapeTexture(otherCapePath);
+			m_characters[slot].SetTexture(otherSkinPath, backupTexture);
+			m_characters[slot].SetCapeTexture(otherCapePath);
 		}
 
 		previousIndex = getPreviousSkinIndex(previousIndex);
@@ -1197,22 +1232,17 @@ void UIScene_SkinSelectMenu::handlePackIndexChanged()
 			}	
 			break;
 		case SKIN_SELECT_PACK_FAVORITES:
-			if(app.GetPlayerFavoriteSkinsCount(m_iPad)>0)
 			{
-				unsigned int favSkinId = app.GetPlayerFavoriteSkin(m_iPad,app.GetPlayerFavoriteSkinsPos(m_iPad));
-				if(GET_IS_DLC_SKIN_FROM_BITMASK(favSkinId))
+				unsigned int favCount = app.GetPlayerFavoriteSkinsCount(m_iPad);
+				if(favCount > 0)
 				{
-					bool found;
-					wchar_t chars[256];
-					swprintf(chars, 256, L"dlcskin%08d.png", GET_DLC_SKIN_ID_FROM_BITMASK(favSkinId));
-
-					DLCPack *Pack=app.m_dlcManager.getPackContainingSkin(chars);	
-					if(Pack)
+					unsigned int pos = app.GetPlayerFavoriteSkinsPos(m_iPad);
+					if(pos >= favCount)
 					{
-						Pack->getSkinIndexAt(m_currentSkinPath, found);
+						pos = 0; // stale/invalid position — fall back to the first favorite
 					}
+					m_skinIndex = pos;
 				}
-				m_skinIndex = app.GetPlayerFavoriteSkinsPos(m_iPad);
 			}
 			break;
 		default:
@@ -1910,37 +1940,32 @@ int UIScene_SkinSelectMenu::RenableInput(LPVOID lpVoid, int, int)
 
 void UIScene_SkinSelectMenu::AddFavoriteSkin(int iPad,int iSkinID)
 {
-	// Is this favorite skin already in the array?
-	unsigned int uiCurrentFavoriteSkinsCount=app.GetPlayerFavoriteSkinsCount(iPad);
+	unsigned int favCount = app.GetPlayerFavoriteSkinsCount(iPad);
 
-	for(int i=0;i<uiCurrentFavoriteSkinsCount;i++)
+	// DO NOT TOUCH THE RAM
+	for(unsigned int i = 0; i < favCount; i++)
 	{
-		if(app.GetPlayerFavoriteSkin(m_iPad,i)==iSkinID)
+		if(app.GetPlayerFavoriteSkin(iPad, i) == (unsigned int)iSkinID)
 		{
-			app.SetPlayerFavoriteSkinsPos(m_iPad,i);
+			app.SetPlayerFavoriteSkinsPos(iPad, i);
 			return;
 		}
 	}
 
-	unsigned char ucPos=app.GetPlayerFavoriteSkinsPos(m_iPad);
-	if(ucPos==(MAX_FAVORITE_SKINS-1))
+	if(favCount < MAX_FAVORITE_SKINS)
 	{
-		ucPos=0;
+		// append at the end of the list
+		app.SetPlayerFavoriteSkin(iPad, favCount, iSkinID);
+		app.SetPlayerFavoriteSkinsPos(iPad, favCount);
 	}
 	else
 	{
-		if(uiCurrentFavoriteSkinsCount>0)
-		{
-			ucPos++;
-		}
-		else
-		{
-			ucPos=0;
-		}
+		// replace the next skin in the list
+		unsigned char ucPos = app.GetPlayerFavoriteSkinsPos(iPad);
+		ucPos = (ucPos + 1) % MAX_FAVORITE_SKINS;
+		app.SetPlayerFavoriteSkin(iPad, ucPos, iSkinID);
+		app.SetPlayerFavoriteSkinsPos(iPad, ucPos);
 	}
-
-	app.SetPlayerFavoriteSkin(iPad,(int)ucPos,iSkinID);
-	app.SetPlayerFavoriteSkinsPos(m_iPad,ucPos);
 }
 
 

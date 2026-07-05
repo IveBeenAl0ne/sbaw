@@ -1936,21 +1936,38 @@ void CMinecraftApp::ValidateFavoriteSkins(int iPad)
 
 	for(unsigned int i=0;i<uiCount;i++)
 	{
-		// get the pack number from the skin id
-		swprintf(chars, 256, L"dlcskin%08d.png", app.GetPlayerFavoriteSkin(iPad,i));
+		unsigned int uiFavoriteSkin = app.GetPlayerFavoriteSkin(iPad,i);
 
-		// Also check they haven't reverted to a trial pack
-		DLCPack *pDLCPack=app.m_dlcManager.getPackContainingSkin(chars);
-
-		if(pDLCPack!=nullptr)
+		if(uiFavoriteSkin == 0xFFFFFFFF)
 		{
-			// 4J-PB - We should let players add the free skins to their favourites as well!
-			//DLCFile *pDLCFile=pDLCPack->getFile(DLCManager::e_DLCType_Skin,chars);
-			DLCSkinFile *pSkinFile = pDLCPack->getSkinFile(chars);
+			continue;
+		}
 
-			if( pDLCPack->hasPurchasedFile(DLCManager::e_DLCType_Skin, L"") || (pSkinFile && pSkinFile->isFree()))
+		if(GET_IS_DLC_SKIN_FROM_BITMASK(uiFavoriteSkin))
+		{
+			// get the pack number from the skin id
+			swprintf(chars, 256, L"dlcskin%08d.png", GET_DLC_SKIN_ID_FROM_BITMASK(uiFavoriteSkin));
+
+			// Also check they haven't reverted to a trial pack
+			DLCPack *pDLCPack=app.m_dlcManager.getPackContainingSkin(chars);
+
+			if(pDLCPack!=nullptr)
 			{
-				GameSettingsA[iPad]->uiFavoriteSkinA[uiValidSkin++]=GameSettingsA[iPad]->uiFavoriteSkinA[i];
+				// 4J-PB - We should let players add the free skins to their favourites as well!
+				DLCSkinFile *pSkinFile = pDLCPack->getSkinFile(chars);
+
+				if( pDLCPack->hasPurchasedFile(DLCManager::e_DLCType_Skin, L"") || (pSkinFile && pSkinFile->isFree()))
+				{
+					GameSettingsA[iPad]->uiFavoriteSkinA[uiValidSkin++]=uiFavoriteSkin;
+				}
+			}
+		}
+		else
+		{
+			DWORD defaultSkinIndex = GET_DEFAULT_SKIN_ID_FROM_BITMASK(uiFavoriteSkin);
+			if(defaultSkinIndex < eDefaultSkins_Count)
+			{
+				GameSettingsA[iPad]->uiFavoriteSkinA[uiValidSkin++]=uiFavoriteSkin;
 			}
 		}
 	}

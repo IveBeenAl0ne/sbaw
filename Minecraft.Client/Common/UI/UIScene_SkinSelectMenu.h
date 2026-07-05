@@ -38,8 +38,8 @@ private:
 		eCharacter_Current = 0,
 		eCharacter_Next1 = 1,
 		eCharacter_Next2 = 2,
-		eCharacter_Previous1 = 5,
-		eCharacter_Previous2 = 6,
+		eCharacter_Previous1 = 4,
+		eCharacter_Previous2 = 5,
 
 		eCharacter_COUNT = 7,
 	};
@@ -73,14 +73,10 @@ private:
 		UI_MAP_ELEMENT( m_controlIggyCharacters, "IggyCharacters" )
 		UI_BEGIN_MAP_CHILD_ELEMENTS( m_controlIggyCharacters )
 			UI_MAP_ELEMENT( m_characters[eCharacter_Current], "iggy_Character0" )
-
 			UI_MAP_ELEMENT( m_characters[eCharacter_Next1], "iggy_Character1" )
 			UI_MAP_ELEMENT( m_characters[eCharacter_Next2], "iggy_Character2" )
-			UI_MAP_ELEMENT( m_characters[3], "iggy_Character3" )
-			UI_MAP_ELEMENT( m_characters[4], "iggy_Character4" )
-		
-			UI_MAP_ELEMENT( m_characters[eCharacter_Previous1], "iggy_Character5" )
-			UI_MAP_ELEMENT( m_characters[eCharacter_Previous2], "iggy_Character6" )
+			UI_MAP_ELEMENT( m_characters[eCharacter_Previous1], "iggy_Character6" )
+			UI_MAP_ELEMENT( m_characters[eCharacter_Previous2], "iggy_Character5" )
 		UI_END_MAP_CHILD_ELEMENTS()
 
 		UI_MAP_NAME( m_funcSetPlayerCharacterSelected, L"SetPlayerCharacterSelected" )
