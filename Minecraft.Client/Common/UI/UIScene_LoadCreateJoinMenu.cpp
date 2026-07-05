@@ -4675,7 +4675,7 @@ void UIScene_LoadCreateJoinMenu::RebuildJoinGamesListVisual(bool syncFocus)
         m_buttonListGames.getItemCount() - 1,
         L"lceheadwer.png",
         L"lceheadwer");
-
+    RefreshServerListHtmlPatch();
 #endif
 
     if (m_currentSessions == nullptr || m_currentSessions->empty())
@@ -4756,7 +4756,10 @@ void UIScene_LoadCreateJoinMenu::RebuildJoinGamesListVisual(bool syncFocus)
             }
         }
 
-        m_buttonListGames.addItem(sessionInfo->displayLabel, modeIconName, tpIconName);
+        wstring htmlLabel = app.EscapeHTMLString(sessionInfo->displayLabel);
+        htmlLabel = app.FormatColoredString(htmlLabel);
+
+        m_buttonListGames.addItem(htmlLabel, modeIconName, tpIconName);
 
         if (memcmp(&selectedSessionId, &sessionInfo->sessionId, sizeof(SessionID)) == 0)
 
@@ -4777,6 +4780,8 @@ void UIScene_LoadCreateJoinMenu::RebuildJoinGamesListVisual(bool syncFocus)
         ++sessionIndex;
 
     }
+
+    RefreshServerListHtmlPatch();
 
     if(syncFocus)
         m_buttonListGames.updateChildFocus(m_buttonListGames.getCurrentSelection());
@@ -9206,6 +9211,21 @@ int UIScene_LoadCreateJoinMenu::AddServerKeyboardCallback(LPVOID lpParam, bool b
 
     return 0;
 
+}
+
+void UIScene_LoadCreateJoinMenu::RefreshServerListHtmlPatch() {
+    S32 arrayItems = 0;
+    IggyValueGetArrayLengthRS(m_buttonListGames.getIggyValuePath(), 0, "m_aItems", &arrayItems);
+
+    IggyValuePath listPath;
+    IggyValuePathMakeNameRef(&listPath, m_buttonListGames.getIggyValuePath(), "m_aItems");
+
+    for (int i = 0; i < arrayItems; i++) {
+        IggyValuePath listItem;
+        IggyValuePathMakeArrayRef(&listItem, &listPath, i);
+
+        IggyValueSetBooleanRS(&listItem, 0, "m_bUseHtmlText", true);
+    }
 }
 
 

@@ -486,6 +486,9 @@ TrackedEntity::eVisibility TrackedEntity::isVisible(EntityTracker *tracker, shar
 	// 4J Stu - We call update players when the entity has moved more than a certain amount at the start of it's tick
 	// Before this call we set xpu, ypu and zpu to the entities new position, but xp,yp and zp are the old position until later in the tick.
 	// Therefore we should use the new position for visibility checks
+	// nullptr check
+	if (!this || !tracker || !sp) return eVisibility_NotVisible;
+	if (sp == nullptr) return eVisibility_NotVisible;
 	double xd = sp->x - xpu; //xp / 32;
 	double zd = sp->z - zpu; //zp / 32;
 
@@ -516,6 +519,7 @@ TrackedEntity::eVisibility TrackedEntity::isVisible(EntityTracker *tracker, shar
 	if (!bVisible)
 #endif
 	{
+		if (!e || !e->riding) return eVisibility_NotVisible;
 		MinecraftServer *server = MinecraftServer::getInstance();
 		INetworkPlayer *thisPlayer = sp->connection->getNetworkPlayer();
 		if( thisPlayer )
@@ -524,6 +528,9 @@ TrackedEntity::eVisibility TrackedEntity::isVisible(EntityTracker *tracker, shar
 			{
 				// Consider extra players, but not if they are the entity we are tracking, or the player we've been passed as input, or in another dimension
 				shared_ptr<ServerPlayer> ep = server->getPlayers()->players[i];
+				if (!ep) continue;
+				if (!ep->connection) continue;
+				if (!ep->connection->getNetworkPlayer()) continue;
 				if( ep == sp ) continue;
 				if( ep == e ) continue;
 				if( ep->dimension != sp->dimension ) continue;

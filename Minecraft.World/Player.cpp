@@ -110,6 +110,10 @@ void Player::_init()
 	m_bCheckedForModelParts=false;
 	m_bCheckedDLCForModelParts=false;
 
+	m_ppSkinOffsets=nullptr;
+	m_bCheckedForSkinOffsets=false;
+	m_bCheckedDLCForSkinOffsets=false;
+
 #if defined(__PS3__) || defined(__ORBIS__)
 	m_ePlayerNameValidState=ePlayerNameValid_NotSet;
 #endif
@@ -724,7 +728,9 @@ void Player::setCustomSkin(DWORD skinId)
 	m_bCheckedDLCForModelParts=false;
 	this->SetAdditionalModelParts(nullptr);
 
-
+	m_bCheckedForSkinOffsets=false;
+	m_bCheckedDLCForSkinOffsets=false;
+	this->SetSkinOffsets(nullptr);
 }
 
 unsigned int Player::getSkinAnimOverrideBitmask(DWORD skinId)
@@ -2903,25 +2909,25 @@ int Player::getTexture()
 	case eDefaultSkins_Skin7:
 		return TN_MOB_CHAR7; // 4J - was L"/mob/char7.png";
 	case eDefaultSkins_Skin8:
-		return TN_MOB_CHAR8; // 4J - was L"/mob/char8.png";
+		return TN_MOB_ALEX; // 4J - was L"/mob/alex.png";
 	case eDefaultSkins_Skin9:
-		return TN_MOB_CHAR9; // 4J - was L"/mob/char9.png";
+		return TN_MOB_ALEX1; // 4J - was L"/mob/alex1.png";
 	case eDefaultSkins_Skin10:
-		return TN_MOB_CHAR10; // 4J - was L"/mob/char10.png";
+		return TN_MOB_ALEX2; // 4J - was L"/mob/alex2.png";
 	case eDefaultSkins_Skin11:
-		return TN_MOB_CHAR11; // 4J - was L"/mob/char11.png";
+		return TN_MOB_ALEX3; // 4J - was L"/mob/alex3.png";
 	case eDefaultSkins_Skin12:
-		return TN_MOB_CHAR12; // 4J - was L"/mob/char12.png";
+		return TN_MOB_ALEX4; // 4J - was L"/mob/alex4.png";
 	case eDefaultSkins_Skin13:
-		return TN_MOB_CHAR13; // 4J - was L"/mob/char13.png";
+		return TN_MOB_ALEX5; // 4J - was L"/mob/alex5.png";
 	case eDefaultSkins_Skin14:
-		return TN_MOB_CHAR14; // 4J - was L"/mob/char14.png";
+		return TN_MOB_ALEX6; // 4J - was L"/mob/alex6.png";
 	case eDefaultSkins_Skin15:
-		return TN_MOB_CHAR15; // 4J - was L"/mob/char15.png";
+		return TN_MOB_ALEX7; // 4J - was L"/mob/alex7.png";
 	case eDefaultSkins_Skin16:
-		return TN_MOB_CHAR16; // 4J - was L"/mob/char16.png";
+		return TN_MOB_DEVALEX; // 4J - was L"/mob/DevAlex.png";
 	case eDefaultSkins_Skin17:
-		return TN_MOB_CHAR17; // 4J - was L"/mob/char17.png";
+		return TN_MOB_DEVSTEVE; // 4J - was L"/mob/DevSteve.png";
 
 	default:
 		return TN_MOB_CHAR; // 4J - was L"/mob/char.png";
@@ -3389,9 +3395,69 @@ vector<ModelPart *> *Player::GetAdditionalModelParts()
 	return m_ppAdditionalModelParts;
 }
 
+vector<SKIN_OFFSET *> *Player::GetSkinOffsets()
+{
+	if(m_ppSkinOffsets==nullptr && !m_bCheckedForSkinOffsets)
+	{
+		bool hasCustomTexture = !customTextureUrl.empty();
+		bool customTextureIsDefaultSkin = customTextureUrl.substr(0,3).compare(L"def") == 0;
+
+		// see if we can find the parts
+		m_ppSkinOffsets=app.GetSkinOffsets(m_dwSkinId);
+
+		// If it's a default texture (which has no parts), we have the parts, or we already have the texture (in which case we should have parts if there are any) then we are done
+		if(!hasCustomTexture || customTextureIsDefaultSkin || m_ppSkinOffsets != nullptr || app.IsFileInMemoryTextures(customTextureUrl))
+		{
+			m_bCheckedForSkinOffsets=true;
+		}
+		if(m_ppSkinOffsets == nullptr && !m_bCheckedDLCForSkinOffsets)
+		{
+			m_bCheckedDLCForSkinOffsets = true;
+
+			// we don't have the data from the dlc skin yet
+			app.DebugPrintf("m_bCheckedForModelOffsets Couldn't get skin offsets for skin %X\n",m_dwSkinId);
+
+			// do we have it from the DLC pack?
+			DLCSkinFile *pDLCSkinFile = app.m_dlcManager.getSkinFile(this->customTextureUrl);
+
+			if(pDLCSkinFile!=nullptr)
+			{
+				DWORD dwOffsetC=pDLCSkinFile->getOffsetsCount();
+				if(dwOffsetC!=0)
+				{
+					app.DebugPrintf("m_bCheckedForSkinOffsets Got skin offsets from DLCskin for skin %X\n",m_dwSkinId);
+					m_ppSkinOffsets=app.SetSkinOffsets(m_dwSkinId,pDLCSkinFile->getOffsets());
+				}
+
+				m_bCheckedForSkinOffsets=true;
+			}
+		}
+	}
+	return m_ppSkinOffsets;
+}
+
+int Player::GetModelTypeFromAnimBitmask(unsigned int animBitmask)
+{
+	if (animBitmask&(1<<HumanoidModel::eAnim_SlimModel)) return 2;
+	else if (animBitmask&(1<<HumanoidModel::eAnim_WideModel)) return 1;
+	else return 0;
+}
+
+int Player::GetModelTypeFromTextureId(int textureId)
+{
+	if (textureId > 8 && textureId < 18) return 2;
+	else if (textureId == 18) return 1;
+	else return 0;
+}
+
 void Player::SetAdditionalModelParts(vector<ModelPart *> *ppAdditionalModelParts)
 {
 	m_ppAdditionalModelParts=ppAdditionalModelParts;
+}
+
+void Player::SetSkinOffsets(vector<SKIN_OFFSET *> *ppSkinOffsets)
+{
+	m_ppSkinOffsets=ppSkinOffsets;
 }
 
 #if defined(__PS3__) || defined(__ORBIS__)

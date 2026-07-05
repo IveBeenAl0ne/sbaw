@@ -736,9 +736,13 @@ vector<HtmlString> *ItemInstance::getHoverText(shared_ptr<Player> player, bool a
 {
 	vector<HtmlString> *lines = new vector<HtmlString>();
 	Item *item = Item::items[id];
-	HtmlString title = HtmlString(getHoverName());
 
-	if (hasCustomHoverName())
+	wstring hoverName = getHoverName();
+	HtmlString title = HtmlString(L"");
+	title.text = app.EscapeHTMLString(hoverName);
+	title.text = app.FormatColoredString(title.text);
+
+	if (hasCustomHoverName() && !(hoverName[0] == L'\u00A7' && hoverName[1] == L'r'))
 	{
 		title.italics = true;
 	}
@@ -791,19 +795,12 @@ vector<HtmlString> *ItemInstance::getHoverText(shared_ptr<Player> player, bool a
 		{
 			CompoundTag *display = tag->getCompound(L"display");
 
-			//if (display->contains(L"color"))
-			//{
-			//	if (advanced)
-			//	{
-			//		wchar_t text [256];
-			//		swprintf(text, 256, L"Color: LOCALISE #%08X", display->getInt(L"color"));
-			//		lines->push_back(HtmlString(text));
-			//	}
-			//	else
-			//	{
-			//		lines->push_back(HtmlString(L"Dyed LOCALISE", eMinecraftColour_NOT_SET, true));
-			//	}
-			//}
+			if (display->contains(L"color") && advanced)
+			{
+				wchar_t text[256];
+				swprintf(text, 256, L"Color: LOCALISE #%08X", display->getInt(L"color"));
+				lines->push_back(HtmlString(text));
+			}
 
 			if (display->contains(L"Lore"))
 			{
@@ -813,7 +810,10 @@ vector<HtmlString> *ItemInstance::getHoverText(shared_ptr<Player> player, bool a
 					for (int i = 0; i < lore->size(); i++)
 					{
 						//lines->push_back(ChatFormatting::DARK_PURPLE + "" + ChatFormatting::ITALIC + lore->get(i)->data);
-						lines->push_back(lore->get(i)->data);
+						HtmlString loreString = HtmlString(L"");
+						loreString.text = app.EscapeHTMLString(lore->get(i)->data);
+						loreString.text = app.EscapeHTMLString(loreString.text);
+						lines->push_back(loreString);
 					}
 				}
 			}

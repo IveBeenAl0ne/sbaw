@@ -45,6 +45,7 @@ public:
 		e_DLCParamType_EnchantmentTextFocusColour,
 		e_DLCParamType_DataPath,
 		e_DLCParamType_PackVersion,
+		e_DLCParamType_Offset,
 
 		e_DLCParamType_Max,
 

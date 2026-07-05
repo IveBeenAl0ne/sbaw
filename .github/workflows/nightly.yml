@@ -70,7 +70,7 @@ jobs:
       - name: Build
         run: |
           export INSTALL_PREFIX=$PWD/result
-          taskset -c 0-2 ./build-linux.sh . Release
+          ./build-linux.sh . Release
 
       - name: Package artifacts
         run: |
