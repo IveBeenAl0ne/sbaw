@@ -13,6 +13,9 @@
 #include <iostream>
 #endif
 
+#include <codecvt>
+#include <string>
+
 CPlatformNetworkManagerStub *g_pPlatformNetworkManager;
 
 
@@ -910,13 +913,12 @@ void CPlatformNetworkManagerStub::SearchForGames()
 					if (std::fread(&nameLen, sizeof(uint16_t), 1, file) != 1) break;
 					if (nameLen > 256) break;
 
-					char nameBuf[257] = {};
-					if (nameLen > 0)
-					{
-						if (std::fread(nameBuf, 1, nameLen, file) != nameLen) break;
+					wstring wName = L"";
+					for (int l = 0; l < nameLen; l++) {
+						uint16_t _char = 0;
+						if (std::fread(&_char, 1, 1, file) != 1) break;
+						wName += _char;
 					}
-
-					wstring wName = convStringToWstring(nameBuf);
 
 					FriendSessionInfo* info = new FriendSessionInfo();
 					size_t nLen = wName.length();

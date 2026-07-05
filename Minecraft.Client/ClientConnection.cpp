@@ -1637,7 +1637,7 @@ void ClientConnection::handleChat(shared_ptr<ChatPacket> packet)
 			message = packet->m_stringArgs[0];
 
 			message = app.EscapeHTMLString(message); //do this to enforce escaped string
-			message = app.FormatChatMessage(message); //this needs to be last cause it converts colors to html colors that would have been escaped
+			message = app.FormatColoredString(message); //this needs to be last cause it converts colors to html colors that would have been escaped
 		} else {
 			message = L"";
 		}
