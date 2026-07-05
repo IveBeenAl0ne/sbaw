@@ -201,6 +201,7 @@ CMinecraftApp::CMinecraftApp()
 	InitializeCriticalSection(&csTMSPPDownloadQueue);
 	InitializeCriticalSection(&csAdditionalModelParts);
 	InitializeCriticalSection(&csAdditionalSkinBoxes);
+	InitializeCriticalSection(&csSkinOffsets);
 	InitializeCriticalSection(&csAnimOverrideBitmask);
 	InitializeCriticalSection(&csMemFilesLock);
 	InitializeCriticalSection(&csMemTPDLock);
@@ -245,8 +246,7 @@ CMinecraftApp::CMinecraftApp()
 }
 
 
-void CMinecraftApp::GetSkinAdjustments(_SkinAdjustments* out,
-                                        unsigned int skinId)
+void CMinecraftApp::GetSkinAdjustments(_SkinAdjustments* out, unsigned int skinId)
 {
     _SkinAdjustments adj; 
 
@@ -264,8 +264,7 @@ void CMinecraftApp::GetSkinAdjustments(_SkinAdjustments* out,
     *out = adj;
 }
 
-void CMinecraftApp::SetSkinAdjustments(unsigned int skinId,
-                                        const _SkinAdjustments& adj)
+void CMinecraftApp::SetSkinAdjustments(unsigned int skinId, const _SkinAdjustments& adj)
 {
     EnterCriticalSection(&csAdditionalSkinBoxes);
 
@@ -7027,72 +7026,102 @@ wstring CMinecraftApp::EscapeHTMLString(const wstring& desc)
 	return finalString;
 }
 
-wstring CMinecraftApp::FormatChatMessage(const wstring& desc, bool applyStyling)
-{
-	static std::wregex IDS_Pattern(LR"(\{\*IDS_(\d+)\*\})"); //maybe theres a better way to do translateable IDS
-	static std::wstring_view colorFormatString = L"<font color=\"#%08x\">";
-
-	wstring results = desc;
-	wchar_t replacements[64];
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_0), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A70", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_1), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A71", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_2), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A72", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_3), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A73", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_4), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A74", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_5), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A75", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_6), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A76", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_7), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A77", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_8), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A78", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_9), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A79", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_a), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A7a", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_b), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A7b", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_c), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A7c", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_d), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A7d", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_e), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A7e", replacements);
-
-	swprintf(replacements, 64, (applyStyling ? colorFormatString.data() : L""), GetHTMLColour(eHTMLColor_f), 0xFFFFFFFF);
-	results = replaceAll(results, L"\u00A7f", replacements);
-	results = replaceAll(results, L"\u00A7r", replacements); //we only support color so reset is the same as white color
-
-	if (applyStyling) {
-		std::wsmatch match;
-		while (std::regex_search(results, match, IDS_Pattern)) {
-			results = replaceAll(results, match[0], app.GetString(std::stoi(match[1].str())));
-		}
+eMinecraftColour GetColorFromCode(wchar_t _char) {
+	switch (_char) {
+	case L'0': return eHTMLColor_0;
+	case L'1': return eHTMLColor_1;
+	case L'2': return eHTMLColor_2;
+	case L'3': return eHTMLColor_3;
+	case L'4': return eHTMLColor_4;
+	case L'5': return eHTMLColor_5;
+	case L'6': return eHTMLColor_6;
+	case L'7': return eHTMLColor_7;
+	case L'8': return eHTMLColor_8;
+	case L'9': return eHTMLColor_9;
+	case L'a': return eHTMLColor_a;
+	case L'b': return eHTMLColor_b;
+	case L'c': return eHTMLColor_c;
+	case L'd': return eHTMLColor_d;
+	case L'e': return eHTMLColor_e;
+	case L'f': return eHTMLColor_f;
+	default: return eMinecraftColour_NOT_SET;
 	}
-	
+}
 
-	return results;
+wstring CMinecraftApp::FormatColoredString(const wstring& string) {
+	static constexpr std::wstring_view colorFormatString = L"<font color=\"#%08x\">";
+
+	wstring result;
+
+	bool fontOpen = false;
+	bool italicOpen = false;
+
+	auto CloseItalic = [&]() {
+		if (italicOpen) {
+			result += L"</i>";
+			italicOpen = false;
+		}
+	};
+
+	auto CloseFont = [&]() {
+		if (fontOpen) {
+			result += L"</font>";
+			fontOpen = false;
+		}
+	};
+
+	wchar_t buffer[64];
+
+	for (size_t i = 0; i < string.length(); ++i) {
+		if (string[i] == L'\u00A7' && i + 1 < string.length()) {
+			wchar_t code = towlower(string[i + 1]);
+
+			if (GetColorFromCode(code) != eMinecraftColour_NOT_SET) {
+				bool restoreItalic = italicOpen;
+
+				CloseItalic();
+				CloseFont();
+
+				swprintf(buffer, _countof(buffer), colorFormatString.data(), GetHTMLColour(GetColorFromCode(code)));
+
+				result += buffer;
+				fontOpen = true;
+
+				if (restoreItalic) {
+					result += L"<i>";
+					italicOpen = true;
+				}
+
+				++i;
+				continue;
+			}
+
+			if (code == L'o') {
+				if (!italicOpen) {
+					result += L"<i>";
+					italicOpen = true;
+				}
+
+				++i;
+				continue;
+			}
+
+			if (code == L'r') {
+				CloseItalic();
+				CloseFont();
+
+				++i;
+				continue;
+			}
+		}
+
+		result += string[i];
+	}
+
+	CloseItalic();
+	CloseFont();
+
+	return result;
 }
 
 wstring CMinecraftApp::GetActionReplacement(int iPad, unsigned char ucAction)
@@ -9751,7 +9780,14 @@ void CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, SKIN_BOX *SkinBoxA, D
 {
 	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
 	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
-	Model *pModel = renderer ? renderer->getModel() : nullptr;
+	unsigned int m_uiAnimOverrideBitmask = GetAnimOverrideBitmask(dwSkinID);
+	Model *pModel;
+	if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_SlimModel))
+		pModel = renderer ? renderer->getModel(2) : nullptr;
+	else if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_WideModel))
+		pModel = renderer ? renderer->getModel(1) : nullptr;
+	else
+		pModel = renderer ? renderer->getModel(0) : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 	vector<SKIN_BOX *> *pvSkinBoxes = new vector<SKIN_BOX *>;
 
@@ -9784,7 +9820,14 @@ vector<ModelPart *> * CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, vect
 {
 	EntityRenderDispatcher *dispatcher = EntityRenderDispatcher::instance;
 	EntityRenderer *renderer = dispatcher ? dispatcher->getRenderer(eTYPE_PLAYER) : nullptr;
-	Model *pModel = renderer ? renderer->getModel() : nullptr;
+	unsigned int m_uiAnimOverrideBitmask = GetAnimOverrideBitmask(dwSkinID);
+	Model *pModel;
+	if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_SlimModel))
+		pModel = renderer ? renderer->getModel(2) : nullptr;
+	else if (m_uiAnimOverrideBitmask & (1 << HumanoidModel::eAnim_WideModel))
+		pModel = renderer ? renderer->getModel(1) : nullptr;
+	else
+		pModel = renderer ? renderer->getModel(0) : nullptr;
 	vector<ModelPart *> *pvModelPart = new vector<ModelPart *>;
 
 	EnterCriticalSection( &csAdditionalModelParts );
@@ -9807,6 +9850,44 @@ vector<ModelPart *> * CMinecraftApp::SetAdditionalSkinBoxes(DWORD dwSkinID, vect
 	LeaveCriticalSection( &csAdditionalSkinBoxes );
 	LeaveCriticalSection( &csAdditionalModelParts );
 	return pvModelPart;
+}
+
+void CMinecraftApp::SetSkinOffsets(DWORD dwSkinID, SKIN_OFFSET *SkinOffsetA, DWORD dwSkinOffsetC)
+{
+	vector<SKIN_OFFSET *> *pvSkinOffset = new vector<SKIN_OFFSET *>;
+
+	EnterCriticalSection( &csSkinOffsets );
+
+	app.DebugPrintf("*** SetSkinOffsets - Adding skin offsets for skin %d from array of Skin Offsets\n",dwSkinID&0x0FFFFFFF);
+
+	for(unsigned int i=0;i<dwSkinOffsetC;i++)
+	{
+		pvSkinOffset->push_back(&SkinOffsetA[i]);
+	}
+
+
+	m_SkinOffsets.insert( std::pair<DWORD, vector<SKIN_OFFSET *> *>(dwSkinID, pvSkinOffset) );
+
+	LeaveCriticalSection( &csSkinOffsets );
+
+}
+
+vector<SKIN_OFFSET *> * CMinecraftApp::SetSkinOffsets(DWORD dwSkinID, vector<SKIN_OFFSET *> *pvSkinOffsetA)
+{
+	vector<SKIN_OFFSET *> *pvSkinOffset = new vector<SKIN_OFFSET *>;
+
+	EnterCriticalSection( &csSkinOffsets );
+	app.DebugPrintf("*** SetSkinOffsets - Inserting skin offsets for skin %d from array of Skin Offsets\n",dwSkinID&0x0FFFFFFF);
+
+	for( auto& it : *pvSkinOffsetA )
+	{
+		pvSkinOffset->push_back(it);
+	}
+
+	m_SkinOffsets.emplace(dwSkinID, pvSkinOffsetA);
+
+	LeaveCriticalSection( &csSkinOffsets );
+	return pvSkinOffset;
 }
 
 
@@ -9842,6 +9923,23 @@ vector<SKIN_BOX *> *CMinecraftApp::GetAdditionalSkinBoxes(DWORD dwSkinID)
 
 	LeaveCriticalSection( &csAdditionalSkinBoxes );
 	return pvSkinBoxes;
+}
+
+vector<SKIN_OFFSET *> *CMinecraftApp::GetSkinOffsets(DWORD dwSkinID)
+{
+	EnterCriticalSection( &csSkinOffsets );
+	vector<SKIN_OFFSET *> *pvSkinOffsets=nullptr;
+	if(m_SkinOffsets.size()>0)
+	{
+		auto it = m_SkinOffsets.find(dwSkinID);
+		if(it!=m_SkinOffsets.end())
+		{
+			pvSkinOffsets = (*it).second;
+		}
+	}
+
+	LeaveCriticalSection( &csSkinOffsets );
+	return pvSkinOffsets;
 }
 
 unsigned int CMinecraftApp::GetAnimOverrideBitmask(DWORD dwSkinID)

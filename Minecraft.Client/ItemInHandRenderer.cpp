@@ -404,8 +404,8 @@ void ItemInHandRenderer::renderItem3D(Tesselator *t, float u0, float v0, float u
 
 void ItemInHandRenderer::render(float a)
 {
-    float h = oHeight + (height - oHeight) * a;
-    shared_ptr<Player> player = minecraft->player;
+	float h = oHeight + (height - oHeight) * a;
+	shared_ptr<Player> player = minecraft->player;
 
 	if (player == nullptr)
 	{
@@ -907,8 +907,8 @@ void ItemInHandRenderer::renderFire(float a)
 	unsigned int col = Minecraft::GetInstance()->getColourTable()->getColor( eMinecraftColour_Fire_Overlay );
 	float aCol = ( (col>>24)&0xFF )/255.0f;
 	float rCol = ( (col>>16)&0xFF )/255.0f;
-	float gCol = ( (col>>8)&0xFF )/255.0;
-	float bCol = ( col&0xFF )/255.0;
+	float gCol = ( (col>>8)&0xFF )/255.0f;
+	float bCol = ( col&0xFF )/255.0f;
 
     glColor4f(rCol, gCol, bCol, aCol);
     glEnable(GL_BLEND);

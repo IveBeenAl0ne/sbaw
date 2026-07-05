@@ -8,7 +8,6 @@
 #include "../../ModelPart.h"
 #include "../../Options.h"
 #include "../../../Minecraft.World/net.minecraft.world.entity.player.h"
-#include "Skins.h"
 #include "UIControl_PlayerSkinPreview.h"
 #include <string>
 
@@ -108,6 +107,7 @@ UIControl_PlayerSkinPreview::UIControl_PlayerSkinPreview()
 	m_framesAnimatingRotation = 0;
 	m_bAnimatingToFacing = false;
 	m_pvAdditionalModelParts=nullptr;
+	m_pvSkinOffsets=nullptr;
 	m_uiAnimOverrideBitmask=0L;
 }
 
@@ -184,6 +184,7 @@ void UIControl_PlayerSkinPreview::SetTexture(const wstring &url, TEXTURE_NAME ba
 	}
 
 	m_pvAdditionalModelParts=app.GetAdditionalModelParts(app.getSkinIdFromPath(m_customTextureUrl));
+	m_pvSkinOffsets=app.GetSkinOffsets(app.getSkinIdFromPath(m_customTextureUrl));
 }
 
 void UIControl_PlayerSkinPreview::SetFacing(ESkinPreviewFacing facing, bool bAnimate /*= false*/)
@@ -309,24 +310,8 @@ void UIControl_PlayerSkinPreview::render(EntityRenderer *renderer, double x, dou
 	glPushMatrix();
 	glDisable(GL_CULL_FACE);
 
-	HumanoidModel *model = static_cast<HumanoidModel *>(renderer->getModel());
-	Textures *textures = Minecraft::GetInstance()->textures;
-	int skinId = textures->loadMemTexture(m_customTextureUrl, m_backupTexture) - 37;
-
-	if (slim[skinId] == true)
-	{
-		if (textures->getHeight(m_customTextureUrl, m_backupTexture) == 64)
-			model = static_cast<HumanoidModel *>(renderer->getNewModelSlim());
-		else
-			model = static_cast<HumanoidModel *>(renderer->getModelSlim());
-	}
-	else
-	{
-		if (textures->getHeight(m_customTextureUrl, m_backupTexture) == 64)
-			model = static_cast<HumanoidModel *>(renderer->getNewModel());
-		else
-			model = static_cast<HumanoidModel *>(renderer->getModel());
-	}
+	Textures *t = Minecraft::GetInstance()->textures;
+	HumanoidModel *model = static_cast<HumanoidModel *>(renderer->getModel(Player::GetModelTypeFromTextureId(t->loadMemTexture(m_customTextureUrl, m_backupTexture)-36)+Player::GetModelTypeFromAnimBitmask(m_uiAnimOverrideBitmask)));
 
 	//getAttackAnim(mob, a);
 	//if (armor != nullptr) armor->attackTime = model->attackTime;
@@ -438,7 +423,7 @@ void UIControl_PlayerSkinPreview::render(EntityRenderer *renderer, double x, dou
 	glEnable(GL_ALPHA_TEST);
 
 	//model->prepareMobModel(mob, wp, ws, a);
-	model->render(nullptr, wp, ws, bob, headRot - bodyRot, headRotx, _scale, true);
+	model->renderUI(wp, ws, bob, headRot - bodyRot, headRotx, _scale, true, m_pvSkinOffsets);
 	/*for (int i = 0; i < MAX_ARMOR_LAYERS; i++)
 	{
 	if (prepareArmor(mob, i, a))

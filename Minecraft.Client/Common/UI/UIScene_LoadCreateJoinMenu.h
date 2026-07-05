@@ -270,6 +270,8 @@ private:
 	void BeginAddServer();
 	void AppendServerToFile(const wstring& ip, const wstring& port, const wstring& name);
 	static int AddServerKeyboardCallback(LPVOID lpParam, bool bRes);
+
+	void RefreshServerListHtmlPatch();
 #endif
 
 #if defined(__PS3__) || defined(__PSVITA__) || defined(__ORBIS__)
