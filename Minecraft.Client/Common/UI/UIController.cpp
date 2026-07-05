@@ -1150,16 +1150,33 @@ void UIController::tickInput()
 									{
 										// ButtonList manages focus internally via Flash —
 										// pass mouse coords so it can highlight the right item.
-										S32 adjustedMouseY = static_cast<S32>(sceneMouseY);
-										if (pScene->getSceneType() == eUIScene_LoadCreateJoinMenu)
+											S32 adjustedMouseY = static_cast<S32>(sceneMouseY);
+											if (pScene->getSceneType() == eUIScene_LoadCreateJoinMenu)
+											{
+												const S32 visibleRows = 7;
+												const S32 rowHeight = (visibleRows > 0) ? (ch / visibleRows) : 0;
+												if (rowHeight > 0)
+													adjustedMouseY -= rowHeight;
+											}
+									UIControl_MultiList *pMulti = dynamic_cast<UIControl_MultiList*>(ctrl);
+										if (pMulti)
 										{
-											const S32 visibleRows = 7;
-											const S32 rowHeight = (visibleRows > 0) ? (ch / visibleRows) : 0;
-											if (rowHeight > 0)
-												adjustedMouseY -= rowHeight;
+											S32 adjustedY = static_cast<S32>(sceneMouseY);
+											if (pScene->getSceneType() == eUIScene_LoadMenu)
+											{
+												const S32 visibleRows = 7;
+												const S32 rowHeight = (visibleRows > 0) ? (ch / visibleRows) : 0;
+												if (rowHeight > 0)
+													adjustedY -= (rowHeight * 2);
+											}
+											pMulti->SetTouchFocus(
+												static_cast<S32>(sceneMouseX), adjustedY, false);
 										}
+										else
+										{
 										static_cast<UIControl_ButtonList*>(ctrl)->SetTouchFocus(
 											static_cast<S32>(sceneMouseX), adjustedMouseY, false);
+										}
 										hitControlId = -1;
 										hitArea = INT_MAX;
 										hitCtrl = NULL;
@@ -1308,8 +1325,8 @@ void UIController::tickInput()
 									break;
 								}
 							}
+							}
 						}
-					}
 
 					if (leftDown && m_mouseDraggingSliderScene == pScene->getSceneType() && m_mouseDraggingSliderId >= 0)
 					{

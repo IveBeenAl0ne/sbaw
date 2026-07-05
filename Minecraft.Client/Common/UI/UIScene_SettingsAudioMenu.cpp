@@ -45,6 +45,7 @@ void UIScene_SettingsAudioMenu::tick()
 	{
 		m_bNeedsMultiListPopulate = false;
 		m_multiList.setupControl(this, m_rootPath, "MultiList");
+		m_controls.push_back(&m_multiList);
 		m_multiList.clearList();
 		m_multiList.init(eControl_MultiList);
 

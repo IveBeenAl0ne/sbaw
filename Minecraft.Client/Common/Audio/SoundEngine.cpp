@@ -29,6 +29,8 @@
 #include <mutex>
 #include <lce_filesystem/lce_filesystem.h>
 
+constexpr float MUSIC_FADE_DURATION_SECONDS = 4.0f;
+
 #ifdef __ORBIS__
 #include <audioout.h>
 //#define __DISABLE_MILES__			// MGH disabled for now as it crashes if we call sceNpMatching2Initialize
@@ -448,6 +450,9 @@ SoundEngine::SoundEngine()
 	m_StreamingAudioInfo.z=0;
 	m_StreamingAudioInfo.volume=1;
 	m_StreamingAudioInfo.pitch=1;
+	m_musicFadeSecondsRemaining = 0.0f;
+	m_musicFadeLastUpdateTime = std::chrono::steady_clock::now();
+	m_bCurrentStreamIsCustom = false;
 
 	memset(CurrentSoundsPlaying,0,sizeof(int)*(eSoundType_MAX+eSFX_MAX));
 	memset(m_ListenerA,0,sizeof(AUDIO_LISTENER)*XUSER_MAX_COUNT);
@@ -825,10 +830,22 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 	m_StreamingAudioInfo.volume = volume;
 	m_StreamingAudioInfo.pitch  = pitch;
 
+	bool bNextCustom = isCustomMusicRequest(name);
+	bool bCurrentCustom = m_musicStreamActive && m_bCurrentStreamIsCustom;
+
 	if(m_StreamState == eMusicStreamState_Playing)
-		m_StreamState = eMusicStreamState_Stop;
+	{
+		if (bCurrentCustom != bNextCustom)
+		{
+			m_StreamState = eMusicStreamState_Fading;
+			m_musicFadeSecondsRemaining = MUSIC_FADE_DURATION_SECONDS;
+			m_musicFadeLastUpdateTime = std::chrono::steady_clock::now();
+		}
+	}
 	else if(m_StreamState == eMusicStreamState_Opening)
+	{
 		m_StreamState = eMusicStreamState_OpeningCancel;
+	}
 
 	if(name.empty())
 	{
@@ -864,61 +881,78 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 		else if(playerInNether)
 			m_musicID = getMusicID(eMusicType_Nether);
 		else
-		    getGameModeMusicID(pMinecraft, i);
+		{
+			bool foundCreative = false;
+			for(unsigned int j = 0; j < MAX_LOCAL_PLAYERS; j++)
+			{
+				if(pMinecraft->localplayers[j] != nullptr &&
+				   pMinecraft->localplayers[j]->abilities.instabuild &&
+				   pMinecraft->localplayers[j]->abilities.mayfly)
+				{
+					m_musicID = getMusicID(eMusicType_Creative);
+					foundCreative = true;
+					break;
+				}
+			}
+			if(!foundCreative)
+			{
+				m_musicID = getMusicID(eMusicType_Overworld);
+			}
+		}
 	}
 	else
 	{
 		// jukebox
-	    m_StreamingAudioInfo.bIs3D=true;
-	    m_musicID=getMusicID(name);
-	    m_iMusicDelay=0;
+		m_StreamingAudioInfo.bIs3D=true;
+		m_musicID=getMusicID(name);
+		m_iMusicDelay=0;
 	}
 }
 
+bool SoundEngine::isCustomMusicRequest(const wstring& name) const
+{
+	if (!name.empty())
+	{
+		return false;
+	}
 
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	if (!pMinecraft)
+	{
+		return false;
+	}
+
+	return pMinecraft->skins->getSelected()->hasAudio();
+}
 
 int SoundEngine::GetRandomishTrack(int iStart,int iEnd)
 {
-	// 4J-PB - make it more likely that we'll get a track we've not heard for a while, although repeating tracks sometimes is fine
-
-	// if all tracks have been heard, clear the flags
 	bool bAllTracksHeard=true;
 	int iVal=iStart;
 	for(size_t i=iStart;i<=iEnd;i++)
 	{
-		if(m_bHeardTrackA[i]==false) 
+		if(m_bHeardTrackA[i]==false)
 		{
 			bAllTracksHeard=false;
-			//app.DebugPrintf("Not heard all tracks yet\n");
 			break;
 		}
 	}
 
 	if(bAllTracksHeard)
 	{
-		//app.DebugPrintf("Heard all tracks - resetting the tracking array\n");
-
 		for(size_t i=iStart;i<=iEnd;i++)
 		{
 			m_bHeardTrackA[i]=false;
 		}
 	}
 
-	// trying to get a track we haven't heard, but not too hard		
 	for(size_t i=0;i<=((iEnd-iStart)/2);i++)
 	{
-		// random->nextInt(1) will always return 0
 		iVal=random->nextInt((iEnd-iStart)+1)+iStart;
 		if(m_bHeardTrackA[iVal]==false)
 		{
-			// not heard this
-			//app.DebugPrintf("(%d) Not heard track %d yet, so playing it now\n",i,iVal);
 			m_bHeardTrackA[iVal]=true;
 			break;
-		}
-		else
-		{
-			//app.DebugPrintf("(%d) Skipping track %d already heard it recently\n",i,iVal);
 		}
 	}
 
@@ -1363,7 +1397,38 @@ void SoundEngine::playMusicUpdate()
 			if (m_StreamingAudioInfo.bIs3D)
 			{
 				ma_sound_set_spatialization_enabled(&m_musicStream, MA_TRUE);
-				ma_sound_set_position(&m_musicStream, m_StreamingAudioInfo.x, m_StreamingAudioInfo.y, m_StreamingAudioInfo.z);
+				if (m_validListenerCount > 1)
+				{
+					int iClosestListener = 0;
+					float fClosestDist = 1e6f;
+
+					for (size_t i = 0; i < MAX_LOCAL_PLAYERS; i++)
+					{
+						if (m_ListenerA[i].bValid)
+						{
+							float dx = m_StreamingAudioInfo.x - m_ListenerA[i].vPosition.x;
+							float dy = m_StreamingAudioInfo.y - m_ListenerA[i].vPosition.y;
+							float dz = m_StreamingAudioInfo.z - m_ListenerA[i].vPosition.z;
+							float dist = sqrtf(dx*dx + dy*dy + dz*dz);
+
+							if (dist < fClosestDist)
+							{
+								fClosestDist = dist;
+								iClosestListener = i;
+							}
+						}
+					}
+
+					float relX = m_StreamingAudioInfo.x - m_ListenerA[iClosestListener].vPosition.x;
+					float relY = m_StreamingAudioInfo.y - m_ListenerA[iClosestListener].vPosition.y;
+					float relZ = m_StreamingAudioInfo.z - m_ListenerA[iClosestListener].vPosition.z;
+
+					ma_sound_set_position(&m_musicStream, relX, relY, relZ);
+				}
+				else
+				{
+					ma_sound_set_position(&m_musicStream, m_StreamingAudioInfo.x, m_StreamingAudioInfo.y, m_StreamingAudioInfo.z);
+				}
 			}
 			else
 			{
@@ -1376,6 +1441,7 @@ void SoundEngine::playMusicUpdate()
 
 			ma_sound_set_volume(&m_musicStream, finalVolume);
 			ma_result startResult = ma_sound_start(&m_musicStream);
+			m_bCurrentStreamIsCustom = Minecraft::GetInstance() && Minecraft::GetInstance()->skins->getSelected()->hasAudio();
 			app.DebugPrintf("ma_sound_start result: %d\n", startResult);
 
 			m_StreamState=eMusicStreamState_Playing;
@@ -1400,6 +1466,36 @@ void SoundEngine::playMusicUpdate()
 		SetIsPlayingStreamingCDMusic(false);
 		SetIsPlayingStreamingGameMusic(false);
 
+		m_StreamState = eMusicStreamState_Idle;
+	break;
+	case eMusicStreamState_Fading:
+		if (m_musicStreamActive)
+		{
+			const auto now = std::chrono::steady_clock::now();
+			const float elapsedSeconds = std::chrono::duration<float>(now - m_musicFadeLastUpdateTime).count();
+			if (elapsedSeconds > 0.0f)
+			{
+				m_musicFadeSecondsRemaining = (elapsedSeconds >= m_musicFadeSecondsRemaining)
+					? 0.0f
+					: m_musicFadeSecondsRemaining - elapsedSeconds;
+				m_musicFadeLastUpdateTime = now;
+			}
+
+			if (m_musicFadeSecondsRemaining > 0.0f)
+			{
+				const float fadeFactor = m_musicFadeSecondsRemaining / MUSIC_FADE_DURATION_SECONDS;
+				const float finalVolume = m_StreamingAudioInfo.volume * getMasterMusicVolume() * fadeFactor;
+				ma_sound_set_volume(&m_musicStream, finalVolume);
+				break;
+			}
+
+			ma_sound_stop(&m_musicStream);
+			ma_sound_uninit(&m_musicStream);
+			m_musicStreamActive = false;
+		}
+
+		SetIsPlayingStreamingCDMusic(false);
+		SetIsPlayingStreamingGameMusic(false);
 		m_StreamState = eMusicStreamState_Idle;
 	break;
 	case eMusicStreamState_Stopping:
@@ -1589,7 +1685,7 @@ void SoundEngine::playMusicUpdate()
 			}
 			else
 			{
-			    m_musicID = getMusicID(eMusicType_Overworld);
+			    getGameModeMusicID(pMinecraft, i);
 				SetIsPlayingNetherMusic(false);
 				SetIsPlayingEndMusic(false);
 			}
