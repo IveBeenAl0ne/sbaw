@@ -1101,6 +1101,9 @@ void UIController::tickInput()
 						panelOffsetY = pMainPanel->getYPos();
 					}
 
+					bool leftPressed = g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT);
+					bool leftDown = leftPressed || g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT);
+
 					// Mouse hover — hit test against C++ control bounds.
 					// Simple controls use SetFocusToElement; list controls
 					// use their own SetTouchFocus for Flash-side hit testing.
@@ -1158,7 +1161,7 @@ void UIController::tickInput()
 												if (rowHeight > 0)
 													adjustedMouseY -= rowHeight;
 											}
-									UIControl_MultiList *pMulti = dynamic_cast<UIControl_MultiList*>(ctrl);
+										UIControl_MultiList *pMulti = dynamic_cast<UIControl_MultiList*>(ctrl);
 										if (pMulti)
 										{
 											S32 adjustedY = static_cast<S32>(sceneMouseY);
@@ -1169,13 +1172,14 @@ void UIController::tickInput()
 												if (rowHeight > 0)
 													adjustedY -= (rowHeight * 2);
 											}
-											pMulti->SetTouchFocus(
-												static_cast<S32>(sceneMouseX), adjustedY, false);
+
+											S32 localX = static_cast<S32>(sceneMouseX) - cx;
+											pMulti->SetTouchFocus(localX, adjustedY, leftDown);
 										}
 										else
 										{
 										static_cast<UIControl_ButtonList*>(ctrl)->SetTouchFocus(
-											static_cast<S32>(sceneMouseX), adjustedMouseY, false);
+											static_cast<S32>(sceneMouseX), adjustedMouseY, leftDown);
 										}
 										hitControlId = -1;
 										hitArea = INT_MAX;
@@ -1246,9 +1250,6 @@ void UIController::tickInput()
 							UpdateCursorIcon(currHitCtrl);
 						}
 					}
-
-					bool leftPressed = g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT);
-					bool leftDown = leftPressed || g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT);
 
 					if (m_mouseDraggingSliderScene != eUIScene_COUNT && m_mouseDraggingSliderScene != pScene->getSceneType())
 					{
