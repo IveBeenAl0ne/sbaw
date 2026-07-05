@@ -85,6 +85,7 @@ typedef struct
 			// 0x00000200 - eGameSetting_CustomSkinAnim - on
 
 			// TU9								// 0x00000400 - eGameSetting_DeathMessages - on
+			// 0x00070000 - eGameSetting_ControlType - 0..6
 
 			// Adding another bitmask to store "special" completion tasks for the tutorial
 			unsigned int uiSpecialTutorialBitmask;

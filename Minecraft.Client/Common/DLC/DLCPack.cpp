@@ -416,15 +416,28 @@ bool DLCPack::hasPurchasedFile(DLCManager::EDLCType type, const wstring &path)
 void  DLCPack::UpdateLanguage()
 {
 	// find the language file
-	DLCManager::e_DLCType_LocalisationData;
-	DLCFile *file = nullptr;
-
-	if(m_files[DLCManager::e_DLCType_LocalisationData].size() > 0)
+	if (m_files[DLCManager::e_DLCType_LocalisationData].empty())
 	{
-		file = m_files[DLCManager::e_DLCType_LocalisationData][0];
-		DLCLocalisationFile *localisationFile = static_cast<DLCLocalisationFile *>(getFile(DLCManager::e_DLCType_LocalisationData, L"languages.loc"));
-		StringTable *strTable = localisationFile->getStringTable();
-		strTable->ReloadStringTable();
+		return;
 	}
 
+	DLCFile *file = getFile(DLCManager::e_DLCType_LocalisationData, L"languages.loc");
+	if (!file)
+	{
+		file = m_files[DLCManager::e_DLCType_LocalisationData][0];
+	}
+
+	DLCLocalisationFile *localisationFile = static_cast<DLCLocalisationFile *>(file);
+	if (!localisationFile)
+	{
+		return;
+	}
+
+	StringTable *strTable = localisationFile->getStringTable();
+	if (!strTable)
+	{
+		return;
+	}
+
+	strTable->ReloadStringTable();
 }

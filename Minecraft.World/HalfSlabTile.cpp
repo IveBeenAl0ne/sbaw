@@ -12,13 +12,43 @@ HalfSlabTile::HalfSlabTile(int id, Material *material)
     Tile::lightBlock[id] = 0xFF;
 }
 
+void HalfSlabTile::createBlockStateDefinition()
+{
+    if (!m_blockStateDefinition)
+        m_blockStateDefinition = new BlockStateDefinition(this);
+}
+
+int HalfSlabTile::defaultBlockState()
+{
+    return 0;
+}
+
+int HalfSlabTile::convertBlockStateToLegacyData(BlockState *state)
+{
+    return state ? (state->value & (TYPE_MASK | TOP_SLOT_BIT)) : 0;
+}
+
+Tile::BlockState HalfSlabTile::getBlockState(int data)
+{
+    return Tile::BlockState(data & (TYPE_MASK | TOP_SLOT_BIT));
+}
+
+Tile::BlockState HalfSlabTile::getBlockState(LevelSource *level, int x, int y, int z)
+{
+    return Tile::BlockState(level->getData(x, y, z) & (TYPE_MASK | TOP_SLOT_BIT));
+}
+
 void HalfSlabTile::DerivedInit()
 {
-    
     if (!isFullSize())
+    {
+        setLightBlock(0);
         setShape(0.0f, 0.0f, 0.0f, 1.0f, 0.5f, 1.0f);
+    }
     else
+    {
         Tile::solid[id] = true;
+    }
 }
 
 void HalfSlabTile::updateDefaultShape()
@@ -83,54 +113,33 @@ bool HalfSlabTile::isCubeShaped()
     return isFullSize() != 0;
 }
 
-bool HalfSlabTile::shouldRenderFace(
-    LevelSource *level, int x, int y, int z, int face)
+bool HalfSlabTile::shouldRenderFace(LevelSource *level, int x, int y, int z, int face) 
 {
-   
-    if (isFullSize())
-        return Tile::shouldRenderFace(level, x, y, z, face);
+	if (isFullSize()) return Tile::shouldRenderFace(level, x, y, z, face);
 
-   
-    if (face != Facing::UP && face != Facing::DOWN
-        && !Tile::shouldRenderFace(level, x, y, z, face))
-        return false;
+	if (face != Facing::UP && face != Facing::DOWN && !Tile::shouldRenderFace(level, x, y, z, face)) 
+	{
+		return false;
+	}
 
-    int oppFace = Facing::getOpposite(face);
-    int nx = x, ny = y, nz = z;
-    
-    if (oppFace == Facing::DOWN)  ny--;
-    if (oppFace == Facing::UP)    ny++;
-    if (oppFace == Facing::NORTH) nz--;
-    if (oppFace == Facing::SOUTH) nz++;
-    if (oppFace == Facing::WEST)  nx--;
-    if (oppFace == Facing::EAST)  nx++;
+	int ox = x, oy = y, oz = z;
+	ox += Facing::STEP_X[Facing::OPPOSITE_FACING[face]];
+	oy += Facing::STEP_Y[Facing::OPPOSITE_FACING[face]];
+	oz += Facing::STEP_Z[Facing::OPPOSITE_FACING[face]];
 
-    int currentData  = level->getData(x,  y,  z);
-    int neighborData = level->getData(nx, ny, nz);
-    int currentTile  = level->getTile(x,  y,  z);
-    int neighborTile = level->getTile(nx, ny, nz);
-
-    bool currentIsUpper  = (currentData  & TOP_SLOT_BIT) != 0;
-    bool neighborIsUpper = (neighborData & TOP_SLOT_BIT) != 0;
-
-    bool currentIsSlab  = isHalfSlab(currentTile);
-    bool neighborIsSlab = isHalfSlab(neighborTile);
-
-    
-    if (neighborIsSlab && neighborIsUpper)
-    {
-        if (face == Facing::DOWN)
-            return true;
-        if (face == Facing::UP && !Tile::shouldRenderFace(level, x, y, z, face))
-            return currentIsSlab && !currentIsUpper ? false : true;
-        return !(currentIsSlab && currentIsUpper);
-    }
-
-    if (face == Facing::UP || (face == Facing::DOWN
-        && Tile::shouldRenderFace(level, x, y, z, face)))
-        return true;
-
-    return !(currentIsSlab && !currentIsUpper);
+	boolean isUpper = (level->getData(ox, oy, oz) & TOP_SLOT_BIT) != 0;
+	if (isUpper) 
+	{
+		if (face == Facing::DOWN) return true;
+		if (face == Facing::UP && Tile::shouldRenderFace(level, x, y, z, face)) return true;
+		return !(isHalfSlab(level->getTile(x, y, z)) && (level->getData(x, y, z) & TOP_SLOT_BIT) != 0);
+	} 
+	else 
+	{
+		if (face == Facing::UP) return true;
+		if (face == Facing::DOWN && Tile::shouldRenderFace(level, x, y, z, face)) return true;
+		return !(isHalfSlab(level->getTile(x, y, z)) && (level->getData(x, y, z) & TOP_SLOT_BIT) == 0);
+	}
 }
 
 int HalfSlabTile::getSpawnResourcesAuxValue(int data)

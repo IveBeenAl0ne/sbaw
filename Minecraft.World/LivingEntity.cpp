@@ -164,7 +164,7 @@ void LivingEntity::checkFallDamage(double ya, bool onGround)
 		updateInWaterState();
 	}
 
-	if (onGround && fallDistance > 0)
+	if (onGround)
 	{
 		int xt = Mth::floor(x);
 		int yt = Mth::floor(y - 0.2f - heightOffset);
@@ -179,9 +179,14 @@ void LivingEntity::checkFallDamage(double ya, bool onGround)
 			}
 		}
 
-		if (t > 0)
+		Tile *tile = Tile::tiles[t];
+		if (t > 0 && tile != nullptr) // tu31 tutorial world fix
 		{
-			Tile::tiles[t]->fallOn(level, xt, yt, zt, shared_from_this(), fallDistance);
+			if (fallDistance > 0 || t == Tile::slimeBlock->id)
+			{
+				auto ent = shared_from_this();
+				Tile::tiles[t]->fallOn(level, xt, yt, zt, ent, fallDistance);
+			}
 		}
 	}
 
@@ -1560,10 +1565,12 @@ void LivingEntity::travel(float xa, float ya)
 		if (onGround)
 		{
 			frictionTile = level->getTile(Mth::floor(x), Mth::floor(bb->y0) - 1, Mth::floor(z));
+			Tile *tile = Tile::tiles[frictionTile];
 			friction = 0.6f * 0.91f;
 			if (frictionTile > 0)
 			{
-				friction = Tile::tiles[frictionTile]->friction * 0.91f;
+				if (tile == nullptr) tile = Tile::tiles[1];
+				friction = tile->friction * 0.91f;
 			}
 		}
 
@@ -1586,8 +1593,10 @@ void LivingEntity::travel(float xa, float ya)
 		{
 			friction = 0.6f * 0.91f;
 			if (frictionTile > 0)
-			{
-				friction = Tile::tiles[frictionTile]->friction * 0.91f;
+			{	
+				Tile *tile = Tile::tiles[frictionTile];
+				if (tile == nullptr) tile = Tile::tiles[1];
+				friction = tile->friction * 0.91f;
 			}
 		}
 		if (onLadder())

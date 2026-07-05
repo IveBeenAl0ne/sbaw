@@ -1,0 +1,38 @@
+{
+    "tasks": [
+        {
+            "label": "Build Release [Linux]",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "./build-linux.sh . Release && ${env:HOME}/.local/share/neoLegacy/minecraft-lce-client"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Builds + runs the project in Release mode w/ build-linux.sh"
+        },
+        {
+            "label": "Build Debug [Linux]",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "./build-linux.sh . Debug && ${env:HOME}/.local/share/neoLegacy/minecraft-lce-client"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "build",
+            "detail": "Builds + runs the project in Debug mode w/ build-linux.sh"
+        }
+    ],
+    "version": "2.0.0"
+}

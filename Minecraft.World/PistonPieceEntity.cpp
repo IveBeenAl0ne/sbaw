@@ -2,6 +2,7 @@
 #include "com.mojang.nbt.h"
 #include "PistonPieceEntity.h"
 #include "PistonMovingPiece.h"
+#include "net.minecraft.world.phys.h"
 #include "net.minecraft.world.level.h"
 #include "Facing.h"
 #include "Tile.h"
@@ -119,7 +120,13 @@ void PistonPieceEntity::moveCollidedEntities(float progress, float amount)
 	AABB *aabb = Tile::pistonMovingPiece->getAABB(level, x, y, z, id, progress, facing);
 	if (aabb != nullptr)
 	{
-		vector<shared_ptr<Entity> > *entities = level->getEntities(nullptr, aabb);
+		AABB *queryBox = aabb;
+		if (id == Tile::slimeBlock->id && Facing::STEP_Y[facing] > 0)
+		{
+			queryBox = AABB::newTemp(aabb->x0, aabb->y0, aabb->z0, aabb->x1, aabb->y1 + 1.0f, aabb->z1);
+		}
+
+		vector<shared_ptr<Entity> > *entities = level->getEntities(nullptr, queryBox);
 		if (!entities->empty())
 		{
 			vector< shared_ptr<Entity> > collisionHolder;
@@ -133,6 +140,18 @@ void PistonPieceEntity::moveCollidedEntities(float progress, float amount)
 				it->move(amount * Facing::STEP_X[facing],
 							amount * Facing::STEP_Y[facing],
 							amount * Facing::STEP_Z[facing]);
+
+				if (id == Tile::slimeBlock->id && Facing::STEP_Y[facing] > 0)
+				{
+					if (it->yd < amount)
+					{
+						it->yd = amount;
+					}
+					it->yd = it->yd * 1.25f;
+					it->onGround = false;
+					it->fallDistance = 0.0f;
+					it->hasImpulse = true;
+				}
 			}
 		}
 	}
@@ -145,7 +164,7 @@ void PistonPieceEntity::finalTick()
 		progressO = progress = 1;
 		level->removeTileEntity(x, y, z);
 		setRemoved();
-		if (level->getTile(x, y, z) == Tile::pistonMovingPiece_Id)
+		if (level->getTile(x, y, z) == Tile::piston_extension_Id)
 		{
 			level->setTileAndData(x, y, z, id, data, Tile::UPDATE_ALL);
 			level->neighborChanged(x, y, z, id);
@@ -162,7 +181,7 @@ void PistonPieceEntity::tick()
 		moveCollidedEntities(1, 4 / 16.f);
 		level->removeTileEntity(x, y, z);
 		setRemoved();
-		if (level->getTile(x, y, z) == Tile::pistonMovingPiece_Id)
+		if (level->getTile(x, y, z) == Tile::piston_extension_Id)
 		{
 			level->setTileAndData(x, y, z, id, data, Tile::UPDATE_ALL);
 			level->neighborChanged(x, y, z, id);

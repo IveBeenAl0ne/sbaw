@@ -5,6 +5,7 @@
 
 ThinFenceTile::ThinFenceTile(int id, const wstring &tex, const wstring &edgeTex, Material *material, bool dropsResources) : Tile(id, material,isSolidRender())
 {
+    setLightBlock(0);
 	iconSide = nullptr;
 	edgeTexture = edgeTex;
 	this->dropsResources = dropsResources;

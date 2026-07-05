@@ -131,6 +131,7 @@ void UIScene_JoinMenu::updateTooltips()
 
 void UIScene_JoinMenu::tick()
 {
+	if (this == nullptr) return;
 	if (!m_friendInfoRequestIssued)
 	{
 		ui.NavigateToScene(m_iPad, eUIScene_Timer);

@@ -80,10 +80,13 @@ Stitcher *TextureManager::createStitcher(const wstring &name)
 	return new Stitcher(name, maxTextureSize, maxTextureSize, true);
 }
 
-vector<Texture *> *TextureManager::createTextures(const wstring &filename, bool mipmap)
+vector<Texture *> *TextureManager::createTextures(const wstring &filename, bool mipmap, bool forceAnimation)
 {
 	vector<Texture *> *result = new vector<Texture *>();
 	TexturePack *texturePack = Minecraft::GetInstance()->skins->getSelected();
+	TexturePack *imagePack = texturePack;
+
+    
 	//try {
 	int mode = Texture::TM_CONTAINER; // Most important -- so it doesn't get uploaded to videoram
 	int clamp = Texture::WM_WRAP; // 4J Stu - Don't clamp as it causes issues with how we signal non-mipmmapped textures to the pixel shader //Texture::WM_CLAMP;
@@ -95,9 +98,9 @@ vector<Texture *> *TextureManager::createTextures(const wstring &filename, bool 
 	wstring drive = L"";
 
 
-	if(texturePack->hasFile(L"res/" + filename,false))
+	if(imagePack->hasFile(L"res/" + filename,false))
 	{
-		drive = texturePack->getPath(true);
+		drive = imagePack->getPath(true);
 	}
 	else
 	{
@@ -108,31 +111,39 @@ vector<Texture *> *TextureManager::createTextures(const wstring &filename, bool 
 			char *pchUsrDir = app.GetBDUsrDirPath(pchTextureName);
 			wstring wstr (pchUsrDir, pchUsrDir+strlen(pchUsrDir));
 			drive= wstr + L"\\Common\\res\\TitleUpdate\\";
+			imagePack = texturePack;
 		}
 		else
 #endif
 		{
-			drive = Minecraft::GetInstance()->skins->getDefault()->getPath(true);
+			imagePack = Minecraft::GetInstance()->skins->getDefault();
+			drive = imagePack->getPath(true);
 		}
 	}
 
+    
+
 	//BufferedImage *image = new BufferedImage(texturePack->getResource(L"/" + filename),false,true,drive); //ImageIO::read(texturePack->getResource(L"/" + filename));
 
-	BufferedImage *image = texturePack->getImageResource(filename, false, true, drive);
+	BufferedImage *image = imagePack->getImageResource(filename, false, true, drive);
 	MemSect(0);
+
+    
 	int height = image->getHeight();
 	int width = image->getWidth();
 
 	wstring texName = getTextureNameFromPath(filename);
 
-	if (isAnimation(filename, texturePack))
+	if (forceAnimation || isAnimation(filename, texturePack))
 	{
+    
 		// TODO: Read this information from the animation file later
 		int frameWidth = width;
 		int frameHeight = width;
 
 		// This could end as 0 frames
 		int frameCount = height / frameWidth;
+    
 		for (int i = 0; i < frameCount; i++)
 		{
 			BufferedImage *subImage = image->getSubimage(0, frameHeight * i, frameWidth, frameHeight);
@@ -140,6 +151,7 @@ vector<Texture *> *TextureManager::createTextures(const wstring &filename, bool 
 			delete subImage;
 			result->push_back(texture);
 		}
+    
 	}
 	else
 	{
@@ -147,6 +159,7 @@ vector<Texture *> *TextureManager::createTextures(const wstring &filename, bool 
 		if (width == height)
 		{
 			result->push_back(createTexture(texName, mode, width, height, clamp, format, minFilter, magFilter, mipmap || image->getData(1) != nullptr, image));
+            
 		}
 		else
 		{
@@ -157,6 +170,8 @@ vector<Texture *> *TextureManager::createTextures(const wstring &filename, bool 
 		}
 	}
 	delete image;
+
+    
 
 
 	//return result;
@@ -176,9 +191,16 @@ wstring TextureManager::getTextureNameFromPath(const wstring &filename)
 
 bool TextureManager::isAnimation(const wstring &filename, TexturePack *texturePack)
 {
-	wstring dataFileName = L"/" + filename.substr(0, filename.find_last_of(L'.')) + L".txt";
-	bool hasOriginalImage = texturePack->hasFile(L"/" + filename, false);
-	return Minecraft::GetInstance()->skins->getSelected()->hasFile(dataFileName, !hasOriginalImage);
+	File file(filename);
+	wstring textureName = file.getName();
+	size_t extensionPos = textureName.find_last_of(L'.');
+	if (extensionPos != wstring::npos)
+	{
+		textureName = textureName.substr(0, extensionPos);
+	}
+
+	wstring path = filename.substr(0, filename.length() - file.getName().length());
+	return !texturePack->getAnimationString(textureName, path, true).empty();
 }
 
 Texture *TextureManager::createTexture(const wstring &name, int mode, int width, int height, int wrap, int format, int minFilter, int magFilter, bool mipmap, BufferedImage *image)

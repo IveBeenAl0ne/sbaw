@@ -45,6 +45,7 @@ public:
 	static const int PUSH_NORMAL = 0;
 	static const int PUSH_DESTROY = 1;
 	static const int PUSH_BLOCK = 2;		// not pushable
+	static const int PUSH_SLIME = 3;        // slime block
 
 	static void staticCtor();
 

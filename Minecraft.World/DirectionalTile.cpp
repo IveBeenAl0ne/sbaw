@@ -4,6 +4,7 @@
 
 DirectionalTile::DirectionalTile(int id, Material *material, bool isSolidRender) : Tile(id, material, isSolidRender)
 {
+	setLightBlock(0);
 }
 
 int DirectionalTile::getDirection(int data)

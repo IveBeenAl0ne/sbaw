@@ -10,6 +10,9 @@
 #include "net.minecraft.world.h"
 #include "LevelChunk.h"
 #include "Dimension.h"
+#include <algorithm>
+#include <deque>
+#include <climits>
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 #include "../Minecraft.Server/FourKitBridge.h"
 #endif
@@ -34,7 +37,6 @@ DWORD PistonBaseTile::tlsIdx = TlsAlloc();
 
 PistonBaseTile::PistonBaseTile(int id, bool isSticky) : Tile(id, Material::piston, isSolidRender() )
 {
-	// 4J - added initialiser
 	this->isSticky = isSticky;
 	setSoundType(SOUND_STONE);
 	setDestroyTime(0.5f);
@@ -42,6 +44,32 @@ PistonBaseTile::PistonBaseTile(int id, bool isSticky) : Tile(id, Material::pisto
 	iconInside = nullptr;
 	iconBack = nullptr;
 	iconPlatform = nullptr;
+}
+
+void PistonBaseTile::createBlockStateDefinition()
+{
+	if (!m_blockStateDefinition)
+		m_blockStateDefinition = new BlockStateDefinition(this);
+}
+
+int PistonBaseTile::defaultBlockState()
+{
+	return 0;
+}
+
+int PistonBaseTile::convertBlockStateToLegacyData(BlockState *state)
+{
+	return state ? (state->value & 0xF) : 0;
+}
+
+Tile::BlockState PistonBaseTile::getBlockState(int data)
+{
+	return Tile::BlockState(data & 0xF);
+}
+
+Tile::BlockState PistonBaseTile::getBlockState(LevelSource *level, int x, int y, int z)
+{
+	return Tile::BlockState(level->getData(x, y, z) & 0xF);
 }
 
 Icon *PistonBaseTile::getPlatformTexture()
@@ -88,7 +116,7 @@ Icon *PistonBaseTile::getTexture(const wstring &name)
 {
 	if (name.compare(EDGE_TEX) == 0) return Tile::pistonBase->icon;
 	if (name.compare(PLATFORM_TEX) == 0) return Tile::pistonBase->iconPlatform;
-	if (name.compare(PLATFORM_STICKY_TEX) == 0) return Tile::pistonStickyBase->iconPlatform;
+	if (name.compare(PLATFORM_STICKY_TEX) == 0) return Tile::sticky_piston->iconPlatform;
 	if (name.compare(INSIDE_TEX) == 0) return Tile::pistonBase->iconInside;
 
 	return nullptr;
@@ -164,7 +192,7 @@ void PistonBaseTile::checkIfExtend(Level *level, int x, int y, int z)
 	}
 	else if (!extend && isExtended(data))
 	{
-		level->setData(x, y, z, facing, UPDATE_CLIENTS);
+		// level->setData(x, y, z, facing, UPDATE_CLIENTS);
 		level->tileEvent(x, y, z, id, TRIGGER_CONTRACT, facing);
 	}
 }
@@ -285,7 +313,7 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 		}
 
 		stopSharingIfServer(level, x, y, z);	// 4J added
-		level->setTileAndData(x, y, z, Tile::pistonMovingPiece_Id, facing, Tile::UPDATE_ALL);
+		level->setTileAndData(x, y, z, Tile::piston_extension_Id, facing, Tile::UPDATE_ALL);
 		level->setTileEntity(x, y, z, PistonMovingPiece::newMovingPieceEntity(id, facing, facing, false, true));
 
 		PIXEndNamedEvent();
@@ -303,7 +331,7 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 
 			PIXEndNamedEvent();
 
-			if (block == Tile::pistonMovingPiece_Id)
+			if (block == Tile::piston_extension_Id)
 			{
 				PIXBeginNamedEvent(0,"Contract sticky phase B\n");
 				// the block two steps away is a moving piston block piece, so replace it with the real data,
@@ -326,24 +354,66 @@ bool PistonBaseTile::triggerEvent(Level *level, int x, int y, int z, int param1,
 			}
 
 			PIXBeginNamedEvent(0,"Contract sticky phase C\n");
-			if (!pistonPiece && block > 0 && (isPushable(block, level, twoX, twoY, twoZ, false))
-				&& (Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_NORMAL || block == Tile::pistonBase_Id || block == Tile::pistonStickyBase_Id))
 			{
-				stopSharingIfServer(level, twoX, twoY, twoZ);	// 4J added
+				int pullDir = Facing::OPPOSITE_FACING[facing];
+				int armX = x + Facing::STEP_X[facing];
+				int armY = y + Facing::STEP_Y[facing];
+				int armZ = z + Facing::STEP_Z[facing];
 
-				x += Facing::STEP_X[facing];
-				y += Facing::STEP_Y[facing];
-				z += Facing::STEP_Z[facing];
+				bool canPull = block > 0
+					&& isPushable(block, level, twoX, twoY, twoZ, false)
+					&& (Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_NORMAL
+						|| Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_SLIME
+						|| block == Tile::piston_Id
+						|| block == Tile::sticky_piston_Id);
 
-				level->setTileAndData(x, y, z, Tile::pistonMovingPiece_Id, blockData, Tile::UPDATE_ALL);
-				level->setTileEntity(x, y, z, PistonMovingPiece::newMovingPieceEntity(block, blockData, facing, false, false));
+				if (canPull)
+				{
+					std::vector<BlockPos3> toMove, toDestroy;
+					bool ok = collectStructure(level, pullDir,
+						twoX, twoY, twoZ,
+						x, y, z,
+						armX, armY, armZ,
+						false,
+						toMove, toDestroy);
 
-				level->removeTile(twoX, twoY, twoZ);
-			}
-			else if (!pistonPiece)
-			{
-				stopSharingIfServer(level, x + Facing::STEP_X[facing], y + Facing::STEP_Y[facing], z + Facing::STEP_Z[facing]);	// 4J added
-				level->removeTile(x + Facing::STEP_X[facing], y + Facing::STEP_Y[facing], z + Facing::STEP_Z[facing]);
+					if (ok && !toMove.empty())
+					{
+						applyStructureMove(level, x, y, z, facing, pullDir, isSticky,
+							toMove, toDestroy, false);
+					}
+					else if (block > 0 && Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_SLIME)
+					{
+						std::vector<BlockPos3> fallbackMove;
+						std::vector<BlockPos3> fallbackDestroy;
+						bool fallbackOk = collectStructure(level, pullDir,
+							twoX, twoY, twoZ,
+							x, y, z,
+							armX, armY, armZ,
+							true,
+							fallbackMove, fallbackDestroy);
+						if (fallbackOk && !fallbackMove.empty())
+						{
+							applyStructureMove(level, x, y, z, facing, pullDir, isSticky,
+								fallbackMove, fallbackDestroy, false);
+						}
+						else
+						{
+							stopSharingIfServer(level, armX, armY, armZ);
+							level->removeTile(armX, armY, armZ);
+						}
+					}
+					else
+					{
+						stopSharingIfServer(level, armX, armY, armZ);
+						level->removeTile(armX, armY, armZ);
+					}
+				}
+				else
+				{
+					stopSharingIfServer(level, armX, armY, armZ);
+					level->removeTile(armX, armY, armZ);
+				}
 			}
 			PIXEndNamedEvent();
 		}
@@ -453,13 +523,16 @@ int PistonBaseTile::getNewFacing(Level *level, int x, int y, int z, shared_ptr<L
 
 bool PistonBaseTile::isPushable(int block, Level *level, int cx, int cy, int cz, bool allowDestroyable)
 {
+	Tile *tile = Tile::tiles[block];
+	if (tile == nullptr) return false; // tu31 tutorial world fix
+
 	// special case for obsidian
 	if (block == Tile::obsidian_Id)
 	{
 		return false;
 	}
 
-	if (block == Tile::pistonBase_Id || block == Tile::pistonStickyBase_Id)
+	if (block == Tile::piston_Id || block == Tile::sticky_piston_Id)
 	{
 		// special case for piston bases
 		if (isExtended(level->getData(cx, cy, cz)))
@@ -469,17 +542,17 @@ bool PistonBaseTile::isPushable(int block, Level *level, int cx, int cy, int cz,
 	}
 	else
 	{
-		if (Tile::tiles[block]->getDestroySpeed(level, cx, cy, cz) == Tile::INDESTRUCTIBLE_DESTROY_TIME)
+		if (tile->getDestroySpeed(level, cx, cy, cz) == Tile::INDESTRUCTIBLE_DESTROY_TIME)
 		{
 			return false;
 		}
 
-		if (Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_BLOCK)
+		if (tile->getPistonPushReaction() == Material::PUSH_BLOCK)
 		{
 			return false;
 		}
 
-		if (Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_DESTROY)
+		if (tile->getPistonPushReaction() == Material::PUSH_DESTROY)
 		{
 			if(!allowDestroyable)
 			{
@@ -489,7 +562,7 @@ bool PistonBaseTile::isPushable(int block, Level *level, int cx, int cy, int cz,
 		}
 	}
 
-	if( Tile::tiles[block]->isEntityTile() )	// 4J - java uses instanceof EntityTile here
+	if( tile->isEntityTile() )	// 4J - java uses instanceof EntityTile here
 	{
 		// may not push tile entities
 		return false;
@@ -500,56 +573,199 @@ bool PistonBaseTile::isPushable(int block, Level *level, int cx, int cy, int cz,
 
 bool PistonBaseTile::canPush(Level *level, int sx, int sy, int sz, int facing)
 {
-	int cx = sx + Facing::STEP_X[facing];
-	int cy = sy + Facing::STEP_Y[facing];
-	int cz = sz + Facing::STEP_Z[facing];
+	std::vector<BlockPos3> toMove, toDestroy;
+	return collectStructure(level, facing,
+		sx + Facing::STEP_X[facing], sy + Facing::STEP_Y[facing], sz + Facing::STEP_Z[facing],
+		sx, sy, sz,
+		INT_MIN, 0, 0,
+		true,
+		toMove, toDestroy);
+}
 
-	for (int i = 0; i < MAX_PUSH_DEPTH + 1; i++)
+bool PistonBaseTile::collectStructure(Level *level, int moveDir,
+	int startX, int startY, int startZ,
+	int skipX, int skipY, int skipZ,
+	int skip2X, int skip2Y, int skip2Z,
+	bool allowDestroy,
+	std::vector<BlockPos3> &toMove,
+	std::vector<BlockPos3> &toDestroy)
+{
+	std::deque<BlockPos3> queue;
+	std::vector<BlockPos3> visited;
+
+	auto hasVisited = [&](int x, int y, int z) -> bool {
+		for (auto &v : visited) if (v.x == x && v.y == y && v.z == z) return true;
+		return false;
+	};
+	auto isSkipped = [&](int x, int y, int z) -> bool {
+		if (x == skipX && y == skipY && z == skipZ) return true;
+		if (x == skip2X && y == skip2Y && z == skip2Z) return true;
+		return false;
+	};
+
+	queue.push_back({startX, startY, startZ});
+
+	while (!queue.empty())
 	{
+		BlockPos3 pos = queue.front();
+		queue.pop_front();
 
-		if (cy <= 0 || cy >= (Level::maxBuildHeight - 1))
+		if (hasVisited(pos.x, pos.y, pos.z)) continue;
+		if (isSkipped(pos.x, pos.y, pos.z)) continue;
+		visited.push_back(pos);
+
+		if (pos.y <= 0 || pos.y >= (Level::maxBuildHeight - 1)) return false;
+		int minXZ = -(level->dimension->getXZSize() * 16) / 2;
+		int maxXZ = (level->dimension->getXZSize() * 16) / 2 - 1;
+		if (pos.x <= minXZ || pos.x >= maxXZ || pos.z <= minXZ || pos.z >= maxXZ) return false;
+
+		int block = level->getTile(pos.x, pos.y, pos.z);
+		if (block == 0) continue;
+
+		if (!isPushable(block, level, pos.x, pos.y, pos.z, allowDestroy)) return false;
+
+		int reaction = Tile::tiles[block]->getPistonPushReaction();
+
+		if (reaction == Material::PUSH_DESTROY)
 		{
-			// out of bounds
-			return false;
+			toDestroy.push_back(pos);
+			continue;
 		}
 
-		// 4J - added to also check for out of bounds in x/z for our finite world
-		int minXZ = - (level->dimension->getXZSize() * 16 ) / 2;
-		int maxXZ = (level->dimension->getXZSize() * 16 ) / 2 - 1;
-		if( ( cx <= minXZ ) || ( cx >= maxXZ ) || ( cz <= minXZ ) || ( cz >= maxXZ ) )
-		{
-			return false;
-		}
-		int block = level->getTile(cx, cy, cz);
-		if (block == 0)
-		{
-			break;
-		}
+		if ((int)toMove.size() >= MAX_PUSH_DEPTH) return false;
+		toMove.push_back(pos);
 
-		if (!isPushable(block, level, cx, cy, cz, true))
-		{
-			return false;
-		}
+		queue.push_back({pos.x + Facing::STEP_X[moveDir],
+		                 pos.y + Facing::STEP_Y[moveDir],
+		                 pos.z + Facing::STEP_Z[moveDir]});
 
-		if (Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_DESTROY)
+		if (reaction == Material::PUSH_SLIME)
 		{
-			break;
+			for (int d = 0; d < 6; d++)
+			{
+				if (d == moveDir) continue;
+				int nx = pos.x + Facing::STEP_X[d];
+				int ny = pos.y + Facing::STEP_Y[d];
+				int nz = pos.z + Facing::STEP_Z[d];
+				int neighborBlock = level->getTile(nx, ny, nz);
+				if (neighborBlock == 0) continue;
+				if (!isPushable(neighborBlock, level, nx, ny, nz, false)) continue;
+				queue.push_back({nx, ny, nz});
+			}
 		}
-
-		if (i == MAX_PUSH_DEPTH)
-		{
-			// we've reached the maximum push depth
-			// without finding air or a breakable block
-			return false;
-		}
-
-		cx += Facing::STEP_X[facing];
-		cy += Facing::STEP_Y[facing];
-		cz += Facing::STEP_Z[facing];
 	}
 
 	return true;
+}
 
+void PistonBaseTile::applyStructureMove(Level *level,
+	int pistonX, int pistonY, int pistonZ,
+	int facing, int moveDir, bool sticky,
+	std::vector<BlockPos3> &toMove,
+	std::vector<BlockPos3> &toDestroy,
+	bool isExtension)
+{
+	for (auto &dpos : toDestroy)
+	{
+		int block = level->getTile(dpos.x, dpos.y, dpos.z);
+		if (block > 0)
+		{
+			Tile::tiles[block]->spawnResources(level, dpos.x, dpos.y, dpos.z, level->getData(dpos.x, dpos.y, dpos.z), 0);
+			stopSharingIfServer(level, dpos.x, dpos.y, dpos.z);
+			level->removeTile(dpos.x, dpos.y, dpos.z);
+		}
+	}
+
+	int n = (int)toMove.size();
+	int armX = pistonX + Facing::STEP_X[facing];
+	int armY = pistonY + Facing::STEP_Y[facing];
+	int armZ = pistonZ + Facing::STEP_Z[facing];
+
+	if (n == 0)
+	{
+		if (isExtension)
+		{
+			int armData = facing | (sticky ? PistonExtensionTile::STICKY_BIT : 0);
+			stopSharingIfServer(level, armX, armY, armZ);
+			level->setTileAndData(armX, armY, armZ, Tile::piston_extension_Id, armData, Tile::UPDATE_NONE);
+			level->setTileEntity(armX, armY, armZ,
+				PistonMovingPiece::newMovingPieceEntity(Tile::piston_head_Id, armData, facing, true, false));
+		}
+		return;
+	}
+
+	std::vector<int> savedBlocks(n), savedDatas(n);
+	for (int i = 0; i < n; i++)
+	{
+		savedBlocks[i] = level->getTile(toMove[i].x, toMove[i].y, toMove[i].z);
+		savedDatas[i] = level->getData(toMove[i].x, toMove[i].y, toMove[i].z);
+	}
+
+	std::sort(toMove.begin(), toMove.end(),
+		[&](const BlockPos3 &a, const BlockPos3 &b) {
+			int da = a.x * Facing::STEP_X[moveDir] + a.y * Facing::STEP_Y[moveDir] + a.z * Facing::STEP_Z[moveDir];
+			int db = b.x * Facing::STEP_X[moveDir] + b.y * Facing::STEP_Y[moveDir] + b.z * Facing::STEP_Z[moveDir];
+			return da > db;
+		});
+
+	for (int i = 0; i < n; i++)
+	{
+		savedBlocks[i] = level->getTile(toMove[i].x, toMove[i].y, toMove[i].z);
+		savedDatas[i] = level->getData(toMove[i].x, toMove[i].y, toMove[i].z);
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		auto &pos = toMove[i];
+		int destX = pos.x + Facing::STEP_X[moveDir];
+		int destY = pos.y + Facing::STEP_Y[moveDir];
+		int destZ = pos.z + Facing::STEP_Z[moveDir];
+
+		stopSharingIfServer(level, destX, destY, destZ);
+		level->setTileAndData(destX, destY, destZ, Tile::piston_extension_Id, savedDatas[i], Tile::UPDATE_NONE);
+		level->setTileEntity(destX, destY, destZ,
+			PistonMovingPiece::newMovingPieceEntity(savedBlocks[i], savedDatas[i], facing, isExtension, false));
+	}
+
+	if (isExtension)
+	{
+		int armData = facing | (sticky ? PistonExtensionTile::STICKY_BIT : 0);
+		stopSharingIfServer(level, armX, armY, armZ);
+		level->setTileAndData(armX, armY, armZ, Tile::piston_extension_Id, armData, Tile::UPDATE_NONE);
+		level->setTileEntity(armX, armY, armZ,
+			PistonMovingPiece::newMovingPieceEntity(Tile::piston_head_Id, armData, facing, true, false));
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		auto &pos = toMove[i];
+
+		if (isExtension && pos.x == armX && pos.y == armY && pos.z == armZ)
+			continue;
+
+		int srcX = pos.x - Facing::STEP_X[moveDir];
+		int srcY = pos.y - Facing::STEP_Y[moveDir];
+		int srcZ = pos.z - Facing::STEP_Z[moveDir];
+		bool receivesBlock = false;
+		for (auto &src : toMove)
+		{
+			if (src.x == srcX && src.y == srcY && src.z == srcZ)
+			{
+				receivesBlock = true;
+				break;
+			}
+		}
+		if (!receivesBlock)
+		{
+			stopSharingIfServer(level, pos.x, pos.y, pos.z);
+			level->setTileAndData(pos.x, pos.y, pos.z, 0, 0, Tile::UPDATE_CLIENTS);
+		}
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		level->updateNeighborsAt(toMove[i].x, toMove[i].y, toMove[i].z, savedBlocks[i]);
+	}
 }
 
 void PistonBaseTile::stopSharingIfServer(Level *level, int x, int y, int z)
@@ -567,111 +783,20 @@ void PistonBaseTile::stopSharingIfServer(Level *level, int x, int y, int z)
 
 bool PistonBaseTile::createPush(Level *level, int sx, int sy, int sz, int facing)
 {
-	int cx = sx + Facing::STEP_X[facing];
-	int cy = sy + Facing::STEP_Y[facing];
-	int cz = sz + Facing::STEP_Z[facing];
+	std::vector<BlockPos3> toMove, toDestroy;
 
-	for (int i = 0; i < MAX_PUSH_DEPTH + 1; i++)
+	if (!collectStructure(level, facing,
+		sx + Facing::STEP_X[facing], sy + Facing::STEP_Y[facing], sz + Facing::STEP_Z[facing],
+		sx, sy, sz,
+		INT_MIN, 0, 0,
+		true,
+		toMove, toDestroy))
 	{
-		if (cy <= 0 || cy >= (Level::maxBuildHeight - 1))
-		{
-			// out of bounds
-			return false;
-		}
-
-		// 4J - added to also check for out of bounds in x/z for our finite world
-		int minXZ = - (level->dimension->getXZSize() * 16 ) / 2;
-		int maxXZ = (level->dimension->getXZSize() * 16 ) / 2 - 1;
-		if( ( cx <= minXZ ) || ( cx >= maxXZ ) || ( cz <= minXZ ) || ( cz >= maxXZ ) )
-		{
-			return false;
-		}
-
-		int block = level->getTile(cx, cy, cz);
-		if (block == 0)
-		{
-			break;
-		}
-
-		if (!isPushable(block, level, cx, cy, cz, true))
-		{
-			return false;
-		}
-
-		if (Tile::tiles[block]->getPistonPushReaction() == Material::PUSH_DESTROY)
-		{
-			// this block is destroyed when pushed
-			Tile::tiles[block]->spawnResources(level, cx, cy, cz, level->getData(cx, cy, cz), 0);
-			// setting the tile to air is actually superflous, but helps vs multiplayer problems
-			stopSharingIfServer(level, cx, cy, cz);	// 4J added
-			level->removeTile(cx, cy, cz);
-			break;
-		}
-
-		if (i == MAX_PUSH_DEPTH)
-		{
-			// we've reached the maximum push depth without finding air or a breakable block
-			return false;
-		}
-
-		cx += Facing::STEP_X[facing];
-		cy += Facing::STEP_Y[facing];
-		cz += Facing::STEP_Z[facing];
+		return false;
 	}
 
-	int ex = cx;
-	int ey = cy;
-	int ez = cz;
-	int count = 0;
-	int tiles[MAX_PUSH_DEPTH + 1];
-
-	while (cx != sx || cy != sy || cz != sz)
-	{
-
-		int nx = cx - Facing::STEP_X[facing];
-		int ny = cy - Facing::STEP_Y[facing];
-		int nz = cz - Facing::STEP_Z[facing];
-
-		int block = level->getTile(nx, ny, nz);
-		int data = level->getData(nx, ny, nz);
-
-		stopSharingIfServer(level, cx, cy, cz);	// 4J added
-
-		if (block == id && nx == sx && ny == sy && nz == sz)
-		{
-			level->setTileAndData(cx, cy, cz, Tile::pistonMovingPiece_Id, facing | (isSticky ? PistonExtensionTile::STICKY_BIT : 0), Tile::UPDATE_NONE);
-			level->setTileEntity(cx, cy, cz, PistonMovingPiece::newMovingPieceEntity(Tile::pistonExtensionPiece_Id, facing | (isSticky ? PistonExtensionTile::STICKY_BIT : 0), facing, true, false));
-		}
-		else
-		{
-			level->setTileAndData(cx, cy, cz, Tile::pistonMovingPiece_Id, data, Tile::UPDATE_NONE);
-			level->setTileEntity(cx, cy, cz, PistonMovingPiece::newMovingPieceEntity(block, data, facing, true, false));
-		}
-		tiles[count++] = block;
-
-		cx = nx;
-		cy = ny;
-		cz = nz;
-	}
-
-	cx = ex;
-	cy = ey;
-	cz = ez;
-	count = 0;
-
-	while (cx != sx || cy != sy || cz != sz)
-	{
-		int nx = cx - Facing::STEP_X[facing];
-		int ny = cy - Facing::STEP_Y[facing];
-		int nz = cz - Facing::STEP_Z[facing];
-
-		level->updateNeighborsAt(nx, ny, nz, tiles[count++]);
-
-		cx = nx;
-		cy = ny;
-		cz = nz;
-	}
+	applyStructureMove(level, sx, sy, sz, facing, facing, isSticky,
+		toMove, toDestroy, true);
 
 	return true;
-
 }

@@ -94,6 +94,7 @@ public:
 
 	bool readDLCDataFile(DWORD &dwFilesProcessed, const wstring &path, DLCPack *pack, bool fromArchive = false);
 	bool readDLCDataFile(DWORD &dwFilesProcessed, const string &path, DLCPack *pack, bool fromArchive = false);
+	bool readDLCDataFolder(DWORD &dwFilesProcessed, const wstring &path, DLCPack *pack);
 	DWORD retrievePackIDFromDLCDataFile(const string &path, DLCPack *pack);
 
 	static unsigned short SwapInt16(unsigned short value) {

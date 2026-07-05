@@ -1046,6 +1046,10 @@ int CMinecraftApp::SetDefaultOptions(C_4JProfile::PROFILESETTINGS *pSettings,con
 
 	//TU25
 	SetGameSettings(iPad, eGameSetting_ClassicCrafting, 0);
+	SetGameSettings(iPad, eGameSetting_CaveSounds, 1);
+
+	//TU34
+	SetGameSettings(iPad, eGameSetting_MinecartSounds, 1);
 
 	// 4J-PB - leave these in, or remove from everywhere they are referenced!
 	// Although probably best to leave in unless we split the profile settings into platform specific classes - having different meaning per platform for the same bitmask could get confusing
@@ -1481,6 +1485,7 @@ void CMinecraftApp::ApplyGameSettingsChanged(int iPad)
 	ActionGameSettings(iPad,eGameSetting_ControlScheme	);
 	ActionGameSettings(iPad,eGameSetting_ControlInvertLook);
 	ActionGameSettings(iPad,eGameSetting_ControlSouthPaw);
+	ActionGameSettings(iPad,eGameSetting_ControlType);
 	ActionGameSettings(iPad,eGameSetting_SplitScreenVertical);
 	ActionGameSettings(iPad,eGameSetting_GamertagsVisible);
 
@@ -1506,7 +1511,11 @@ void CMinecraftApp::ApplyGameSettingsChanged(int iPad)
 
 	//TU25
 	ActionGameSettings(iPad, eGameSetting_ClassicCrafting);
+	ActionGameSettings(iPad, eGameSetting_CaveSounds);
+	ActionGameSettings(iPad, eGameSetting_MinecartSounds);
 	ActionGameSettings(iPad, eGameSetting_HideSaveSizeBar);
+	ActionGameSettings(iPad, eGameSetting_SafeCam);
+	ActionGameSettings(iPad, eGameSetting_Swap);
 }
 
 void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
@@ -1763,6 +1772,18 @@ void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
 	case eGameSetting_HideSaveSizeBar:
 		//nothing to do here
 		break;
+	case eGameSetting_SafeCam:
+		{
+			int iVal = GetGameSettings(iPad, eGameSetting_SafeCam);
+			InputManager.SetButtonSwapEnabled(iPad, 0, iVal != 0);
+		}
+		break;
+	case eGameSetting_Swap:
+		{
+			int iVal = GetGameSettings(iPad, eGameSetting_Swap);
+			InputManager.SetButtonSwapEnabled(iPad, 1, iVal != 0);
+		}
+		break;
 	}
 }
 
@@ -1914,21 +1935,38 @@ void CMinecraftApp::ValidateFavoriteSkins(int iPad)
 
 	for(unsigned int i=0;i<uiCount;i++)
 	{
-		// get the pack number from the skin id
-		swprintf(chars, 256, L"dlcskin%08d.png", app.GetPlayerFavoriteSkin(iPad,i));
+		unsigned int uiFavoriteSkin = app.GetPlayerFavoriteSkin(iPad,i);
 
-		// Also check they haven't reverted to a trial pack
-		DLCPack *pDLCPack=app.m_dlcManager.getPackContainingSkin(chars);
-
-		if(pDLCPack!=nullptr)
+		if(uiFavoriteSkin == 0xFFFFFFFF)
 		{
-			// 4J-PB - We should let players add the free skins to their favourites as well!
-			//DLCFile *pDLCFile=pDLCPack->getFile(DLCManager::e_DLCType_Skin,chars);
-			DLCSkinFile *pSkinFile = pDLCPack->getSkinFile(chars);
+			continue;
+		}
 
-			if( pDLCPack->hasPurchasedFile(DLCManager::e_DLCType_Skin, L"") || (pSkinFile && pSkinFile->isFree()))
+		if(GET_IS_DLC_SKIN_FROM_BITMASK(uiFavoriteSkin))
+		{
+			// get the pack number from the skin id
+			swprintf(chars, 256, L"dlcskin%08d.png", GET_DLC_SKIN_ID_FROM_BITMASK(uiFavoriteSkin));
+
+			// Also check they haven't reverted to a trial pack
+			DLCPack *pDLCPack=app.m_dlcManager.getPackContainingSkin(chars);
+
+			if(pDLCPack!=nullptr)
 			{
-				GameSettingsA[iPad]->uiFavoriteSkinA[uiValidSkin++]=GameSettingsA[iPad]->uiFavoriteSkinA[i];
+				// 4J-PB - We should let players add the free skins to their favourites as well!
+				DLCSkinFile *pSkinFile = pDLCPack->getSkinFile(chars);
+
+				if( pDLCPack->hasPurchasedFile(DLCManager::e_DLCType_Skin, L"") || (pSkinFile && pSkinFile->isFree()))
+				{
+					GameSettingsA[iPad]->uiFavoriteSkinA[uiValidSkin++]=uiFavoriteSkin;
+				}
+			}
+		}
+		else
+		{
+			DWORD defaultSkinIndex = GET_DEFAULT_SKIN_ID_FROM_BITMASK(uiFavoriteSkin);
+			if(defaultSkinIndex < eDefaultSkins_Count)
+			{
+				GameSettingsA[iPad]->uiFavoriteSkinA[uiValidSkin++]=uiFavoriteSkin;
 			}
 		}
 	}
@@ -2134,6 +2172,14 @@ void CMinecraftApp::SetGameSettings(int iPad,eGameSetting eVal,unsigned char ucV
 			}
 			ActionGameSettings(iPad,eVal);
 			GameSettingsA[iPad]->bSettingsChanged=true;
+		}
+		break;
+	case eGameSetting_ControlType:
+		if((GameSettingsA[iPad]->uiBitmaskValues & 0x00070000) != ((ucVal & 0x07) << 16))
+		{
+			GameSettingsA[iPad]->uiBitmaskValues &= ~0x00070000;
+			GameSettingsA[iPad]->uiBitmaskValues |= (ucVal & 0x07) << 16;
+			GameSettingsA[iPad]->bSettingsChanged = true;
 		}
 		break;
 	case eGameSetting_SplitScreenVertical:
@@ -2520,6 +2566,36 @@ void CMinecraftApp::SetGameSettings(int iPad,eGameSetting eVal,unsigned char ucV
 			GameSettingsA[iPad]->bSettingsChanged = true;
 		}
 		break;
+	case eGameSetting_CaveSounds:
+		if ((GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_CAVESOUNDS) != (ucVal & 0x01) << 27)
+		{
+			if (ucVal == 1)
+			{
+				GameSettingsA[iPad]->uiBitmaskValues |= GAMESETTING_CAVESOUNDS;
+			}
+			else
+			{
+				GameSettingsA[iPad]->uiBitmaskValues &= ~GAMESETTING_CAVESOUNDS;
+			}
+			ActionGameSettings(iPad, eVal);
+			GameSettingsA[iPad]->bSettingsChanged = true;
+		}
+		break;
+	case eGameSetting_MinecartSounds:
+		if ((GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_MINECARTSOUNDS) != (ucVal & 0x01) << 28)
+		{
+			if (ucVal == 1)
+			{
+				GameSettingsA[iPad]->uiBitmaskValues |= GAMESETTING_MINECARTSOUNDS;
+			}
+			else
+			{
+				GameSettingsA[iPad]->uiBitmaskValues &= ~GAMESETTING_MINECARTSOUNDS;
+			}
+			ActionGameSettings(iPad, eVal);
+			GameSettingsA[iPad]->bSettingsChanged = true;
+		}
+		break;
 	case eGameSetting_HideSaveSizeBar:
 		if ((GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_HIDESAVESIZEBAR) != (ucVal & 0x01) << 27)
 		{
@@ -2530,6 +2606,36 @@ void CMinecraftApp::SetGameSettings(int iPad,eGameSetting eVal,unsigned char ucV
 			else
 			{
 				GameSettingsA[iPad]->uiBitmaskValues &= ~GAMESETTING_HIDESAVESIZEBAR;
+			}
+			ActionGameSettings(iPad, eVal);
+			GameSettingsA[iPad]->bSettingsChanged = true;
+		}
+		break;
+	case eGameSetting_SafeCam:
+		if ((GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_SAFECAM) != ((unsigned int)(ucVal & 0x01) << 30))
+		{
+			if (ucVal == 1)
+			{
+				GameSettingsA[iPad]->uiBitmaskValues |= GAMESETTING_SAFECAM;
+			}
+			else
+			{
+				GameSettingsA[iPad]->uiBitmaskValues &= ~GAMESETTING_SAFECAM;
+			}
+			ActionGameSettings(iPad, eVal);
+			GameSettingsA[iPad]->bSettingsChanged = true;
+		}
+		break;
+	case eGameSetting_Swap:
+		if ((GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_SWAP) != ((unsigned int)(ucVal & 0x01) << 31))
+		{
+			if (ucVal == 1)
+			{
+				GameSettingsA[iPad]->uiBitmaskValues |= GAMESETTING_SWAP;
+			}
+			else
+			{
+				GameSettingsA[iPad]->uiBitmaskValues &= ~GAMESETTING_SWAP;
 			}
 			ActionGameSettings(iPad, eVal);
 			GameSettingsA[iPad]->bSettingsChanged = true;
@@ -2547,6 +2653,11 @@ unsigned char CMinecraftApp::GetGameSettings(eGameSetting eVal)
 
 unsigned char CMinecraftApp::GetGameSettings(int iPad,eGameSetting eVal)
 {
+	if (iPad < 0 || iPad >= XUSER_MAX_COUNT || GameSettingsA[iPad] == nullptr)
+	{
+		return 0;
+	}
+
 	switch(eVal)
 	{
 	case eGameSetting_MusicVolume:
@@ -2673,6 +2784,12 @@ unsigned char CMinecraftApp::GetGameSettings(int iPad,eGameSetting eVal)
 	case eGameSetting_ClassicCrafting:
 		return (GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_CLASSICCRAFTING) >> 26;
 
+	case eGameSetting_CaveSounds:
+		return (GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_CAVESOUNDS) >> 27;
+
+	case eGameSetting_MinecartSounds:
+		return (GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_MINECARTSOUNDS) >> 28;
+
 	case eGameSetting_HideSaveSizeBar:
 		return (GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_HIDESAVESIZEBAR) >> 27;
 
@@ -2681,6 +2798,14 @@ unsigned char CMinecraftApp::GetGameSettings(int iPad,eGameSetting eVal)
 
 	case eGameSetting_ExclusiveFullscreen:
 		return (GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_EXCLUSIVEFULLSCREEN)>>25;
+	case eGameSetting_ControlType:
+		return (GameSettingsA[iPad]->uiBitmaskValues & 0x00070000) >> 16;
+
+	case eGameSetting_SafeCam:
+		return (GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_SAFECAM) >> 30;
+
+	case eGameSetting_Swap:
+		return (GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_SWAP) >> 31;
 
 	}
 	return 0;

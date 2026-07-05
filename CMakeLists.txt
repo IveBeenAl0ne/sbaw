@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
+cmake_policy(SET CMP0057 NEW)
 
 project(LCE-Revelations LANGUAGES C CXX RC ASM_MASM)
 set(CMAKE_CXX_STANDARD 17)
@@ -234,6 +235,8 @@ if(TARGET Minecraft.Server)
   add_dependencies(Minecraft.Server GenerateStringIdLookup)
 endif()
 
+# item.h takes priority as some tile.h blocks are not meant to be accessed
+# for example: the wheat 'block' (stage 1 wheat crop) is NOT supposed to override the normal wheat item
 set(_item_map_inputs
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.World/Item.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.World/Tile.h"

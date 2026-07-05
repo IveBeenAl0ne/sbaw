@@ -97,6 +97,7 @@
 
 #include "SignTile.h"
 #include "SkullTile.h"
+#include "SlimeTile.h"
 #include "SmoothStoneBrickTile.h"
 #include "SnowTile.h"
 #include "SoulSandTile.h"

@@ -13,6 +13,7 @@
 #include "../Minecraft.Client/ServerLevel.h"
 #include "com.mojang.nbt.h"
 #include "Minecart.h"
+#include "MinecartSoundInstance.h"
 #include "SharedConstants.h"
 
 
@@ -44,7 +45,8 @@ void Minecart::_init()
 	blocksBuilding = true;
 	setSize(0.98f, 0.7f);
 	heightOffset = bbHeight / 2.0f;
-	soundUpdater = nullptr;
+	m_rollingSound = nullptr;
+	m_ridingSound = nullptr;
 	name = L"";
 	//
 
@@ -61,26 +63,43 @@ Minecart::Minecart(Level *level) : Entity( level )
 
 Minecart::~Minecart()
 {
-	delete soundUpdater;
+	delete m_rollingSound;
+	delete m_ridingSound;
 }
 
 shared_ptr<Minecart> Minecart::createMinecart(Level *level, double x, double y, double z, int type)
 {
+	shared_ptr<Minecart> minecart;
+
 	switch (type)
 	{
 	case TYPE_CHEST:
-		return std::make_shared<MinecartChest>(level, x, y, z);
+		minecart = std::make_shared<MinecartChest>(level, x, y, z);
+		break;
 	case TYPE_FURNACE:
-		return std::make_shared<MinecartFurnace>(level, x, y, z);
+		minecart = std::make_shared<MinecartFurnace>(level, x, y, z);
+		break;
 	case TYPE_TNT:
-		return std::make_shared<MinecartTNT>(level, x, y, z);
+		minecart = std::make_shared<MinecartTNT>(level, x, y, z);
+		break;
 	case TYPE_SPAWNER:
-		return std::make_shared<MinecartSpawner>(level, x, y, z);
+		minecart = std::make_shared<MinecartSpawner>(level, x, y, z);
+		break;
 	case TYPE_HOPPER:
-		return std::make_shared<MinecartHopper>(level, x, y, z);
+		minecart = std::make_shared<MinecartHopper>(level, x, y, z);
+		break;
 	default:
-		return std::make_shared<MinecartRideable>(level, x, y, z);
+		minecart = std::make_shared<MinecartRideable>(level, x, y, z);
+		break;
 	}
+
+	if (level != nullptr && level->isClientSide)
+	{
+		minecart->m_rollingSound = new MinecartSoundInstance(minecart);
+		minecart->m_ridingSound = new RidingMinecartSoundInstance(minecart);
+	}
+
+	return minecart;
 }
 
 bool Minecart::makeStepSound()
@@ -207,11 +226,36 @@ bool Minecart::isPickable()
 void Minecart::remove()
 {
 	Entity::remove();
+	// clean up sounds after invalidation
+	if (m_rollingSound)
+	{
+		delete m_rollingSound;
+		m_rollingSound = nullptr;
+	}
+	if (m_ridingSound)
+	{
+		delete m_ridingSound;
+		m_ridingSound = nullptr;
+	}
 	//if (soundUpdater != nullptr) soundUpdater->tick();
 }
 
 void Minecart::tick()
 {
+	// minecart tick handler
+	if (level->isClientSide)
+	{
+		if (m_rollingSound)
+		{
+			m_rollingSound->tick();
+		}
+
+		if (m_ridingSound)
+		{
+			m_ridingSound->tick();
+		}
+	}
+
 	//if (soundUpdater != nullptr) soundUpdater->tick();
 	// 4J - make minecarts (server-side) tick twice, to put things back to how they were when we were accidently ticking them twice
 	for( int i = 0; i < 2; i++ )
@@ -313,7 +357,7 @@ void Minecart::tick()
 			int data = level->getData(xt, yt, zt);
 			moveAlongTrack(xt, yt, zt, max, slideSpeed, tile, data);
 
-			if (tile == Tile::activatorRail_Id)
+			if (tile == Tile::activator_rail_Id)
 			{
 				activateMinecart(xt, yt, zt, (data & BaseRailTile::RAIL_DATA_BIT) != 0);
 			}
@@ -410,7 +454,7 @@ void Minecart::moveAlongTrack(int xt, int yt, int zt, double maxSpeed, double sl
 
 	bool powerTrack = false;
 	bool haltTrack = false;
-	if (tile == Tile::goldenRail_Id)
+	if (tile == Tile::golden_rail_Id)
 	{
 		powerTrack = (data & BaseRailTile::RAIL_DATA_BIT) != 0;
 		haltTrack = !powerTrack;

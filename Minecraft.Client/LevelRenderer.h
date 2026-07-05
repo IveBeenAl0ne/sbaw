@@ -49,7 +49,7 @@ public:
     void doBarrierParticles(int posX, int posY, int posZ); 
 
 	static const int CHUNK_XZSIZE = 16;
-	static const int CHUNK_RENDER_LAYERS = 3;
+	static const int CHUNK_RENDER_LAYERS = 4;
 #ifdef _LARGE_WORLDS
 	static const int CHUNK_SIZE = 16;
 #else
@@ -286,9 +286,11 @@ public:
 	int *visibleLists_layer0;
 	int *visibleLists_layer1;
 	int *visibleLists_layer2;
+	int *visibleLists_layer3;
 	int visibleCount_layer0;
 	int visibleCount_layer1;
 	int visibleCount_layer2;
+	int visibleCount_layer3;
 
 	bool				dirtyChunkPresent;
 	int64_t				lastDirtyChunkFound;

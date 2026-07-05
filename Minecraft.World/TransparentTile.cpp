@@ -5,6 +5,7 @@
 TransparentTile::TransparentTile(int id, Material *material, bool allowSame, bool isSolidRender) : Tile(id, material,isSolidRender)
 {
 	this->allowSame = allowSame;
+	setLightBlock(1);
 }
 
 bool TransparentTile::isSolidRender(bool isServerLevel)

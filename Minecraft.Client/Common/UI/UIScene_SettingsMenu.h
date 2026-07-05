@@ -4,10 +4,9 @@
 
 #define BUTTON_ALL_OPTIONS				0
 #define BUTTON_ALL_AUDIO				1
-#define BUTTON_ALL_CONTROL				2
-#define BUTTON_ALL_GRAPHICS				4
-#define BUTTON_ALL_UI					5
-#define BUTTON_ALL_RESETTODEFAULTS		6
+#define BUTTON_ALL_GRAPHICS				3
+#define BUTTON_ALL_UI					4
+#define BUTTON_ALL_RESETTODEFAULTS		5
 #define BUTTONS_ALL_MAX			BUTTON_ALL_RESETTODEFAULTS + 1
 
 class UIScene_SettingsMenu : public UIScene
@@ -17,10 +16,9 @@ private:
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
 		UI_MAP_ELEMENT( m_buttons[BUTTON_ALL_OPTIONS], "Button1")
 		UI_MAP_ELEMENT( m_buttons[BUTTON_ALL_AUDIO], "Button2")
-		UI_MAP_ELEMENT( m_buttons[BUTTON_ALL_CONTROL], "Button3")
-		UI_MAP_ELEMENT( m_buttons[BUTTON_ALL_GRAPHICS], "Button4")
-		UI_MAP_ELEMENT( m_buttons[BUTTON_ALL_UI], "Button5")
-		UI_MAP_ELEMENT( m_buttons[BUTTON_ALL_RESETTODEFAULTS], "Button6")
+		UI_MAP_ELEMENT( m_buttons[BUTTON_ALL_GRAPHICS], "Button3")
+		UI_MAP_ELEMENT( m_buttons[BUTTON_ALL_UI], "Button4")
+		UI_MAP_ELEMENT( m_buttons[BUTTON_ALL_RESETTODEFAULTS], "Button5")
 	UI_END_MAP_ELEMENTS_AND_NAMES()
 public:
 	UIScene_SettingsMenu(int iPad, void *initData, UILayer *parentLayer);

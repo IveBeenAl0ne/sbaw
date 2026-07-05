@@ -626,37 +626,39 @@ so they can easily join you.
 	</data>	
 
 	<data name="IDS_HOW_TO_PLAY_WHATSNEW">
-		<value>{*T3*}Changes and Additions{*ETW*}{*B*}{*B*}
-- Added new items - Hardened Clay, Stained Clay, Block of Coal, Hay Bale, Activator Rail, Block of Redstone, Daylight Sensor, Dropper, Hopper, Minecart with Hopper, Minecart with TNT, Redstone Comparator, Weighted Pressure Plate, Beacon, Trapped Chest, Firework Rocket, Firework Star, Nether Star, Lead, Horse Armor, Name Tag, Horse Spawn Egg{*B*}
-- Added new Mobs - Wither, Wither Skeletons, Witches, Bats, Horses, Donkeys and Mules{*B*}
-- Added new terrain generation features - Witch Huts.{*B*}
-- Added Beacon interface.{*B*}
-- Added Horse interface.{*B*}
-- Added Hopper interface.{*B*}
-- Added Fireworks - Fireworks interface is accessible from the Crafting Table when you have the ingredients to craft a Firework Star or Firework Rocket.{*B*}
-- Added 'Adventure Mode' - You can only break blocks with the correct tools.{*B*}
-- Added lots of new sounds.{*B*}
-- Mobs, items and projectiles can now pass through portals.{*B*}
-- Repeaters can now be locked by powering their sides with another Repeater.{*B*}
-- Zombies and Skeletons can now spawn with different weapons and armor.{*B*}
-- New death messages.{*B*}
-- Name mobs with a Name Tag, and rename containers to change the title when the menu is open.{*B*}
-- Bonemeal no longer instantly grows everything to full size, and instead randomly grows in stages.{*B*}
-- A Redstone signal describing the contents of Chests, Brewing Stands, Dispensers and Jukeboxes can be detected by placing a Redstone Comparator directly against them.{*B*}
-- Dispensers can face in any direction.{*B*}
-- Eating a Golden Apple gives the player extra "absorption" health  for a short period.{*B*}
-- The longer you remain in an area the harder the monsters that spawn in that area will be.{*B*}
-</value>
+		<value>
+			{*T3*}Changes and Additions{*ETW*}{*B*}
+			{*T3*}neoLegacy v1.0.9b{*ETW*}{*B*}{*B*}
+			Additions{*B*}
+			- You can now copy and save various worlds on the LoadCreateJoin menu.{*B*}{*B*}
+			- Controller icons and in-game logos are now modifiable via a slider in 'User Interface' menu Changes{*B*}{*B*}
+			- Skin Select menu has been updated in order to achieve parity with TU36+{*B*}{*B*}
+			- Controls menu has been updated.{*B*}{*B*}
+			- Tutorial world has been updated to version TU31.{*B*}{*B*}
+			- Settings menus are now wider to match the ones from TU31{*B*}{*B*}
+			- In-game music now fades when leaving / joining a world.{*B*}{*B*}
+			- World size is now displayed correctly on the worlds-list menu.{*B*}{*B*}
+			- The LoadCreateJoin menu no longer features an infinite spinner object.{*B*}{*B*}
+		</value>
 	</data>	
 
 	<data name="IDS_TITLEUPDATE">
-		<value>{*ETB*}Welcome back! You may not have noticed but your Minecraft has just been updated.{*B*}{*B*}
-There are lots of new features for you and friends to play with so here’s just a few highlights. Have a read and then go and have fun!{*B*}{*B*}
-{*T1*}New Items{*ETB*} - Hardened Clay, Stained Clay, Block of Coal, Hay Bale, Activator Rail, Block of Redstone, Daylight Sensor, Dropper, Hopper, Minecart with Hopper, Minecart with TNT, Redstone Comparator, Weighted Pressure Plate, Beacon, Trapped Chest, Firework Rocket, Firework Star, Nether Star, Lead, Horse Armor, Name Tag, Horse Spawn Egg{*B*}{*B*}
-{*T1*}New Mobs{*ETB*} - Wither, Wither Skeletons, Witches, Bats, Horses, Donkeys and Mules{*B*}{*B*}
-{*T1*}New Features{*ETB*} -  Tame and ride a horse, craft fireworks and put on a show, name animals and monsters with a Name Tag, create more advanced Redstone circuits, and new Host Options to help control what guests to your world can do!{*B*}{*B*}
-{*T1*}New Tutorial World{*ETB*} – Learn how to use the old and new features in the Tutorial World. See if you can find all the secret Music Discs hidden in the world!{*B*}{*B*}
-    </value>
+		<value>
+			Welcome back! You may not have noticed, but your Minecraft has just been updated.
+			{*T3*}neoLegacy v1.0.9b{*ETW*}
+			Additions
+			- You can now copy and save various worlds on the LoadCreateJoin menu.
+			- Controller icons and in-game logos are now modifiable via a slider in 'User Interface' menu.
+			Changes
+			- Skin Select menu has been updated in order to achieve parity with TU36+
+			- Controls menu has been updated.
+			- Tutorial world has been updated to version TU31.
+			- Settings menus are now wider to match the ones from TU31+
+			Bug Fixes
+			- In-game music now fades when leaving / joining a world.
+			- World size is now displayed correctly on the worlds-list menu.
+			- The LoadCreateJoin menu no longer features an infinite spinner object.
+		</value>
 	</data>	
 
 	<data name="IDS_HOW_TO_PLAY_MENU_HORSES">
@@ -1300,6 +1302,10 @@ Can also be used for low-level lighting.</value>
 	<data name="IDS_DESC_STONE">
 		<value>Can be mined with a pickaxe to collect cobblestone.</value>
 	</data>	
+
+	<data name="IDS_DESC_SLIME_BLOCK">
+		<value>Causes players and mobs to bounce when they jump on it.</value>
+	</data>
 
 	<data name="IDS_DESC_DIRT">
 		<value>Collected using a shovel. Can be used for construction.</value>
@@ -2948,6 +2954,10 @@ Can also be used for low-level lighting.</value>
 	<data name="IDS_TILE_STONE">
 		<value>Stone</value>
 	</data>	
+
+	<data name="IDS_TILE_SLIME_BLOCK">
+		<value>Slime Block</value>
+	</data>
 
 	<data name="IDS_TILE_GRASS">
 		<value>Grass Block</value>
@@ -6104,6 +6114,10 @@ Would you like to unlock the full game now?</value>
 		<value>Difficulty</value>
 	</data>	
 
+	<data name="IDS_SLIDER_CONTROLTYPE">
+		<value>Control Type</value>
+	</data>
+
 	<data name="IDS_SLIDER_MUSIC">
 		<value>Music</value>
 	</data>	
@@ -6139,6 +6153,38 @@ Would you like to unlock the full game now?</value>
 	<data name="IDS_DIFFICULTY_TITLE_HARD">
 		<value>Hard</value>
 	</data>	
+
+	<data name="IDS_CONTROLTYPE_KBM">
+		<value>Keyboard &amp; Mouse</value>
+	</data>
+
+	<data name="IDS_CONTROLTYPE_XBOXONE">
+		<value>Xbox One</value>
+	</data>
+
+	<data name="IDS_CONTROLTYPE_XBOX360">
+		<value>Xbox 360</value>
+	</data>
+
+	<data name="IDS_CONTROLTYPE_VITA">
+		<value>PlayStation Vita</value>
+	</data>
+
+	<data name="IDS_CONTROLTYPE_PLAYSTATION3">
+		<value>PlayStation 3</value>
+	</data>
+
+	<data name="IDS_CONTROLTYPE_PLAYSTATION4">
+		<value>PlayStation 4</value>
+	</data>
+
+	<data name="IDS_CONTROLTYPE_WIIU">
+		<value>Wii U</value>
+	</data>
+
+	<data name="IDS_CONTROLTYPE_SWITCH">
+		<value>Nintendo Switch</value>
+	</data>
 
 	<data name="IDS_DIFFICULTY_PEACEFUL">
 		<value>In this mode, the player regains health over time, and there are no enemies in the environment.</value>
@@ -6577,6 +6623,14 @@ Would you like to install the mash-up pack or texture pack now?</value>
 	<data name="IDS_CHECKBOX_RENDER_CLOUDS">
 		<value>Render Clouds</value>
 	</data>	
+
+	<data name="IDS_CHECKBOX_CAVE_SOUNDS">
+		<value>Cave Sounds</value>
+	</data>
+
+	<data name="IDS_CHECKBOX_MINECART_SOUNDS">
+		<value>Minecart Sounds</value>
+	</data>
 
 	<data name="IDS_TEXT_SAVEOPTIONS">
 		<value>What would you like to do with this save game?</value>
@@ -7482,7 +7536,7 @@ Would you like to install the mash-up pack or texture pack now?</value>
 	</data>	
 
 	<data name="IDS_OPTIONS">
-		<value>Options</value>
+		<value>Game Options</value>
 	</data>	
 
 	<data name="IDS_AUDIO">
@@ -7518,7 +7572,7 @@ Would you like to install the mash-up pack or texture pack now?</value>
 	</data>	
 
 	<data name="IDS_CHECKBOX_VERTICAL_SPLIT_SCREEN">
-		<value>2 Player Split-screen Vertical</value>
+		<value>Vertical Splitscreen</value>
 	</data>	
 
 	<data name="IDS_DONE">
@@ -9573,5 +9627,41 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 
 	<data name="IDS_DESC_RABBIT_STEW">
 		<value>Restores 5{*ICON_SHANK_01*}.</value>
+	</data>
+
+	<data name="IDS_SAFE_SPRINT">
+		<value>Safe Sprint</value>]
+	</data>
+
+	<data name="IDS_SWAP">
+		<value>Swap</value>
+	</data>
+
+	<data name="IDS_COPYSAVE">
+		<value>Copy Save</value>
+	</data>
+	
+	<data name="IDS_TEXT_COPY_SAVE">
+		<value>Are you sure you want to copy this save game?</value>
+	</data>
+
+	<data name="IDS_PROGRESS_COPYING_SAVE">
+		<value>Copying Save</value>
+	</data>
+	
+	<data name="IDS_TEXTURE_PACK">
+		<value>Texture Pack</value>
+	</data>
+	
+	<data name="IDS_SKIN_PACK">
+		<value>Skin Pack</value>
+	</data>
+
+	<data name="IDS_TOOLTIPS_ADD_FAVORITE">
+		<value>Add Favorite</value>
+	</data>
+
+    <data name="IDS_TOOLTIPS_REMOVE_FAVORITE">
+		<value>Remove Favorite</value>
 	</data>
 </root>

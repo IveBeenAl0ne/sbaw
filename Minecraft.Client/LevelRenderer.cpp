@@ -66,6 +66,7 @@
 #include "FrustumCuller.h"
 #include "../Minecraft.World/BasicTypeContainers.h"
 #include "Common/UI/UIScene_SettingsGraphicsMenu.h"	
+#include "ParticleUtils.h"
 #include <unordered_set>
 
 //#define DISABLE_SPU_CODE
@@ -166,9 +167,11 @@ LevelRenderer::LevelRenderer(Minecraft *mc, Textures *textures)
 	visibleLists_layer0 = nullptr;
 	visibleLists_layer1 = nullptr;
 	visibleLists_layer2 = nullptr;
+	visibleLists_layer3 = nullptr;
 	visibleCount_layer0 = 0;
 	visibleCount_layer1 = 0;
 	visibleCount_layer2 = 0;
+	visibleCount_layer3 = 0;
 
 	this->mc = mc;
 	this->textures = textures;
@@ -473,9 +476,11 @@ void LevelRenderer::allChanged(int playerIndex)
 	delete[] visibleLists_layer0;
 	delete[] visibleLists_layer1;
 	delete[] visibleLists_layer2;
+	delete[] visibleLists_layer3;
 	visibleLists_layer0 = nullptr;
 	visibleLists_layer1 = nullptr;
 	visibleLists_layer2 = nullptr;
+	visibleLists_layer3 = nullptr;
 
 	chunks[playerIndex] = ClipChunkArray(xChunks * yChunks * zChunks);
 	//	sortedChunks[playerIndex] = new vector<Chunk *>(xChunks * yChunks * zChunks);		// 4J - removed - not sorting our chunks anymore
@@ -514,9 +519,11 @@ void LevelRenderer::allChanged(int playerIndex)
 	visibleLists_layer0 = new int[totalChunkCount];
 	visibleLists_layer1 = new int[totalChunkCount];
 	visibleLists_layer2 = new int[totalChunkCount];
+	visibleLists_layer3 = new int[totalChunkCount];
 	visibleCount_layer0 = 0;
 	visibleCount_layer1 = 0;
 	visibleCount_layer2 = 0;
+	visibleCount_layer3 = 0;
 
 	if (level != nullptr)
 	{
@@ -810,6 +817,11 @@ void LevelRenderer::renderChunksDirect(int layer, double alpha)
 		lists = visibleLists_layer1;
 		numVisible = visibleCount_layer1;
 	}
+	else if (layer == 3)
+	{
+		lists = visibleLists_layer3;
+		numVisible = visibleCount_layer3;
+	}
 	bool first = true;
 	if (lists != nullptr)
 	{
@@ -908,6 +920,11 @@ int LevelRenderer::renderChunks(int from, int to, int layer, double alpha)
 	{
 		lists = visibleLists_layer1;
 		numVisible = visibleCount_layer1;
+	}
+	else if (layer == 3)
+	{
+		lists = visibleLists_layer3;
+		numVisible = visibleCount_layer3;
 	}
 	if (lists != nullptr)
 	{
@@ -2684,6 +2701,7 @@ void LevelRenderer::cull(Culler *culler, float a)
 	visibleCount_layer0 = 0;
 	visibleCount_layer1 = 0;
 	visibleCount_layer2 = 0;
+	visibleCount_layer3 = 0;
 
 	// Column-level frustum culling: test one AABB per XZ column before testing individual Y chunks.
 	// At dist 64 this reduces ~278K clip() calls to ~17K column tests + per-chunk tests only for visible columns.
@@ -2743,6 +2761,7 @@ void LevelRenderer::cull(Culler *culler, float a)
 					if (!((flags & CHUNK_FLAG_EMPTY1) == CHUNK_FLAG_EMPTY1))
 						visibleLists_layer1[visibleCount_layer1++] = list + 1;
 					visibleLists_layer2[visibleCount_layer2++] = list + 2;
+					visibleLists_layer3[visibleCount_layer3++] = list + 3;
 				}
 			}
 		}
@@ -2821,9 +2840,9 @@ else if (name== L"footstep") mc->particleEngine->add(shared_ptr<FootstepParticle
 else if (name== L"splash") mc->particleEngine->add(shared_ptr<SplashParticle>( new SplashParticle(level[playerIndex], x, y, z, xa, ya, za) ) );
 else if (name== L"largesmoke") mc->particleEngine->add(shared_ptr<SmokeParticle>( new SmokeParticle(level[playerIndex], x, y, z, xa, ya, za, 2.5f) ) );
 else if (name== L"reddust") mc->particleEngine->add(shared_ptr<RedDustParticle>( new RedDustParticle(level[playerIndex], x, y, z, (float) xa, (float) ya, (float) za) ) );
-else if (name== L"snowballpoof") mc->particleEngine->add(shared_ptr<BreakingItemParticle>( new BreakingItemParticle(level[playerIndex], x, y, z, Item::snowBall) ) );
+else if (name== L"snowballpoof") mc->particleEngine->add(shared_ptr<BreakingItemParticle>( new BreakingItemParticle(level[playerIndex], x, y, z, Item::snowball) ) );
 else if (name== L"snowshovel") mc->particleEngine->add(shared_ptr<SnowShovelParticle>( new SnowShovelParticle(level[playerIndex], x, y, z, xa, ya, za) ) );
-else if (name== L"slime") mc->particleEngine->add(shared_ptr<BreakingItemParticle>( new BreakingItemParticle(level[playerIndex], x, y, z, Item::slimeBall)) ) ;
+else if (name== L"slime") mc->particleEngine->add(shared_ptr<BreakingItemParticle>( new BreakingItemParticle(level[playerIndex], x, y, z, Item::slime_ball)) ) ;
 else if (name== L"heart") mc->particleEngine->add(shared_ptr<HeartParticle>( new HeartParticle(level[playerIndex], x, y, z, xa, ya, za) ) );
 }
 */
@@ -2835,7 +2854,7 @@ void LevelRenderer::addParticle(ePARTICLE_TYPE eParticleType, double x, double y
 
 shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticleType, double x, double y, double z, double xa, double ya, double za)
 {
-	if (mc == nullptr || mc->cameraTargetPlayer == nullptr || mc->particleEngine == nullptr)
+	if (mc == nullptr || mc->cameraTargetPlayer == nullptr || mc->particleEngine == nullptr || mc->options == nullptr)
 	{
 		return nullptr;
 	}
@@ -2845,18 +2864,46 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 	if( Double::isNaN(x) ) return nullptr;
 	if( Double::isNaN(y) ) return nullptr;
 	if( Double::isNaN(z) ) return nullptr;
+	if( Double::isNaN(xa) ) return nullptr;
+	if( Double::isNaN(ya) ) return nullptr;
+	if( Double::isNaN(za) ) return nullptr;
 
 	int particleLevel = mc->options->particles;
 
-	Level *lev;
-	int playerIndex = mc->player->GetXboxPad();	// 4J added
-	lev = level[playerIndex];
+	Level *lev = nullptr;
+	int playerIndex = -1;
 
-	if (particleLevel == 1)
+	shared_ptr<LocalPlayer> sourcePlayer = mc->player;
+	if (sourcePlayer == nullptr && mc->cameraTargetPlayer != nullptr)
+	{
+		sourcePlayer = dynamic_pointer_cast<LocalPlayer>(mc->cameraTargetPlayer);
+	}
+	if (sourcePlayer != nullptr)
+	{
+		playerIndex = sourcePlayer->GetXboxPad();
+		if (playerIndex >= 0 && playerIndex < XUSER_MAX_COUNT && isReasonableLevelPointer(level[playerIndex]) && level[playerIndex]->dimension != nullptr)
+		{
+			lev = level[playerIndex];
+		}
+	}
+
+	if (lev == nullptr)
+	{
+		for (unsigned int i = 0; i < XUSER_MAX_COUNT; ++i)
+		{
+			if (mc->localplayers[i] != nullptr && isReasonableLevelPointer(mc->localplayers[i]->level) && mc->localplayers[i]->level->dimension != nullptr)
+			{
+				lev = mc->localplayers[i]->level;
+				break;
+			}
+		}
+	}
+
+	if (particleLevel == 1 && lev != nullptr)
 	{
 		// when playing at "decreased" particle level, randomly filter
 		// particles by setting the level to "minimal"
-		if (level[playerIndex]->random->nextInt(3) == 0)
+		if (lev->random->nextInt(3) == 0)
 		{
 			particleLevel = 2;
 		}
@@ -2902,6 +2949,42 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 	{
 		lev =  mc->animateTickLevel;
 	}
+
+	if (lev == nullptr)
+		return nullptr;
+
+	if (!isReasonableLevelPointer(lev) || !isReasonableDimensionPointer(lev->dimension))
+		return nullptr;
+
+	bool levIsKnown = false;
+	if (lev == mc->level || lev == mc->animateTickLevel)
+	{
+		levIsKnown = true;
+	}
+	else
+	{
+		for (unsigned int i = 0; i < XUSER_MAX_COUNT && !levIsKnown; ++i)
+		{
+			if (mc->localplayers[i] != nullptr && mc->localplayers[i]->level == lev && isReasonableLevelPointer(mc->localplayers[i]->level) && mc->localplayers[i]->level->dimension != nullptr)
+			{
+				levIsKnown = true;
+			}
+		}
+		for (int i = 0; i < 4 && !levIsKnown; ++i)
+		{
+			if (this->level[i] == lev && isReasonableLevelPointer(this->level[i]) && this->level[i]->dimension != nullptr)
+			{
+				levIsKnown = true;
+			}
+		}
+	}
+	if (!levIsKnown)
+	{
+		return nullptr;
+	}
+
+	if (lev->dimension == nullptr)
+		return nullptr;
 
 	if (particleLevel > 1)
 	{
@@ -3048,7 +3131,7 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 		particle = std::make_shared<RedDustParticle>(lev, x, y, z, static_cast<float>(xa), static_cast<float>(ya), static_cast<float>(za));
 		break;
 	case eParticleType_snowballpoof:
-		particle = std::make_shared<BreakingItemParticle>(lev, x, y, z, Item::snowBall, textures);
+		particle = std::make_shared<BreakingItemParticle>(lev, x, y, z, Item::snowball, textures);
 		break;
 	case eParticleType_dripWater:
 		particle = std::make_shared<DripParticle>(lev, x, y, z, Material::water);
@@ -3060,7 +3143,7 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 		particle = std::make_shared<SnowShovelParticle>(lev, x, y, z, xa, ya, za);
 		break;
 	case eParticleType_slime:
-		particle = std::make_shared<BreakingItemParticle>(lev, x, y, z, Item::slimeBall, textures);
+		particle = std::make_shared<BreakingItemParticle>(lev, x, y, z, Item::slime_ball, textures);
 		break;
 	case eParticleType_heart:
 		particle = std::make_shared<HeartParticle>(lev, x, y, z, xa, ya, za);
@@ -3341,7 +3424,7 @@ void LevelRenderer::levelEvent(shared_ptr<Player> source, int type, int x, int y
 			double yp = y;
 			double zp = z + 0.5;
 
-			ePARTICLE_TYPE particle = PARTICLE_ICONCRACK(Item::eyeOfEnder->id,0);
+			ePARTICLE_TYPE particle = PARTICLE_ICONCRACK(Item::eye_of_ender->id,0);
 			for (int i = 0; i < 8; i++)
 			{
 				addParticle(particle, xp, yp, zp, random->nextGaussian() * 0.15, random->nextDouble() * 0.2, random->nextGaussian() * .15);
@@ -4018,7 +4101,7 @@ int LevelRenderer::checkAllPresentChunks(bool *faultFound)
 					for( int cz = 4; cz <= 12; cz++ )
 					{
 						int t0 = levelChunk->getTile(cx, 0, cz);
-						if( ( t0 != Tile::unbreakable_Id ) && (t0 != Tile::dirt_Id) )
+						if( ( t0 != Tile::bedrock_Id ) && (t0 != Tile::dirt_Id) )
 						{
 							*faultFound = true;
 						}

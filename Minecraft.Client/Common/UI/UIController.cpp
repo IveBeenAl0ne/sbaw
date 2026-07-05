@@ -187,6 +187,61 @@ static void RADLINK DeallocateFunction ( void * alloc_callback_user_data , void 
 	LeaveCriticalSection(&controller->m_Allocatorlock);
 }
 
+#ifdef _WINDOWS64
+static wstring GetControlTypeSkinPath(int controlType, bool hd)
+{
+	const wchar_t *skinName = L"windows"; // default to windows if control type is unknown
+
+	switch(controlType)
+	{
+	case 0:
+		skinName = L"windows";
+		break;
+	case 1:
+		skinName = L"xboxOne";
+		break;
+	case 2:
+		skinName = L"xbox360";
+		break;
+	case -1:
+		skinName = L"vita"; // not implemented yet
+		break;
+	case 3:
+		skinName = L"PS3";
+		break;
+	case 4:
+		skinName = L"PS4";
+		break;
+	case 5:
+		skinName = L"WiiU";
+		break;
+	case -2:
+		skinName = L"Switch"; // not implemented yet
+		break;
+	default:
+		break;
+	}
+
+	if(skinName == L"windows") {
+		if (hd)
+		{
+			return L"skinHDWin.swf";
+		}
+
+		return L"skinWin.swf";
+	}
+	else 
+	{
+		if(hd)
+		{
+			return wstring(L"Graphics\\ControlType\\HD\\") + skinName + L"HD.swf";
+		}
+
+		return wstring(L"Graphics\\ControlType\\") + skinName + L".swf";
+	}
+}
+#endif
+
 UIController::UIController()
 {
 	m_uiDebugConsole = nullptr;
@@ -199,6 +254,14 @@ UIController::UIController()
 	m_moj7 = nullptr;
 	m_moj11 = nullptr;
 	m_unicodeBitmapFont = nullptr;
+
+#ifdef _WINDOWS64
+	m_savedPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_savedPlatformSkin = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkin = IGGY_INVALID_LIBRARY;
+	m_platformSkinOverrideDepth = 0;
+#endif
 
 	// 4J-JEV: It's important that these remain the same, unless updateCurrentLanguage is going to be called.
 	m_eCurrentFont = m_eTargetFont = eFont_NotLoaded;
@@ -583,10 +646,26 @@ void UIController::loadSkins()
 	m_iggyLibraries[eLibrary_Default] = loadSkin(L"skin.swf", L"skin.swf");
 
 #elif defined _WINDOWS64
-	// HD platform skin — required by skinHD*.swf (1080p scene SWFs)
-	m_iggyLibraries[eLibrary_Platform] = loadSkin(L"skinHDWin.swf", L"platformskinHD.swf");
-	// Non-HD platform skin — required by skin*.swf (720p/480p scene SWFs)
-	m_iggyLibraries[eLibraryFallback_Platform] = loadSkin(L"skinWin.swf", L"platformskin.swf");
+	// emulate control type skins
+	const int controlType = app.GetGameSettings(ProfileManager.GetPrimaryPad(), eGameSetting_ControlType);
+	wstring platformSkinHD = GetControlTypeSkinPath(controlType, true);
+	wstring platformSkin = GetControlTypeSkinPath(controlType, false);
+
+	m_iggyLibraries[eLibrary_Platform] = loadSkin(platformSkinHD, L"platformskinHD.swf");
+	if(m_iggyLibraries[eLibrary_Platform] == IGGY_INVALID_LIBRARY)
+	{
+		m_iggyLibraries[eLibrary_Platform] = loadSkin(platformSkin, L"platformskinHD.swf");
+	}
+
+	m_iggyLibraries[eLibraryFallback_Platform] = loadSkin(platformSkin, L"platformskin.swf");
+	if(m_iggyLibraries[eLibraryFallback_Platform] == IGGY_INVALID_LIBRARY)
+	{
+		m_iggyLibraries[eLibraryFallback_Platform] = loadSkin(L"Graphics\\ControlType\\windows.swf", L"platformskin.swf");
+	}
+	if(m_iggyLibraries[eLibrary_Platform] == IGGY_INVALID_LIBRARY)
+	{
+		m_iggyLibraries[eLibrary_Platform] = loadSkin(L"Graphics\\ControlType\\HD\\windowsHD.swf", L"platformskin.swf");
+	}
 
 	// Non-HD skin set (720p/480p scenes import these)
 	m_iggyLibraries[eLibraryFallback_GraphicsDefault] = loadSkin(L"skinGraphics.swf", L"skinGraphics.swf");
@@ -708,6 +787,14 @@ void UIController::ReloadSkin()
 	}
 
 #ifdef _WINDOWS64
+	m_savedPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_savedPlatformSkin = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkin = IGGY_INVALID_LIBRARY;
+	m_platformSkinOverrideDepth = 0;
+#endif
+
+#ifdef _WINDOWS64
 	// 4J Stu - Don't load on a thread on windows. I haven't investigated this in detail, so a quick fix
 	reloadSkinThreadProc(this);
 #else
@@ -737,6 +824,70 @@ void UIController::StartReloadSkinThread()
 {
 	if(m_reloadSkinThread) m_reloadSkinThread->Run();
 }
+
+#ifdef _WINDOWS64
+void UIController::PushDefaultPlatformSkinForPanorama()
+{
+	if(m_platformSkinOverrideDepth++ > 0)
+	{
+		return;
+	}
+
+	m_savedPlatformSkinHD = m_iggyLibraries[eLibrary_Platform];
+	m_savedPlatformSkin = m_iggyLibraries[eLibraryFallback_Platform];
+	m_panoramaPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	m_panoramaPlatformSkin = IGGY_INVALID_LIBRARY;
+
+	const wstring defaultHd = L"Graphics\\ControlType\\HD\\windowsHD.swf";
+	const wstring defaultSd = L"Graphics\\ControlType\\windows.swf";
+
+	IggyLibrary hdLib = loadSkin(defaultHd, L"platformskinHD.swf");
+	if(hdLib != IGGY_INVALID_LIBRARY)
+	{
+		m_panoramaPlatformSkinHD = hdLib;
+		m_iggyLibraries[eLibrary_Platform] = hdLib;
+	}
+
+	IggyLibrary sdLib = loadSkin(defaultSd, L"platformskin.swf");
+	if(sdLib != IGGY_INVALID_LIBRARY)
+	{
+		m_panoramaPlatformSkin = sdLib;
+		m_iggyLibraries[eLibraryFallback_Platform] = sdLib;
+	}
+}
+
+void UIController::PopDefaultPlatformSkinForPanorama()
+{
+	if(m_platformSkinOverrideDepth == 0)
+	{
+		return;
+	}
+	if(--m_platformSkinOverrideDepth > 0)
+	{
+		return;
+	}
+
+	if(m_panoramaPlatformSkinHD != IGGY_INVALID_LIBRARY)
+	{
+		IggyLibraryDestroy(m_panoramaPlatformSkinHD);
+		m_panoramaPlatformSkinHD = IGGY_INVALID_LIBRARY;
+	}
+	if(m_panoramaPlatformSkin != IGGY_INVALID_LIBRARY)
+	{
+		IggyLibraryDestroy(m_panoramaPlatformSkin);
+		m_panoramaPlatformSkin = IGGY_INVALID_LIBRARY;
+	}
+
+	if(m_savedPlatformSkinHD != IGGY_INVALID_LIBRARY)
+	{
+		m_iggyLibraries[eLibrary_Platform] = m_savedPlatformSkinHD;
+	}
+	if(m_savedPlatformSkin != IGGY_INVALID_LIBRARY)
+	{
+		m_iggyLibraries[eLibraryFallback_Platform] = m_savedPlatformSkin;
+	}
+}
+#endif
 
 int UIController::reloadSkinThreadProc(void* lpParam)
 {
@@ -950,6 +1101,9 @@ void UIController::tickInput()
 						panelOffsetY = pMainPanel->getYPos();
 					}
 
+					bool leftPressed = g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT);
+					bool leftDown = leftPressed || g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT);
+
 					// Mouse hover — hit test against C++ control bounds.
 					// Simple controls use SetFocusToElement; list controls
 					// use their own SetTouchFocus for Flash-side hit testing.
@@ -999,16 +1153,34 @@ void UIController::tickInput()
 									{
 										// ButtonList manages focus internally via Flash —
 										// pass mouse coords so it can highlight the right item.
-										S32 adjustedMouseY = static_cast<S32>(sceneMouseY);
-										if (pScene->getSceneType() == eUIScene_LoadCreateJoinMenu)
+											S32 adjustedMouseY = static_cast<S32>(sceneMouseY);
+											if (pScene->getSceneType() == eUIScene_LoadCreateJoinMenu)
+											{
+												const S32 visibleRows = 7;
+												const S32 rowHeight = (visibleRows > 0) ? (ch / visibleRows) : 0;
+												if (rowHeight > 0)
+													adjustedMouseY -= rowHeight;
+											}
+										UIControl_MultiList *pMulti = dynamic_cast<UIControl_MultiList*>(ctrl);
+										if (pMulti)
 										{
-											const S32 visibleRows = 7;
-											const S32 rowHeight = (visibleRows > 0) ? (ch / visibleRows) : 0;
-											if (rowHeight > 0)
-												adjustedMouseY -= rowHeight;
+											S32 adjustedY = static_cast<S32>(sceneMouseY);
+											if (pScene->getSceneType() == eUIScene_LoadMenu)
+											{
+												const S32 visibleRows = 7;
+												const S32 rowHeight = (visibleRows > 0) ? (ch / visibleRows) : 0;
+												if (rowHeight > 0)
+													adjustedY -= (rowHeight * 2);
+											}
+
+											S32 localX = static_cast<S32>(sceneMouseX) - cx;
+											pMulti->SetTouchFocus(localX, adjustedY, leftDown);
 										}
+										else
+										{
 										static_cast<UIControl_ButtonList*>(ctrl)->SetTouchFocus(
-											static_cast<S32>(sceneMouseX), adjustedMouseY, false);
+											static_cast<S32>(sceneMouseX), adjustedMouseY, leftDown);
+										}
 										hitControlId = -1;
 										hitArea = INT_MAX;
 										hitCtrl = NULL;
@@ -1078,9 +1250,6 @@ void UIController::tickInput()
 							UpdateCursorIcon(currHitCtrl);
 						}
 					}
-
-					bool leftPressed = g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT);
-					bool leftDown = leftPressed || g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT);
 
 					if (m_mouseDraggingSliderScene != eUIScene_COUNT && m_mouseDraggingSliderScene != pScene->getSceneType())
 					{
@@ -1157,8 +1326,8 @@ void UIController::tickInput()
 									break;
 								}
 							}
+							}
 						}
-					}
 
 					if (leftDown && m_mouseDraggingSliderScene == pScene->getSceneType() && m_mouseDraggingSliderId >= 0)
 					{
@@ -2018,10 +2187,10 @@ void UIController::unregisterSubstitutionTexture(const wstring &textureName, boo
 bool UIController::NavigateToScene(int iPad, EUIScene scene, void *initData, EUILayer layer, EUIGroup group)
 {
 	static bool bSeenUpdateTextThisSession = false;
-	#if 0 // Disable since we don't use this
+	#if 1 // Disable since we don't use this
 	// If you're navigating to the multigamejoinload, and the player hasn't seen the updates message yet, display it now
 	// display this message the first 3 times
-	if((scene==eUIScene_LoadOrJoinMenu) && (bSeenUpdateTextThisSession==false) && ( app.GetGameSettings(ProfileManager.GetPrimaryPad(),eGameSetting_DisplayUpdateMessage)!=0))
+	if((scene==eUIScene_LoadCreateJoinMenu) && (bSeenUpdateTextThisSession==false) && ( app.GetGameSettings(ProfileManager.GetPrimaryPad(),eGameSetting_DisplayUpdateMessage)!=0))
 	{
 		scene=eUIScene_NewUpdateMessage;
 		bSeenUpdateTextThisSession=true;
@@ -2672,6 +2841,11 @@ void UIController::DisplayGamertag(unsigned int iPad, bool show)
 
 void UIController::SetSelectedItem(unsigned int iPad, const wstring &name)
 {
+	// control type settings are already disabled whilst in-game
+	// this just serves as an additional check just incase the removal of the option doesnt work for some reason
+	if(IsReloadingSkin())
+		return;
+
 	EUIGroup group;
 
 	if( app.GetGameStarted() )
@@ -2685,7 +2859,12 @@ void UIController::SetSelectedItem(unsigned int iPad, const wstring &name)
 		group = eUIGroup_Fullscreen;
 	}
 	bool handled = false;
-	if(m_groups[static_cast<int>(group)]->getHUD()) m_groups[static_cast<int>(group)]->getHUD()->SetSelectedLabel(name);
+	
+	auto pHUD = m_groups[static_cast<int>(group)]->getHUD();
+	if(pHUD && pHUD->hasMovie())
+	{
+		pHUD->SetSelectedLabel(name);
+	}
 }
 
 void UIController::UpdateSelectedItemPos(unsigned int iPad)

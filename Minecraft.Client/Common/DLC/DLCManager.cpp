@@ -4,9 +4,94 @@
 #include "DLCPack.h"
 #include "DLCFile.h"
 #include "../../../Minecraft.World/StringHelpers.h"
+#include "../../../Minecraft.World/File.h"
 #include "../../Minecraft.h"
 #include "../../TexturePackRepository.h"
 #include "Common/UI/UI.h"
+#include "lce_filesystem/FolderFile.h"
+
+static bool isDigitW(wchar_t ch)
+{
+	return ch >= L'0' && ch <= L'9';
+}
+
+static bool isDataPackPckName(const wstring &baseNameLower)
+{
+	const wstring suffix = L"data.pck";
+	if(baseNameLower.size() <= suffix.size() + 1)
+	{
+		return false;
+	}
+	if(baseNameLower[0] != L'x')
+	{
+		return false;
+	}
+	if(baseNameLower.compare(baseNameLower.size() - suffix.size(), suffix.size(), suffix) != 0)
+	{
+		return false;
+	}
+	const size_t digitsStart = 1;
+	const size_t digitsEnd = baseNameLower.size() - suffix.size();
+	if(digitsEnd <= digitsStart)
+	{
+		return false;
+	}
+	for(size_t i = digitsStart; i < digitsEnd; ++i)
+	{
+		if(!isDigitW(baseNameLower[i]))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+static bool hasPckFolderFallback(const wstring &path, wstring &folderPath)
+{
+	wstring lowerPath = toLower(path);
+	const wstring pckSuffix = L".pck";
+	if(lowerPath.size() <= pckSuffix.size())
+	{
+		return false;
+	}
+	if(lowerPath.compare(lowerPath.size() - pckSuffix.size(), pckSuffix.size(), pckSuffix) != 0)
+	{
+		return false;
+	}
+
+	const size_t nameStart = lowerPath.find_last_of(L"/\\");
+	const size_t baseOffset = (nameStart == wstring::npos) ? 0 : (nameStart + 1);
+	wstring baseNameLower = lowerPath.substr(baseOffset);
+	if(!isDataPackPckName(baseNameLower))
+	{
+		return false;
+	}
+
+	folderPath = path.substr(0, path.size() - pckSuffix.size());
+	return true;
+}
+
+static DLCManager::EDLCType getFolderFileType(const wstring &path)
+{
+	wstring lowerPath = toLower(path);
+	if(lowerPath == L"colours.col" || lowerPath.rfind(L"/colours.col") != wstring::npos)
+	{
+		return DLCManager::e_DLCType_ColourTable;
+	}
+	if(lowerPath.rfind(L"/languages.loc") != wstring::npos || lowerPath.rfind(L".loc") != wstring::npos)
+	{
+		return DLCManager::e_DLCType_LocalisationData;
+	}
+	if(lowerPath.rfind(L".xzp") != wstring::npos)
+	{
+		return DLCManager::e_DLCType_UIData;
+	}
+	if(lowerPath.rfind(L".grf") != wstring::npos)
+	{
+		return DLCManager::e_DLCType_GameRulesHeader;
+	}
+	return DLCManager::e_DLCType_Texture;
+}
 
 const WCHAR *DLCManager::wchTypeNamesA[]=
 {
@@ -329,13 +414,47 @@ bool DLCManager::readDLCDataFile(DWORD &dwFilesProcessed, const string &path, DL
 	}
 	else if (fromArchive) return false;
 
+	wstring finalPathW = wPath;
 #ifdef _WINDOWS64
 	string finalPath = StorageManager.GetMountedPath(path.c_str());
 	if(finalPath.size() == 0) finalPath = path;
-	HANDLE file = CreateFile(finalPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	finalPathW = convStringToWstring(finalPath);
 #elif defined(_DURANGO)
 	wstring finalPath = StorageManager.GetMountedPath(wPath.c_str());
 	if(finalPath.size() == 0) finalPath = wPath;
+	finalPathW = finalPath;
+#endif
+
+	if(!fromArchive)
+	{
+		wstring folderPath;
+		if(hasPckFolderFallback(finalPathW, folderPath))
+		{
+			wstring resolvedFolderPath = folderPath;
+#ifdef _WINDOWS64
+			const char *folderPathA = wstringtofilename(folderPath);
+			string mountedFolderPath = StorageManager.GetMountedPath(folderPathA);
+			if(mountedFolderPath.size() > 0)
+			{
+				resolvedFolderPath = convStringToWstring(mountedFolderPath);
+			}
+#elif defined(_DURANGO)
+			wstring mountedFolderPath = StorageManager.GetMountedPath(folderPath.c_str());
+			if(mountedFolderPath.size() > 0)
+			{
+				resolvedFolderPath = mountedFolderPath;
+			}
+#endif
+			if(readDLCDataFolder(dwFilesProcessed, resolvedFolderPath, pack))
+			{
+				return true;
+			}
+		}
+	}
+
+#ifdef _WINDOWS64
+	HANDLE file = CreateFile(finalPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+#elif defined(_DURANGO)
 	HANDLE file = CreateFile(finalPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 #else
 	HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -370,6 +489,81 @@ bool DLCManager::readDLCDataFile(DWORD &dwFilesProcessed, const string &path, DL
 		return false;
 	}
 	return processDLCDataFile(dwFilesProcessed, pbData, bytesRead, pack);
+}
+
+bool DLCManager::readDLCDataFolder(DWORD &dwFilesProcessed, const wstring &path, DLCPack *pack)
+{
+	File folder(path);
+	if(!folder.exists() || !folder.isDirectory())
+	{
+		return false;
+	}
+
+	FolderFile folderFile(path);
+	vector<wstring> *fileList = folderFile.getFileList();
+	if(fileList == nullptr || fileList->empty())
+	{
+		delete fileList;
+		return false;
+	}
+
+	struct FolderEntry
+	{
+		wstring rawPath;
+		wstring normalizedPath;
+		int size;
+	};
+	vector<FolderEntry> entries;
+	entries.reserve(fileList->size());
+
+	unsigned int totalBytes = 0;
+	for(const auto &rawPath : *fileList)
+	{
+		wstring normalized = replaceAll(rawPath, L"\\", L"/");
+		if(normalized.empty() || normalized == L"0")
+		{
+			continue;
+		}
+		int size = folderFile.getFileSize(rawPath);
+		if(size <= 0)
+		{
+			continue;
+		}
+		entries.push_back({ rawPath, normalized, size });
+		totalBytes += static_cast<unsigned int>(size);
+	}
+	delete fileList;
+
+	if(entries.empty() || totalBytes == 0)
+	{
+		return false;
+	}
+
+	PBYTE dataBuffer = new BYTE[totalBytes];
+	pack->SetDataPointer(dataBuffer);
+
+	unsigned int offset = 0;
+	for(const auto &entry : entries)
+	{
+		byteArray data = folderFile.getFile(entry.rawPath);
+		if(data.data == nullptr || data.length == 0)
+		{
+			continue;
+		}
+
+		DLCManager::EDLCType type = getFolderFileType(entry.normalizedPath);
+		DLCFile *dlcFile = pack->addFile(type, entry.normalizedPath);
+		if(dlcFile != nullptr)
+		{
+			memcpy(dataBuffer + offset, data.data, data.length);
+			dlcFile->addData(dataBuffer + offset, data.length);
+			offset += data.length;
+			++dwFilesProcessed;
+		}
+		delete [] data.data;
+	}
+
+	return dwFilesProcessed > 0;
 }
 
 bool DLCManager::processDLCDataFile(DWORD &dwFilesProcessed, PBYTE pbData, DWORD dwLength, DLCPack *pack)
