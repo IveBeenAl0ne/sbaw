@@ -1250,10 +1250,34 @@ void UIScene_SkinSelectMenu::handlePackIndexChanged()
 		}
 	}
 	// register pack image or whatever texture and set it on the BitmapIcon
-	wstring textureName = L"default";
+	// control type is used to determine which default image to use if the pack image is not available
+	int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+	wstring controlTypeTextureName = L"default";
+	
+	switch(controlType)
+	{
+	case 2:	// Xbox 360
+		controlTypeTextureName = L"xbox360";
+		break;
+	case 3:	// PS3
+		controlTypeTextureName = L"playStation";
+		break;
+	case 4:	// PS4
+		controlTypeTextureName = L"playStation";
+		break;
+	case 5:	// WiiU
+		controlTypeTextureName = L"wiiU";
+		break;
+	default:
+		controlTypeTextureName = L"default";
+		break;
+	}
+
+	wstring textureName = L"";
 	if(m_currentPack != nullptr)
 	{
 		DWORD packId = m_currentPack->GetPackId();
+		// printf("Pack name: %ls, packId: %d\n", m_currentPack->getName().c_str(), packId);
 		if(packId >= 1)
 		{
 			wchar_t packIdStr[16];
@@ -1261,9 +1285,9 @@ void UIScene_SkinSelectMenu::handlePackIndexChanged()
 			textureName = packIdStr;
 		}
 	}
-	if(!registerTexture(textureName))
+	if(textureName.empty() || !registerTexture(textureName))
 	{
-		textureName = L"default";
+		textureName = controlTypeTextureName;
 		registerTexture(textureName);
 	}
 	m_controlTexturePackIcon.setTextureName(textureName);
