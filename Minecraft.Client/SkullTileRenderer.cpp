@@ -16,7 +16,7 @@ ResourceLocation SkullTileRenderer::CREEPER_LOCATION = ResourceLocation(TN_MOB_C
 SkullTileRenderer::SkullTileRenderer()
 {
 	skeletonModel = new SkeletonHeadModel(0, 0, 64, 32);
-	zombieModel = new SkeletonHeadModel(0, 0, 64, 64);
+	zombieModel = new SkeletonHeadModel(0, 0, 64, 32);
 }
 
 SkullTileRenderer::~SkullTileRenderer()
