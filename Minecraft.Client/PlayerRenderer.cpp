@@ -175,7 +175,7 @@ int PlayerRenderer::prepareArmor(shared_ptr<LivingEntity> _player, int layer, fl
 			case SkullTileEntity::TYPE_CHAR:
 			{
 				armor = armorParts3;
-				auto t = new SkeletonHeadModel(0, 0, 64, 64, 1);
+				auto t = new SkeletonHeadModel(0, 0, 64, 32, 1);
 				armor->head = t->head;
 				bindTexture(&PlayerRenderer::DEFAULT_LOCATION);
 				break;
