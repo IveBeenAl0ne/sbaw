@@ -188,7 +188,7 @@ void Skeleton::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	if (getSkeletonType() == TYPE_WITHER)
 	{
-		// drop some arrows
+		// drop some coal
 		int count = random->nextInt(3 + playerBonusLevel) - 1;
 		for (int i = 0; i < count; i++)
 		{
