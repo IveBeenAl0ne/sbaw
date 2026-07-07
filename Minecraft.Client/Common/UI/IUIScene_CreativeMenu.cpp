@@ -167,7 +167,12 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM_AUX(Tile::dirt_Id, DirtTile::PODZOL)
 		ITEM(Tile::grass_path_Id)
 		ITEM(Tile::nether_brick_Id)
+		ITEM(Tile::red_nether_brick_Id)
 		ITEM(Tile::end_stone_Id)
+		ITEM(Tile::end_bricks_Id)
+		ITEM(Tile::magma_Id)
+		ITEM(Tile::nether_wart_block_Id)
+		ITEM(Tile::bone_block_Id)
 		ITEM_AUX(Tile::quartz_block_Id,QuartzBlockTile::TYPE_CHISELED)
 		ITEM_AUX(Tile::quartz_block_Id,QuartzBlockTile::TYPE_LINES_Y)
 		ITEM(Tile::trapdoor_Id)
@@ -499,6 +504,7 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM_AUX(Item::spawn_egg_Id, 100 | ((EntityHorse::TYPE_MULE + 1) << 12)); // Mule
 		ITEM_AUX(Item::spawn_egg_Id, 120); // Villager
 		ITEM_AUX(Item::spawn_egg_Id, 101); // Rabbit Brown
+		ITEM_AUX(Item::spawn_egg_Id, 107); // Polar Bear
 		ITEM(Item::record_13_Id)
 		ITEM(Item::record_cat_Id)
 		ITEM(Item::record_blocks_Id)

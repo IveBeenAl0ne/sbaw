@@ -147,5 +147,7 @@
 #include "StoneSlabTile2.h"
 #include "GrassPathTile.h"
 #include "BeetrootTile.h"
+#include "MagmaTile.h"
+#include "BoneBlockTile.h"
 
 

@@ -469,7 +469,6 @@ enum eMinecraftColour
 	eMinecraftColour_Mob_Guardian_Colour2,
 	eMinecraftColour_Mob_ElderGuardian_Colour1,
 	eMinecraftColour_Mob_ElderGuardian_Colour2,
-
 	eMinecraftColour_Armour_Default_Leather_Colour,
 
 	eMinecraftColour_Under_Water_Clear_Colour,
@@ -567,6 +566,9 @@ enum eMinecraftColour
 	//eHTMLColor_d_dark = 0x3f153f, //r:3f , g: 15, b: 3f, i: 1d
 	//eHTMLColor_e_dark = 0x3f3f15, //r:3f , g: 3f, b: 15, i: 1e
 	//eHTMLColor_f_dark = 0x3f3f3f, //r:3f , g: 3f, b: 3f, i: 1f
+
+	eMinecraftColour_Mob_PolarBear_Colour1,
+	eMinecraftColour_Mob_PolarBear_Colour2,
 
 	eMinecraftColour_COUNT,
 };

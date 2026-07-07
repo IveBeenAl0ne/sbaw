@@ -194,6 +194,7 @@ const wchar_t *Textures::preLoaded[TN_COUNT] =
 	L"mob/guardian",
 	L"mob/guardian_elder",
 	L"mob/guardian_beam",
+	L"mob/bear/polarbear",
 
 #ifdef _LARGE_WORLDS
 	L"misc/additionalmapicons",

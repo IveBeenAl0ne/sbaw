@@ -668,15 +668,11 @@ void UIController::loadSkins()
 	}
 	if(m_iggyLibraries[eLibrary_Platform] == IGGY_INVALID_LIBRARY)
 	{
-<<<<<<< Updated upstream
-		m_iggyLibraries[eLibrary_Platform] = loadSkin(L"skinHDWin.swf", L"platformskin.swf");
-=======
 		m_iggyLibraries[eLibrary_Platform] = loadSkin(L"Graphics\\ControlType\\HD\\windowsHD.swf", L"platformskinHD.swf");
 		if(m_iggyLibraries[eLibrary_Platform] == IGGY_INVALID_LIBRARY)
 		{
 			m_iggyLibraries[eLibrary_Platform] = loadSkin(L"skinHDWin.swf", L"platformskinHD.swf");
 		}
->>>>>>> Stashed changes
 	}
 
 	// Non-HD skin set (720p/480p scenes import these)

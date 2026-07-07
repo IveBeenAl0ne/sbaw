@@ -47,6 +47,8 @@ class TallGrass2;
 class FrostedIceTile;
 class GrassPathTile;
 class BeetrootTile;
+class MagmaTile;
+class BoneBlockTile;
 
 class ChunkRebuildData;
 
@@ -443,15 +445,15 @@ public:
 	//purpur_stairs     203
 	//purpur_double_slab 204
 	//purpur_slab		205
-	//end_bricks		206
+	static const int end_bricks_Id = 206;
 	static const int beetroots_Id = 207;
 	static const int grass_path_Id = 208;
 	//end_gateway		209
 	static const int frosted_ice_Id = 212;
-	//magma				213
-	//nether_wart_block 214
-	//red_nether_brick  215
-	//bone_block		216
+	static const int magma_Id = 213;
+	static const int nether_wart_block_Id = 214;
+	static const int red_nether_brick_Id = 215;
+	static const int bone_block_Id = 216;
 	//structure_void    217
 	// 
 	//
@@ -668,6 +670,11 @@ public:
 	static FrostedIceTile* frosted_ice;
 	static GrassPathTile* grass_path;
 	static BeetrootTile* beetroots;
+	static Tile* end_bricks;
+	static MagmaTile* magma;
+	static Tile* nether_wart_block;
+	static Tile* red_nether_brick;
+	static BoneBlockTile* bone_block;
 	static Tile* seaLantern;
 	static Tile* prismarine;
 

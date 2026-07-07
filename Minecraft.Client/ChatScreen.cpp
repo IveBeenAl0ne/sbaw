@@ -33,6 +33,15 @@ ChatScreen::ChatScreen()
     ChatScreen::s_chatIndex = 0;
 }
 
+ChatScreen::ChatScreen(const wstring &initialMessage)
+{
+	frame = 0;
+	message = initialMessage;
+	cursorIndex = static_cast<int>(message.length());
+	s_historyIndex = -1;
+	ChatScreen::s_chatIndex = 0;
+}
+
 void ChatScreen::init()
 {
 	Keyboard::enableRepeatEvents(true);

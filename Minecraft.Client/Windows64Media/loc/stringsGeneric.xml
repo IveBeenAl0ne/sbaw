@@ -9029,6 +9029,10 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 		<value>Rabbit</value>
 	</data>
 
+	<data name="IDS_POLAR_BEAR">
+		<value>Polar Bear</value>
+	</data>
+
 	<data name="IDS_DESC_RABBIT">
 		<value>A harmless creature. May drop a rabbit hide or a rabbit's foot when killed.</value>
 	</data>
@@ -9485,6 +9489,11 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 
 	<data name="IDS_TILE_GRASS_PATH"><value>Dirt Path</value></data>
 	<data name="IDS_TILE_BEETROOTS"><value>Beetroot</value></data>
+	<data name="IDS_TILE_END_BRICKS"><value>End Stone Bricks</value></data>
+	<data name="IDS_TILE_MAGMA"><value>Magma Block</value></data>
+	<data name="IDS_TILE_NETHER_WART_BLOCK"><value>Nether Wart Block</value></data>
+	<data name="IDS_TILE_RED_NETHER_BRICK"><value>Red Nether Bricks</value></data>
+	<data name="IDS_TILE_BONE_BLOCK"><value>Bone Block</value></data>
 	<data name="IDS_BEETROOT"><value>Beetroot</value></data>
 	<data name="IDS_BEETROOT_SEEDS"><value>Beetroot Seeds</value></data>
 	<data name="IDS_ITEM_BEETROOT_SOUP"><value>Beetroot Stew</value></data>

@@ -118,6 +118,10 @@ void EntityIO::staticCtor()
       eMinecraftColour_Mob_Rabbit_Colour1,
       eMinecraftColour_Mob_Rabbit_Colour2, IDS_RABBIT);
 
+	setId(PolarBear::create, eTYPE_POLARBEAR, L"PolarBear", 107,
+      eMinecraftColour_Mob_PolarBear_Colour1,
+      eMinecraftColour_Mob_PolarBear_Colour2, IDS_POLAR_BEAR);
+
 	setId(ArmorStand::create, eTYPE_ARMORSTAND, L"ArmorStand", 102);
 
 	//change IDS_Endermite later
