@@ -660,11 +660,11 @@ void UIController::loadSkins()
 	m_iggyLibraries[eLibraryFallback_Platform] = loadSkin(platformSkin, L"platformskin.swf");
 	if(m_iggyLibraries[eLibraryFallback_Platform] == IGGY_INVALID_LIBRARY)
 	{
-		m_iggyLibraries[eLibraryFallback_Platform] = loadSkin(L"Graphics\\ControlType\\windows.swf", L"platformskin.swf");
+		m_iggyLibraries[eLibraryFallback_Platform] = loadSkin(L"skinWin.swf", L"platformskin.swf");
 	}
 	if(m_iggyLibraries[eLibrary_Platform] == IGGY_INVALID_LIBRARY)
 	{
-		m_iggyLibraries[eLibrary_Platform] = loadSkin(L"Graphics\\ControlType\\HD\\windowsHD.swf", L"platformskin.swf");
+		m_iggyLibraries[eLibrary_Platform] = loadSkin(L"skinHDWin.swf", L"platformskin.swf");
 	}
 
 	// Non-HD skin set (720p/480p scenes import these)
@@ -838,8 +838,8 @@ void UIController::PushDefaultPlatformSkinForPanorama()
 	m_panoramaPlatformSkinHD = IGGY_INVALID_LIBRARY;
 	m_panoramaPlatformSkin = IGGY_INVALID_LIBRARY;
 
-	const wstring defaultHd = L"Graphics\\ControlType\\HD\\windowsHD.swf";
-	const wstring defaultSd = L"Graphics\\ControlType\\windows.swf";
+	const wstring defaultHd = L"skinHDWin.swf";
+	const wstring defaultSd = L"skinWin.swf";
 
 	IggyLibrary hdLib = loadSkin(defaultHd, L"platformskinHD.swf");
 	if(hdLib != IGGY_INVALID_LIBRARY)
