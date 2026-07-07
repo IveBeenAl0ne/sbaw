@@ -1273,6 +1273,10 @@ set(_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_WORLD_ITEM_ENCHANTMENT
   "${CMAKE_CURRENT_SOURCE_DIR}/WaterWorkerEnchantment.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/WaterWalkerEnchantment.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/WaterWalkerEnchantment.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/FrostWalkerEnchantment.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/FrostWalkerEnchantment.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/MendingEnchantment.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/MendingEnchantment.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/net.minecraft.world.item.enchantment.h"
 )
 source_group("net/minecraft/world/item/enchantment" FILES ${_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_WORLD_ITEM_ENCHANTMENT})
@@ -2039,6 +2043,12 @@ set(_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_WORLD_LEVEL_TILE
   "${CMAKE_CURRENT_SOURCE_DIR}/Rose.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/TreeTile2.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/PackedIceTile.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/FrostedIceTile.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/FrostedIceTile.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/GrassPathTile.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/GrassPathTile.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BeetrootTile.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BeetrootTile.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/RedSandStoneTile.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/SeaLanternTile.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/PrismarineTile.cpp"

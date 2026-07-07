@@ -564,8 +564,11 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(13, 2, L"doorDark")
 		ADD_ICON(13, 3, L"doorJungle")
 		ADD_ICON(13, 4, L"doorSpruce")
-		ADD_ICON(13, 5, L"rabbit_stew") 
+		ADD_ICON(13, 5, L"rabbit_stew")
 		ADD_ICON(13, 6, L"salmonCooked")
+		ADD_ICON(12, 1, L"beetroot")
+		ADD_ICON(12, 2, L"beetroot_seeds")
+		ADD_ICON(12, 3, L"beetroot_soup")
 		
 
 		ADD_ICON(14,	0,	L"skull_skeleton")
@@ -577,8 +580,8 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(14,	6,	L"rabbitHide")
 		ADD_ICON(13,    14, L"prismarineCrystal");
 		ADD_ICON(13,	 13, L"prismarineShard");
-		ADD_ICON(13, 12, L"elytra");
-		ADD_ICON(13, 11, L"broken_elytra");
+		ADD_ICON(0, 15, L"elytra");
+		ADD_ICON(1, 15, L"broken_elytra");
 
 		ADD_ICON_WITH_NAME(14,	7,	L"compassP0", L"compass") // 4J Added
 		ADD_ICON_WITH_NAME(14,	8,	L"compassP1", L"compass") // 4J Added
@@ -1067,6 +1070,26 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(24, 2, L"dark_oak_door_lower");
 		ADD_ICON(24, 3, L"jungle_door_lower");
 		ADD_ICON(24, 4, L"spruce_door_lower");
+
+		ADD_ICON(24, 12, L"frosted_ice_0");
+		ADD_ICON(24, 13, L"frosted_ice_1");
+		ADD_ICON(24, 14, L"frosted_ice_2");
+		ADD_ICON(24, 15, L"frosted_ice_3");
+
+		ADD_ICON(23, 9,  L"grass_path_side");
+		ADD_ICON(23, 10,  L"grass_path_top");
+		ADD_ICON(24, 9,  L"magma");
+		ADD_ICON(24, 10, L"nether_wart_block");
+
+		ADD_ICON(23, 8,  L"end_bricks");
+		ADD_ICON(26, 1,  L"bone_block_top");
+		ADD_ICON(26, 0,  L"bone_block_side");
+
+		ADD_ICON(25, 0,  L"beetroots_stage_0");
+		ADD_ICON(25, 1,  L"beetroots_stage_1");
+		ADD_ICON(25, 2,  L"beetroots_stage_2");
+		ADD_ICON(25, 3,  L"beetroots_stage_3");
+		ADD_ICON(24, 11, L"red_nether_brick");
 
 		ADD_ICON(21, 1, L"tallgrass2_tall_grass_lower");
 		ADD_ICON(20, 1, L"tallgrass2_tall_grass_upper");

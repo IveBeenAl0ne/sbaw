@@ -398,7 +398,7 @@ void UIScene::loadMovie()
 	// Read movie dimensions from the SWF header (available immediately after
 	// CreateFromMemory, no init tick needed).
 	IggyProperties *properties = IggyPlayerProperties ( swf );
-	if(!properties)
+	if(!properties || (uintptr_t)properties < 0x1000)
 	{
 		app.DebugPrintf("ERROR: IggyPlayerProperties returned null for scene '%ls'\n", moviePath.c_str());
 #ifndef _CONTENT_PACKAGE

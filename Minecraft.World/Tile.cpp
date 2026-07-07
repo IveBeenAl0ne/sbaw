@@ -266,6 +266,9 @@ Tile* Tile::prismarine = nullptr;
 
 Tile* Tile::log2 = nullptr;
 Tile* Tile::packedIce = nullptr;
+FrostedIceTile* Tile::frosted_ice = nullptr;
+GrassPathTile* Tile::grass_path = nullptr;
+BeetrootTile* Tile::beetroots = nullptr;
 
 Tile* Tile::barrier = nullptr;
 TallGrass2* Tile::double_plant = nullptr;
@@ -577,6 +580,9 @@ void Tile::staticCtor()
 
 	//
 	Tile::packedIce = (new PackedIceTile(174))->setDestroyTime(0.5f)->setSoundType(SOUND_GLASS)->setIconName(L"packed_ice")->setDescriptionId(IDS_TILE_PACKED_ICE)->setUseDescriptionId(IDS_DESC_PACKED_ICE);
+	Tile::beetroots = static_cast<BeetrootTile*>((new BeetrootTile(beetroots_Id))->setIconName(L"beetroots")->setDescriptionId(IDS_TILE_BEETROOTS)->setUseDescriptionId(IDS_DESC_BEETROOT_SEEDS)->disableMipmap());
+	Tile::grass_path = static_cast<GrassPathTile*>((new GrassPathTile(grass_path_Id))->setDestroyTime(0.65f)->setSoundType(SOUND_GRAVEL)->setIconName(L"grass_path_top")->setDescriptionId(IDS_TILE_GRASS_PATH)->setUseDescriptionId(IDS_DESC_DIRT)->sendTileData());
+	Tile::frosted_ice = static_cast<FrostedIceTile*>((new FrostedIceTile(frosted_ice_Id))->setDestroyTime(0.5f)->setLightBlock(3)->setSoundType(Tile::SOUND_GLASS)->setIconName(L"ice")->setDescriptionId(IDS_TILE_FROSTED_ICE)->setUseDescriptionId(IDS_DESC_ICE)->setNotCollectStatistics());
 
 	Tile::daylight_detector_inverted = static_cast<DaylightDetectorTile*>((new DaylightDetectorTile(178, true))->setDestroyTime(0.2f)->setSoundType(SOUND_WOOD)->setIconName(L"daylight_detector")->setDescriptionId(IDS_TILE_DAYLIGHT_DETECTOR)->setUseDescriptionId(IDS_DESC_DAYLIGHT_DETECTOR));
 	Tile::red_sandstone = (new RedSandStoneTile(red_sandstone_Id))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_sand)->setSoundType(Tile::SOUND_STONE)->setDestroyTime(0.8f)->sendTileData()->setIconName(L"red_sandstone")->setDescriptionId(IDS_TILE_RED_SANDSTONE)->setUseDescriptionId(IDS_DESC_RED_SANDSTONE)->sendTileData();
@@ -670,7 +676,7 @@ void Tile::staticCtor()
 			{
 				propagate = true;
 			}
-			if (i == Tile::farmland_Id) propagate = true;
+			if (i == Tile::farmland_Id || i == Tile::grass_path_Id) propagate = true;
 			if (Tile::transculent[i])
 			{
 				propagate = true;
@@ -1906,4 +1912,6 @@ const int Tile::carpet_Id;
 const int Tile::acacia_stairs_Id;
 const int Tile::dark_oak_stairs_Id;
 const int Tile::slime_Id;
+const int Tile::beetroots_Id;
+const int Tile::grass_path_Id;
 #endif

@@ -274,6 +274,10 @@ Item* Item::prismarine_shard = nullptr;
 
 Item* Item::elytra = nullptr;
 
+Item* Item::beetroot = nullptr;
+Item* Item::beetroot_seeds = nullptr;
+Item* Item::beetroot_soup = nullptr;
+
 
 void Item::staticCtor()
 {
@@ -541,6 +545,10 @@ void Item::staticCtor()
 	Item::prismarine_crystal = (new Item(154))->setIconName(L"prismarineCrystal")->setDescriptionId(IDS_ITEM_PRISMARINE_CRYSTAL)->setUseDescriptionId(IDS_ITEM_PRISMARINE_CRYSTAL_DESC);
 	Item::prismarine_shard = (new Item(153))->setIconName(L"prismarineShard")->setDescriptionId(IDS_ITEM_PRISMARINE_SHARD)->setUseDescriptionId(IDS_ITEM_PRISMARINE_SHARD_DESC);
 	Item::elytra = (new ElytraItem())->setBaseItemTypeAndMaterial(eBaseItemType_chestplate, eMaterial_cloth)->setIconName(L"elytra")->setDescriptionId(IDS_ITEM_ELYTRA)->setUseDescriptionId(IDS_ITEM_ELYTRA);
+
+	Item::beetroot = (new FoodItem(178, 1, 0.6f, false))->setIconName(L"beetroot")->setDescriptionId(IDS_BEETROOT)->setUseDescriptionId(IDS_DESC_BEETROOT);
+	Item::beetroot_seeds = (new SeedItem(179, Tile::beetroots_Id, Tile::farmland_Id))->setIconName(L"beetroot_seeds")->setDescriptionId(IDS_BEETROOT_SEEDS)->setUseDescriptionId(IDS_DESC_BEETROOT_SEEDS);
+	Item::beetroot_soup = (new BowlFoodItem(180, 6))->setIconName(L"beetroot_soup")->setDescriptionId(IDS_ITEM_BEETROOT_SOUP)->setUseDescriptionId(IDS_DESC_BEETROOT_SOUP);
 }
 
 
@@ -1195,5 +1203,8 @@ const int Item::carrot_on_a_stick_Id	;
 const int Item::pumpkin_pie_Id		;
 const int Item::enchanted_book_Id		;
 const int Item::quartz_Id		;
+const int Item::beetroot_Id		;
+const int Item::beetroot_seeds_Id	;
+const int Item::beetroot_soup_Id	;
 #endif
 

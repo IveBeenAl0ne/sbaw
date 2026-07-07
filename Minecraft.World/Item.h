@@ -439,6 +439,10 @@ public:
 	static Item* prismarine_shard;
 	static Item* elytra;
 
+	static Item* beetroot;
+	static Item* beetroot_seeds;
+	static Item* beetroot_soup;
+
 
 	static const int iron_shovel_Id			= 256;
 	static const int iron_pickaxe_Id		= 257;
@@ -671,6 +675,10 @@ public:
 
 
 	static const int elytra_Id = 443;
+
+	static const int beetroot_Id = 434;
+	static const int beetroot_seeds_Id = 435;
+	static const int beetroot_soup_Id = 436;
 	//TU31
 	
 	
