@@ -160,6 +160,41 @@ if(PLATFORM_NAME STREQUAL "Windows64") # Server is only supported on Windows for
   add_subdirectory(Minecraft.Server)
 endif()
 
+if(TARGET Minecraft.Client)
+  add_custom_target(AssetTitleUpdateColourOverride ALL
+    COMMAND ${CMAKE_COMMAND} -E remove "$<TARGET_FILE_DIR:Minecraft.Client>/Common/res/TitleUpdate/res/colours.col"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_SOURCE_DIR}/Minecraft.Client/Common/res/TitleUpdate/res/colours.xml"
+      "$<TARGET_FILE_DIR:Minecraft.Client>/Common/res/TitleUpdate/res/colours.xml"
+    VERBATIM
+  )
+  add_dependencies(AssetTitleUpdateColourOverride AssetFolderCopy_Minecraft.Client)
+  add_dependencies(Minecraft.Client AssetTitleUpdateColourOverride)
+  set_property(TARGET AssetTitleUpdateColourOverride PROPERTY FOLDER "Build")
+endif()
+
+if(TARGET Minecraft.Server)
+  add_custom_target(AssetTitleUpdateColourOverride_Minecraft.Server ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_SOURCE_DIR}/Minecraft.Client/Common/res/TitleUpdate/res/colours.xml"
+      "$<TARGET_FILE_DIR:Minecraft.Server>/Common/res/TitleUpdate/res/colours.xml"
+    VERBATIM
+  )
+  add_dependencies(Minecraft.Server AssetTitleUpdateColourOverride_Minecraft.Server)
+  set_property(TARGET AssetTitleUpdateColourOverride_Minecraft.Server PROPERTY FOLDER "Build")
+endif()
+
+if(TARGET Minecraft.Server.FourKit)
+  add_custom_target(AssetTitleUpdateColourOverride_Minecraft.Server.FourKit ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_SOURCE_DIR}/Minecraft.Client/Common/res/TitleUpdate/res/colours.xml"
+      "$<TARGET_FILE_DIR:Minecraft.Server.FourKit>/Common/res/TitleUpdate/res/colours.xml"
+    VERBATIM
+  )
+  add_dependencies(Minecraft.Server.FourKit AssetTitleUpdateColourOverride_Minecraft.Server.FourKit)
+  set_property(TARGET AssetTitleUpdateColourOverride_Minecraft.Server.FourKit PROPERTY FOLDER "Build")
+endif()
+
 if(TARGET GenerateStringsHeader_Minecraft.Client)
   add_dependencies(Minecraft.World GenerateStringsHeader_Minecraft.Client)
 endif()
