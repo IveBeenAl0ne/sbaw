@@ -49,6 +49,7 @@ class GrassPathTile;
 class BeetrootTile;
 class MagmaTile;
 class BoneBlockTile;
+class BannerTile;
 
 class ChunkRebuildData;
 
@@ -415,8 +416,8 @@ public:
 	static const int coal_block_Id = 173;
 	static const int packed_ice_Id = 174;
 	static const int double_plant_Id = 175;
-	//176 standing_banner
-	//177 wall_banner
+	static const int standing_banner_Id = 176;
+	static const int wall_banner_Id = 177;
 	static const int daylight_detector_inverted_Id = 178;
 	static const int red_sandstone_Id = 179;
 	static const int red_sandstone_stairs_Id = 180;
@@ -679,7 +680,9 @@ public:
 	static Tile* prismarine;
 
 	static TallGrass2* double_plant;
-	
+
+	static BannerTile* standing_banner;
+	static BannerTile* wall_banner;
 
 	static void staticCtor();
 

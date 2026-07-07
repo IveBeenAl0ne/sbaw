@@ -971,6 +971,10 @@ source_group("net/minecraft/client/renderer/texture/custom" FILES ${_MINECRAFT_C
 set(_MINECRAFT_CLIENT_COMMON_NET_MINECRAFT_CLIENT_RENDERER_TILEENTITY
   "${CMAKE_CURRENT_SOURCE_DIR}/BeaconRenderer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/BeaconRenderer.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BannerModel.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BannerModel.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BannerRenderer.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BannerRenderer.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ChestRenderer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ChestRenderer.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/EnchantTableRenderer.cpp"

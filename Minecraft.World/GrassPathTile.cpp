@@ -5,7 +5,7 @@
 #include "Facing.h"
 #include "GrassPathTile.h"
 
-GrassPathTile::GrassPathTile(int id) : Tile(id, Material::dirt), iconTop(nullptr)
+GrassPathTile::GrassPathTile(int id) : Tile(id, Material::dirt), iconTop(nullptr), iconBottom(nullptr)
 {
 }
 
@@ -26,13 +26,15 @@ bool GrassPathTile::isCubeShaped()
 
 void GrassPathTile::registerIcons(IconRegister *iconRegister)
 {
-	iconTop = iconRegister->registerIcon(L"grass_path_top");
-	icon    = iconRegister->registerIcon(L"grass_path_side");
+	iconTop    = iconRegister->registerIcon(L"grass_path_top");
+	iconBottom = iconRegister->registerIcon(L"dirt");
+	icon       = iconRegister->registerIcon(L"grass_path_side");
 }
 
 Icon *GrassPathTile::getTexture(int face, int data)
 {
 	if (face == Facing::UP) return iconTop;
+	if (face == Facing::DOWN) return iconBottom;
 	return icon;
 }
 

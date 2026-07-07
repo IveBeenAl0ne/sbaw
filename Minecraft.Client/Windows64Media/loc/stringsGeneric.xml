@@ -9694,4 +9694,72 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
     <data name="IDS_TOOLTIPS_REMOVE_FAVORITE">
 		<value>Remove Favorite</value>
 	</data>
+
+	<data name="IDS_TILE_BANNER">
+		<value>Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_BLACK">
+		<value>Black Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_RED">
+		<value>Red Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_GREEN">
+		<value>Green Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_BROWN">
+		<value>Brown Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_BLUE">
+		<value>Blue Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_PURPLE">
+		<value>Purple Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_CYAN">
+		<value>Cyan Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_SILVER">
+		<value>Light Gray Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_GRAY">
+		<value>Gray Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_PINK">
+		<value>Pink Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_LIME">
+		<value>Lime Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_YELLOW">
+		<value>Yellow Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_LIGHT_BLUE">
+		<value>Light Blue Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_MAGENTA">
+		<value>Magenta Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_ORANGE">
+		<value>Orange Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_WHITE">
+		<value>White Banner</value>
+	</data>
 </root>

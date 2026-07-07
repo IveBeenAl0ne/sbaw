@@ -55,7 +55,12 @@ FloatBuffer *Lighting::getBuffer(float a, float b, float c, float d)
     return lb;
 }
 
-void Lighting::turnOnGui() 
+void Lighting::setAmbient(float a)
+{
+    glLightModel(GL_LIGHT_MODEL_AMBIENT, getBuffer(a, a, a, 1.0f));
+}
+
+void Lighting::turnOnGui()
 {
 	glPushMatrix();
 	glRotatef(-30, 0, 1, 0);
