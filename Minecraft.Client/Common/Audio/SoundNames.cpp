@@ -287,7 +287,14 @@ const WCHAR *ConsoleSoundEngine::wchSoundNames[eSoundType_MAX]=
 	L"mob.guardian.curse",        
 	L"mob.guardian.elder_death",        
 	L"mob.guardian.elder_hit",         
-	L"mob.guardian.elder_idle"       
+	L"mob.guardian.elder_idle",
+
+	L"mob.polarbear.babyidle",
+	L"mob.polarbear.idle",
+	L"mob.polarbear.hurt",
+	L"mob.polarbear.death",
+	L"mob.polarbear.step",
+	L"mob.polarbear.warning"
 
 
 };

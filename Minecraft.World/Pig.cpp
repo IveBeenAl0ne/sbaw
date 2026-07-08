@@ -36,6 +36,8 @@ Pig::Pig(Level *level) : Animal( level )
 	goalSelector.addGoal(3, new BreedGoal(this, 1.0));
 	goalSelector.addGoal(4, new TemptGoal(this, 1.2, Item::carrot_on_a_stick_Id, false));
 	goalSelector.addGoal(4, new TemptGoal(this, 1.2, Item::carrot_Id, false));
+	goalSelector.addGoal(4, new TemptGoal(this, 1.2, Item::potato_Id, false));
+	goalSelector.addGoal(4, new TemptGoal(this, 1.2, Item::beetroot_Id, false));
 	goalSelector.addGoal(5, new FollowParentGoal(this, 1.1));
 	goalSelector.addGoal(6, new RandomStrollGoal(this, 1.0));
 	goalSelector.addGoal(7, new LookAtPlayerGoal(this, typeid(Player), 6));
@@ -199,7 +201,10 @@ shared_ptr<AgableMob> Pig::getBreedOffspring(shared_ptr<AgableMob> target)
 
 bool Pig::isFood(shared_ptr<ItemInstance> itemInstance)
 {
-	return itemInstance != nullptr && itemInstance->id == Item::carrot_Id;
+	if (itemInstance == nullptr) return false;
+	return itemInstance->id == Item::carrot_Id
+		|| itemInstance->id == Item::potato_Id
+		|| itemInstance->id == Item::beetroot_Id;
 }
 
 ControlledByPlayerGoal *Pig::getControlGoal()

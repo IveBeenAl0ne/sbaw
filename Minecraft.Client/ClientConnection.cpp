@@ -3482,6 +3482,10 @@ void ClientConnection::handleTileEntityData(shared_ptr<TileEntityDataPacket> pac
 			{
 				dynamic_pointer_cast<SkullTileEntity>(te)->load(packet->tag);
 			}
+			else if (packet->type == TileEntityDataPacket::TYPE_BANNER && dynamic_pointer_cast<BannerTileEntity>(te) != nullptr)
+			{
+				dynamic_pointer_cast<BannerTileEntity>(te)->load(packet->tag);
+			}
 		}
 	}
 }

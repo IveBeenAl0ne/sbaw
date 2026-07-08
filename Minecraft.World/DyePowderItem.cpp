@@ -234,12 +234,25 @@ bool DyePowderItem::growCrop(shared_ptr<ItemInstance> itemInstance, Level *level
 		}
 		return true;
 	}
-	else if (tile == Tile::wheat_Id) 
+	else if (tile == Tile::wheat_Id)
 	{
 		if (level->getData(x, y, z) == 7) return false;
 		if(!bTestUseOnOnly)
-		{	
-			if (!level->isClientSide) 
+		{
+			if (!level->isClientSide)
+			{
+				static_cast<CropTile *>(Tile::tiles[tile])->growCrops(level, x, y, z);
+				itemInstance->count--;
+			}
+		}
+		return true;
+	}
+	else if (tile == Tile::beetroots_Id)
+	{
+		if (level->getData(x, y, z) == 3) return false;
+		if (!bTestUseOnOnly)
+		{
+			if (!level->isClientSide)
 			{
 				static_cast<CropTile *>(Tile::tiles[tile])->growCrops(level, x, y, z);
 				itemInstance->count--;

@@ -1,6 +1,9 @@
 #include "stdafx.h"
 
+#include "net.minecraft.world.entity.player.h"
+#include "net.minecraft.world.level.h"
 #include "net.minecraft.world.level.tile.h"
+#include "ItemInstance.h"
 #include "ShovelItem.h"
 
 TileArray *ShovelItem::diggables = nullptr;
@@ -22,6 +25,30 @@ void ShovelItem::staticCtor()
 
 ShovelItem::ShovelItem(int id, const Tier *tier) : DiggerItem(id, 1, tier, diggables)
 {
+}
+
+bool ShovelItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> player, Level *level, int x, int y, int z, int face, float clickX, float clickY, float clickZ, bool bTestUseOnOnly)
+{
+	if (!player->mayUseItemAt(x, y, z, face, instance)) return false;
+
+	int targetType = level->getTile(x, y, z);
+	int above = level->getTile(x, y + 1, z);
+
+	if (face != 0 && above == 0 && (targetType == Tile::grass_Id || targetType == Tile::dirt_Id))
+	{
+		if (!bTestUseOnOnly)
+		{
+			Tile *tile = Tile::grass_path;
+			level->playSound(x + 0.5f, y + 0.5f, z + 0.5f, tile->soundType->getStepSound(), (tile->soundType->getVolume() + 1) / 2, tile->soundType->getPitch() * 0.8f);
+
+			if (level->isClientSide) return true;
+			level->setTileAndUpdate(x, y, z, tile->id);
+			instance->hurtAndBreak(1, player);
+		}
+		return true;
+	}
+
+	return false;
 }
 
 bool ShovelItem::canDestroySpecial(Tile *tile)

@@ -662,9 +662,17 @@ void UIController::loadSkins()
 	{
 		m_iggyLibraries[eLibraryFallback_Platform] = loadSkin(L"skinWin.swf", L"platformskin.swf");
 	}
+	if(m_iggyLibraries[eLibraryFallback_Platform] == IGGY_INVALID_LIBRARY)
+	{
+		m_iggyLibraries[eLibraryFallback_Platform] = loadSkin(L"skinWin.swf", L"platformskin.swf");
+	}
 	if(m_iggyLibraries[eLibrary_Platform] == IGGY_INVALID_LIBRARY)
 	{
-		m_iggyLibraries[eLibrary_Platform] = loadSkin(L"skinHDWin.swf", L"platformskin.swf");
+		m_iggyLibraries[eLibrary_Platform] = loadSkin(L"Graphics\\ControlType\\HD\\windowsHD.swf", L"platformskinHD.swf");
+		if(m_iggyLibraries[eLibrary_Platform] == IGGY_INVALID_LIBRARY)
+		{
+			m_iggyLibraries[eLibrary_Platform] = loadSkin(L"skinHDWin.swf", L"platformskinHD.swf");
+		}
 	}
 
 	// Non-HD skin set (720p/480p scenes import these)
@@ -679,17 +687,28 @@ void UIController::loadSkins()
 	m_iggyLibraries[eLibraryFallback_Tooltips] = loadSkin(L"skinTooltips.swf", L"skinTooltips.swf");
 	m_iggyLibraries[eLibraryFallback_Default] = loadSkin(L"skin.swf", L"skin.swf");
 
-	// HD skin set (1080p scenes import these)
-	m_iggyLibraries[eLibrary_GraphicsDefault] = loadSkin(L"skinHDGraphics.swf", L"skinHDGraphics.swf");
-	m_iggyLibraries[eLibrary_GraphicsHUD] = loadSkin(L"skinHDGraphicsHud.swf", L"skinHDGraphicsHud.swf");
-	m_iggyLibraries[eLibrary_GraphicsInGame] = loadSkin(L"skinHDGraphicsInGame.swf", L"skinHDGraphicsInGame.swf");
-	m_iggyLibraries[eLibrary_GraphicsTooltips] = loadSkin(L"skinHDGraphicsTooltips.swf", L"skinHDGraphicsTooltips.swf");
-	m_iggyLibraries[eLibrary_GraphicsLabels] = loadSkin(L"skinHDGraphicsLabels.swf", L"skinHDGraphicsLabels.swf");
-	m_iggyLibraries[eLibrary_Labels] = loadSkin(L"skinHDLabels.swf", L"skinHDLabels.swf");
-	m_iggyLibraries[eLibrary_InGame] = loadSkin(L"skinHDInGame.swf", L"skinHDInGame.swf");
-	m_iggyLibraries[eLibrary_HUD] = loadSkin(L"skinHDHud.swf", L"skinHDHud.swf");
-	m_iggyLibraries[eLibrary_Tooltips] = loadSkin(L"skinHDTooltips.swf", L"skinHDTooltips.swf");
-	m_iggyLibraries[eLibrary_Default] = loadSkin(L"skinHD.swf", L"skinHD.swf");
+	// HD skin set (1080p scenes import these). Fall back to skinHDWin.swf for any
+	// that are missing so scenes can always resolve their HD skin imports.
+	struct { IggyLibrary *slot; const wchar_t *file; const wchar_t *name; } hdSkins[] = {
+		{ &m_iggyLibraries[eLibrary_GraphicsDefault],  L"skinHDGraphics.swf",         L"skinHDGraphics.swf" },
+		{ &m_iggyLibraries[eLibrary_GraphicsHUD],      L"skinHDGraphicsHud.swf",      L"skinHDGraphicsHud.swf" },
+		{ &m_iggyLibraries[eLibrary_GraphicsInGame],   L"skinHDGraphicsInGame.swf",   L"skinHDGraphicsInGame.swf" },
+		{ &m_iggyLibraries[eLibrary_GraphicsTooltips], L"skinHDGraphicsTooltips.swf", L"skinHDGraphicsTooltips.swf" },
+		{ &m_iggyLibraries[eLibrary_GraphicsLabels],   L"skinHDGraphicsLabels.swf",   L"skinHDGraphicsLabels.swf" },
+		{ &m_iggyLibraries[eLibrary_Labels],           L"skinHDLabels.swf",           L"skinHDLabels.swf" },
+		{ &m_iggyLibraries[eLibrary_InGame],           L"skinHDInGame.swf",           L"skinHDInGame.swf" },
+		{ &m_iggyLibraries[eLibrary_HUD],              L"skinHDHud.swf",              L"skinHDHud.swf" },
+		{ &m_iggyLibraries[eLibrary_Tooltips],         L"skinHDTooltips.swf",         L"skinHDTooltips.swf" },
+		{ &m_iggyLibraries[eLibrary_Default],          L"skinHD.swf",                 L"skinHD.swf" },
+	};
+	for(auto &s : hdSkins)
+	{
+		*s.slot = loadSkin(s.file, s.name);
+		if(*s.slot == IGGY_INVALID_LIBRARY)
+		{
+			*s.slot = loadSkin(L"skinHDWin.swf", s.name);
+		}
+	}
 
 	//Load skins specifcally edited for use on achievements, if we
 	//used these as skin.swf and skinInGame.swf it breaks some other things

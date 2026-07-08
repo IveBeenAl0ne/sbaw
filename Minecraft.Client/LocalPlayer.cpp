@@ -23,6 +23,7 @@
 #include "../Minecraft.World/net.minecraft.world.food.h"
 #include "../Minecraft.World/net.minecraft.world.effect.h"
 #include "../Minecraft.World/net.minecraft.world.entity.player.h"
+#include "../Minecraft.World/net.minecraft.world.item.enchantment.h"
 #include "../Minecraft.World/net.minecraft.world.entity.monster.h"
 #include "../Minecraft.World/ItemEntity.h"
 #include "../Minecraft.World/net.minecraft.world.level.h"
@@ -524,6 +525,16 @@ void LocalPlayer::aiStep()
 		fallDistance = 0.0f;
 		yd = 0.0f;
 		onGround = true;
+	}
+
+	if (isAlive())
+	{
+		int frostWalkerLevel = EnchantmentHelper::getFrostWalker(dynamic_pointer_cast<LivingEntity>(shared_from_this()));
+		if (frostWalkerLevel > 0)
+		{
+			FrostWalkerEnchantment::freezeNearby(dynamic_pointer_cast<LivingEntity>(shared_from_this()), level,
+				Mth::floor(x), Mth::floor(y), Mth::floor(z), frostWalkerLevel);
+		}
 	}
 
 	// Check if the player is idle and the rich presence needs updated

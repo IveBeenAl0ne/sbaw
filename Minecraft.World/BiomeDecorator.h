@@ -17,6 +17,7 @@ class BiomeDecorator
 	friend class SavannaBiome;
 	friend class JungleBiome;
 	friend class FlowerForestBiome;
+	friend class MesaBiome;
 protected:
 	Level *level;
 	Random *random;

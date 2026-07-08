@@ -344,6 +344,8 @@ const wchar_t *ColourTable::ColourTableElements[eMinecraftColour_COUNT] =
 	L"Color_EnchantTextFocus",
 	L"Color_EnchantTextDisabled",
 	L"Color_RenamedItemTitle",
+	L"Mob_PolarBear_Colour1",
+	L"Mob_PolarBear_Colour2",
 };
 
 void ColourTable::staticCtor()

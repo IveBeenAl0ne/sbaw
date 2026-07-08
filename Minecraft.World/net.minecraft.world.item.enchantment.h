@@ -28,3 +28,6 @@
 #include "LuckOfTheSeaEnchantment.h"
 
 #include "LureEnchantment.h"
+
+#include "FrostWalkerEnchantment.h"
+#include "MendingEnchantment.h"

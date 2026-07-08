@@ -239,9 +239,39 @@ int EnchantmentHelper::getWaterWalker(shared_ptr<LivingEntity> source)
     return getEnchantmentLevel(Enchantment::waterWalker->id, source->getEquipmentSlots() );
 }
 
+int EnchantmentHelper::getFrostWalker(shared_ptr<LivingEntity> source)
+{
+	return getEnchantmentLevel(Enchantment::frostWalker->id, source->getEquipmentSlots());
+}
+
 int EnchantmentHelper::getArmorThorns(shared_ptr<LivingEntity> source)
 {
 	return getEnchantmentLevel(Enchantment::thorns->id, source->getEquipmentSlots());
+}
+
+shared_ptr<ItemInstance> EnchantmentHelper::getMendingItem(shared_ptr<LivingEntity> source)
+{
+	int mendId = Enchantment::mending->id;
+	vector<shared_ptr<ItemInstance>> candidates;
+
+	shared_ptr<ItemInstance> held = source->getCarriedItem();
+	if (held != nullptr && held->isDamaged() && getEnchantmentLevel(mendId, held) > 0)
+	{
+		candidates.push_back(held);
+	}
+
+	ItemInstanceArray armor = source->getEquipmentSlots();
+	for (unsigned int i = 0; i < armor.length; ++i)
+	{
+		shared_ptr<ItemInstance> piece = armor[i];
+		if (piece != nullptr && piece->isDamaged() && getEnchantmentLevel(mendId, piece) > 0)
+		{
+			candidates.push_back(piece);
+		}
+	}
+
+	if (candidates.empty()) return nullptr;
+	return candidates[random.nextInt((int)candidates.size())];
 }
 
 shared_ptr<ItemInstance> EnchantmentHelper::getRandomItemWith(Enchantment *enchantment, shared_ptr<LivingEntity> source)

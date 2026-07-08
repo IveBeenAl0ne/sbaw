@@ -250,6 +250,7 @@ public:
 	static const int KEY_SUBTRACT = 53;
 	static const int KEY_LEFT = 54;
 	static const int KEY_RIGHT = 55;
+	static const int KEY_SLASH = 56;
 
 #ifdef _WINDOWS64
 	// Map LWJGL-style key constant to Windows VK code
