@@ -22,6 +22,7 @@ private:
 
 public:
 	ChatScreen();
+	ChatScreen(const wstring &initialMessage);
 	virtual void init();
 	virtual void removed();
 	virtual void tick();

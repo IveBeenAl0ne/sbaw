@@ -182,6 +182,13 @@ BandEntry MesaBiome::getBand(int x, int y, int z)
 void MesaBiome::decorate(Level* level, Random* random, int xo, int zo)
 {
     Biome::decorate(level, random, xo, zo);
+    decorator->level = level;
+    decorator->random = random;
+    decorator->xo = xo;
+    decorator->zo = zo;
+    decorator->decorateDepthSpan(20, decorator->goldOreFeature, 32, 80);
+    decorator->level = nullptr;
+    decorator->random = nullptr;
 }
 
 Feature* MesaBiome::getTreeFeature(Random* random)

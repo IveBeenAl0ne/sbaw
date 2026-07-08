@@ -4,6 +4,7 @@
 #include "net.minecraft.world.phys.h"
 #include "net.minecraft.world.level.tile.h"
 #include "net.minecraft.world.damagesource.h"
+#include "net.minecraft.world.item.enchantment.h"
 #include "com.mojang.nbt.h"
 #include "JavaMath.h"
 #include "SharedConstants.h"
@@ -198,7 +199,21 @@ void ExperienceOrb::playerTouch(shared_ptr<Player> player)
 		// 4J - sound change brought forward from 1.2.3
 		playSound(eSoundType_RANDOM_ORB, 0.1f, 0.5f * ((random->nextFloat() - random->nextFloat()) * 0.7f + 1.8f));
 		player->take(shared_from_this(), 1);
-		player->increaseXp(value);
+
+		shared_ptr<ItemInstance> mendItem = EnchantmentHelper::getMendingItem(dynamic_pointer_cast<LivingEntity>(player));
+		if (mendItem != nullptr)
+		{
+			int repair = value * 2;
+			int damage = mendItem->getDamageValue();
+			if (repair > damage) repair = damage;
+			mendItem->setAuxValue(mendItem->getAuxValue() - repair);
+			value -= repair / 2;
+		}
+
+		if (value > 0)
+		{
+			player->increaseXp(value);
+		}
 		remove();
 	}
 }

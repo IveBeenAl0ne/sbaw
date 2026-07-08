@@ -82,6 +82,8 @@
 #include "BatRenderer.h"
 #include "CaveSpiderRenderer.h"
 #include "RabbitRenderer.h"
+#include "PolarBearRenderer.h"
+#include "PolarBearModel.h"
 
 #include "ArmorStandRenderer.h"
 #include "EndermiteRenderer.h"
@@ -142,6 +144,7 @@ EntityRenderDispatcher::EntityRenderDispatcher()
 	renderers[eTYPE_WITHERBOSS] = new WitherBossRenderer();
 
 	renderers[eTYPE_RABBIT] = new RabbitRenderer();
+	renderers[eTYPE_POLARBEAR] = new PolarBearRenderer(new PolarBearModel(), 0.7f);
 	
 
 	renderers[eTYPE_ENTITY] = new DefaultRenderer();

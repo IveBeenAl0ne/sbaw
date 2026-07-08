@@ -175,7 +175,7 @@ int PlayerRenderer::prepareArmor(shared_ptr<LivingEntity> _player, int layer, fl
 			case SkullTileEntity::TYPE_CHAR:
 			{
 				armor = armorParts3;
-				auto t = new SkeletonHeadModel(0, 0, 64, 64, 1);
+				auto t = new SkeletonHeadModel(0, 0, 64, 32, 1);
 				armor->head = t->head;
 				bindTexture(&PlayerRenderer::DEFAULT_LOCATION);
 				break;
@@ -626,6 +626,13 @@ void PlayerRenderer::additionalRendering(shared_ptr<LivingEntity> _mob, float a)
 				glRotatef(45, 1, 0, 0);
 				glRotatef(45, 0, 1, 0);
 				glScalef(-s, -s, s);
+			}
+			else if (dynamic_cast<BannerItem*>(Item::items[item->id]) != nullptr)
+			{
+				glTranslatef(0 / 16.0f, 2 / 16.0f, -4 / 16.0f);
+				glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+				glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+				glScalef(0.22f, 0.22f, 0.22f);
 			}
 			else
 			{

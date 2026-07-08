@@ -3,7 +3,9 @@
 #include "TileRenderer.h"
 #include "EntityRenderDispatcher.h"
 #include "SkullTileRenderer.h"
+#include "BannerRenderer.h"
 #include "../Minecraft.World/SkullItem.h"
+#include "../Minecraft.World/BannerItem.h"
 #include "../Minecraft.World/Facing.h"
 #include "../Minecraft.World/JavaMath.h"
 #include "../Minecraft.World/net.minecraft.world.entity.item.h"
@@ -93,6 +95,14 @@ void ItemRenderer::render(shared_ptr<Entity> _itemEntity, double x, double y, do
 		glRotatef(spin, 0, 1, 0);
 		glScalef(0.5f, 0.5f, 0.5f);
 		SkullTileRenderer::instance->renderSkull(-0.5f, -0.25f, -0.5f, Facing::UP, 0.0f, item->getAuxValue(), extra);
+	}
+	else if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
+	{
+		int baseColor = item->getAuxValue() & 15;
+		glRotatef(spin, 0.0f, 1.0f, 0.0f);
+		const float s = 0.18f;
+		glScalef(s, -s, -s);
+		BannerRenderer::instance->renderBannerForHand(1.0f, baseColor);
 	}
 	else if ((item->getIconType() == Icon::TYPE_TERRAIN && tile != nullptr && TileRenderer::canRender(tile->getRenderShape())) && item->id != Tile::barrier_Id)
 	{
@@ -400,6 +410,13 @@ void ItemRenderer::renderGuiItem(Font *font, Textures *textures, shared_ptr<Item
 		glRotatef(-45.0f, 0.0f, 1.0f, 0.0f);
 		SkullTileRenderer::instance->renderSkull(-0.5f, 0.0f, -0.5f, Facing::UP, 0.0f, itemAuxValue, extra);
 		glPopMatrix();
+		return;
+	}
+
+	if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
+	{
+		int baseColor = item->getAuxValue() & 15;
+		BannerRenderer::instance->renderBannerForGui(x, y, fScaleX, fScaleY, fAlpha, baseColor);
 		return;
 	}
 

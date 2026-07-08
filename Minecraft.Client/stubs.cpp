@@ -60,6 +60,7 @@ static const int s_keyToVK[] = {
 	VK_SUBTRACT,// KEY_SUBTRACT = 53
 	VK_LEFT,    // KEY_LEFT = 54
 	VK_RIGHT,   // KEY_RIGHT = 55
+	VK_OEM_2,   // KEY_SLASH = 56
 };
 static const int s_keyToVKCount = sizeof(s_keyToVK) / sizeof(s_keyToVK[0]);
 

@@ -99,6 +99,7 @@ void ZombieRenderer::swapArmor(shared_ptr<Zombie> mob)
 	}
 
 	humanoidModel = static_cast<HumanoidModel *>(model);
+	resModel = model;
 }
 
 void ZombieRenderer::setupRotations(shared_ptr<LivingEntity> _mob, float bob, float bodyRot, float a)

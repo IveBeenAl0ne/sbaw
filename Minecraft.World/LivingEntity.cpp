@@ -208,6 +208,15 @@ void LivingEntity::baseTick()
 		hurt(DamageSource::inWall, 1);
 	}
 
+	if (!level->isClientSide && isAlive() && onGround && !isSneaking() && tickCount % 10 == 0)
+	{
+		int tileBelow = level->getTile(Mth::floor(x), Mth::floor(bb->y0) - 1, Mth::floor(z));
+		if (tileBelow == Tile::magma_Id)
+		{
+			hurt(DamageSource::inFire, 1);
+		}
+	}
+
 	if (isFireImmune() || level->isClientSide) clearFire();
 	shared_ptr<Player> thisPlayer = dynamic_pointer_cast<Player>(shared_from_this());
 	bool isInvulnerable = (thisPlayer != nullptr && thisPlayer->abilities.invulnerable);
@@ -287,6 +296,16 @@ void LivingEntity::baseTick()
 	tickEffects();
 
 	animStepO = animStep;
+
+	if (!level->isClientSide && isAlive())
+	{
+		int frostWalkerLevel = EnchantmentHelper::getFrostWalker(dynamic_pointer_cast<LivingEntity>(shared_from_this()));
+		if (frostWalkerLevel > 0)
+		{
+			FrostWalkerEnchantment::freezeNearby(dynamic_pointer_cast<LivingEntity>(shared_from_this()), level,
+				Mth::floor(x), Mth::floor(y), Mth::floor(z), frostWalkerLevel);
+		}
+	}
 
 	yBodyRotO = yBodyRot;
 	yHeadRotO = yHeadRot;

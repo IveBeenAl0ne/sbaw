@@ -148,18 +148,6 @@ endif()
 # Copy redist files
 add_copyredist_target(Minecraft.Client)
 
-# replace col file with xml file
-add_custom_target(AssetTitleUpdateColourOverride_Minecraft.Client ALL
-  COMMAND ${CMAKE_COMMAND} -E remove "$<TARGET_FILE_DIR:Minecraft.Client>/Common/res/TitleUpdate/res/colours.col"
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_CURRENT_SOURCE_DIR}/Common/res/TitleUpdate/res/colours.xml"
-    "$<TARGET_FILE_DIR:Minecraft.Client>/Common/res/TitleUpdate/res/colours.xml"
-  VERBATIM
-)
-add_dependencies(AssetTitleUpdateColourOverride_Minecraft.Client AssetFolderCopy_Minecraft.Client)
-add_dependencies(Minecraft.Client AssetTitleUpdateColourOverride_Minecraft.Client)
-set_property(TARGET AssetTitleUpdateColourOverride_Minecraft.Client PROPERTY FOLDER "Build")
-
 # Make sure GameHDD exists on Windows
 if(PLATFORM_NAME STREQUAL "Windows64")
   add_gamehdd_target(Minecraft.Client)

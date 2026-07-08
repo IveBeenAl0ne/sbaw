@@ -555,7 +555,7 @@ bool VillagePieces::Well::postProcess(Level *level, Random *random, BoundingBox 
 			{
 				continue;
 			}
-			placeBlock(level, Tile::gravel_Id, 0, x, height - 4, z, chunkBB);
+			placeBlock(level, Tile::cobblestone_Id, 0, x, height - 4, z, chunkBB);
 			generateAirColumnUp(level, x, height - 3, z, chunkBB);
 		}
 	}
@@ -709,8 +709,8 @@ BoundingBox *VillagePieces::StraightRoad::findPieceBox(StartPiece *startPiece, l
 
 bool VillagePieces::StraightRoad::postProcess(Level *level, Random *random, BoundingBox *chunkBB)
 {
-	int roadTile = biomeBlock(Tile::gravel_Id, 0);
-	int baseTile = biomeBlock(Tile::cobblestone_Id, 0);
+	int roadTile = biomeBlock(Tile::grass_path_Id, 0);
+	// int baseTile = biomeBlock(Tile::cobblestone_Id, 0);
 	for (int x = boundingBox->x0; x <= boundingBox->x1; x++)
 	{
 		for (int z = boundingBox->z0; z <= boundingBox->z1; z++)
@@ -719,7 +719,7 @@ bool VillagePieces::StraightRoad::postProcess(Level *level, Random *random, Boun
 			{
 				int y = level->getTopSolidBlock(x, z) - 1;
 				level->setTileAndData(x, y, z, roadTile, 0, Tile::UPDATE_CLIENTS);
-				level->setTileAndData(x, y - 1, z, baseTile, 0, Tile::UPDATE_CLIENTS);
+				// level->setTileAndData(x, y - 1, z, baseTile, 0, Tile::UPDATE_CLIENTS);
 			}
 		}
 	}
@@ -1771,6 +1771,8 @@ int VillagePieces::Farmland::selectCrops(Random *random)
 		return Tile::carrots_Id;
 	case 1:
 		return Tile::potatoes_Id;
+	case 2:
+		return Tile::beetroots_Id;
 	}
 }
 

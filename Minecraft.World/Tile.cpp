@@ -266,9 +266,19 @@ Tile* Tile::prismarine = nullptr;
 
 Tile* Tile::log2 = nullptr;
 Tile* Tile::packedIce = nullptr;
+FrostedIceTile* Tile::frosted_ice = nullptr;
+GrassPathTile* Tile::grass_path = nullptr;
+BeetrootTile* Tile::beetroots = nullptr;
+Tile* Tile::end_bricks = nullptr;
+MagmaTile* Tile::magma = nullptr;
+Tile* Tile::nether_wart_block = nullptr;
+Tile* Tile::red_nether_brick = nullptr;
+BoneBlockTile* Tile::bone_block = nullptr;
 
 Tile* Tile::barrier = nullptr;
 TallGrass2* Tile::double_plant = nullptr;
+BannerTile* Tile::standing_banner = nullptr;
+BannerTile* Tile::wall_banner = nullptr;
 
 DWORD Tile::tlsIdxShape = TlsAlloc();
 
@@ -577,6 +587,15 @@ void Tile::staticCtor()
 
 	//
 	Tile::packedIce = (new PackedIceTile(174))->setDestroyTime(0.5f)->setSoundType(SOUND_GLASS)->setIconName(L"packed_ice")->setDescriptionId(IDS_TILE_PACKED_ICE)->setUseDescriptionId(IDS_DESC_PACKED_ICE);
+	Tile::beetroots = static_cast<BeetrootTile*>((new BeetrootTile(beetroots_Id))->setIconName(L"beetroots")->setDescriptionId(IDS_TILE_BEETROOTS)->setUseDescriptionId(IDS_DESC_BEETROOT_SEEDS)->disableMipmap());
+	Tile::grass_path = static_cast<GrassPathTile*>((new GrassPathTile(grass_path_Id))->setDestroyTime(0.65f)->setSoundType(SOUND_GRAVEL)->setIconName(L"grass_path_top")->setDescriptionId(IDS_TILE_GRASS_PATH)->setUseDescriptionId(IDS_DESC_DIRT)->sendTileData());
+	Tile::frosted_ice = static_cast<FrostedIceTile*>((new FrostedIceTile(frosted_ice_Id))->setDestroyTime(0.5f)->setLightBlock(3)->setSoundType(Tile::SOUND_GLASS)->setIconName(L"ice")->setDescriptionId(IDS_TILE_FROSTED_ICE)->setUseDescriptionId(IDS_DESC_ICE)->setNotCollectStatistics());
+
+	Tile::end_bricks = (new Tile(end_bricks_Id, Material::stone))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(3.0f)->setExplodeable(9)->setSoundType(SOUND_STONE)->setIconName(L"end_bricks")->setDescriptionId(IDS_TILE_END_BRICKS)->setUseDescriptionId(IDS_DESC_STONE);
+	Tile::magma = static_cast<MagmaTile*>((new MagmaTile(magma_Id))->setBaseItemTypeAndMaterial(Item::eBaseItemType_block, Item::eMaterial_stone)->setDestroyTime(0.5f)->setExplodeable(6)->setSoundType(SOUND_STONE)->setIconName(L"magma")->setDescriptionId(IDS_TILE_MAGMA)->setUseDescriptionId(IDS_DESC_STONE));
+	Tile::nether_wart_block = (new Tile(nether_wart_block_Id, Material::grass))->setBaseItemTypeAndMaterial(Item::eBaseItemType_block, Item::eMaterial_wheat)->setDestroyTime(0.5f)->setSoundType(SOUND_WOOD)->setIconName(L"nether_wart_block")->setDescriptionId(IDS_TILE_NETHER_WART_BLOCK)->setUseDescriptionId(IDS_DESC_STONE);
+	Tile::red_nether_brick = (new Tile(red_nether_brick_Id, Material::stone))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(2.0f)->setExplodeable(6)->setSoundType(SOUND_STONE)->setIconName(L"red_nether_brick")->setDescriptionId(IDS_TILE_RED_NETHER_BRICK)->setUseDescriptionId(IDS_DESC_STONE);
+	Tile::bone_block = static_cast<BoneBlockTile*>((new BoneBlockTile(bone_block_Id))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(1.5f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"bone_block_side")->setDescriptionId(IDS_TILE_BONE_BLOCK)->setUseDescriptionId(IDS_DESC_STONE)->sendTileData());
 
 	Tile::daylight_detector_inverted = static_cast<DaylightDetectorTile*>((new DaylightDetectorTile(178, true))->setDestroyTime(0.2f)->setSoundType(SOUND_WOOD)->setIconName(L"daylight_detector")->setDescriptionId(IDS_TILE_DAYLIGHT_DETECTOR)->setUseDescriptionId(IDS_DESC_DAYLIGHT_DETECTOR));
 	Tile::red_sandstone = (new RedSandStoneTile(red_sandstone_Id))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_sand)->setSoundType(Tile::SOUND_STONE)->setDestroyTime(0.8f)->sendTileData()->setIconName(L"red_sandstone")->setDescriptionId(IDS_TILE_RED_SANDSTONE)->setUseDescriptionId(IDS_DESC_RED_SANDSTONE)->sendTileData();
@@ -601,6 +620,11 @@ void Tile::staticCtor()
 	Tile::prismarine = (new PrismarineTile(168))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(1.5f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"prismarine")->setDescriptionId(IDS_TILE_PRISMARINE)->setUseDescriptionId(IDS_DESC_PRISMARINE);
 
 	Tile::double_plant = static_cast<TallGrass2*>((new TallGrass2(175))->setDestroyTime(0.0f)->setSoundType(Tile::SOUND_GRASS)->setIconName(L"tallgrass2_tall_grass_upper")->setDescriptionId(IDS_DESC_DOUBLE_TALL_GRASS)->setUseDescriptionId(IDS_DESC_TALL_GRASS)->disableMipmap()->sendTileData(0xFF));
+
+	Tile::standing_banner = static_cast<BannerTile*>((new BannerTile(176, true))->setDestroyTime(1.0f)->setSoundType(Tile::SOUND_WOOD)->setIconName(L"planks_oak")->setNotCollectStatistics()->sendTileData()->setUseDescriptionId(IDS_DESC_SIGN));
+	Tile::wall_banner    = static_cast<BannerTile*>((new BannerTile(177, false))->setDestroyTime(1.0f)->setSoundType(Tile::SOUND_WOOD)->setIconName(L"planks_oak")->setNotCollectStatistics()->sendTileData()->setUseDescriptionId(IDS_DESC_SIGN));
+
+	Item::items[standing_banner_Id] = (new BannerItem(standing_banner_Id - 256))->setIconName(L"sign")->setDescriptionId(IDS_TILE_BANNER)->setUseDescriptionId(IDS_DESC_SIGN);
 
 	// Special cases for certain items since they can have different icons
 	Item::items[wool_Id]				= ( new WoolTileItem(Tile::wool_Id- 256) )->setIconName(L"cloth")->setDescriptionId(IDS_TILE_CLOTH)->setUseDescriptionId(IDS_DESC_WOOL);
@@ -670,7 +694,7 @@ void Tile::staticCtor()
 			{
 				propagate = true;
 			}
-			if (i == Tile::farmland_Id) propagate = true;
+			if (i == Tile::farmland_Id || i == Tile::grass_path_Id) propagate = true;
 			if (Tile::transculent[i])
 			{
 				propagate = true;
@@ -1906,4 +1930,11 @@ const int Tile::carpet_Id;
 const int Tile::acacia_stairs_Id;
 const int Tile::dark_oak_stairs_Id;
 const int Tile::slime_Id;
+const int Tile::beetroots_Id;
+const int Tile::grass_path_Id;
+const int Tile::end_bricks_Id;
+const int Tile::magma_Id;
+const int Tile::nether_wart_block_Id;
+const int Tile::red_nether_brick_Id;
+const int Tile::bone_block_Id;
 #endif

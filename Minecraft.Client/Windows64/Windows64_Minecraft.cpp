@@ -2191,6 +2191,12 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			pMinecraft->setScreen(new ChatScreen());
 			SetFocus(g_hWnd);
 		}
+		if (g_KBMInput.IsKeyPressed(VK_OEM_2) && app.GetGameStarted() && !ui.GetMenuDisplayed(0) && pMinecraft->screen == NULL)
+		{
+			g_KBMInput.ClearCharBuffer();
+			pMinecraft->setScreen(new ChatScreen(L"/"));
+			SetFocus(g_hWnd);
+		}
 
 #if 0
 		// has the game defined profile data been changed (by a profile load)

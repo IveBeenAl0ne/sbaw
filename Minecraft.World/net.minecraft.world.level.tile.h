@@ -55,6 +55,7 @@
 #include "HopperTile.h"
 #include "HugeMushroomTile.h"
 #include "IceTile.h"
+#include "FrostedIceTile.h"
 #include "JukeboxTile.h"
 #include "LadderTile.h"
 #include "LeafTile.h"
@@ -144,5 +145,10 @@
 
 #include "PackedIceTile.h"
 #include "StoneSlabTile2.h"
+#include "GrassPathTile.h"
+#include "BeetrootTile.h"
+#include "MagmaTile.h"
+#include "BoneBlockTile.h"
+#include "BannerTile.h"
 
 

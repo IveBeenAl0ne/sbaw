@@ -14,6 +14,8 @@
 #include "SkullTileRenderer.h"
 #include "EnderChestRenderer.h"
 #include "BeaconRenderer.h"
+#include "BannerRenderer.h"
+#include "BannerModel.h"
 
 TileEntityRenderDispatcher *TileEntityRenderDispatcher::instance = nullptr;
 double TileEntityRenderDispatcher::xOff = 0;
@@ -47,6 +49,7 @@ TileEntityRenderDispatcher::TileEntityRenderDispatcher()
 	renderers[eTYPE_SKULLTILEENTITY] = new SkullTileRenderer();
 	renderers[eTYPE_FURNACETILEENTITY] = nullptr;
 	renderers[eTYPE_BEACONTILEENTITY] = new BeaconRenderer();
+	renderers[eTYPE_BANNERTILEENTITY] = new BannerRenderer();
 	glDisable(GL_LIGHTING);
 
 	for(auto& renderer : renderers)

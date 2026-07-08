@@ -44,6 +44,12 @@ class HalfSlabTile;
 class Icon;
 class IconRegister;
 class TallGrass2;
+class FrostedIceTile;
+class GrassPathTile;
+class BeetrootTile;
+class MagmaTile;
+class BoneBlockTile;
+class BannerTile;
 
 class ChunkRebuildData;
 
@@ -410,8 +416,8 @@ public:
 	static const int coal_block_Id = 173;
 	static const int packed_ice_Id = 174;
 	static const int double_plant_Id = 175;
-	//176 standing_banner
-	//177 wall_banner
+	static const int standing_banner_Id = 176;
+	static const int wall_banner_Id = 177;
 	static const int daylight_detector_inverted_Id = 178;
 	static const int red_sandstone_Id = 179;
 	static const int red_sandstone_stairs_Id = 180;
@@ -440,15 +446,15 @@ public:
 	//purpur_stairs     203
 	//purpur_double_slab 204
 	//purpur_slab		205
-	//end_bricks		206
-	//beetroots         207
-	//grass_path		208
+	static const int end_bricks_Id = 206;
+	static const int beetroots_Id = 207;
+	static const int grass_path_Id = 208;
 	//end_gateway		209
-	//frosted_ice		212
-	//magma				213
-	//nether_wart_block 214
-	//red_nether_brick  215
-	//bone_block		216
+	static const int frosted_ice_Id = 212;
+	static const int magma_Id = 213;
+	static const int nether_wart_block_Id = 214;
+	static const int red_nether_brick_Id = 215;
+	static const int bone_block_Id = 216;
 	//structure_void    217
 	// 
 	//
@@ -662,11 +668,21 @@ public:
 	static HalfSlabTile* stoneSlab2Half;
 	static Tile* log2;
 	static Tile* packedIce;
+	static FrostedIceTile* frosted_ice;
+	static GrassPathTile* grass_path;
+	static BeetrootTile* beetroots;
+	static Tile* end_bricks;
+	static MagmaTile* magma;
+	static Tile* nether_wart_block;
+	static Tile* red_nether_brick;
+	static BoneBlockTile* bone_block;
 	static Tile* seaLantern;
 	static Tile* prismarine;
 
 	static TallGrass2* double_plant;
-	
+
+	static BannerTile* standing_banner;
+	static BannerTile* wall_banner;
 
 	static void staticCtor();
 
