@@ -8,11 +8,15 @@
 
 using namespace std;
 
+class FolderFile;
+
 class ArchiveFile
 {
 protected:
 	File m_sourcefile;
 	BYTE *m_cachedData;
+	FolderFile *m_folderFile;
+	bool m_useFolder;
 
 	typedef struct _MetaData
 	{
@@ -28,7 +32,7 @@ protected:
 public:
 	void _readHeader(DataInputStream *dis);
 
-	ArchiveFile(File file);
+	ArchiveFile(File file, bool allowFolder = false);
 	~ArchiveFile();
 
 	vector<wstring> *getFileList();

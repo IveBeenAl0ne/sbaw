@@ -12,6 +12,7 @@ class FenceGateTile;
 class BrewingStandTile;
 class CauldronTile;
 class EggTile;
+class SlimeTile;
 class TheEndPortalFrameTile;
 class RepeaterTile;
 class ComparatorTile;
@@ -39,6 +40,7 @@ class TileRenderer
 	public :
 	static bool fancy;
 	bool setColor;
+	float fixedTextureAlpha;
 
 	float tileShapeX0;
 	float tileShapeX1;
@@ -87,11 +89,14 @@ public:
 	bool tesselateInWorld( Tile* tt, int x, int y, int z, int forceData = -1, shared_ptr< TileEntity > forceEntity =
 						   shared_ptr< TileEntity >() );	// 4J added forceData, forceEntity param
 
+	bool tesselateSlimeInnerInWorld(Tile *tt, int x, int y, int z);
+
 	private:
 	bool tesselateAirPortalFrameInWorld(TheEndPortalFrameTile *tt, int x, int y, int z);
 	bool tesselateBedInWorld( Tile* tt, int x, int y, int z );
 	bool tesselateBrewingStandInWorld(BrewingStandTile *tt, int x, int y, int z);
 	bool tesselateCauldronInWorld(CauldronTile *tt, int x, int y, int z);
+	bool tesselateSlimeBlockInWorld(Tile *tt, int x, int y, int z);
 	bool tesselateFlowerPotInWorld(FlowerPotTile *tt, int x, int y, int z);
 	bool tesselateAnvilInWorld(AnvilTile *tt, int x, int y, int z);
 
@@ -144,6 +149,7 @@ private:
 	bool tesselateRowInWorld( Tile* tt, int x, int y, int z );
 	void tesselateTorch( Tile* tt, float x, float y, float z, float xxa, float zza, int data );
 	void tesselateCrossTexture( Tile* tt, int data, float x, float y, float z, float scale );
+	void tesselateCrossStemHeight( Tile* tt, int data, float x, float y, float z, float height );
 	void tesselateStemTexture( Tile* tt, int data, float h, float x, float y, float z );
 	bool tesselateLilypadInWorld(Tile *tt, int x, int y, int z);
 	void tesselateStemDirTexture( StemTile* tt, int data, int dir, float h, float x, float y, float z );

@@ -279,7 +279,7 @@ public:
 	virtual bool openFurnace(shared_ptr<FurnaceTileEntity> container);		// 4J - added bool return
 	virtual bool openTrap(shared_ptr<DispenserTileEntity> container);		// 4J - added bool return
 	virtual void openTextEdit(shared_ptr<TileEntity> sign);
-	virtual bool openBrewingStand(shared_ptr<BrewingStandTileEntity> brewingStand); // 4J - added bool return
+	virtual bool openBrewingStand(shared_ptr<BrewingStandTileEntity> brewing_stand); // 4J - added bool return
 	virtual bool openBeacon(shared_ptr<BeaconTileEntity> beacon);
 	virtual bool openTrading(shared_ptr<Merchant> traderTarget, const wstring &name); // 4J - added bool return
 	virtual void openItemInstanceGui(shared_ptr<ItemInstance> itemInstance, shared_ptr<Player> player);
@@ -442,6 +442,8 @@ public:
 	static DWORD getCapeIdFromPath(const wstring &cape);
 	static wstring getCapePathFromId(DWORD capeId);
 	static unsigned int getSkinAnimOverrideBitmask(DWORD skinId);
+	static int GetModelTypeFromAnimBitmask(unsigned int uiAnimOverrideBitmask);
+	static int GetModelTypeFromTextureId(int textureId);
 
 	// 4J Added
 	void setXuid(PlayerUID xuid);
@@ -553,6 +555,8 @@ public:
 
 	vector<ModelPart *> *GetAdditionalModelParts();
 	void SetAdditionalModelParts(vector<ModelPart *> *ppAdditionalModelParts);
+	vector<SKIN_OFFSET *> *GetSkinOffsets();
+	void SetSkinOffsets(vector<SKIN_OFFSET *> *ppSkinOffsets);
 
 #if defined(__PS3__) || defined(__ORBIS__)
 	enum ePlayerNameValidState
@@ -569,6 +573,9 @@ private:
 	vector<ModelPart *> *m_ppAdditionalModelParts;
 	bool m_bCheckedForModelParts;
 	bool m_bCheckedDLCForModelParts;
+	vector<SKIN_OFFSET *> *m_ppSkinOffsets;
+	bool m_bCheckedForSkinOffsets;
+	bool m_bCheckedDLCForSkinOffsets;
 
 #if defined(__PS3__) || defined(__ORBIS__)
 	ePlayerNameValidState m_ePlayerNameValidState; // 4J-PB - to ensure we have the characters for this name in our font, or display a player number instead

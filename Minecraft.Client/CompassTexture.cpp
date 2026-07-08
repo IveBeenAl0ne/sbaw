@@ -77,13 +77,19 @@ void CompassTexture::updateFromPosition(Level *level, double x, double z, double
 		rot += rota;
 	}
 
+	int frameCount = getFrames();
+	if (frameCount <= 0)
+	{
+		return;
+	}
+
 	// 4J Stu - We share data with another texture
 	if(m_dataTexture != nullptr)
 	{
-		int newFrame = static_cast<int>(((rot / (PI * 2)) + 1.0) * m_dataTexture->frames->size()) % m_dataTexture->frames->size();
+		int newFrame = static_cast<int>(((rot / (PI * 2)) + 1.0) * frameCount) % frameCount;
 		while (newFrame < 0)
 		{
-			newFrame = (newFrame + m_dataTexture->frames->size()) % m_dataTexture->frames->size();
+			newFrame = (newFrame + frameCount) % frameCount;
 		}
 		if (newFrame != frame)
 		{
@@ -93,10 +99,10 @@ void CompassTexture::updateFromPosition(Level *level, double x, double z, double
 	}
 	else
 	{
-		int newFrame = static_cast<int>(((rot / (PI * 2)) + 1.0) * frames->size()) % frames->size();
+		int newFrame = static_cast<int>(((rot / (PI * 2)) + 1.0) * frameCount) % frameCount;
 		while (newFrame < 0)
 		{
-			newFrame = (newFrame + frames->size()) % frames->size();
+			newFrame = (newFrame + frameCount) % frameCount;
 		}
 		if (newFrame != frame)
 		{

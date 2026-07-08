@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../Minecraft.Client/Minecraft.h"
 #include "GrassTile.h"
+#include "HalfSlabTile.h"
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.level.biome.h"
 #include "net.minecraft.h"
@@ -96,7 +97,16 @@ void GrassTile::tick(Level *level, int x, int y, int z, Random *random)
 {
 	if (level->isClientSide) return;
 
-	if (level->getRawBrightness(x, y + 1, z) < MIN_BRIGHTNESS && Tile::lightBlock[level->getTile(x, y + 1, z)] > 2)
+	int aboveTileId = level->getTile(x, y + 1, z);
+	Material* above = level->getMaterial(x, y + 1, z);
+	bool aboveIsTopSlab = false;
+	if (Tile::tiles[aboveTileId] != nullptr)
+	{
+		HalfSlabTile *aboveSlab = dynamic_cast<HalfSlabTile *>(Tile::tiles[aboveTileId]);
+		aboveIsTopSlab = aboveSlab != nullptr && (level->getData(x, y + 1, z) & HalfSlabTile::TOP_SLOT_BIT) != 0;
+	}
+
+	if (!aboveIsTopSlab && level->getRawBrightness(x, y + 1, z) < MIN_BRIGHTNESS && Tile::lightBlock[aboveTileId] > 2)
 	{
 		level->setTileAndUpdate(x, y, z, Tile::dirt_Id);
 	}
@@ -123,12 +133,10 @@ void GrassTile::tick(Level *level, int x, int y, int z, Random *random)
 
   // using isSolid() here is wrong because non full blocks like iron bars,
   // fences, walls are also flagged as solid by their material
-  int aboveTileId = level->getTile(x, y + 1, z);
-  Material* above = level->getMaterial(x, y + 1, z);
-  if (above->isLiquid() || Tile::lightBlock[aboveTileId] > 2)
-  {
-    level->setTileAndUpdate(x, y, z, Tile::dirt_Id);
-  }
+	if (!aboveIsTopSlab && (above->isLiquid() || Tile::lightBlock[aboveTileId] > 2))
+	{
+		level->setTileAndUpdate(x, y, z, Tile::dirt_Id);
+	}
 }
 
 int GrassTile::getResource(int data, Random *random, int playerBonusLevel)

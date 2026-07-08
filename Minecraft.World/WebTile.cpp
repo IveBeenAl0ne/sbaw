@@ -5,6 +5,7 @@
 
 WebTile::WebTile(int id) : Tile(id, Material::web)
 {
+	setLightBlock(0);
 }
 
 

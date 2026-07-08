@@ -92,6 +92,7 @@ void ConsoleUIController::render()
 	let it know we're done rendering, so it can do any finalization
 	it needs to do. */
 	gdraw_D3D11_NoMoreGDrawThisFrame();
+
 #endif
 }
 

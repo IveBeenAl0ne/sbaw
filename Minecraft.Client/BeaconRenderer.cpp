@@ -88,7 +88,7 @@ void BeaconRenderer::render(shared_ptr<TileEntity> _beacon, double x, double y, 
             
             segments.push_back({curR, curG, curB, 1});
         } 
-        else if (tileID == 0 || tileID == Tile::glass_Id || tileID == Tile::thinGlass_Id) {
+        else if (tileID == 0 || tileID == Tile::glass_Id || tileID == Tile::glass_pane_Id) {
             if (segments.empty()) {
                 segments.push_back({1.0f, 1.0f, 1.0f, 1});
             } else {
@@ -113,7 +113,7 @@ void BeaconRenderer::render(shared_ptr<TileEntity> _beacon, double x, double y, 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
     glDepthMask(true);
 
-    double currentYBase = 0;
+    double currentYBase = 1;
     for (const auto& seg : segments) {
         int r = (int)(seg.r * 255);
         int g = (int)(seg.g * 255);
@@ -163,7 +163,7 @@ void BeaconRenderer::render(shared_ptr<TileEntity> _beacon, double x, double y, 
     
     glDepthMask(false);
 
-    currentYBase = 0;
+    currentYBase = 1;
     for (const auto& seg : segments) {
         int r = (int)(seg.r * 255);
         int g = (int)(seg.g * 255);

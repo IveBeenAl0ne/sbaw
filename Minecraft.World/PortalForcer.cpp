@@ -101,14 +101,77 @@ bool PortalForcer::findPortal(shared_ptr<Entity> e, double xOriginal, double yOr
 	{
 		PortalPosition *pos = it->second;
 
-		closest = 0;
-		xTarget = pos->x;
-		yTarget = pos->y;
-		zTarget = pos->z;
-		pos->lastUsed = level->getGameTime();
-		updateCache = false;
+		if (level->getTile(pos->x, pos->y, pos->z) == Tile::portal_Id)
+		{
+			closest = 0;
+			xTarget = pos->x;
+			yTarget = pos->y;
+			zTarget = pos->z;
+			pos->lastUsed = level->getGameTime();
+			updateCache = false;
+		}
+		else
+		{
+			delete pos;
+			cachedPortals.erase(it);
+			for (auto keyIt = cachedPortalKeys.begin(); keyIt != cachedPortalKeys.end(); ++keyIt)
+			{
+				if (*keyIt == hash)
+				{
+					cachedPortalKeys.erase(keyIt);
+					break;
+				}
+			}
+		}
 	}
-	else
+
+	if (updateCache)
+	{
+		const int localRadius = 16;
+		double localClosest = -1;
+		int localX = 0;
+		int localY = 0;
+		int localZ = 0;
+
+		for (int x = xc - localRadius; x <= xc + localRadius; x++)
+		{
+			double xd = (x + 0.5) - e->x;
+			for (int z = zc - localRadius; z <= zc + localRadius; z++)
+			{
+				double zd = (z + 0.5) - e->z;
+				for (int y = level->getHeight() - 1; y >= 0; y--)
+				{
+					if (level->getTile(x, y, z) == Tile::portal_Id)
+					{
+						while (level->getTile(x, y - 1, z) == Tile::portal_Id)
+						{
+							y--;
+						}
+
+						double yd = (y + 0.5) - e->y;
+						double dist = xd * xd + yd * yd + zd * zd;
+						if (localClosest < 0 || dist < localClosest)
+						{
+							localClosest = dist;
+							localX = x;
+							localY = y;
+							localZ = z;
+						}
+					}
+				}
+			}
+		}
+
+		if (localClosest >= 0)
+		{
+			closest = localClosest;
+			xTarget = localX;
+			yTarget = localY;
+			zTarget = localZ;
+		}
+	}
+
+	if (closest < 0)
 	{
 		for (int x = xc - r; x <= xc + r; x++)
 		{
@@ -118,9 +181,9 @@ bool PortalForcer::findPortal(shared_ptr<Entity> e, double xOriginal, double yOr
 				double zd = (z + 0.5) - e->z;
 				for (int y = level->getHeight() - 1; y >= 0; y--)
 				{
-					if (level->getTile(x, y, z) == Tile::portalTile_Id)
+					if (level->getTile(x, y, z) == Tile::portal_Id)
 					{
-						while (level->getTile(x, y - 1, z) == Tile::portalTile_Id)
+						while (level->getTile(x, y - 1, z) == Tile::portal_Id)
 						{
 							y--;
 						}
@@ -166,10 +229,10 @@ bool PortalForcer::findPortal(shared_ptr<Entity> e, double xOriginal, double yOr
 		double zt = z + 0.5;
 		int dir = Direction::UNDEFINED;
 
-		if (level->getTile(x - 1, y, z) == Tile::portalTile_Id) dir = Direction::NORTH;
-		if (level->getTile(x + 1, y, z) == Tile::portalTile_Id) dir = Direction::SOUTH;
-		if (level->getTile(x, y, z - 1) == Tile::portalTile_Id) dir = Direction::EAST;
-		if (level->getTile(x, y, z + 1) == Tile::portalTile_Id) dir = Direction::WEST;
+		if (level->getTile(x - 1, y, z) == Tile::portal_Id) dir = Direction::NORTH;
+		if (level->getTile(x + 1, y, z) == Tile::portal_Id) dir = Direction::SOUTH;
+		if (level->getTile(x, y, z - 1) == Tile::portal_Id) dir = Direction::EAST;
+		if (level->getTile(x, y, z + 1) == Tile::portal_Id) dir = Direction::WEST;
 
 		int originalDir = e->getPortalEntranceDir();
 
@@ -491,7 +554,7 @@ next_second: continue;
 				int zt = z + (s - 1) * za;
 
 				bool border = s == 0 || s == 3 || h == -1 || h == 3;
-				level->setTileAndData(xt, yt, zt, border ? Tile::obsidian_Id : Tile::portalTile_Id, 0, Tile::UPDATE_CLIENTS);
+				level->setTileAndData(xt, yt, zt, border ? Tile::obsidian_Id : Tile::portal_Id, 0, Tile::UPDATE_CLIENTS);
 			}
 		}
 

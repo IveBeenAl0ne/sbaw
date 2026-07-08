@@ -144,9 +144,27 @@ InputStream *DLCTexturePack::getResourceImplementation(const wstring &name) //th
 
 bool DLCTexturePack::hasFile(const wstring &name)
 {
-	bool hasFile = false;
-	if(m_dlcDataPack != nullptr) hasFile = m_dlcDataPack->doesPackContainFile(DLCManager::e_DLCType_Texture, name);
-	return hasFile;
+	if(m_dlcDataPack == nullptr)
+	{
+		return false;
+	}
+
+	wstring normalized = replaceAll(name, L"\\", L"/");
+	if(!normalized.empty() && normalized[0] == L'/')
+	{
+		normalized = normalized.substr(1);
+	}
+	if(normalized.rfind(L"res/", 0) != 0)
+	{
+		normalized = L"res/" + normalized;
+	}
+
+	if(m_dlcDataPack->doesPackContainFile(DLCManager::e_DLCType_Texture, normalized))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 bool DLCTexturePack::isTerrainUpdateCompatible()
@@ -163,10 +181,28 @@ wstring DLCTexturePack::getAnimationString(const wstring &textureName, const wst
 {
 	wstring result = L"";
 
-	wstring fullpath = L"res/" + path + textureName + L".png"; 
-	if(hasFile(fullpath))
+	wstring fullpath = path;
+	if(!fullpath.empty() && fullpath[0] == L'/')
 	{
-		result = m_dlcDataPack->getFile(DLCManager::e_DLCType_Texture, fullpath)->getParameterAsString(DLCManager::e_DLCParamType_Anim);
+		fullpath = fullpath.substr(1);
+	}
+	if(fullpath.rfind(L"res/", 0) != 0)
+	{
+		fullpath = L"res/" + fullpath;
+	}
+	fullpath += textureName + L".png";
+	if(m_dlcDataPack != nullptr && m_dlcDataPack->doesPackContainFile(DLCManager::e_DLCType_Texture, fullpath))
+	{
+		DLCFile *dlcFile = m_dlcDataPack->getFile(DLCManager::e_DLCType_Texture, fullpath);
+		if(dlcFile != nullptr)
+		{
+			result = dlcFile->getParameterAsString(DLCManager::e_DLCParamType_Anim);
+		}
+	}
+
+	if(result.empty() && fallback != nullptr)
+	{
+		result = fallback->getAnimationString(textureName, path, true);
 	}
 
 	return result;
@@ -174,8 +210,33 @@ wstring DLCTexturePack::getAnimationString(const wstring &textureName, const wst
 
 BufferedImage *DLCTexturePack::getImageResource(const wstring& File, bool filenameHasExtension /*= false*/, bool bTitleUpdateTexture /*=false*/, const wstring &drive /*=L""*/)
 {
-	if(m_dlcDataPack) return new BufferedImage(m_dlcDataPack, L"/" + File, filenameHasExtension);
-	else return fallback->getImageResource(File, filenameHasExtension, bTitleUpdateTexture, drive);
+	if(m_dlcDataPack != nullptr)
+	{
+		wstring dlcPath = File;
+		if(!dlcPath.empty() && dlcPath[0] == L'/')
+		{
+			dlcPath = dlcPath.substr(1);
+		}
+		if(dlcPath.rfind(L"res/", 0) != 0)
+		{
+			dlcPath = L"res/" + dlcPath;
+		}
+		bool hasTexture = m_dlcDataPack->doesPackContainFile(DLCManager::e_DLCType_Texture, dlcPath);
+		if(!hasTexture && !filenameHasExtension)
+		{
+			hasTexture = m_dlcDataPack->doesPackContainFile(DLCManager::e_DLCType_Texture, dlcPath + L".png");
+		}
+		if(!hasTexture && filenameHasExtension && dlcPath.size() > 4)
+		{
+			wstring noExt = dlcPath.substr(0, dlcPath.size() - 4);
+			hasTexture = m_dlcDataPack->doesPackContainFile(DLCManager::e_DLCType_Texture, noExt + L".png");
+		}
+		if(hasTexture)
+		{
+			return new BufferedImage(m_dlcDataPack, L"/" + File, filenameHasExtension);
+		}
+	}
+	return fallback->getImageResource(File, filenameHasExtension, bTitleUpdateTexture, drive);
 }
 
 DLCPack * DLCTexturePack::getDLCPack()
@@ -354,8 +415,16 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 					}
 				}
 #else
-				File archivePath(getFilePath(texturePack->m_dlcInfoPack->GetPackID(), wstring(L"media.arc") ) );
-				if(archivePath.exists()) texturePack->m_archiveFile = new ArchiveFile(archivePath);
+				File mediaFolder(getFilePath(texturePack->m_dlcInfoPack->GetPackID(), wstring(L"media")));
+				if(mediaFolder.exists() && mediaFolder.isDirectory())
+				{
+					texturePack->m_archiveFile = new ArchiveFile(mediaFolder, true);
+				}
+				else
+				{
+					File archivePath(getFilePath(texturePack->m_dlcInfoPack->GetPackID(), wstring(L"media.arc") ) );
+					if(archivePath.exists()) texturePack->m_archiveFile = new ArchiveFile(archivePath);
+				}
 #endif
 
 				/**
@@ -364,16 +433,73 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 				*/
 				DLCPack *pack = texturePack->m_dlcInfoPack->GetParentPack();
 				LevelGenerationOptions *levelGen = app.getLevelGenerationOptions();
-				if (levelGen != nullptr && !levelGen->hasLoadedData())
+				bool shouldLoadGameRules = levelGen != nullptr && levelGen->isFromDLC();
+				if (shouldLoadGameRules)
 				{
-					int gameRulesCount = pack->getDLCItemsCount(DLCManager::e_DLCType_GameRulesHeader);
-					for(int i = 0; i < gameRulesCount; ++i)
+					bool needsReload = !levelGen->hasLoadedData()
+						|| levelGen->getRequiredTexturePackId() != texturePack->getDLCParentPackId();
+					if(needsReload)
 					{
-						DLCGameRulesHeader *dlcFile = static_cast<DLCGameRulesHeader *>(pack->getFile(DLCManager::e_DLCType_GameRulesHeader, i));
-					
-						if (!dlcFile->getGrfPath().empty())
+						int gameRulesCount = pack->getDLCItemsCount(DLCManager::e_DLCType_GameRulesHeader);
+						for(int i = 0; i < gameRulesCount; ++i)
 						{
-							File grf( getFilePath(texturePack->m_dlcInfoPack->GetPackID(), dlcFile->getGrfPath() ) );
+							DLCGameRulesHeader *dlcFile = static_cast<DLCGameRulesHeader *>(pack->getFile(DLCManager::e_DLCType_GameRulesHeader, i));
+
+							if (!dlcFile->getGrfPath().empty())
+							{
+								File grf( getFilePath(texturePack->m_dlcInfoPack->GetPackID(), dlcFile->getGrfPath() ) );
+								if (grf.exists())
+								{
+#ifdef _UNICODE
+									wstring path = grf.getPath();
+									const WCHAR *pchFilename=path.c_str();
+									HANDLE fileHandle = CreateFile(
+										pchFilename, // file name
+										GENERIC_READ, // access mode
+										0, // share mode // TODO 4J Stu - Will we need to share file? Probably not but...
+										nullptr, // Unused
+										OPEN_EXISTING , // how to create // TODO 4J Stu - Assuming that the file already exists if we are opening to read from it
+										FILE_FLAG_SEQUENTIAL_SCAN, // file attributes
+										nullptr // Unsupported
+										);
+#else
+									const char *pchFilename=wstringtofilename(grf.getPath());
+									HANDLE fileHandle = CreateFile(
+										pchFilename, // file name
+										GENERIC_READ, // access mode
+										0, // share mode // TODO 4J Stu - Will we need to share file? Probably not but...
+										nullptr, // Unused
+										OPEN_EXISTING , // how to create // TODO 4J Stu - Assuming that the file already exists if we are opening to read from it
+										FILE_FLAG_SEQUENTIAL_SCAN, // file attributes
+										nullptr // Unsupported
+										);
+#endif
+
+									if( fileHandle != INVALID_HANDLE_VALUE )
+									{
+										DWORD dwFileSize = grf.length();
+										DWORD bytesRead;
+										PBYTE pbData =  (PBYTE) new BYTE[dwFileSize];
+										BOOL bSuccess = ReadFile(fileHandle,pbData,dwFileSize,&bytesRead,nullptr);
+										if(bSuccess==FALSE)
+										{
+											app.FatalLoadError();
+										}
+										CloseHandle(fileHandle);
+
+										// 4J-PB - is it possible that we can get here after a read fail and it's not an error?
+										dlcFile->setGrfData(pbData, dwFileSize, texturePack->m_stringTable);
+
+										delete [] pbData;
+
+										app.m_gameRules.setLevelGenerationOptions( dlcFile->lgo );
+									}
+								}
+							}
+						}
+						if(levelGen->requiresBaseSave() && !levelGen->getBaseSavePath().empty() )
+						{
+							File grf(getFilePath(texturePack->m_dlcInfoPack->GetPackID(), levelGen->getBaseSavePath() ));
 							if (grf.exists())
 							{
 #ifdef _UNICODE
@@ -403,8 +529,7 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 
 								if( fileHandle != INVALID_HANDLE_VALUE )
 								{
-									DWORD dwFileSize = grf.length();
-									DWORD bytesRead;
+									DWORD bytesRead,dwFileSize = GetFileSize(fileHandle,nullptr);
 									PBYTE pbData =  (PBYTE) new BYTE[dwFileSize];
 									BOOL bSuccess = ReadFile(fileHandle,pbData,dwFileSize,&bytesRead,nullptr);
 									if(bSuccess==FALSE)
@@ -414,58 +539,8 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 									CloseHandle(fileHandle);
 
 									// 4J-PB - is it possible that we can get here after a read fail and it's not an error?
-									dlcFile->setGrfData(pbData, dwFileSize, texturePack->m_stringTable);
-
-									delete [] pbData;
-
-									app.m_gameRules.setLevelGenerationOptions( dlcFile->lgo );
+									levelGen->setBaseSaveData(pbData, dwFileSize);
 								}
-							}
-						}
-					}
-					if(levelGen->requiresBaseSave() && !levelGen->getBaseSavePath().empty() )
-					{
-						File grf(getFilePath(texturePack->m_dlcInfoPack->GetPackID(), levelGen->getBaseSavePath() ));
-						if (grf.exists())
-						{
-#ifdef _UNICODE
-							wstring path = grf.getPath();
-							const WCHAR *pchFilename=path.c_str();
-							HANDLE fileHandle = CreateFile(
-								pchFilename, // file name
-								GENERIC_READ, // access mode
-								0, // share mode // TODO 4J Stu - Will we need to share file? Probably not but...
-								nullptr, // Unused
-								OPEN_EXISTING , // how to create // TODO 4J Stu - Assuming that the file already exists if we are opening to read from it
-								FILE_FLAG_SEQUENTIAL_SCAN, // file attributes
-								nullptr // Unsupported
-								);
-#else
-							const char *pchFilename=wstringtofilename(grf.getPath());
-							HANDLE fileHandle = CreateFile(
-								pchFilename, // file name
-								GENERIC_READ, // access mode
-								0, // share mode // TODO 4J Stu - Will we need to share file? Probably not but...
-								nullptr, // Unused
-								OPEN_EXISTING , // how to create // TODO 4J Stu - Assuming that the file already exists if we are opening to read from it
-								FILE_FLAG_SEQUENTIAL_SCAN, // file attributes
-								nullptr // Unsupported
-								);
-#endif
-
-							if( fileHandle != INVALID_HANDLE_VALUE )
-							{
-								DWORD bytesRead,dwFileSize = GetFileSize(fileHandle,nullptr);
-								PBYTE pbData =  (PBYTE) new BYTE[dwFileSize];
-								BOOL bSuccess = ReadFile(fileHandle,pbData,dwFileSize,&bytesRead,nullptr);
-								if(bSuccess==FALSE)
-								{
-									app.FatalLoadError();
-								}
-								CloseHandle(fileHandle);
-
-								// 4J-PB - is it possible that we can get here after a read fail and it's not an error?
-								levelGen->setBaseSaveData(pbData, dwFileSize);
 							}
 						}
 					}

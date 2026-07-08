@@ -4,6 +4,8 @@
 #include "Enchantment.h"
 
 #include "WaterWalkerEnchantment.h"
+#include "FrostWalkerEnchantment.h"
+#include "MendingEnchantment.h"
 #include "LuckOfTheSeaEnchantment.h"
 #include "LureEnchantment.h"
 
@@ -19,6 +21,7 @@ Enchantment *Enchantment::projectileProtection = nullptr;
 Enchantment *Enchantment::drownProtection = nullptr;
 Enchantment *Enchantment::waterWorker = nullptr;
 Enchantment *Enchantment::waterWalker = nullptr;
+Enchantment *Enchantment::frostWalker = nullptr;
 Enchantment *Enchantment::thorns = nullptr;
 
 // weapon
@@ -45,6 +48,9 @@ Enchantment *Enchantment::arrowInfinite = nullptr;
 Enchantment *Enchantment::lure = nullptr;
 Enchantment *Enchantment::luckOfTheSea = nullptr;
 
+// misc / treasure
+Enchantment *Enchantment::mending = nullptr;
+
 void Enchantment::staticCtor()
 {
 	allDamageProtection = new ProtectionEnchantment(0, FREQ_COMMON, ProtectionEnchantment::ALL);
@@ -55,6 +61,7 @@ void Enchantment::staticCtor()
 	drownProtection = new OxygenEnchantment(5, FREQ_RARE);
 	waterWorker = new WaterWorkerEnchantment(6, FREQ_RARE);
     waterWalker = new WaterWalkerEnchantment(8, FREQ_RARE);
+	frostWalker = new FrostWalkerEnchantment(9, FREQ_RARE);
 	thorns = new ThornsEnchantment(7, FREQ_VERY_RARE);
 
 	// weapon
@@ -81,10 +88,13 @@ void Enchantment::staticCtor()
 	lure = new LureEnchantment(64, FREQ_RARE);
 	luckOfTheSea = new LuckOfTheSeaEnchantment(65, FREQ_RARE);
 
+	// misc / treasure
+	mending = new MendingEnchantment(70, FREQ_RARE);
+
 	for(unsigned int i = 0; i < 256; ++i)
 	{
 		Enchantment *enchantment = enchantments[i];
-		if (enchantment != nullptr)
+		if (enchantment != nullptr && !enchantment->isTreasureEnchantment())
 		{
 			validEnchantments.push_back(enchantment);
 		}

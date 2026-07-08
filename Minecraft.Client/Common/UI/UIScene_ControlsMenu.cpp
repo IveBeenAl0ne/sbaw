@@ -13,7 +13,9 @@ UIScene_ControlsMenu::UIScene_ControlsMenu(int iPad, void *initData, UILayer *pa
 	IggyDataValue value[1];
 	value[0].type = IGGY_DATATYPE_number;
 #if defined(_XBOX) || defined(_WIN64)
-	value[0].number = static_cast<F64>(0);
+	int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+	static const int platformMap[] = {0, 1, 0, 2, 3, 5};
+	value[0].number = static_cast<F64>(platformMap[controlType]);
 #elif defined(_DURANGO)
 	value[0].number = (F64)1;
 #elif defined(__PS3__)
@@ -55,6 +57,16 @@ UIScene_ControlsMenu::UIScene_ControlsMenu(int iPad, void *initData, UILayer *pa
 
 	m_checkboxInvert.init(app.GetString(IDS_INVERT_LOOK), eControl_InvertLook, app.GetGameSettings(m_iPad,eGameSetting_ControlInvertLook));
 	m_checkboxSouthpaw.init(app.GetString(IDS_SOUTHPAW), eControl_Southpaw, app.GetGameSettings(m_iPad,eGameSetting_ControlSouthPaw));
+	m_checkboxSafeCam.init(app.GetString(IDS_SAFE_SPRINT), eControl_SafeCam, app.GetGameSettings(m_iPad,eGameSetting_SafeCam));
+	m_checkboxAbswap.init(app.GetString(IDS_SWAP), eControl_ABSwap, app.GetGameSettings(m_iPad,eGameSetting_Swap));
+
+	{
+		IggyDataValue result;
+		IggyDataValue value[1];
+		value[0].type = IGGY_DATATYPE_boolean;
+		value[0].boolval = 0;
+		IggyPlayerCallMethodRS(getMovie(), &result, IggyPlayerRootPath(getMovie()), m_funcSetABSwapCheckBox, 1, value);
+	}
 
 	m_iSchemeTextA[0]=IDS_CONTROLS_SCHEME0;
 	m_iSchemeTextA[1]=IDS_CONTROLS_SCHEME1;
@@ -96,11 +108,7 @@ UIScene_ControlsMenu::UIScene_ControlsMenu(int iPad, void *initData, UILayer *pa
 	if (InputManager.IsVitaTV()) m_iCurrentNavigatedControlsLayout = 1;
 #endif
 
-	for(unsigned int i = 0; i < e_PadCOUNT; ++i)
-	{
-		m_labelsPad[i].init(L"");
-		m_controlLines[i].setVisible(false);
-	}
+	m_parentLayer->showComponent(m_iPad, eUIComponent_Logo, false);
 	m_bLayoutChanged = false;
 
 
@@ -189,6 +197,14 @@ void UIScene_ControlsMenu::handleCheckboxToggled(F64 controlId, bool selected)
 		app.SetGameSettings(m_iPad,eGameSetting_ControlSouthPaw,(unsigned char)( selected ) );
 		PositionAllText(m_iPad);
 		break;
+	case eControl_SafeCam:
+		app.SetGameSettings(m_iPad,eGameSetting_SafeCam,(unsigned char)( selected ) );
+		m_bLayoutChanged = true;
+		break;
+	case eControl_ABSwap:
+		app.SetGameSettings(m_iPad,eGameSetting_Swap,(unsigned char)( selected ) );
+		m_bLayoutChanged = true;
+		break;
 	};
 }
 
@@ -230,11 +246,8 @@ void UIScene_ControlsMenu::handleFocusChange(F64 controlId, F64 childId)
 
 void UIScene_ControlsMenu::PositionAllText(int iPad)
 {
-	for(unsigned int i = 0; i < e_PadCOUNT; ++i)
-	{
-		m_labelsPad[i].setLabel(L"");
-		m_controlLines[i].setVisible(false);
-	}
+	IggyDataValue result;
+	IggyPlayerCallMethodRS(getMovie(), &result, IggyPlayerRootPath(getMovie()), m_funcClearAllKeyLines, 0, 0);
 
 	if(m_bCreativeMode)
 	{
@@ -331,6 +344,20 @@ void UIScene_ControlsMenu::PositionTextDirect(int iPad,int iTextID, int iControl
 {
 	LPCWSTR text = app.GetString(iTextID);
 
-	m_labelsPad[iControlDetailsIndex].setLabel(text);
-	m_controlLines[iControlDetailsIndex].setVisible(bShow);
+	IggyDataValue result;
+	IggyDataValue value[3];
+
+	value[0].type = IGGY_DATATYPE_number;
+	value[0].number = static_cast<F64>(iControlDetailsIndex);
+
+	IggyStringUTF16 stringVal;
+	stringVal.string = (IggyUTF16*)text;
+	stringVal.length = (int)wcslen(text);
+	value[1].type = IGGY_DATATYPE_string_UTF16;
+	value[1].string16 = stringVal;
+
+	value[2].type = IGGY_DATATYPE_boolean;
+	value[2].boolval = bShow ? 1 : 0;
+
+	IggyPlayerCallMethodRS(getMovie(), &result, IggyPlayerRootPath(getMovie()), m_funcSetLineAndText, 3, value);
 }

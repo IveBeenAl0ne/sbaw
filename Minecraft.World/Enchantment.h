@@ -26,6 +26,7 @@ public :
 	static Enchantment *drownProtection;
 	static Enchantment *waterWorker;
     static Enchantment *waterWalker;
+	static Enchantment *frostWalker;
 	static Enchantment *thorns;
 
 	// weapon
@@ -51,6 +52,9 @@ public :
 	// fishing rod
 	static Enchantment *lure;
 	static Enchantment *luckOfTheSea;
+
+	// misc / treasure
+	static Enchantment *mending;
 
 	const int id;
 
@@ -81,6 +85,7 @@ public:
 	virtual int getDamageProtection(int level, DamageSource *source);
 	virtual float getDamageBonus(int level, shared_ptr<LivingEntity> target);
 	virtual bool isCompatibleWith(Enchantment *other) const;
+	virtual bool isTreasureEnchantment() const { return false; }
 	virtual Enchantment *setDescriptionId(int id);
 	virtual int getDescriptionId();
 	virtual HtmlString getFullname(int level);

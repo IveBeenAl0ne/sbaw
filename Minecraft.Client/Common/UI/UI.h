@@ -83,7 +83,6 @@
 #include "UIScene_SettingsMenu.h"
 #include "UIScene_SettingsOptionsMenu.h"
 #include "UIScene_SettingsAudioMenu.h"
-#include "UIScene_SettingsControlMenu.h"
 #include "UIScene_SettingsGraphicsMenu.h"
 #include "UIScene_SettingsUIMenu.h"
 #include "UIScene_SkinSelectMenu.h"

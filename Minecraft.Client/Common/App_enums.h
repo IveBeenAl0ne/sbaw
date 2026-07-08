@@ -184,8 +184,15 @@ enum eGameSetting
 
 	//TU25
 	eGameSetting_ClassicCrafting,
+	eGameSetting_CaveSounds,
+	eGameSetting_MinecartSounds,
+	eGameSetting_ControlType,
 	// if enabled hides the save size bar in loadcreatejoinmenu (load tab)
 	eGameSetting_HideSaveSizeBar,
+	// TU31
+	eGameSetting_SafeCam, //safe cam is safe sprint 
+	eGameSetting_Swap,
+    eGameSetting_GameChat,
 };
 
 
@@ -283,6 +290,7 @@ enum eMinecraftColour
 	eMinecraftColour_Water_ExtremeHillsEdge,
 	eMinecraftColour_Water_Jungle,
 	eMinecraftColour_Water_JungleHills,
+	eMinecraftColour_Water_JungleEdge,
 	eMinecraftColour_Water_Mesa,
 
 	eMinecraftColour_Sky_Ocean,
@@ -308,6 +316,7 @@ enum eMinecraftColour
 	eMinecraftColour_Sky_ExtremeHillsEdge,
 	eMinecraftColour_Sky_Jungle,
 	eMinecraftColour_Sky_JungleHills,
+	eMinecraftColour_Sky_JungleEdge,
 
 	eMinecraftColour_Tile_RedstoneDust,
 	eMinecraftColour_Tile_RedstoneDustUnlit,
@@ -460,7 +469,6 @@ enum eMinecraftColour
 	eMinecraftColour_Mob_Guardian_Colour2,
 	eMinecraftColour_Mob_ElderGuardian_Colour1,
 	eMinecraftColour_Mob_ElderGuardian_Colour2,
-
 	eMinecraftColour_Armour_Default_Leather_Colour,
 
 	eMinecraftColour_Under_Water_Clear_Colour,
@@ -558,6 +566,9 @@ enum eMinecraftColour
 	//eHTMLColor_d_dark = 0x3f153f, //r:3f , g: 15, b: 3f, i: 1d
 	//eHTMLColor_e_dark = 0x3f3f15, //r:3f , g: 3f, b: 15, i: 1e
 	//eHTMLColor_f_dark = 0x3f3f3f, //r:3f , g: 3f, b: 3f, i: 1f
+
+	eMinecraftColour_Mob_PolarBear_Colour1,
+	eMinecraftColour_Mob_PolarBear_Colour2,
 
 	eMinecraftColour_COUNT,
 };

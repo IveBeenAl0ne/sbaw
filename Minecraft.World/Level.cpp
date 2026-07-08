@@ -891,12 +891,14 @@ bool Level::reallyHasChunksAt(int x0, int y0, int z0, int x1, int y1, int z1)
 
 bool Level::hasChunk(int x, int z)
 {
+	if (this->chunkSource == nullptr) return false;
 	return this->chunkSource->hasChunk(x, z);
 }
 
 // 4J added
 bool Level::reallyHasChunk(int x, int z)
 {
+	if (this->chunkSource == nullptr) return false;
 	return this->chunkSource->reallyHasChunk(x, z);
 }
 
@@ -963,7 +965,9 @@ Material *Level::getMaterial(int x, int y, int z)
 {
 	int t = getTile(x, y, z);
 	if (t == 0) return Material::air;
-	return Tile::tiles[t]->material;
+	Tile *tile = Tile::tiles[t];
+	if (tile == nullptr) return Material::air;
+	return tile->material;
 }
 
 int Level::getData(int x, int y, int z)
@@ -1516,7 +1520,7 @@ HitResult *Level::clip(Vec3 *a, Vec3 *b, bool liquid, bool solidOnly)
 			// No collision
 
 		}
-		else if (t > 0 && tile->mayPick(data, liquid))
+		else if (t > 0 && tile != nullptr && tile->mayPick(data, liquid))
 		{
 			HitResult *r = tile->clip(this, xTile0, yTile0, zTile0, a, b);
 			if (r != nullptr) return r;
@@ -1618,7 +1622,7 @@ HitResult *Level::clip(Vec3 *a, Vec3 *b, bool liquid, bool solidOnly)
 			// No collision
 
 		}
-		else if (t > 0 && tile->mayPick(data, liquid))
+		else if (t > 0 && tile != nullptr && tile->mayPick(data, liquid))
 		{
 			HitResult *r = tile->clip(this, xTile0, yTile0, zTile0, a, b);
 			if (r != nullptr) return r;
@@ -2682,7 +2686,7 @@ bool Level::containsFireTile(AABB *box)
 				{
 					int t = getTile(x, y, z);
 
-					if (t == Tile::fire_Id || t == Tile::lava_Id || t == Tile::calmLava_Id) return true;
+					if (t == Tile::fire_Id || t == Tile::flowing_lava_Id || t == Tile::lava_Id) return true;
 				}
 	}
 	return false;
@@ -3321,13 +3325,17 @@ void Level::tickClientSideTiles(int xo, int zo, LevelChunk *lc)
 			shared_ptr<Player> player = getNearestPlayer(x + 0.5, y + 0.5, z + 0.5, 8);
 			if (player != nullptr && player->distanceToSqr(x + 0.5, y + 0.5, z + 0.5) > 2 * 2)
 			{
-				// 4J-PB - Fixed issue with cave audio event having 2 sounds at 192k
+				// check for cave sound functionality
+				if (app.GetGameSettings(static_cast<int>(player->getPlayerIndex()), eGameSetting_CaveSounds))
+				{
+					// 4J-PB - Fixed issue with cave audio event having 2 sounds at 192k
 #ifdef _XBOX
-				this->playSound(x + 0.5, y + 0.5, z + 0.5,eSoundType_AMBIENT_CAVE_CAVE2, 0.7f, 0.8f + random->nextFloat() * 0.2f);
+					this->playSound(x + 0.5, y + 0.5, z + 0.5,eSoundType_AMBIENT_CAVE_CAVE2, 0.7f, 0.8f + random->nextFloat() * 0.2f);
 #else
-				this->playSound(x + 0.5, y + 0.5, z + 0.5,eSoundType_AMBIENT_CAVE_CAVE, 0.7f, 0.8f + random->nextFloat() * 0.2f);
+					this->playSound(x + 0.5, y + 0.5, z + 0.5,eSoundType_AMBIENT_CAVE_CAVE, 0.7f, 0.8f + random->nextFloat() * 0.2f);
 #endif
-				delayUntilNextMoodSound = random->nextInt(SharedConstants::TICKS_PER_SECOND * 60 * 10) + SharedConstants::TICKS_PER_SECOND * 60 * 5;
+					delayUntilNextMoodSound = random->nextInt(SharedConstants::TICKS_PER_SECOND * 60 * 10) + SharedConstants::TICKS_PER_SECOND * 60 * 5;
+				}
 			}
 		}
 	}
@@ -3360,7 +3368,7 @@ bool Level::shouldFreeze(int x, int y, int z, bool checkNeighbors)
 	if (y >= 0 && y < maxBuildHeight && getBrightness(LightLayer::Block, x, y, z) < 10)
 	{
 		int current = getTile(x, y, z);
-		if ((current == Tile::calmWater_Id || current == Tile::water_Id) && getData(x, y, z) == 0)
+		if ((current == Tile::water_Id || current == Tile::flowing_water_Id) && getData(x, y, z) == 0)
 		{
 			if (!checkNeighbors) return true;
 
@@ -3991,7 +3999,9 @@ int Level::getDirectSignal(int x, int y, int z, int dir)
 {
 	int t = getTile(x, y, z);
 	if (t == 0) return Redstone::SIGNAL_NONE;
-	return Tile::tiles[t]->getDirectSignal(this, x, y, z, dir);
+	Tile *tile = Tile::tiles[t];
+	if (tile == nullptr) return Redstone::SIGNAL_NONE; // tu31 tutorial world fix
+	return tile->getDirectSignal(this, x, y, z, dir);
 }
 
 int Level::getDirectSignalTo(int x, int y, int z)
@@ -4024,8 +4034,9 @@ int Level::getSignal(int x, int y, int z, int dir)
 		return getDirectSignalTo(x, y, z);
 	}
 	int t = getTile(x, y, z);
-	if (t == 0) return Redstone::SIGNAL_NONE;
-	return Tile::tiles[t]->getSignal(this, x, y, z, dir);
+	Tile *tile = Tile::tiles[t];
+	if (t == 0 || tile == nullptr) return Redstone::SIGNAL_NONE;
+	return tile->getSignal(this, x, y, z, dir);
 }
 
 bool Level::hasNeighborSignal(int x, int y, int z)

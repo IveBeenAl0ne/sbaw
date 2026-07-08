@@ -18,15 +18,24 @@ public:
 private:
 	Icon* iconBottom[VARIANT_COUNT];
 	Icon* iconTop[VARIANT_COUNT];
+	Icon* iconHeadFront[VARIANT_COUNT];
+	Icon* iconHeadBack[VARIANT_COUNT];
 
 protected:
 	TallGrass2(int id);
 
 public:
 	virtual void         updateDefaultShape() override;
+	virtual void         createBlockStateDefinition() override;
+	virtual int          defaultBlockState() override;
+	virtual int          convertBlockStateToLegacyData(BlockState *state) override;
+	virtual Tile::BlockState getBlockState(LevelSource* level, int x, int y, int z) override;
+	virtual Tile::BlockState getBlockState(int data);
 	virtual Icon* getTexture(int face, int data) override;
 	virtual Icon* getTexture(LevelSource* level, int x, int y, int z, int face) override;
 	virtual void         registerIcons(IconRegister* iconRegister) override;
+	Icon* getSunflowerHeadFrontIcon() const { return iconHeadFront[SUNFLOWER]; }
+	Icon* getSunflowerHeadBackIcon() const { return iconHeadBack[SUNFLOWER]; }
 	virtual int          getRenderShape() override;
 	virtual bool         blocksLight() override;
 	virtual bool         isSolidRender(bool isServerLevel = false) override;
@@ -46,6 +55,7 @@ public:
 
 	virtual int          getResource(int data, Random* random, int playerBonusLevel) override;
 	virtual int          getResourceCountForLootBonus(int bonusLevel, Random* random) override;
+	virtual int          getSpawnResourcesAuxValue(int data) override;
 	virtual void         playerDestroy(Level* level, shared_ptr<Player> player, int x, int y, int z, int data) override;
 	virtual void         playerWillDestroy(Level* level, int x, int y, int z, int data, shared_ptr<Player> player) override;
 

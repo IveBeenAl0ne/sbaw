@@ -154,20 +154,12 @@ void TextureMap::stitch()
 		{
 			animatedTextures.push_back(stored);
 
-			wstring animationDefinitionFile = textureName + L".txt";
-
 			TexturePack *texturePack = Minecraft::GetInstance()->skins->getSelected();
-			bool requiresFallback = !texturePack->hasFile(L"\\" + textureName + L".png", false);
-				InputStream *fileStream = texturePack->getResource(L"\\" + path + animationDefinitionFile, requiresFallback);
-
-				//Minecraft::getInstance()->getLogger().info("Found animation info for: " + animationDefinitionFile);
-#ifndef _CONTENT_PACKAGE
-				wprintf(L"Found animation info for: %ls\n", animationDefinitionFile.c_str() );
-#endif
-				InputStreamReader isr(fileStream);
-				BufferedReader br(&isr);
-				stored->loadAnimationFrames(&br);
-				delete fileStream;
+			wstring animationString = texturePack->getAnimationString(textureName, path, true);
+			if (!animationString.empty())
+			{
+				stored->loadAnimationFrames(animationString);
+			}
 		}
 	}
 	delete areas;

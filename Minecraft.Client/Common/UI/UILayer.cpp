@@ -288,9 +288,6 @@ bool UILayer::NavigateToScene(int iPad, EUIScene scene, void *initData)
 	case eUIScene_SettingsAudioMenu:
 		newScene = new UIScene_SettingsAudioMenu(iPad, initData, this);
 		break;
-	case eUIScene_SettingsControlMenu:
-		newScene = new UIScene_SettingsControlMenu(iPad, initData, this);
-		break;
 	case eUIScene_SettingsGraphicsMenu:
 		newScene = new UIScene_SettingsGraphicsMenu(iPad, initData, this);
 		break;

@@ -40,16 +40,16 @@ intArray AddIslandLayer::getArea(int xo, int yo, int w, int h)
 				}
 				else
 				{
-					if (swap == 4) result[x + y * w] = Biome::frozenOcean->id;
-					else result[x + y * w] = 0;
+				if (swap == 4) result[x + y * w] = 4;
+				else result[x + y * w] = 0;
 				}
 			}
 			else if (c > 0 && (n1 == 0 || n2 == 0 || n3 == 0 || n4 == 0))
 			{
 				if (nextRandom(5) == 0)
 				{
-					if (c == 4) result[x + y * w] = Biome::frozenOcean->id;
-					else result[x + y * w] = 0;
+				if (c == 4) result[x + y * w] = 4;
+				else result[x + y * w] = 0;
 				}
 				else result[x + y * w] = c;
 			}

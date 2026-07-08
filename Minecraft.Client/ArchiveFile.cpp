@@ -4,6 +4,7 @@
 #include "../Minecraft.World/compression.h"
 
 #include "ArchiveFile.h"
+#include "lce_filesystem/FolderFile.h"
 
 void ArchiveFile::_readHeader(DataInputStream *dis)
 {
@@ -28,10 +29,19 @@ void ArchiveFile::_readHeader(DataInputStream *dis)
 	}
 }
 
-ArchiveFile::ArchiveFile(File file)
+ArchiveFile::ArchiveFile(File file, bool allowFolder)
 {
 	m_cachedData = nullptr;
+	m_folderFile = nullptr;
+	m_useFolder = false;
 	m_sourcefile = file;
+
+	if(allowFolder && file.exists() && file.isDirectory())
+	{
+		m_folderFile = new FolderFile(file.getPath());
+		m_useFolder = true;
+		return;
+	}
 	app.DebugPrintf("Loading archive file...\n");
 #ifndef _CONTENT_PACKAGE
 	char buf[256];
@@ -72,10 +82,15 @@ ArchiveFile::ArchiveFile(File file)
 ArchiveFile::~ArchiveFile()
 {
 	delete m_cachedData;
+	delete m_folderFile;
 }
 
 vector<wstring> *ArchiveFile::getFileList()
 {
+	if(m_useFolder)
+	{
+		return m_folderFile->getFileList();
+	}
 	vector<wstring> *out = new vector<wstring>();
 	
 	for ( const auto& it : m_index )
@@ -86,16 +101,28 @@ vector<wstring> *ArchiveFile::getFileList()
 
 bool ArchiveFile::hasFile(const wstring &filename)
 {
+	if(m_useFolder)
+	{
+		return m_folderFile->hasFile(filename);
+	}
 	return m_index.find(filename) != m_index.end();
 }
 
 int ArchiveFile::getFileSize(const wstring &filename)
 {
+	if(m_useFolder)
+	{
+		return m_folderFile->getFileSize(filename);
+	}
 	return hasFile(filename) ? m_index.at(filename)->filesize : -1;
 }
 
 byteArray ArchiveFile::getFile(const wstring &filename)
 {
+	if(m_useFolder)
+	{
+		return m_folderFile->getFile(filename);
+	}
 	byteArray out;
 	auto it = m_index.find(filename);
 

@@ -26,8 +26,8 @@ public:
 	Layer(int64_t seedMixup);
 
 	virtual void init(int64_t seed);
-	bool isOcean(int biomeId);
-	bool isSame(int biomeIdA, int biomeIdB);
+	static bool isOcean(int biomeId);
+	static bool isSame(int biomeIdA, int biomeIdB);
 	virtual void initRandom(int64_t x, int64_t y);
 
 protected:

@@ -799,7 +799,7 @@ skipUseItemOn:
 		// beside a piston and then performing an action on the side of it facing a piston, the following line of code will send a TileUpdatePacket containing the change to pistonMovingPiece_Id
 		// to the client, and this packet is received before the piston retract action happens - when the piston retract then occurs, it doesn't work properly because the piston tile
 		// isn't what it is expecting.
-		if( level->getTile(x,y,z) != Tile::pistonMovingPiece_Id )
+		if( level->getTile(x,y,z) != Tile::piston_extension_Id )
 		{
 			player->connection->send(std::make_shared<TileUpdatePacket>(x, y, z, level));
 		}
@@ -1046,6 +1046,13 @@ void PlayerConnection::handleCommand(const wstring& message)
 	ss >> cmd;
 if (cmd == L"tp" || cmd == L"teleport")
 {
+
+	if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+		{
+			warn(L"Cheats are not enabled on this server.");
+			return;
+		}
+
     if (!player->hasPermission(eGameCommand_Teleport))
     {
         warn(L"You do not have permission to use this command.");
@@ -1138,6 +1145,13 @@ if (cmd == L"tp" || cmd == L"teleport")
 	}
 } else if (cmd == L"time")
 {
+
+	if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+		{
+			warn(L"Cheats are not enabled on this server.");
+			return;
+		}
+
     if (!player->hasPermission(eGameCommand_Time))
     {
         warn(L"You do not have permission to use this command.");
@@ -1268,15 +1282,44 @@ if (cmd == L"tp" || cmd == L"teleport")
 }
 	else if (cmd == L"kill")
 	{
+		if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+		{
+			warn(L"Cheats are not enabled on this server.");
+			return;
+		}
+
 		if (!player->hasPermission(eGameCommand_Kill))
 		{
 			warn(L"You do not have permission to use this command.");
 			return;
 		}
-		server->getCommandDispatcher()->performCommand(player, eGameCommand_Kill, byteArray());
+
+		wstring targetName;
+		ss >> targetName;
+
+		if (targetName.empty())
+		{
+        
+			server->getCommandDispatcher()->performCommand(player, eGameCommand_Kill, byteArray());
+		}
+		else
+		{
+        
+			ByteArrayOutputStream baos;
+			DataOutputStream dos(&baos);
+			dos.writeUTF(targetName);
+			byteArray data = baos.toByteArray();
+			server->getCommandDispatcher()->performCommand(player, eGameCommand_Kill, data);
+		}
 	}
 	else if (cmd == L"toggledownfall")
 	{
+		if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+		{
+			warn(L"Cheats are not enabled on this server.");
+			return;
+		}
+
 		if (!player->hasPermission(eGameCommand_ToggleDownfall))
 		{
 			warn(L"You do not have permission to use this command.");
@@ -1285,6 +1328,14 @@ if (cmd == L"tp" || cmd == L"teleport")
 		shared_ptr<GameCommandPacket> packet = ToggleDownfallCommand::preparePacket();
 		server->getCommandDispatcher()->performCommand(player, eGameCommand_ToggleDownfall, packet->data);
 	} else if (cmd == L"gamemode") {
+
+
+		if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+		{
+			warn(L"Cheats are not enabled on this server.");
+			return;
+		}
+
 		if (!player->hasPermission(eGameCommand_GameMode))
 		{
 			warn(L"You do not have permission to use this command.");
@@ -1323,6 +1374,13 @@ if (cmd == L"tp" || cmd == L"teleport")
     	shared_ptr<GameCommandPacket> packet = GameModeCommand::preparePacket(target, mode);
     	server->getCommandDispatcher()->performCommand(player, eGameCommand_GameMode, packet->data);
 	} else if (cmd == L"give") {
+
+		if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+		{
+			warn(L"Cheats are not enabled on this server.");
+			return;
+		}
+
 		if (!player->hasPermission(eGameCommand_Give))
 		{
 			warn(L"You do not have permission to use this command.");
@@ -1451,12 +1509,12 @@ int PlayerConnection::countDelayedPackets()
 
 void PlayerConnection::info(const wstring& string)
 {
-	send( shared_ptr<ChatPacket>( new ChatPacket(L"§7" + string) ) );
+	send( shared_ptr<ChatPacket>( new ChatPacket(L"\u00A77" + string) ) );
 }
 
 void PlayerConnection::warn(const wstring& string)
 {
-	send( shared_ptr<ChatPacket>( new ChatPacket(L"§c" + string) ) );
+	send( shared_ptr<ChatPacket>( new ChatPacket(L"\u00A7c" + string) ) );
 }
 
 wstring PlayerConnection::getConsoleName()
@@ -1593,9 +1651,10 @@ void PlayerConnection::handleTextureAndGeometry(shared_ptr<TextureAndGeometryPac
 			{
 				// we don't have the dlc skin, so retrieve the data from the app store
 				vector<SKIN_BOX *> *pvSkinBoxes = app.GetAdditionalSkinBoxes(packet->dwSkinID);
+				vector<SKIN_OFFSET *> *pvSkinOffsets = app.GetSkinOffsets(packet->dwSkinID);
 				unsigned int uiAnimOverrideBitmask= app.GetAnimOverrideBitmask(packet->dwSkinID);
 
-				send(std::make_shared<TextureAndGeometryPacket>(packet->textureName, pbData, dwTextureBytes, pvSkinBoxes, uiAnimOverrideBitmask));
+				send(std::make_shared<TextureAndGeometryPacket>(packet->textureName, pbData, dwTextureBytes, pvSkinBoxes, pvSkinOffsets, uiAnimOverrideBitmask));
 			}
 		}
 		else
@@ -1618,6 +1677,13 @@ void PlayerConnection::handleTextureAndGeometry(shared_ptr<TextureAndGeometryPac
 			wprintf(L"Adding skin boxes for skin id %X, box count %d\n",packet->dwSkinID,packet->dwBoxC);
 #endif
 			app.SetAdditionalSkinBoxes(packet->dwSkinID,packet->BoxDataA,packet->dwBoxC);
+		}// add the offsets to the app list
+		if(packet->dwOffsetC!=0)
+		{
+#ifndef _CONTENT_PACKAGE
+			wprintf(L"Adding skin offsets for skin id %X, offset count %d\n",packet->dwSkinID,packet->dwOffsetC);
+#endif
+			app.SetSkinOffsets(packet->dwSkinID,packet->OffsetDataA,packet->dwOffsetC);
 		}
 		// Add the anim override
 		app.SetAnimOverrideBitmask(packet->dwSkinID,packet->uiAnimOverrideBitmask);
@@ -1668,9 +1734,10 @@ void PlayerConnection::handleTextureAndGeometryReceived(const wstring &textureNa
 				// get the data from the app
 				DWORD dwSkinID = app.getSkinIdFromPath(textureName);
 				vector<SKIN_BOX *> *pvSkinBoxes = app.GetAdditionalSkinBoxes(dwSkinID);
+				vector<SKIN_OFFSET *> *pvSkinOffsets = app.GetSkinOffsets(dwSkinID);
 				unsigned int uiAnimOverrideBitmask= app.GetAnimOverrideBitmask(dwSkinID);
 
-				send(std::make_shared<TextureAndGeometryPacket>(textureName, pbData, dwTextureBytes, pvSkinBoxes, uiAnimOverrideBitmask));
+				send(std::make_shared<TextureAndGeometryPacket>(textureName, pbData, dwTextureBytes, pvSkinBoxes, pvSkinOffsets, uiAnimOverrideBitmask));
 			}
 			m_texturesRequested.erase(it);
 		}
@@ -1868,6 +1935,8 @@ void PlayerConnection::handleGameCommand(shared_ptr<GameCommandPacket> packet)
 		player->getName().c_str(), player->isModerator() ? 1 : 0, isHost ? 1 : 0,
 		static_cast<int>(packet->command));
 #endif
+	
+
 	MinecraftServer::getInstance()->getCommandDispatcher()->performCommand(player, packet->command, packet->data);
 }
 
@@ -2391,7 +2460,7 @@ void PlayerConnection::handleCustomPayload(shared_ptr<CustomPayloadPacket> custo
 
 		// make sure the sent item is the currently carried item
 		shared_ptr<ItemInstance> carried = player->inventory->getSelected();
-		if (sentItem != nullptr && sentItem->id == Item::writingBook_Id && sentItem->id == carried->id)
+		if (sentItem != nullptr && sentItem->id == Item::writable_book_Id && sentItem->id == carried->id)
 		{
 			player->inventory->setItem(player->inventory->selected, sentItem);
 		}
@@ -2410,7 +2479,7 @@ void PlayerConnection::handleCustomPayload(shared_ptr<CustomPayloadPacket> custo
 		// make sure the sent item is the currently carried item
 		shared_ptr<ItemInstance> carried = player->inventory->getSelected();
 
-		if (sentItem != nullptr && sentItem->id == Item::writingBook_Id && sentItem->id == carried->id)
+		if (sentItem != nullptr && sentItem->id == Item::writable_book_Id && sentItem->id == carried->id)
 		{
 			sentItem->setHoverName(sentItem->tag->getString(L"title"));
 			sentItem->id = 387;
@@ -2586,7 +2655,7 @@ void PlayerConnection::handleCraftItem(shared_ptr<CraftItemPacket> packet)
 			player->drop(pTempItemInst);
 		}
 	}
-	else if (pTempItemInst->id == Item::fireworksCharge_Id || pTempItemInst->id == Item::fireworks_Id)
+	else if (pTempItemInst->id == Item::firework_charge_Id || pTempItemInst->id == Item::fireworks_Id)
 	{
 		CraftingMenu *menu = static_cast<CraftingMenu *>(player->containerMenu);
 		player->openFireworks(menu->getX(), menu->getY(), menu->getZ() );
@@ -2676,16 +2745,16 @@ void PlayerConnection::handleCraftItem(shared_ptr<CraftItemPacket> packet)
 	// handle achievements
 	switch(pTempItemInst->id)
 	{
-	case Tile::workBench_Id:		player->awardStat(GenericStats::buildWorkbench(),		GenericStats::param_buildWorkbench());		break;
-	case Item::pickAxe_wood_Id:		player->awardStat(GenericStats::buildPickaxe(),			GenericStats::param_buildPickaxe());		break;
+	case Tile::crafting_table_Id:		player->awardStat(GenericStats::buildWorkbench(),		GenericStats::param_buildWorkbench());		break;
+	case Item::wooden_pickaxe_Id:		player->awardStat(GenericStats::buildPickaxe(),			GenericStats::param_buildPickaxe());		break;
 	case Tile::furnace_Id:			player->awardStat(GenericStats::buildFurnace(),			GenericStats::param_buildFurnace());		break;
-	//case Item::hoe_wood_Id:			player->awardStat(GenericStats::buildHoe(),				GenericStats::param_buildHoe());			break;
+	//case Item::wooden_hoe_Id:			player->awardStat(GenericStats::buildHoe(),				GenericStats::param_buildHoe());			break;
 	case Item::bread_Id:			player->awardStat(GenericStats::makeBread(),			GenericStats::param_makeBread());			break;
 	case Item::cake_Id:				player->awardStat(GenericStats::bakeCake(),				GenericStats::param_bakeCake());			break;
-	case Item::pickAxe_stone_Id:	player->awardStat(GenericStats::buildBetterPickaxe(),	GenericStats::param_buildBetterPickaxe());	break;
-	//case Item::sword_wood_Id:		player->awardStat(GenericStats::buildSword(),			GenericStats::param_buildSword());			break;
+	case Item::stone_pickaxe_Id:	player->awardStat(GenericStats::buildBetterPickaxe(),	GenericStats::param_buildBetterPickaxe());	break;
+	//case Item::wooden_sword_Id:		player->awardStat(GenericStats::buildSword(),			GenericStats::param_buildSword());			break;
 	case Tile::dispenser_Id:		player->awardStat(GenericStats::dispenseWithThis(),		GenericStats::param_dispenseWithThis());	break;
-	case Tile::enchantTable_Id:		player->awardStat(GenericStats::enchantments(),			GenericStats::param_enchantments());		break;
+	case Tile::enchanting_table_Id:		player->awardStat(GenericStats::enchantments(),			GenericStats::param_enchantments());		break;
 	case Tile::bookshelf_Id:		player->awardStat(GenericStats::bookcase(),				GenericStats::param_bookcase());			break;
 	}
 	switch (pTempItemInst->getItem()->getBaseItemType()) {

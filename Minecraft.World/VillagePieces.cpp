@@ -412,29 +412,29 @@ int VillagePieces::VillagePiece::biomeBlock(int tile, int data)
 {
 	if (isDesertVillage)
 	{
-		if (tile == Tile::treeTrunk_Id)
+		if (tile == Tile::log_Id)
 		{
-			return Tile::sandStone_Id;
+			return Tile::sandstone_Id;
 		}
 		else if (tile == Tile::cobblestone_Id)
 		{
-			return Tile::sandStone_Id;
+			return Tile::sandstone_Id;
 		}
-		else if (tile == Tile::wood_Id)
+		else if (tile == Tile::planks_Id)
 		{
-			return Tile::sandStone_Id;
+			return Tile::sandstone_Id;
 		}
-		else if (tile == Tile::stairs_wood_Id)
+		else if (tile == Tile::oak_stairs_Id)
 		{
-			return Tile::stairs_sandstone_Id;
+			return Tile::sandstone_stairs_Id;
 		}
-		else if (tile == Tile::stairs_stone_Id)
+		else if (tile == Tile::stone_stairs_Id)
 		{
-			return Tile::stairs_sandstone_Id;
+			return Tile::sandstone_stairs_Id;
 		}
 		else if (tile == Tile::gravel_Id)
 		{
-			return Tile::sandStone_Id;
+			return Tile::sandstone_Id;
 		}
 	}
 	return tile;
@@ -444,7 +444,7 @@ int VillagePieces::VillagePiece::biomeData(int tile, int data)
 {
 	if (isDesertVillage)
 	{
-		if (tile == Tile::treeTrunk_Id)
+		if (tile == Tile::log_Id)
 		{
 			return 0;
 		}
@@ -452,7 +452,7 @@ int VillagePieces::VillagePiece::biomeData(int tile, int data)
 		{
 			return SandStoneTile::TYPE_DEFAULT;
 		}
-		else if (tile == Tile::wood_Id)
+		else if (tile == Tile::planks_Id)
 		{
 			return SandStoneTile::TYPE_SMOOTHSIDE;
 		}
@@ -530,7 +530,7 @@ bool VillagePieces::Well::postProcess(Level *level, Random *random, BoundingBox 
 		boundingBox->move(0, heightPosition - boundingBox->y1 + 3, 0);
 	}
 
-	generateBox(level, chunkBB, 1, 0, 1, 4, height - 3, 4, Tile::cobblestone_Id, Tile::water_Id, false);
+	generateBox(level, chunkBB, 1, 0, 1, 4, height - 3, 4, Tile::cobblestone_Id, Tile::flowing_water_Id, false);
 	placeBlock(level, 0, 0, 2, height - 3, 2, chunkBB);
 	placeBlock(level, 0, 0, 3, height - 3, 2, chunkBB);
 	placeBlock(level, 0, 0, 2, height - 3, 3, chunkBB);
@@ -555,7 +555,7 @@ bool VillagePieces::Well::postProcess(Level *level, Random *random, BoundingBox 
 			{
 				continue;
 			}
-			placeBlock(level, Tile::gravel_Id, 0, x, height - 4, z, chunkBB);
+			placeBlock(level, Tile::cobblestone_Id, 0, x, height - 4, z, chunkBB);
 			generateAirColumnUp(level, x, height - 3, z, chunkBB);
 		}
 	}
@@ -709,8 +709,8 @@ BoundingBox *VillagePieces::StraightRoad::findPieceBox(StartPiece *startPiece, l
 
 bool VillagePieces::StraightRoad::postProcess(Level *level, Random *random, BoundingBox *chunkBB)
 {
-	int roadTile = biomeBlock(Tile::gravel_Id, 0);
-	int baseTile = biomeBlock(Tile::cobblestone_Id, 0);
+	int roadTile = biomeBlock(Tile::grass_path_Id, 0);
+	// int baseTile = biomeBlock(Tile::cobblestone_Id, 0);
 	for (int x = boundingBox->x0; x <= boundingBox->x1; x++)
 	{
 		for (int z = boundingBox->z0; z <= boundingBox->z1; z++)
@@ -719,7 +719,7 @@ bool VillagePieces::StraightRoad::postProcess(Level *level, Random *random, Boun
 			{
 				int y = level->getTopSolidBlock(x, z) - 1;
 				level->setTileAndData(x, y, z, roadTile, 0, Tile::UPDATE_CLIENTS);
-				level->setTileAndData(x, y - 1, z, baseTile, 0, Tile::UPDATE_CLIENTS);
+				// level->setTileAndData(x, y - 1, z, baseTile, 0, Tile::UPDATE_CLIENTS);
 			}
 		}
 	}
@@ -779,8 +779,8 @@ bool VillagePieces::SimpleHouse::postProcess(Level *level, Random *random, Bound
 	// floor
 	generateBox(level, chunkBB, 0, 0, 0, 4, 0, 4, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 	// roof
-	generateBox(level, chunkBB, 0, 4, 0, 4, 4, 4, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 1, 4, 1, 3, 4, 3, Tile::wood_Id, Tile::wood_Id, false);
+	generateBox(level, chunkBB, 0, 4, 0, 4, 4, 4, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 1, 4, 1, 3, 4, 3, Tile::planks_Id, Tile::planks_Id, false);
 
 	// window walls
 	placeBlock(level, Tile::cobblestone_Id, 0, 0, 1, 0, chunkBB);
@@ -795,24 +795,24 @@ bool VillagePieces::SimpleHouse::postProcess(Level *level, Random *random, Bound
 	placeBlock(level, Tile::cobblestone_Id, 0, 4, 1, 4, chunkBB);
 	placeBlock(level, Tile::cobblestone_Id, 0, 4, 2, 4, chunkBB);
 	placeBlock(level, Tile::cobblestone_Id, 0, 4, 3, 4, chunkBB);
-	generateBox(level, chunkBB, 0, 1, 1, 0, 3, 3, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 4, 1, 1, 4, 3, 3, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 1, 4, 3, 3, 4, Tile::wood_Id, Tile::wood_Id, false);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 2, 4, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 4, 2, 2, chunkBB);
+	generateBox(level, chunkBB, 0, 1, 1, 0, 3, 3, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 4, 1, 1, 4, 3, 3, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 1, 4, 3, 3, 4, Tile::planks_Id, Tile::planks_Id, false);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 2, 4, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 4, 2, 2, chunkBB);
 
 	// door wall
-	placeBlock(level, Tile::wood_Id, 0, 1, 1, 0, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 1, 2, 0, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 1, 3, 0, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 2, 3, 0, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 3, 3, 0, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 3, 2, 0, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 3, 1, 0, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 1, 1, 0, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 1, 2, 0, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 1, 3, 0, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 2, 3, 0, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 3, 3, 0, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 3, 2, 0, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 3, 1, 0, chunkBB);
 	if (getBlock(level, 2, 0, -1, chunkBB) == 0 && getBlock(level, 2, -1, -1, chunkBB) != 0)
 	{
-		placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), 2, 0, -1, chunkBB);
+		placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), 2, 0, -1, chunkBB);
 	}
 
 	// fill room with air
@@ -942,28 +942,28 @@ bool VillagePieces::SmallTemple::postProcess(Level *level, Random *random, Bound
 	placeBlock(level, Tile::cobblestone_Id, 0, 2, 1, 7, chunkBB);
 	placeBlock(level, Tile::cobblestone_Id, 0, 3, 1, 6, chunkBB);
 	placeBlock(level, Tile::cobblestone_Id, 0, 3, 1, 7, chunkBB);
-	placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), 1, 1, 5, chunkBB);
-	placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), 2, 1, 6, chunkBB);
-	placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), 3, 1, 5, chunkBB);
-	placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 1), 1, 2, 7, chunkBB);
-	placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 0), 3, 2, 7, chunkBB);
+	placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), 1, 1, 5, chunkBB);
+	placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), 2, 1, 6, chunkBB);
+	placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), 3, 1, 5, chunkBB);
+	placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 1), 1, 2, 7, chunkBB);
+	placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 0), 3, 2, 7, chunkBB);
 
 	// windows
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 3, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 4, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 4, 3, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 6, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 7, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 4, 6, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 4, 7, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 6, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 7, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 6, 4, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 7, 4, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 3, 6, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 4, 3, 6, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 3, 8, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 3, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 4, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 4, 3, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 6, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 7, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 4, 6, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 4, 7, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 6, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 7, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 6, 4, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 7, 4, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 3, 6, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 4, 3, 6, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 3, 8, chunkBB);
 
 	// torches
 	placeBlock(level, Tile::torch_Id, 0, 2, 4, 7, chunkBB);
@@ -981,10 +981,10 @@ bool VillagePieces::SmallTemple::postProcess(Level *level, Random *random, Bound
 	// entrance
 	placeBlock(level, 0, 0, 2, 1, 0, chunkBB);
 	placeBlock(level, 0, 0, 2, 2, 0, chunkBB);
-	createDoor(level, chunkBB, random, 2, 1, 0, getOrientationData(Tile::door_wood_Id, 1));
+	createDoor(level, chunkBB, random, 2, 1, 0, getOrientationData(Tile::wooden_door_Id, 1));
 	if (getBlock(level, 2, 0, -1, chunkBB) == 0 && getBlock(level, 2, -1, -1, chunkBB) != 0)
 	{
-		placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), 2, 0, -1, chunkBB);
+		placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), 2, 0, -1, chunkBB);
 	}
 
 
@@ -1054,12 +1054,12 @@ bool VillagePieces::BookHouse::postProcess(Level *level, Random *random, Boundin
 	generateBox(level, chunkBB, 0, 5, 0, 8, 5, 5, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 	generateBox(level, chunkBB, 0, 6, 1, 8, 6, 4, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 	generateBox(level, chunkBB, 0, 7, 2, 8, 7, 3, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
-	int southStairs = getOrientationData(Tile::stairs_wood_Id, 3);
-	int northStairs = getOrientationData(Tile::stairs_wood_Id, 2);
+	int southStairs = getOrientationData(Tile::oak_stairs_Id, 3);
+	int northStairs = getOrientationData(Tile::oak_stairs_Id, 2);
 	for (int d = -1; d <= 2; d++) {
 		for (int w = 0; w <= 8; w++) {
-			placeBlock(level, Tile::stairs_wood_Id, southStairs, w, 6 + d, d, chunkBB);
-			placeBlock(level, Tile::stairs_wood_Id, northStairs, w, 6 + d, 5 - d, chunkBB);
+			placeBlock(level, Tile::oak_stairs_Id, southStairs, w, 6 + d, d, chunkBB);
+			placeBlock(level, Tile::oak_stairs_Id, northStairs, w, 6 + d, 5 - d, chunkBB);
 		}
 	}
 
@@ -1074,59 +1074,59 @@ bool VillagePieces::BookHouse::postProcess(Level *level, Random *random, Boundin
 	generateBox(level, chunkBB, 8, 2, 0, 8, 4, 0, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 
 	// wooden walls
-	generateBox(level, chunkBB, 0, 2, 1, 0, 4, 4, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 2, 5, 7, 4, 5, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 8, 2, 1, 8, 4, 4, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 2, 0, 7, 4, 0, Tile::wood_Id, Tile::wood_Id, false);
+	generateBox(level, chunkBB, 0, 2, 1, 0, 4, 4, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 2, 5, 7, 4, 5, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 8, 2, 1, 8, 4, 4, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 2, 0, 7, 4, 0, Tile::planks_Id, Tile::planks_Id, false);
 
 	// windows
-	placeBlock(level, Tile::thinGlass_Id, 0, 4, 2, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 5, 2, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 6, 2, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 4, 3, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 5, 3, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 6, 3, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 3, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 3, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 3, 3, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 2, 3, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 3, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 3, 3, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 2, 5, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 3, 2, 5, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 5, 2, 5, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 6, 2, 5, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 4, 2, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 5, 2, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 6, 2, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 4, 3, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 5, 3, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 6, 3, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 3, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 3, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 3, 3, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 2, 3, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 3, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 3, 3, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 2, 5, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 3, 2, 5, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 5, 2, 5, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 6, 2, 5, chunkBB);
 
 	// roof inside and bookshelf
-	generateBox(level, chunkBB, 1, 4, 1, 7, 4, 1, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 4, 4, 7, 4, 4, Tile::wood_Id, Tile::wood_Id, false);
+	generateBox(level, chunkBB, 1, 4, 1, 7, 4, 1, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 4, 4, 7, 4, 4, Tile::planks_Id, Tile::planks_Id, false);
 	generateBox(level, chunkBB, 1, 3, 4, 7, 3, 4, Tile::bookshelf_Id, Tile::bookshelf_Id, false);
 
 	// couch
-	placeBlock(level, Tile::wood_Id, 0, 7, 1, 4, chunkBB);
-	placeBlock(level, Tile::stairs_wood_Id, getOrientationData(Tile::stairs_wood_Id, 0), 7, 1, 3, chunkBB);
-	int orientationData = getOrientationData(Tile::stairs_wood_Id, 3);
-	placeBlock(level, Tile::stairs_wood_Id, orientationData, 6, 1, 4, chunkBB);
-	placeBlock(level, Tile::stairs_wood_Id, orientationData, 5, 1, 4, chunkBB);
-	placeBlock(level, Tile::stairs_wood_Id, orientationData, 4, 1, 4, chunkBB);
-	placeBlock(level, Tile::stairs_wood_Id, orientationData, 3, 1, 4, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 7, 1, 4, chunkBB);
+	placeBlock(level, Tile::oak_stairs_Id, getOrientationData(Tile::oak_stairs_Id, 0), 7, 1, 3, chunkBB);
+	int orientationData = getOrientationData(Tile::oak_stairs_Id, 3);
+	placeBlock(level, Tile::oak_stairs_Id, orientationData, 6, 1, 4, chunkBB);
+	placeBlock(level, Tile::oak_stairs_Id, orientationData, 5, 1, 4, chunkBB);
+	placeBlock(level, Tile::oak_stairs_Id, orientationData, 4, 1, 4, chunkBB);
+	placeBlock(level, Tile::oak_stairs_Id, orientationData, 3, 1, 4, chunkBB);
 
 	// tables
 	placeBlock(level, Tile::fence_Id, 0, 6, 1, 3, chunkBB);
-	placeBlock(level, Tile::pressurePlate_wood_Id, 0, 6, 2, 3, chunkBB);
+	placeBlock(level, Tile::wooden_pressure_plate_Id, 0, 6, 2, 3, chunkBB);
 	placeBlock(level, Tile::fence_Id, 0, 4, 1, 3, chunkBB);
-	placeBlock(level, Tile::pressurePlate_wood_Id, 0, 4, 2, 3, chunkBB);
-	placeBlock(level, Tile::workBench_Id, 0, 7, 1, 1, chunkBB);
+	placeBlock(level, Tile::wooden_pressure_plate_Id, 0, 4, 2, 3, chunkBB);
+	placeBlock(level, Tile::crafting_table_Id, 0, 7, 1, 1, chunkBB);
 
 	// entrance
 	placeBlock(level, 0, 0, 1, 1, 0, chunkBB);
 	placeBlock(level, 0, 0, 1, 2, 0, chunkBB);
-	createDoor(level, chunkBB, random, 1, 1, 0, getOrientationData(Tile::door_wood_Id, 1));
+	createDoor(level, chunkBB, random, 1, 1, 0, getOrientationData(Tile::wooden_door_Id, 1));
 	if (getBlock(level, 1, 0, -1, chunkBB) == 0 && getBlock(level, 1, -1, -1, chunkBB) != 0)
 	{
-		placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), 1, 0, -1, chunkBB);
+		placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), 1, 0, -1, chunkBB);
 	}
 
 	for (int z = 0; z < depth; z++)
@@ -1209,50 +1209,50 @@ bool VillagePieces::SmallHut::postProcess(Level *level, Random *random, Bounding
 	generateBox(level, chunkBB, 1, 0, 1, 2, 0, 3, Tile::dirt_Id, Tile::dirt_Id, false);
 	// roof
 	if (lowCeiling) {
-		generateBox(level, chunkBB, 1, 4, 1, 2, 4, 3, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
+		generateBox(level, chunkBB, 1, 4, 1, 2, 4, 3, Tile::log_Id, Tile::log_Id, false);
 	} else {
-		generateBox(level, chunkBB, 1, 5, 1, 2, 5, 3, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
+		generateBox(level, chunkBB, 1, 5, 1, 2, 5, 3, Tile::log_Id, Tile::log_Id, false);
 	}
-	placeBlock(level, Tile::treeTrunk_Id, 0, 1, 4, 0, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 2, 4, 0, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 1, 4, 4, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 2, 4, 4, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 0, 4, 1, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 0, 4, 2, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 0, 4, 3, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 3, 4, 1, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 3, 4, 2, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 3, 4, 3, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 1, 4, 0, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 2, 4, 0, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 1, 4, 4, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 2, 4, 4, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 0, 4, 1, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 0, 4, 2, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 0, 4, 3, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 3, 4, 1, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 3, 4, 2, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 3, 4, 3, chunkBB);
 
 	// corners
-	generateBox(level, chunkBB, 0, 1, 0, 0, 3, 0, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 3, 1, 0, 3, 3, 0, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 0, 1, 4, 0, 3, 4, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 3, 1, 4, 3, 3, 4, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
+	generateBox(level, chunkBB, 0, 1, 0, 0, 3, 0, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 3, 1, 0, 3, 3, 0, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 0, 1, 4, 0, 3, 4, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 3, 1, 4, 3, 3, 4, Tile::log_Id, Tile::log_Id, false);
 
 	// wooden walls
-	generateBox(level, chunkBB, 0, 1, 1, 0, 3, 3, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 3, 1, 1, 3, 3, 3, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 1, 0, 2, 3, 0, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 1, 4, 2, 3, 4, Tile::wood_Id, Tile::wood_Id, false);
+	generateBox(level, chunkBB, 0, 1, 1, 0, 3, 3, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 3, 1, 1, 3, 3, 3, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 1, 0, 2, 3, 0, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 1, 4, 2, 3, 4, Tile::planks_Id, Tile::planks_Id, false);
 
 	// windows
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 3, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 3, 2, 2, chunkBB);
 
 	// table
 	if (tablePlacement > 0) {
 		placeBlock(level, Tile::fence_Id, 0, tablePlacement, 1, 3, chunkBB);
-		placeBlock(level, Tile::pressurePlate_wood_Id, 0, tablePlacement, 2, 3, chunkBB);
+		placeBlock(level, Tile::wooden_pressure_plate_Id, 0, tablePlacement, 2, 3, chunkBB);
 	}
 
 	// entrance
 	placeBlock(level, 0, 0, 1, 1, 0, chunkBB);
 	placeBlock(level, 0, 0, 1, 2, 0, chunkBB);
-	createDoor(level, chunkBB, random, 1, 1, 0, getOrientationData(Tile::door_wood_Id, 1));
+	createDoor(level, chunkBB, random, 1, 1, 0, getOrientationData(Tile::wooden_door_Id, 1));
 	if (getBlock(level, 1, 0, -1, chunkBB) == 0 && getBlock(level, 1, -1, -1, chunkBB) != 0)
 	{
-		placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), 1, 0, -1, chunkBB);
+		placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), 1, 0, -1, chunkBB);
 	}
 
 	for (int z = 0; z < depth; z++)
@@ -1320,75 +1320,75 @@ bool VillagePieces::PigHouse::postProcess(Level *level, Random *random, Bounding
 	generateBox(level, chunkBB, 3, 1, 10, 7, 1, 10, Tile::fence_Id, Tile::fence_Id, false);
 
 	// floor
-	generateBox(level, chunkBB, 1, 0, 1, 7, 0, 4, Tile::wood_Id, Tile::wood_Id, false);
+	generateBox(level, chunkBB, 1, 0, 1, 7, 0, 4, Tile::planks_Id, Tile::planks_Id, false);
 	generateBox(level, chunkBB, 0, 0, 0, 0, 3, 5, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 	generateBox(level, chunkBB, 8, 0, 0, 8, 3, 5, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 	generateBox(level, chunkBB, 1, 0, 0, 7, 1, 0, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 	generateBox(level, chunkBB, 1, 0, 5, 7, 1, 5, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 
 	// roof
-	generateBox(level, chunkBB, 1, 2, 0, 7, 3, 0, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 2, 5, 7, 3, 5, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 0, 4, 1, 8, 4, 1, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 0, 4, 4, 8, 4, 4, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 0, 5, 2, 8, 5, 3, Tile::wood_Id, Tile::wood_Id, false);
-	placeBlock(level, Tile::wood_Id, 0, 0, 4, 2, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 0, 4, 3, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 8, 4, 2, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 8, 4, 3, chunkBB);
+	generateBox(level, chunkBB, 1, 2, 0, 7, 3, 0, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 2, 5, 7, 3, 5, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 0, 4, 1, 8, 4, 1, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 0, 4, 4, 8, 4, 4, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 0, 5, 2, 8, 5, 3, Tile::planks_Id, Tile::planks_Id, false);
+	placeBlock(level, Tile::planks_Id, 0, 0, 4, 2, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 0, 4, 3, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 8, 4, 2, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 8, 4, 3, chunkBB);
 
-	int southStairs = getOrientationData(Tile::stairs_wood_Id, 3);
-	int northStairs = getOrientationData(Tile::stairs_wood_Id, 2);
+	int southStairs = getOrientationData(Tile::oak_stairs_Id, 3);
+	int northStairs = getOrientationData(Tile::oak_stairs_Id, 2);
 	for (int d = -1; d <= 2; d++)
 	{
 		for (int w = 0; w <= 8; w++)
 		{
-			placeBlock(level, Tile::stairs_wood_Id, southStairs, w, 4 + d, d, chunkBB);
-			placeBlock(level, Tile::stairs_wood_Id, northStairs, w, 4 + d, 5 - d, chunkBB);
+			placeBlock(level, Tile::oak_stairs_Id, southStairs, w, 4 + d, d, chunkBB);
+			placeBlock(level, Tile::oak_stairs_Id, northStairs, w, 4 + d, 5 - d, chunkBB);
 		}
 	}
 
 	// windows etc
-	placeBlock(level, Tile::treeTrunk_Id, 0, 0, 2, 1, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 0, 2, 4, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 8, 2, 1, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 8, 2, 4, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 3, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 2, 3, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 2, 5, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 3, 2, 5, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 5, 2, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 6, 2, 5, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 0, 2, 1, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 0, 2, 4, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 8, 2, 1, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 8, 2, 4, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 3, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 2, 3, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 2, 5, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 3, 2, 5, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 5, 2, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 6, 2, 5, chunkBB);
 
 	// table
 	placeBlock(level, Tile::fence_Id, 0, 2, 1, 3, chunkBB);
-	placeBlock(level, Tile::pressurePlate_wood_Id, 0, 2, 2, 3, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 1, 1, 4, chunkBB);
-	placeBlock(level, Tile::stairs_wood_Id, getOrientationData(Tile::stairs_wood_Id, 3), 2, 1, 4, chunkBB);
-	placeBlock(level, Tile::stairs_wood_Id, getOrientationData(Tile::stairs_wood_Id, 1), 1, 1, 3, chunkBB);
+	placeBlock(level, Tile::wooden_pressure_plate_Id, 0, 2, 2, 3, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 1, 1, 4, chunkBB);
+	placeBlock(level, Tile::oak_stairs_Id, getOrientationData(Tile::oak_stairs_Id, 3), 2, 1, 4, chunkBB);
+	placeBlock(level, Tile::oak_stairs_Id, getOrientationData(Tile::oak_stairs_Id, 1), 1, 1, 3, chunkBB);
 
 	// butcher table
-	generateBox(level, chunkBB, 5, 0, 1, 7, 0, 3, Tile::stoneSlab_Id, Tile::stoneSlab_Id, false);
-	placeBlock(level, Tile::stoneSlab_Id, 0, 6, 1, 1, chunkBB);
-	placeBlock(level, Tile::stoneSlab_Id, 0, 6, 1, 2, chunkBB);
+	generateBox(level, chunkBB, 5, 0, 1, 7, 0, 3, Tile::double_stone_slab_Id, Tile::double_stone_slab_Id, false);
+	placeBlock(level, Tile::double_stone_slab_Id, 0, 6, 1, 1, chunkBB);
+	placeBlock(level, Tile::double_stone_slab_Id, 0, 6, 1, 2, chunkBB);
 
 	// entrance
 	placeBlock(level, 0, 0, 2, 1, 0, chunkBB);
 	placeBlock(level, 0, 0, 2, 2, 0, chunkBB);
 	placeBlock(level, Tile::torch_Id, 0, 2, 3, 1, chunkBB);
-	createDoor(level, chunkBB, random, 2, 1, 0, getOrientationData(Tile::door_wood_Id, 1));
+	createDoor(level, chunkBB, random, 2, 1, 0, getOrientationData(Tile::wooden_door_Id, 1));
 	if (getBlock(level, 2, 0, -1, chunkBB) == 0 && getBlock(level, 2, -1, -1, chunkBB) != 0)
 	{
-		placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), 2, 0, -1, chunkBB);
+		placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), 2, 0, -1, chunkBB);
 	}
 
 	// pig entrance
 	placeBlock(level, 0, 0, 6, 1, 5, chunkBB);
 	placeBlock(level, 0, 0, 6, 2, 5, chunkBB);
 	placeBlock(level, Tile::torch_Id, 0, 6, 3, 4, chunkBB);
-	createDoor(level, chunkBB, random, 6, 1, 5, getOrientationData(Tile::door_wood_Id, 1));
+	createDoor(level, chunkBB, random, 6, 1, 5, getOrientationData(Tile::wooden_door_Id, 1));
 
 	for (int z = 0; z < 5; z++)
 	{
@@ -1457,8 +1457,8 @@ bool VillagePieces::TwoRoomHouse::postProcess(Level *level, Random *random, Boun
 	generateBox(level, chunkBB, 2, 1, 6, 8, 4, 10, 0, 0, false);
 
 	// floor
-	generateBox(level, chunkBB, 2, 0, 5, 8, 0, 10, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 0, 1, 7, 0, 4, Tile::wood_Id, Tile::wood_Id, false);
+	generateBox(level, chunkBB, 2, 0, 5, 8, 0, 10, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 0, 1, 7, 0, 4, Tile::planks_Id, Tile::planks_Id, false);
 	generateBox(level, chunkBB, 0, 0, 0, 0, 3, 5, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 	generateBox(level, chunkBB, 8, 0, 0, 8, 3, 10, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 	generateBox(level, chunkBB, 1, 0, 0, 7, 2, 0, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
@@ -1467,94 +1467,94 @@ bool VillagePieces::TwoRoomHouse::postProcess(Level *level, Random *random, Boun
 	generateBox(level, chunkBB, 3, 0, 10, 7, 3, 10, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
 
 	// room 1 roof
-	generateBox(level, chunkBB, 1, 2, 0, 7, 3, 0, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 2, 5, 2, 3, 5, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 0, 4, 1, 8, 4, 1, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 0, 4, 4, 3, 4, 4, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 0, 5, 2, 8, 5, 3, Tile::wood_Id, Tile::wood_Id, false);
-	placeBlock(level, Tile::wood_Id, 0, 0, 4, 2, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 0, 4, 3, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 8, 4, 2, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 8, 4, 3, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 8, 4, 4, chunkBB);
+	generateBox(level, chunkBB, 1, 2, 0, 7, 3, 0, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 2, 5, 2, 3, 5, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 0, 4, 1, 8, 4, 1, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 0, 4, 4, 3, 4, 4, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 0, 5, 2, 8, 5, 3, Tile::planks_Id, Tile::planks_Id, false);
+	placeBlock(level, Tile::planks_Id, 0, 0, 4, 2, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 0, 4, 3, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 8, 4, 2, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 8, 4, 3, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 8, 4, 4, chunkBB);
 
-	int southStairs = getOrientationData(Tile::stairs_wood_Id, 3);
-	int northStairs = getOrientationData(Tile::stairs_wood_Id, 2);
+	int southStairs = getOrientationData(Tile::oak_stairs_Id, 3);
+	int northStairs = getOrientationData(Tile::oak_stairs_Id, 2);
 	for (int d = -1; d <= 2; d++)
 	{
 		for (int w = 0; w <= 8; w++)
 		{
-			placeBlock(level, Tile::stairs_wood_Id, southStairs, w, 4 + d, d, chunkBB);
+			placeBlock(level, Tile::oak_stairs_Id, southStairs, w, 4 + d, d, chunkBB);
 			if ((d > -1 || w <= 1) && (d > 0 || w <= 3) && (d > 1 || w <= 4 || w >= 6)) {
-				placeBlock(level, Tile::stairs_wood_Id, northStairs, w, 4 + d, 5 - d, chunkBB);
+				placeBlock(level, Tile::oak_stairs_Id, northStairs, w, 4 + d, 5 - d, chunkBB);
 			}
 		}
 	}
 
 	// room 2 roof
-	generateBox(level, chunkBB, 3, 4, 5, 3, 4, 10, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 7, 4, 2, 7, 4, 10, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 4, 5, 4, 4, 5, 10, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 6, 5, 4, 6, 5, 10, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 5, 6, 3, 5, 6, 10, Tile::wood_Id, Tile::wood_Id, false);
-	int westStairs = getOrientationData(Tile::stairs_wood_Id, 0);
+	generateBox(level, chunkBB, 3, 4, 5, 3, 4, 10, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 7, 4, 2, 7, 4, 10, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 4, 5, 4, 4, 5, 10, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 6, 5, 4, 6, 5, 10, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 5, 6, 3, 5, 6, 10, Tile::planks_Id, Tile::planks_Id, false);
+	int westStairs = getOrientationData(Tile::oak_stairs_Id, 0);
 	for (int w = 4; w >= 1; w--)
 	{
-		placeBlock(level, Tile::wood_Id, 0, w, 2 + w, 7 - w, chunkBB);
+		placeBlock(level, Tile::planks_Id, 0, w, 2 + w, 7 - w, chunkBB);
 		for (int d = 8 - w; d <= 10; d++)
 		{
-			placeBlock(level, Tile::stairs_wood_Id, westStairs, w, 2 + w, d, chunkBB);
+			placeBlock(level, Tile::oak_stairs_Id, westStairs, w, 2 + w, d, chunkBB);
 		}
 	}
-	int eastStairs = getOrientationData(Tile::stairs_wood_Id, 1);
-	placeBlock(level, Tile::wood_Id, 0, 6, 6, 3, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 7, 5, 4, chunkBB);
-	placeBlock(level, Tile::stairs_wood_Id, eastStairs, 6, 6, 4, chunkBB);
+	int eastStairs = getOrientationData(Tile::oak_stairs_Id, 1);
+	placeBlock(level, Tile::planks_Id, 0, 6, 6, 3, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 7, 5, 4, chunkBB);
+	placeBlock(level, Tile::oak_stairs_Id, eastStairs, 6, 6, 4, chunkBB);
 	for (int w = 6; w <= 8; w++)
 	{
 		for (int d = 5; d <= 10; d++)
 		{
-			placeBlock(level, Tile::stairs_wood_Id, eastStairs, w, 12 - w, d, chunkBB);
+			placeBlock(level, Tile::oak_stairs_Id, eastStairs, w, 12 - w, d, chunkBB);
 		}
 	}
 
 	// windows etc
-	placeBlock(level, Tile::treeTrunk_Id, 0, 0, 2, 1, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 0, 2, 4, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 3, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 0, 2, 1, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 0, 2, 4, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 3, chunkBB);
 
-	placeBlock(level, Tile::treeTrunk_Id, 0, 4, 2, 0, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 5, 2, 0, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 6, 2, 0, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 4, 2, 0, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 5, 2, 0, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 6, 2, 0, chunkBB);
 
-	placeBlock(level, Tile::treeTrunk_Id, 0, 8, 2, 1, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 2, 3, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 8, 2, 4, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 8, 2, 5, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 8, 2, 6, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 2, 7, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 8, 2, 8, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 8, 2, 9, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 2, 2, 6, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 2, 7, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 2, 8, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 2, 2, 9, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 8, 2, 1, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 2, 3, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 8, 2, 4, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 8, 2, 5, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 8, 2, 6, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 2, 7, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 8, 2, 8, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 8, 2, 9, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 2, 2, 6, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 2, 7, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 2, 8, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 2, 2, 9, chunkBB);
 
-	placeBlock(level, Tile::treeTrunk_Id, 0, 4, 4, 10, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 5, 4, 10, chunkBB);
-	placeBlock(level, Tile::treeTrunk_Id, 0, 6, 4, 10, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 5, 5, 10, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 4, 4, 10, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 5, 4, 10, chunkBB);
+	placeBlock(level, Tile::log_Id, 0, 6, 4, 10, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 5, 5, 10, chunkBB);
 
 	// entrance
 	placeBlock(level, 0, 0, 2, 1, 0, chunkBB);
 	placeBlock(level, 0, 0, 2, 2, 0, chunkBB);
 	placeBlock(level, Tile::torch_Id, 0, 2, 3, 1, chunkBB);
-	createDoor(level, chunkBB, random, 2, 1, 0, getOrientationData(Tile::door_wood_Id, 1));
+	createDoor(level, chunkBB, random, 2, 1, 0, getOrientationData(Tile::wooden_door_Id, 1));
 	generateBox(level, chunkBB, 1, 0, -1, 3, 2, -1, 0, 0, false);
 	if (getBlock(level, 2, 0, -1, chunkBB) == 0 && getBlock(level, 2, -1, -1, chunkBB) != 0) {
-		placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), 2, 0, -1, chunkBB);
+		placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), 2, 0, -1, chunkBB);
 	}
 
 	for (int z = 0; z < 5; z++)
@@ -1584,23 +1584,23 @@ void VillagePieces::Smithy::staticCtor()
 {
 	treasureItems = WeighedTreasureArray(17);
 	treasureItems[0] = new WeighedTreasure(Item::diamond_Id, 0, 1, 3, 3);
-	treasureItems[1] = new WeighedTreasure(Item::ironIngot_Id, 0, 1, 5, 10);
-	treasureItems[2] = new WeighedTreasure(Item::goldIngot_Id, 0, 1, 3, 5);
+	treasureItems[1] = new WeighedTreasure(Item::iron_ingot_Id, 0, 1, 5, 10);
+	treasureItems[2] = new WeighedTreasure(Item::gold_ingot_Id, 0, 1, 3, 5);
 	treasureItems[3] = new WeighedTreasure(Item::bread_Id, 0, 1, 3, 15);
 	treasureItems[4] = new WeighedTreasure(Item::apple_Id, 0, 1, 3, 15);
-	treasureItems[5] = new WeighedTreasure(Item::pickAxe_iron_Id, 0, 1, 1, 5);
-	treasureItems[6] = new WeighedTreasure(Item::sword_iron_Id, 0, 1, 1, 5);
-	treasureItems[7] = new WeighedTreasure(Item::chestplate_iron_Id, 0, 1, 1, 5);
-	treasureItems[8] = new WeighedTreasure(Item::helmet_iron_Id, 0, 1, 1, 5);
-	treasureItems[9] = new WeighedTreasure(Item::leggings_iron_Id, 0, 1, 1, 5);
-	treasureItems[10] = new WeighedTreasure(Item::boots_iron_Id, 0, 1, 1, 5);
+	treasureItems[5] = new WeighedTreasure(Item::iron_pickaxe_Id, 0, 1, 1, 5);
+	treasureItems[6] = new WeighedTreasure(Item::iron_sword_Id, 0, 1, 1, 5);
+	treasureItems[7] = new WeighedTreasure(Item::iron_chestplate_Id, 0, 1, 1, 5);
+	treasureItems[8] = new WeighedTreasure(Item::iron_helmet_Id, 0, 1, 1, 5);
+	treasureItems[9] = new WeighedTreasure(Item::iron_leggings_Id, 0, 1, 1, 5);
+	treasureItems[10] = new WeighedTreasure(Item::iron_boots_Id, 0, 1, 1, 5);
 	treasureItems[11] = new WeighedTreasure(Tile::obsidian_Id, 0, 3, 7, 5);
 	treasureItems[12] = new WeighedTreasure(Tile::sapling_Id, 0, 3, 7, 5);
 	// very rare for villages ...
 	treasureItems[13] = new WeighedTreasure(Item::saddle_Id, 0, 1, 1, 3);
-	treasureItems[14] = new WeighedTreasure(Item::horseArmorMetal_Id, 0, 1, 1, 1);
-	treasureItems[15] = new WeighedTreasure(Item::horseArmorGold_Id, 0, 1, 1, 1);
-	treasureItems[16] = new WeighedTreasure(Item::horseArmorDiamond_Id, 0, 1, 1, 1);
+	treasureItems[14] = new WeighedTreasure(Item::iron_horse_armor_Id, 0, 1, 1, 1);
+	treasureItems[15] = new WeighedTreasure(Item::golden_horse_armor_Id, 0, 1, 1, 1);
+	treasureItems[16] = new WeighedTreasure(Item::diamond_horse_armor_Id, 0, 1, 1, 1);
 	// ...
 }
 
@@ -1662,19 +1662,19 @@ bool VillagePieces::Smithy::postProcess(Level *level, Random *random, BoundingBo
 
 	// roof
 	generateBox(level, chunkBB, 0, 4, 0, 9, 4, 6, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
-	generateBox(level, chunkBB, 0, 5, 0, 9, 5, 6, Tile::stoneSlabHalf_Id, Tile::stoneSlabHalf_Id, false);
+	generateBox(level, chunkBB, 0, 5, 0, 9, 5, 6, Tile::stone_slab_Id, Tile::stone_slab_Id, false);
 	generateBox(level, chunkBB, 1, 5, 1, 8, 5, 5, 0, 0, false);
 
 	// room walls
-	generateBox(level, chunkBB, 1, 1, 0, 2, 3, 0, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 0, 1, 0, 0, 4, 0, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 3, 1, 0, 3, 4, 0, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 0, 1, 6, 0, 4, 6, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	placeBlock(level, Tile::wood_Id, 0, 3, 3, 1, chunkBB);
-	generateBox(level, chunkBB, 3, 1, 2, 3, 3, 2, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 4, 1, 3, 5, 3, 3, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 0, 1, 1, 0, 3, 5, Tile::wood_Id, Tile::wood_Id, false);
-	generateBox(level, chunkBB, 1, 1, 6, 5, 3, 6, Tile::wood_Id, Tile::wood_Id, false);
+	generateBox(level, chunkBB, 1, 1, 0, 2, 3, 0, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 0, 1, 0, 0, 4, 0, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 3, 1, 0, 3, 4, 0, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 0, 1, 6, 0, 4, 6, Tile::log_Id, Tile::log_Id, false);
+	placeBlock(level, Tile::planks_Id, 0, 3, 3, 1, chunkBB);
+	generateBox(level, chunkBB, 3, 1, 2, 3, 3, 2, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 4, 1, 3, 5, 3, 3, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 0, 1, 1, 0, 3, 5, Tile::planks_Id, Tile::planks_Id, false);
+	generateBox(level, chunkBB, 1, 1, 6, 5, 3, 6, Tile::planks_Id, Tile::planks_Id, false);
 
 	// pillars
 	generateBox(level, chunkBB, 5, 1, 0, 5, 3, 0, Tile::fence_Id, Tile::fence_Id, false);
@@ -1682,28 +1682,28 @@ bool VillagePieces::Smithy::postProcess(Level *level, Random *random, BoundingBo
 
 	// furnace
 	generateBox(level, chunkBB, 6, 1, 4, 9, 4, 6, Tile::cobblestone_Id, Tile::cobblestone_Id, false);
-	placeBlock(level, Tile::lava_Id, 0, 7, 1, 5, chunkBB);
-	placeBlock(level, Tile::lava_Id, 0, 8, 1, 5, chunkBB);
-	placeBlock(level, Tile::ironFence_Id, 0, 9, 2, 5, chunkBB);
-	placeBlock(level, Tile::ironFence_Id, 0, 9, 2, 4, chunkBB);
+	placeBlock(level, Tile::flowing_lava_Id, 0, 7, 1, 5, chunkBB);
+	placeBlock(level, Tile::flowing_lava_Id, 0, 8, 1, 5, chunkBB);
+	placeBlock(level, Tile::iron_bars_Id, 0, 9, 2, 5, chunkBB);
+	placeBlock(level, Tile::iron_bars_Id, 0, 9, 2, 4, chunkBB);
 	generateBox(level, chunkBB, 7, 2, 4, 8, 2, 5, 0, 0, false);
 	placeBlock(level, Tile::cobblestone_Id, 0, 6, 1, 3, chunkBB);
 	placeBlock(level, Tile::furnace_Id, 0, 6, 2, 3, chunkBB);
 	placeBlock(level, Tile::furnace_Id, 0, 6, 3, 3, chunkBB);
-	placeBlock(level, Tile::stoneSlab_Id, 0, 8, 1, 1, chunkBB);
+	placeBlock(level, Tile::double_stone_slab_Id, 0, 8, 1, 1, chunkBB);
 
 	// windows etc
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 2, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 0, 2, 4, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 2, 2, 6, chunkBB);
-	placeBlock(level, Tile::thinGlass_Id, 0, 4, 2, 6, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 2, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 0, 2, 4, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 2, 2, 6, chunkBB);
+	placeBlock(level, Tile::glass_pane_Id, 0, 4, 2, 6, chunkBB);
 
 	// table
 	placeBlock(level, Tile::fence_Id, 0, 2, 1, 4, chunkBB);
-	placeBlock(level, Tile::pressurePlate_wood_Id, 0, 2, 2, 4, chunkBB);
-	placeBlock(level, Tile::wood_Id, 0, 1, 1, 5, chunkBB);
-	placeBlock(level, Tile::stairs_wood_Id, getOrientationData(Tile::stairs_wood_Id, 3), 2, 1, 5, chunkBB);
-	placeBlock(level, Tile::stairs_wood_Id, getOrientationData(Tile::stairs_wood_Id, 1), 1, 1, 4, chunkBB);
+	placeBlock(level, Tile::wooden_pressure_plate_Id, 0, 2, 2, 4, chunkBB);
+	placeBlock(level, Tile::planks_Id, 0, 1, 1, 5, chunkBB);
+	placeBlock(level, Tile::oak_stairs_Id, getOrientationData(Tile::oak_stairs_Id, 3), 2, 1, 5, chunkBB);
+	placeBlock(level, Tile::oak_stairs_Id, getOrientationData(Tile::oak_stairs_Id, 1), 1, 1, 4, chunkBB);
 
 	if (!hasPlacedChest)
 	{
@@ -1721,7 +1721,7 @@ bool VillagePieces::Smithy::postProcess(Level *level, Random *random, BoundingBo
 	{
 		if (getBlock(level, x, 0, -1, chunkBB) == 0 && getBlock(level, x, -1, -1, chunkBB) != 0 )
 		{
-			placeBlock(level, Tile::stairs_stone_Id, getOrientationData(Tile::stairs_stone_Id, 3), x, 0, -1, chunkBB);
+			placeBlock(level, Tile::stone_stairs_Id, getOrientationData(Tile::stone_stairs_Id, 3), x, 0, -1, chunkBB);
 		}
 	}
 
@@ -1771,6 +1771,8 @@ int VillagePieces::Farmland::selectCrops(Random *random)
 		return Tile::carrots_Id;
 	case 1:
 		return Tile::potatoes_Id;
+	case 2:
+		return Tile::beetroots_Id;
 	}
 }
 
@@ -1820,12 +1822,12 @@ bool VillagePieces::Farmland::postProcess(Level *level, Random *random, Bounding
 	generateBox(level, chunkBB, 1, 0, 1, 2, 0, 7, Tile::farmland_Id, Tile::farmland_Id, false);
 	generateBox(level, chunkBB, 4, 0, 1, 5, 0, 7, Tile::farmland_Id, Tile::farmland_Id, false);
 	// walkpaths
-	generateBox(level, chunkBB, 0, 0, 0, 0, 0, 8, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 6, 0, 0, 6, 0, 8, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 1, 0, 0, 5, 0, 0, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 1, 0, 8, 5, 0, 8, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
+	generateBox(level, chunkBB, 0, 0, 0, 0, 0, 8, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 6, 0, 0, 6, 0, 8, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 1, 0, 0, 5, 0, 0, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 1, 0, 8, 5, 0, 8, Tile::log_Id, Tile::log_Id, false);
 	// water
-	generateBox(level, chunkBB, 3, 0, 1, 3, 0, 7, Tile::water_Id, Tile::water_Id, false);
+	generateBox(level, chunkBB, 3, 0, 1, 3, 0, 7, Tile::flowing_water_Id, Tile::flowing_water_Id, false);
 	// crops
 	for (int d = 1; d <= 7; d++)
 	{
@@ -1934,14 +1936,14 @@ bool VillagePieces::DoubleFarmland::postProcess(Level *level, Random *random, Bo
 	generateBox(level, chunkBB, 7, 0, 1, 8, 0, 7, Tile::farmland_Id, Tile::farmland_Id, false);
 	generateBox(level, chunkBB, 10, 0, 1, 11, 0, 7, Tile::farmland_Id, Tile::farmland_Id, false);
 	// walkpaths
-	generateBox(level, chunkBB, 0, 0, 0, 0, 0, 8, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 6, 0, 0, 6, 0, 8, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 12, 0, 0, 12, 0, 8, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 1, 0, 0, 11, 0, 0, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
-	generateBox(level, chunkBB, 1, 0, 8, 11, 0, 8, Tile::treeTrunk_Id, Tile::treeTrunk_Id, false);
+	generateBox(level, chunkBB, 0, 0, 0, 0, 0, 8, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 6, 0, 0, 6, 0, 8, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 12, 0, 0, 12, 0, 8, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 1, 0, 0, 11, 0, 0, Tile::log_Id, Tile::log_Id, false);
+	generateBox(level, chunkBB, 1, 0, 8, 11, 0, 8, Tile::log_Id, Tile::log_Id, false);
 	// water
-	generateBox(level, chunkBB, 3, 0, 1, 3, 0, 7, Tile::water_Id, Tile::water_Id, false);
-	generateBox(level, chunkBB, 9, 0, 1, 9, 0, 7, Tile::water_Id, Tile::water_Id, false);
+	generateBox(level, chunkBB, 3, 0, 1, 3, 0, 7, Tile::flowing_water_Id, Tile::flowing_water_Id, false);
+	generateBox(level, chunkBB, 9, 0, 1, 9, 0, 7, Tile::flowing_water_Id, Tile::flowing_water_Id, false);
 	// crops
 	for (int d = 1; d <= 7; d++)
 	{

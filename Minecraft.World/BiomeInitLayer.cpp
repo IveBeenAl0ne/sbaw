@@ -33,11 +33,11 @@ BiomeInitLayer::BiomeInitLayer(int64_t seed, shared_ptr<Layer> parent, int64_t s
     {
        
         desertBiomes[0] = Biome::desert;
-		desertBiomes[1] = Biome::desert;
-		desertBiomes[2] = Biome::desert;
-		desertBiomes[3] = Biome::savanna;
-		desertBiomes[4] = Biome::savanna;
-		desertBiomes[5] = Biome::plains;
+		desertBiomes[1] = Biome::forest;
+		desertBiomes[2] = Biome::extremeHills;
+		desertBiomes[3] = Biome::swampland;
+		desertBiomes[4] = Biome::plains;
+		desertBiomes[5] = Biome::taiga;
     }
 
         warmBiomes[0] = Biome::forest;

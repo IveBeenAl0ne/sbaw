@@ -89,6 +89,7 @@ protected:
 
 	bool m_bIsReloading;
 	bool m_bFocussedOnce;
+	bool m_bPanoramaUsesDefaultPlatformSkin;
 
 	int m_movieWidth, m_movieHeight;
 	int m_renderWidth, m_renderHeight;

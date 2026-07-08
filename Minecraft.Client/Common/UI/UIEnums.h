@@ -60,7 +60,6 @@ enum EUIScene
 	eUIScene_ControlsMenu,
 	eUIScene_SettingsOptionsMenu,
 	eUIScene_SettingsAudioMenu,
-	eUIScene_SettingsControlMenu,
 	eUIScene_SettingsGraphicsMenu,
 	eUIScene_SettingsUIMenu,
 	eUIScene_SettingsMenu,		

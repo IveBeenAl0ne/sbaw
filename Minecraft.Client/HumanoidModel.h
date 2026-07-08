@@ -1,9 +1,11 @@
 ﻿#pragma once
 #include "Model.h"
+#include "SkinOffset.h"
 class HumanoidModel : public Model
 {
 public:
     ModelPart* head, * hair, * body, * jacket, * arm0, * sleeve0, * arm1, * sleeve1, * leg0, * pants0, * leg1, * pants1, * ear, * cloak;
+	ModelPart* waist, * belt, * bodyArmor, * armArmor0, * armArmor1, * legging0, * legging1, * sock0, * sock1, * boot0, * boot1;
     ModelPart* elytraLeft, * elytraRight;
     int holdingLeftHand;
     int holdingRightHand;
@@ -15,6 +17,8 @@ public:
     float eating_swing;	
     bool elytraFlying;    
     bool elytraCrouching; 
+    bool m_isArmor;
+	bool m_is64x64;
     unsigned int m_uiAnimOverrideBitmask; 
     float m_fYOffset;
     enum animbits
@@ -37,11 +41,20 @@ public:
         eAnim_DisableRenderLeg1,
         eAnim_DisableRenderHair,
         eAnim_SmallModel,
-        eAnim_DisableRenderJacket,
-        eAnim_DisableRenderSleeve0,
-        eAnim_DisableRenderSleeve1,
-        eAnim_DisableRenderPants0,
-        eAnim_DisableRenderPants1
+		eAnim_WideModel,
+		eAnim_SlimModel,
+		eAnim_DisableRenderSleeve1,
+		eAnim_DisableRenderSleeve0,
+		eAnim_DisableRenderPants1,
+		eAnim_DisableRenderPants0,
+		eAnim_DisableRenderJacket,
+		eAnim_RenderArmorHead,
+		eAnim_RenderArmorArm0,
+		eAnim_RenderArmorArm1,
+		eAnim_RenderArmorTorso,
+		eAnim_RenderArmorLeg0,
+		eAnim_RenderArmorLeg1,
+		eAnim_Dinnerbone
     };
 
 
@@ -59,22 +72,17 @@ public:
         (1 << HumanoidModel::eAnim_DisableRenderPants0) |
         (1 << HumanoidModel::eAnim_DisableRenderPants1);
 
-    void _init(float g, float yOffset, int texWidth, int texHeight,
-               bool slimHands, bool mirror, bool force32);
+    void _init(float g, float yOffset, int texWidth, int texHeight, bool slim, bool isArmor);
 
     HumanoidModel();
     HumanoidModel(float g);
+    HumanoidModel(float g, bool isArmor);
     HumanoidModel(float g, float yOffset, int texWidth, int texHeight);
-    HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands);
-    HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror);
-    HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slimHands, bool mirror, bool force32);
+    HumanoidModel(float g, float yOffset, int texWidth, int texHeight, bool slim);
 
-    virtual void render(shared_ptr<Entity> entity, float time, float r, float bob,
-                        float yRot, float xRot, float scale, bool usecompiled);
-    virtual void setupAnim(float time, float r, float bob, float yRot, float xRot,
-                           float scale, shared_ptr<Entity> entity,
-                           unsigned int uiBitmaskOverrideAnim = 0);
-
+    virtual void render(shared_ptr<Entity> entity, float time, float r, float bob, float yRot, float xRot, float scale, bool usecompiled);
+	virtual void renderUI(float time, float r, float bob, float yRot, float xRot, float scale, bool usecompiled, vector<SKIN_OFFSET *> *skinOffsets);
+    virtual void setupAnim(float time, float r, float bob, float yRot, float xRot, float scale, shared_ptr<Entity> entity, unsigned int uiBitmaskOverrideAnim = 0);
     void renderHair(float scale, bool usecompiled);
     void renderEars(float scale, bool usecompiled);
     void renderCloak(float scale, bool usecompiled);

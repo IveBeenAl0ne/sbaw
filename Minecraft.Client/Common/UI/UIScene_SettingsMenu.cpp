@@ -12,7 +12,6 @@ UIScene_SettingsMenu::UIScene_SettingsMenu(int iPad, void *initData, UILayer *pa
 
 	m_buttons[BUTTON_ALL_OPTIONS].init(IDS_OPTIONS,BUTTON_ALL_OPTIONS);
 	m_buttons[BUTTON_ALL_AUDIO].init(IDS_AUDIO,BUTTON_ALL_AUDIO);
-	m_buttons[BUTTON_ALL_CONTROL].init(IDS_CONTROL,BUTTON_ALL_CONTROL);
 	m_buttons[BUTTON_ALL_GRAPHICS].init(IDS_GRAPHICS,BUTTON_ALL_GRAPHICS);
 	m_buttons[BUTTON_ALL_UI].init(IDS_USER_INTERFACE,BUTTON_ALL_UI);
 	m_buttons[BUTTON_ALL_RESETTODEFAULTS].init(IDS_RESET_TO_DEFAULTS,BUTTON_ALL_RESETTODEFAULTS);
@@ -126,9 +125,6 @@ void UIScene_SettingsMenu::handlePress(F64 controlId, F64 childId)
 		break;
 	case BUTTON_ALL_AUDIO:
 		ui.NavigateToScene(m_iPad, eUIScene_SettingsAudioMenu);
-		break;
-	case BUTTON_ALL_CONTROL:
-		ui.NavigateToScene(m_iPad, eUIScene_SettingsControlMenu);
 		break;
 	case BUTTON_ALL_GRAPHICS:
 		ui.NavigateToScene(m_iPad, eUIScene_SettingsGraphicsMenu);

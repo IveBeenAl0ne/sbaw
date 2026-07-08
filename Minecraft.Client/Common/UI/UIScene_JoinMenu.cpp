@@ -131,6 +131,7 @@ void UIScene_JoinMenu::updateTooltips()
 
 void UIScene_JoinMenu::tick()
 {
+	if (this == nullptr) return;
 	if (!m_friendInfoRequestIssued)
 	{
 		ui.NavigateToScene(m_iPad, eUIScene_Timer);
@@ -374,7 +375,7 @@ void UIScene_JoinMenu::updateServerDescription() {
 			wstring testText = L"\nNothing yet...";
 			IggyStringUTF16 iggyStr;
 			wstring formattedText = app.EscapeHTMLString(testText);
-			formattedText = app.FormatChatMessage(formattedText);
+			formattedText = app.FormatColoredString(formattedText);
 			iggyStr.string = (IggyUTF16*)formattedText.c_str();
 			iggyStr.length = (unsigned int)formattedText.length();
 

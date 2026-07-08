@@ -5,6 +5,7 @@ using namespace std;
 #include "../../Minecraft.World/SoundTypes.h"
 
 #include "miniaudio.h"
+#include <chrono>
 
 constexpr float SFX_3D_MIN_DISTANCE = 1.0f;
 constexpr float SFX_3D_MAX_DISTANCE = 16.0f;
@@ -82,6 +83,7 @@ enum eMusicStreamState
 {
 	eMusicStreamState_Idle=0,
 	eMusicStreamState_Stop,
+	eMusicStreamState_Fading,
 	eMusicStreamState_Stopping,
 	eMusicStreamState_Opening,
 	eMusicStreamState_OpeningCancel,
@@ -127,6 +129,9 @@ public:
 	void GetSoundName(char *szSoundName,int iSound);
 #endif
     void play(int iSound, float x, float y, float z, float volume, float pitch) override;
+	MiniAudioSound* startLoopingSound(const wstring& name, float x, float y, float z, float volume, float pitch, bool bIs3D = true);
+	void updateLoopingSound(MiniAudioSound* sound, float x, float y, float z, float volume, float pitch);
+	void stopLoopingSound(MiniAudioSound* sound);
 	void startElytraSound(float x, float y, float z, float volume, float pitch);
 	void stopElytraSound();
     void playStreaming(const wstring& name, float x, float y , float z, float volume, float pitch, bool bMusicDelay=true) override;
@@ -160,9 +165,13 @@ private:
 #endif
 	
 	int GetRandomishTrack(int iStart,int iEnd);
+	bool isCustomMusicRequest(const wstring& name) const;
 
 	MiniAudioSound* m_elytraLoopingSound = nullptr;
 
+	float m_musicFadeSecondsRemaining;
+	std::chrono::steady_clock::time_point m_musicFadeLastUpdateTime;
+	bool m_bCurrentStreamIsCustom;
 
 	ma_engine m_engine;
 	ma_engine_config m_engineConfig;

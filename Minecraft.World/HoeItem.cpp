@@ -21,7 +21,7 @@ bool HoeItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> player
 	int targetType = level->getTile(x, y, z);
 	int above = level->getTile(x, y + 1, z);
 
-	if (face != 0 && above == 0 && (targetType == Tile::grass_Id || targetType == Tile::dirt_Id || targetType == Tile::mycel_Id)) 
+	if (face != 0 && above == 0 && (targetType == Tile::grass_Id || targetType == Tile::dirt_Id || targetType == Tile::mycelium_Id)) 
 	{
 		if(!bTestUseOnOnly)
 		{
@@ -38,7 +38,14 @@ bool HoeItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> player
 	return false;
 }
 
-bool HoeItem::isHandEquipped() 
+float HoeItem::getDestroySpeed(shared_ptr<ItemInstance> itemInstance, Tile *tile)
+{
+	if (tile != nullptr && (tile->id == Tile::nether_wart_block_Id || tile->id == Tile::hayBlock->id))
+		return tier->getSpeed();
+	return Item::getDestroySpeed(itemInstance, tile);
+}
+
+bool HoeItem::isHandEquipped()
 {
 	return true;
 }
