@@ -514,9 +514,12 @@ void UIController::SetupFont()
 		}
 		else
 		{
+			//removed this cause it caused a crash when switching from custom font to bitmap font but not when loading the game with font selected, needs a deeper look
+#if 0
 			app.DebugPrintf("[Iggy] Set font indirect to '%hs'.\n", m_mcTTFFont->getFontName().c_str());
 			IggyFontSetIndirectUTF8( "Mojangles7",	-1, IGGY_FONTFLAG_all, m_mcTTFFont->getFontName().c_str(), -1, IGGY_FONTFLAG_none );
 			IggyFontSetIndirectUTF8( "Mojangles11",	-1, IGGY_FONTFLAG_all, m_mcTTFFont->getFontName().c_str(), -1, IGGY_FONTFLAG_none );
+#endif
 		}
 	}
 	else

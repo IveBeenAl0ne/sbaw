@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <locale>
+#include <codecvt>
 
 wstring toLower(const wstring& a)
 {
@@ -41,9 +43,26 @@ bool equalsIgnoreCase(const wstring& a, const wstring& b)
 
 wstring convStringToWstring(const string& converting)
 {
-	wstring converted(converting.length(), L' ');
-	copy(converting.begin(), converting.end(), converted.begin());
-	return converted;
+	if (converting.empty()) return wstring();
+
+#ifdef _WIN32
+	// windows - UTF-16
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> converter;
+#else
+	// unix - UTF-32
+	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+#endif
+	try
+	{
+		return converter.from_bytes(converting);
+	}
+	catch(...)
+	{
+		// fallbakc - simple widening
+		wstring converted(converting.length(), L' ');
+		copy(converting.begin(), converting.end(), converted.begin());
+		return converted;
+	}
 }
 
 // Convert for filename wstrings to a straight character pointer for Xbox APIs. The returned string is only valid until
