@@ -56,7 +56,7 @@ void UIGroup::DestroyAll()
 	}
 }
 
-void UIGroup::ReloadAll()
+void UIGroup::ReloadAll(bool force, UIScene *skipScene)
 {
 	// We only need to reload things when they are likely to be rendered
 	int highestRenderable = 0;
@@ -67,7 +67,7 @@ void UIGroup::ReloadAll()
 	if(highestRenderable < eUILayer_Fullscreen) highestRenderable = eUILayer_Fullscreen;
 	for(; highestRenderable >= 0; --highestRenderable)
 	{
-		if(highestRenderable < eUILayer_COUNT) m_layers[highestRenderable]->ReloadAll(highestRenderable != static_cast<int>(eUILayer_Fullscreen));
+		if(highestRenderable < eUILayer_COUNT) m_layers[highestRenderable]->ReloadAll(force && highestRenderable != static_cast<int>(eUILayer_Fullscreen), skipScene);
 	}
 }
 

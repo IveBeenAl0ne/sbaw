@@ -471,6 +471,7 @@ LPCWSTR StringTable::getString(const wstring &id)
 	else
 	{
 		m_missingKeyFallback = id;
+		printf("StringTable::getString() - Missing key '%ls'\n", id.c_str());
 		return m_missingKeyFallback.c_str();
 	}
 }

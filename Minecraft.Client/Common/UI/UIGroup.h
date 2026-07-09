@@ -44,7 +44,7 @@ public:
 	UIComponent_PressStartToPlay *getPressStartToPlay() { return m_pressStartToPlay; }
 
 	void DestroyAll();
-	void ReloadAll();
+	void ReloadAll(bool force = false, UIScene *skipScene = nullptr);
 
 	void tick();
 	void render();

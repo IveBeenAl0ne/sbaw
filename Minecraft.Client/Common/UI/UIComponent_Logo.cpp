@@ -2,10 +2,44 @@
 #include "UI.h"
 #include "UIComponent_Logo.h"
 
-UIComponent_Logo::UIComponent_Logo(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
+UIComponent_Logo::UIComponent_Logo(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer), m_bFullscreenProgressLogoRefreshed(false)
 {
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
+}
+
+bool UIComponent_Logo::needsReloaded()
+{
+	if(!hasMovie())
+	{
+		return true;
+	}
+
+	UIScene *topScene = ui.GetTopScene(m_iPad);
+	const bool isSettingsMenuActive = topScene && topScene->getSceneType() == eUIScene_SettingsUIMenu;
+	if(isSettingsMenuActive)
+	{
+		return false;
+	}
+
+	const bool isFullscreenProgressActive = topScene && topScene->getSceneType() == eUIScene_FullscreenProgress;
+	if(isFullscreenProgressActive && !m_bFullscreenProgressLogoRefreshed)
+	{
+		m_bFullscreenProgressLogoRefreshed = true;
+		return true;
+	}
+	if(!isFullscreenProgressActive)
+	{
+		m_bFullscreenProgressLogoRefreshed = false;
+	}
+
+	const bool shouldUse1080 = UIScene::SceneShouldUse1080p(getMoviePath());
+	if(shouldUse1080 && m_loadedResolution != eSceneResolution_1080)
+		return true;
+	if(!shouldUse1080 && m_loadedResolution == eSceneResolution_1080)
+		return true;
+
+	return false;
 }
 
 wstring UIComponent_Logo::getMoviePath()

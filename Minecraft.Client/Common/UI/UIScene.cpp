@@ -2,12 +2,45 @@
 #include "UI.h"
 #include "UIScene.h"
 #include "UISplitScreenHelpers.h"
+#include "TexturePackRepository.h"
+#include "UILayer.h"
 
 #include "../../Lighting.h"
 #include "../../LocalPlayer.h"
 #include "../../ItemRenderer.h"
 #include "../../../Minecraft.World/net.minecraft.world.item.h"
 #include "UIScene_BookAndQuillMenu.h"
+
+bool UIScene::SceneShouldUse1080p(const std::wstring &moviePath)
+{
+#if defined(_WINDOWS64)
+	int primaryPad = ProfileManager.GetPrimaryPad();
+	if(primaryPad < 0 || primaryPad >= XUSER_MAX_COUNT)
+		primaryPad = 0;
+	const int controlType = app.GetGameSettings(primaryPad, eGameSetting_ControlType);
+	const bool force720ForControlType = (controlType == 3 || controlType == 5);
+	const bool isTutorialPopupMovie = (moviePath.find(L"TutorialPopup") == 0);
+ 	
+	// dont refresh gui elements when the player
+	// is in the settings menu [resolution mismatch creates artifacts]
+ 	if(moviePath.find(L"SettingsUIMenu") == 0)
+ 	{
+ 		return (ui.getScreenHeight() > 720.0f) && (!force720ForControlType || isTutorialPopupMovie);
+	}
+
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	TexturePack *selectedPack = nullptr;
+	if(pMinecraft && pMinecraft->skins)
+	{
+		selectedPack = pMinecraft->skins->getSelected();
+	}
+	const bool isMarioWorld = (selectedPack && selectedPack->getId() == 1034);
+	return !isMarioWorld && (ui.getScreenHeight() > 720.0f) && (!force720ForControlType || isTutorialPopupMovie);
+#else
+	(void)moviePath;
+	return true;
+#endif
+}
 
 UIScene::UIScene(int iPad, UILayer *parentLayer)
 {
@@ -35,6 +68,7 @@ UIScene::UIScene(int iPad, UILayer *parentLayer)
 	m_needsCacheRendered = true;
 	m_expectedCachedSlotCount = 0;
 	m_callbackUniqueId = 0;
+	m_bWasMarioWorld = false;
 }
 
 UIScene::~UIScene()
@@ -134,7 +168,26 @@ void UIScene::reloadMovie(bool force)
 
 bool UIScene::needsReloaded()
 {
-	return !swf && (!stealsFocus() || bHasFocus);
+	if(!swf)
+	{
+		return !stealsFocus() || bHasFocus;
+	}
+
+	if(!stealsFocus() || bHasFocus)
+	{
+		const wstring moviePath = getMoviePath();
+		UIScene *topScene = ui.GetTopScene(m_iPad);
+		const bool isSettingsMenuActive = topScene && topScene->getSceneType() == eUIScene_SettingsUIMenu;
+		if(isSettingsMenuActive) return false;
+
+		const bool shouldUse1080 = SceneShouldUse1080p(moviePath);
+		if(shouldUse1080 && m_loadedResolution != eSceneResolution_1080)
+			return true;
+		if(!shouldUse1080 && m_loadedResolution == eSceneResolution_1080)
+			return true;
+	}
+
+	return false;
 }
 
 bool UIScene::hasMovie()
@@ -339,7 +392,16 @@ void UIScene::loadMovie()
 	// tutorial popups + HUD elements have inaccuracies + crashes that we need to fix here
 	const bool isTutorialPopupMovie = (moviePath.find(L"TutorialPopup") == 0);
 	const bool isHUDMovie = (moviePath.find(L"HUD") == 0);
-	const bool use1080 = (ui.getScreenHeight() > 720.0f) && (!force720ForControlType || isTutorialPopupMovie);
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	TexturePack *selectedPack = nullptr;
+	if(pMinecraft && pMinecraft->skins)
+	{
+		selectedPack = pMinecraft->skins->getSelected();
+		// printf("Selected texture pack: %ls\n", selectedPack ? selectedPack->getName().c_str() : L"None");
+	}
+	const bool isMarioWorld = (selectedPack && selectedPack->getId() == 1034);
+	bool use1080 = SceneShouldUse1080p(moviePath);
+	m_bWasMarioWorld = isMarioWorld;
 	if(use1080)
 	{
 		moviePath.append(L"1080.swf");
@@ -523,6 +585,11 @@ void UIScene::PrintTotalMemoryUsage(int64_t &totalStatic, int64_t &totalDynamic)
 void UIScene::tick()
 {
 	if(m_bIsReloading) return;
+	if(needsReloaded())
+	{
+		reloadMovie();
+		return;
+	}
 	if(m_hasTickedOnce) m_bCanHandleInput = true;
 	while(IggyPlayerReadyToTick( swf ))
 	{
