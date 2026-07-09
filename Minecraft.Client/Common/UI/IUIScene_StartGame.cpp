@@ -177,17 +177,8 @@ void IUIScene_StartGame::UpdateTexturePackDescription(int index)
 	}
 	else
 	{
-
-		if (tp->getId() != 1034) {
-			m_labelTexturePackName.setLabel(tp->getName());
-			m_labelTexturePackDescription.setLabel(tp->getDesc1());
-		}
-		else
-		{
-			// fireblade: temporarily hardcoded until someone figures out how to read big endian dlc string tables
-			m_labelTexturePackName.setLabel(L"Super Mario");
-			m_labelTexturePackDescription.setLabel(L"Super Mario meets Minecraft! This Mash-Up Pack contains a Super Mario style Texture Pack, Skin Pack, and a Super Mario themed world to explore!");
-		}
+		m_labelTexturePackName.setLabel(tp->getName());
+		m_labelTexturePackDescription.setLabel(tp->getDesc1());
 
 		DWORD dwImageBytes;
 		PBYTE pbImageData = tp->getPackIcon(dwImageBytes);
