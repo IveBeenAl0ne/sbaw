@@ -1,4 +1,4 @@
-﻿<root>
+<root>
 	<data name="IDS_TIPS_GAMETIP_0">
 		<value>If you play this game in High Definition mode, you can have up to four players in split-screen on the same console!</value>
 	</data>	
@@ -8,11 +8,11 @@
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_48">
-		<value>minecraftforum has a section dedicated to the Xbox One Edition.</value>
+		<value>Neolegacy has a discord..</value>
 	</data>
 
   <data name="IDS_TIPS_GAMETIP_44">
-    <value>You'll get the latest info on this game from 4JStudios and Kappische on twitter!</value>
+    <value>You'll get the latest info on this game on discord.gg/neolegacy!</value>
   </data>
 
   <data name="IDS_TIPS_GAMETIP_45">
@@ -29,9 +29,9 @@
 
 	<data name="IDS_HOW_TO_PLAY_MULTIPLAYER">
 		<value>{*T3*}HOW TO PLAY : MULTIPLAYER{*ETW*}{*B*}{*B*}
-Minecraft on the Xbox One console is a multiplayer game by default. If you are playing in a High Definition mode, you can have local players join your game by attaching controllers and pressing{*CONTROLLER_VK_START*} at any point during the game.{*B*}{*B*}
+Neolegacy is a multiplayer game by default. If you are playing in a High Definition mode, you can have local players join your game by attaching controllers and pressing the ENTER KEY/Start Button at any point during the game.{*B*}{*B*}
 When you start or join an online game, it will be visible to people in your friends list (unless you've selected Invite Only when hosting the game), and if they join the game, it will also be visible to people in their friends list (if you have selected the Allow Friends of Friends option).{*B*}
-When you are in a game, you can press the{*CONTROLLER_VK_BACK*} button to bring up a list of all other players in the game, view their Gamer Cards, Kick players from the game, and invite others to the game.
+When you are in a game, you can press the TAB key/Select Button to bring up a list of all other players in the game, view their Gamer Cards, Kick players from the game, and invite others to the game.
     </value>
 	</data>	
 
@@ -48,14 +48,14 @@ Gamertags will not be displayed in the screenshot.
 The creative mode interface allows any item in the game to be moved into the player’s inventory without the need for mining or crafting the item. 
 The items in the player's inventory will not be removed when they are placed or used in the world, and this allows the player to focus on building rather than resource gathering.{*B*}
 If you create, load or save a world in Creative Mode, that world will have achievements and leaderboard updates disabled, even if it is then loaded in Survival Mode.{*B*}
-To fly when in Creative Mode, press{*CONTROLLER_ACTION_JUMP*} twice quickly. To exit flying, repeat the action. To fly faster, push{*CONTROLLER_ACTION_MOVE*} forward twice in rapid succession while flying. 
-When in flying mode, you can hold down{*CONTROLLER_ACTION_JUMP*} to move up and{*CONTROLLER_ACTION_SNEAK*} to move down, or use{*CONTROLLER_ACTION_DPAD_UP*} to move up, {*CONTROLLER_ACTION_DPAD_DOWN*} to move down, 
-{*CONTROLLER_ACTION_DPAD_LEFT*} to move left, and{*CONTROLLER_ACTION_DPAD_RIGHT*} to move right.</value>
+To fly when in Creative Mode, press{*CONTROLLER_ACTION_JUMP*} or [SPACE] twice quickly. To exit flying, repeat the action. To fly faster, push{*CONTROLLER_ACTION_MOVE*} Or [W] forward twice in rapid succession while flying. 
+When in flying mode, you can hold down{*CONTROLLER_ACTION_JUMP*} or [SPACE] to move up and{*CONTROLLER_ACTION_SNEAK*} to move down, or use{*CONTROLLER_ACTION_DPAD_UP*} or Use [W] to move up, {*CONTROLLER_ACTION_DPAD_DOWN*} or [Left Shift] to move down, 
+{*CONTROLLER_ACTION_DPAD_LEFT*} or [A] to move left, and{*CONTROLLER_ACTION_DPAD_RIGHT*} or [D] to move right.</value>
 	</data>	
 
 	<data name="IDS_TUTORIAL_TASK_FLY">
-		<value>Pressing{*CONTROLLER_ACTION_JUMP*} twice quickly will allow you to fly. To exit flying, repeat the action. To fly faster, push{*CONTROLLER_ACTION_MOVE*} forward twice in rapid succession while flying. 
-When in flying mode, you can hold down{*CONTROLLER_ACTION_JUMP*} to move up and{*CONTROLLER_ACTION_SNEAK*} to move down, or use the D-pad to move up, down, left or right.</value>
+		<value>Pressing{*CONTROLLER_ACTION_JUMP*} or [SPACE] twice quickly will allow you to fly. To exit flying, repeat the action. To fly faster, push{*CONTROLLER_ACTION_MOVE*} forward twice in rapid succession while flying. 
+When in flying mode, you can hold down{*CONTROLLER_ACTION_JUMP*} to move up and{*CONTROLLER_ACTION_SNEAK*} or [Left Shift] to move down, or use the D-pad to move up, down, left or right.</value>
 	</data>	
 
 	<data name="IDS_TOOLTIPS_SELECTDEVICE">
@@ -67,11 +67,11 @@ When in flying mode, you can hold down{*CONTROLLER_ACTION_JUMP*} to move up and{
 	</data>	
 
 	<data name="IDS_TOOLTIPS_VIEW_GAMERCARD">
-		<value>View gamercard</value>
+		<value>View Player Profile</value>
 	</data>	
 
 	<data name="IDS_TOOLTIPS_VIEW_GAMERPROFILE">
-		<value>View gamercard</value>
+		<value>View Player Profile</value>
 	</data>	
 
 	<data name="IDS_TOOLTIPS_INVITE_PARTY">
@@ -79,27 +79,27 @@ When in flying mode, you can hold down{*CONTROLLER_ACTION_JUMP*} to move up and{
 	</data>	
 
 	<data name="IDS_CONFIRM_START_CREATIVE">
-		<value>If you create, load or save a world in Creative Mode, that world will have achievements and leaderboard updates disabled, even if it is then loaded in Survival Mode. Are you sure you want to continue?</value>
+		<value>If you create, load or save a world in Creative Mode, that world will have achievements disabled, even if it is then loaded in Survival Mode. Are you sure you want to continue?</value>
 	</data>	
 
 	<data name="IDS_CONFIRM_START_SAVEDINCREATIVE">
-		<value>This world has previously been saved in Creative Mode, and it will have achievements and leaderboard updates disabled. Are you sure you want to continue?</value>
+		<value>This world has previously been saved in Creative Mode, and it will have achievements disabled. Are you sure you want to continue?</value>
 	</data>	
 
 	<data name="IDS_CONFIRM_START_SAVEDINCREATIVE_CONTINUE">
-		<value>This world has previously been saved in Creative Mode, and it will have achievements and leaderboard updates disabled.</value>
+		<value>This world has previously been saved in Creative Mode, and it will have achievements and disabled.</value>
 	</data>	
 
 	<data name="IDS_CONFIRM_START_HOST_PRIVILEGES">
-		<value>If you create, load or save a world with Host Privileges enabled, that world will have achievements and leaderboard updates disabled, even if it is then loaded with those options off. Are you sure you want to continue?</value>
+		<value>If you create, load or save a world with Host Privileges enabled, that world will have achievements disabled, even if it is then loaded with those options off. Are you sure you want to continue?</value>
 	</data>	
 
 	<data name="IDS_CONNECTION_LOST_LIVE">
-		<value>Connection to Xbox Live was lost. Exiting to the main menu.</value>
+		<value>Connection to Neo Live was lost. Exiting to the main menu.</value>
 	</data>	
 
 	<data name="IDS_CONNECTION_LOST_LIVE_NO_EXIT">
-		<value>Connection to Xbox Live was lost.</value>
+		<value>Connection to Neo Live was lost.</value>
 	</data>	
 
 	<data name="IDS_AWARD_AVATAR1">
@@ -156,7 +156,7 @@ Would you like to unlock the full game?</value>
 	</data>	
 
 	<data name="IDS_LEADERBOARD_GAMERTAG">
-		<value>Gamertag</value>
+		<value>Player Name</value>
 	</data>	
 
 	<data name="IDS_GROUPNAME_POTIONS_480">
@@ -217,11 +217,11 @@ Please do not turn off your Xbox One console while this icon is on-screen.</valu
 	</data>	
 
 	<data name="IDS_LABEL_GAMERTAGS">
-		<value>Gamertags:</value>
+		<value>Player Names:</value>
 	</data>	
 
 	<data name="IDS_IN_GAME_GAMERTAGS">
-		<value>In-Game Gamertags</value>
+		<value>In-Game Player Names</value>
 	</data>	
 
 	<data name="IDS_SOCIAL_DEFAULT_DESCRIPTION">
@@ -234,7 +234,7 @@ Please do not turn off your Xbox One console while this icon is on-screen.</valu
     <value>Back</value>
   </data>
   <data name="IDS_HOST_OPTION_DISABLES_ACHIEVEMENTS">
-    <value>This option disables achievements and leaderboard updates for this world while playing, and if loading it again after saving with this option on.</value>
+    <value>This option disables achievements for this world while playing, and if loading it again after saving with this option on.</value>
   </data>
   <data name="IDS_KICK_PLAYER_DESCRIPTION">
     <value>For players that are not on the same Xbox One console as the host player, selecting this option will kick the player from the game and any other players on their Xbox One console. This player will not be able to rejoin the game until it is restarted.</value>
@@ -245,7 +245,7 @@ If you try to save while using the trial version, you will be given the option t
     </value>
   </data>
   <data name="IDS_XBOX_STORE">
-    <value>Xbox Store</value>
+    <value>Neo Store</value>
   </data>
 
 
@@ -268,13 +268,13 @@ If you try to save while using the trial version, you will be given the option t
     <value>World Size</value>
   </data>
   <data name="IDS_GAMEOPTION_SEED">
-    <value>Enter a seed to generate the same terrain again. Leave blank for a random world.</value>
+    <value>Enter a seed to generate the same terrain again. Leave it blank for a random world.</value>
   </data>
   <data name="IDS_GAMEOPTION_WORLD_SIZE">
-    <value>Select a world size to vary the amount of the world that you can explore.</value>
+    <value>Select a world size to vary how much of the world you can explore.</value>
   </data>
   <data name="IDS_DISABLE_SAVING">
-    <value>Disable autosave</value>
+    <value>Disable autosave.</value>
   </data>
   <data name="IDS_GAMEOPTION_DISABLE_SAVING">
     <value>Turn off the constant, automatic saving of the world. If you later choose to save it could take a long time.</value>
@@ -285,7 +285,7 @@ If you try to save while using the trial version, you will be given the option t
   </data>
 
   <data name="IDS_CONFIRM_EXIT_GAME">
-    <value>Are you sure you want to exit to the main menu?</value>
+    <value>Are you sure you want to Return to the main menu?</value>
   </data>
 
   <data name="IDS_CONFIRM_LEAVE_VIA_INVITE">
@@ -388,9 +388,9 @@ If you try to save while using the trial version, you will be given the option t
     <value>Are you sure you want to copy this save game?</value>
   </data>
   <data name="IDS_COPYSAVE">
-    <value>Copy Save</value>
+    <value>Copy Saved World</value>
   </data>
   <data name="IDS_PROGRESS_COPYING_SAVE">
-    <value>Copying Save</value>
+    <value>Copying Saved World</value>
   </data>
 </root>
