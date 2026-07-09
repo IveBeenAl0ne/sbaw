@@ -470,23 +470,9 @@ LPCWSTR StringTable::getString(const wstring &id)
 	}
 	else
 	{
-		// fireblade: temporarily hardcoded until someone figures out how to read big endian dlc string tables
-		if (id == L"IDS_MARIO_NAME")
-		{
-			return L"Super Mario World";
-		}
-		else if (id == L"IDS_MARSHRT_NAME") {
-			return L"Super Mario";
-		}
-		else if (id == L"IDS_MASV_NAME") {
-			return L"Super Mario Save";
-		}
-		else
-		{
-			m_missingKeyFallback = id;
-			printf("StringTable::getString() - Missing key '%ls'\n", id.c_str());
-			return m_missingKeyFallback.c_str();
-		}
+		m_missingKeyFallback = id;
+		printf("StringTable::getString() - Missing key '%ls'\n", id.c_str());
+		return m_missingKeyFallback.c_str();
 	}
 }
 
