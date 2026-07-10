@@ -29,6 +29,8 @@
 #include <mutex>
 #include <lce_filesystem/lce_filesystem.h>
 
+constexpr float MUSIC_FADE_DURATION_SECONDS = 4.0f;
+
 #ifdef __ORBIS__
 #include <audioout.h>
 //#define __DISABLE_MILES__			// MGH disabled for now as it crashes if we call sceNpMatching2Initialize
@@ -448,6 +450,9 @@ SoundEngine::SoundEngine()
 	m_StreamingAudioInfo.z=0;
 	m_StreamingAudioInfo.volume=1;
 	m_StreamingAudioInfo.pitch=1;
+	m_musicFadeSecondsRemaining = 0.0f;
+	m_musicFadeLastUpdateTime = std::chrono::steady_clock::now();
+	m_bCurrentStreamIsCustom = false;
 
 	memset(CurrentSoundsPlaying,0,sizeof(int)*(eSoundType_MAX+eSFX_MAX));
 	memset(m_ListenerA,0,sizeof(AUDIO_LISTENER)*XUSER_MAX_COUNT);
@@ -605,34 +610,8 @@ void SoundEngine::play(int iSound, float x, float y, float z, float volume, floa
     m_activeSounds.push_back(s);
 }
 
-/////////////////////////////////////////////
-//
-//	
-//  startElytraSound / stopElytraSound
-//  Manages a single persistent looping sound for elytra gliding.
-//  Call startElytraSound every tick while gliding (it no-ops if already running,
-//  just updates volume). Call stopElytraSound when gliding ends.
-//
-//  IMPORTANT: m_elytraLoopingSound is NOT added to m_activeSounds.
-//  The tick() cleanup loop deletes sounds where is_playing()==false.
-//  A looping sound briefly reports is_playing()==false at the loop point,
-//  which would cause tick() to free it and leave m_elytraLoopingSound dangling.
-//
-/////////////////////////////////////////////
-void SoundEngine::startElytraSound(float x, float y, float z, float volume, float pitch)
+MiniAudioSound* SoundEngine::startLoopingSound(const wstring& name, float x, float y, float z, float volume, float pitch, bool bIs3D)
 {
-	// If already initialized just update volume and pitch - never reinitialize mid-flight.
-	if (m_elytraLoopingSound != nullptr)
-	{
-		float finalVolume = volume * m_MasterEffectsVolume * SFX_VOLUME_MULTIPLIER;
-		if (finalVolume > SFX_MAX_GAIN) finalVolume = SFX_MAX_GAIN;
-		ma_sound_set_volume(&m_elytraLoopingSound->sound, finalVolume);
-		ma_sound_set_pitch(&m_elytraLoopingSound->sound, pitch);
-		return;
-	}
-
-	// Resolve file path using the same logic as play().
-	wstring name = wchSoundNames[eSoundType_ITEM_ELYTRA_FLYING];
 	char* soundName = ConvertSoundPathToName(name);
 	char basePath[256];
 	sprintf_s(basePath, "Windows64Media/Sound/Minecraft/%s", soundName);
@@ -652,42 +631,100 @@ void SoundEngine::startElytraSound(float x, float y, float z, float volume, floa
 			break;
 		}
 	}
-	if (!found) return;
+	if (!found)
+	{
+		return nullptr;
+	}
 
 	MiniAudioSound* s = new MiniAudioSound();
 	memset(&s->info, 0, sizeof(AUDIO_INFO));
-	s->info.volume = volume; s->info.pitch = pitch;
-	s->info.bIs3D = false;
-	s->info.iSound = eSoundType_ITEM_ELYTRA_FLYING + eSFX_MAX;
+	s->info.x = x;
+	s->info.y = y;
+	s->info.z = z;
+	s->info.volume = volume;
+	s->info.pitch = pitch;
+	s->info.bIs3D = bIs3D;
+	s->info.bUseSoundsPitchVal = false;
 
-	// Synchronous load so the sound is immediately ready - no ASYNC gap.
-	if (ma_sound_init_from_file(&m_engine, finalPath, 0,
-		nullptr, nullptr, &s->sound) != MA_SUCCESS)
+	if (ma_sound_init_from_file(&m_engine, finalPath, 0, nullptr, nullptr, &s->sound) != MA_SUCCESS)
 	{
 		delete s;
-		return;
+		return nullptr;
 	}
 
-	ma_sound_set_spatialization_enabled(&s->sound, MA_FALSE);
+	ma_sound_set_spatialization_enabled(&s->sound, bIs3D ? MA_TRUE : MA_FALSE);
 	ma_sound_set_looping(&s->sound, MA_TRUE);
 
 	float finalVolume = volume * m_MasterEffectsVolume * SFX_VOLUME_MULTIPLIER;
-	if (finalVolume > SFX_MAX_GAIN) finalVolume = SFX_MAX_GAIN;
+	if (finalVolume > SFX_MAX_GAIN)
+		finalVolume = SFX_MAX_GAIN;
 	ma_sound_set_volume(&s->sound, finalVolume);
 	ma_sound_set_pitch(&s->sound, pitch);
+	if (bIs3D)
+	{
+		ma_sound_set_position(&s->sound, x, y, z);
+	}
 	ma_sound_start(&s->sound);
+	return s;
+}
 
+void SoundEngine::updateLoopingSound(MiniAudioSound* sound, float x, float y, float z, float volume, float pitch)
+{
+	if (sound == nullptr)
+	{
+		return;
+	}
+
+	float finalVolume = volume * m_MasterEffectsVolume * SFX_VOLUME_MULTIPLIER;
+	if (finalVolume > SFX_MAX_GAIN)
+		finalVolume = SFX_MAX_GAIN;
+	ma_sound_set_volume(&sound->sound, finalVolume);
+	ma_sound_set_pitch(&sound->sound, pitch);
+	ma_sound_set_position(&sound->sound, x, y, z);
+}
+
+void SoundEngine::stopLoopingSound(MiniAudioSound* sound)
+{
+	if (sound == nullptr)
+	{
+		return;
+	}
+
+	ma_sound_stop(&sound->sound);
+	ma_sound_uninit(&sound->sound);
+	delete sound;
+}
+
+/////////////////////////////////////////////
+//
+//	
+//  startElytraSound / stopElytraSound
+//  Manages a single persistent looping sound for elytra gliding.
+//  Call startElytraSound every tick while gliding (it no-ops if already running,
+//  just updates volume). Call stopElytraSound when gliding ends.
+//
+//  IMPORTANT: m_elytraLoopingSound is NOT added to m_activeSounds.
+//  The tick() cleanup loop deletes sounds where is_playing()==false.
+//  A looping sound briefly reports is_playing()==false at the loop point,
+//  which would cause tick() to free it and leave m_elytraLoopingSound dangling.
+//
+/////////////////////////////////////////////
+void SoundEngine::startElytraSound(float x, float y, float z, float volume, float pitch)
+{
+	// If already initialized just update volume and pitch - never reinitialize mid-flight.
+	if (m_elytraLoopingSound != nullptr)
+	{
+		updateLoopingSound(m_elytraLoopingSound, x, y, z, volume, pitch);
+		return;
+	}
 	// NOT added to m_activeSounds - tick() cleanup would delete it at loop boundaries.
-	m_elytraLoopingSound = s;
+	m_elytraLoopingSound = startLoopingSound(wchSoundNames[eSoundType_ITEM_ELYTRA_FLYING], x, y, z, volume, pitch, false);
 }
 
 void SoundEngine::stopElytraSound()
 {
 	if (m_elytraLoopingSound == nullptr) return;
-
-	ma_sound_stop(&m_elytraLoopingSound->sound);
-	ma_sound_uninit(&m_elytraLoopingSound->sound);
-	delete m_elytraLoopingSound;
+	stopLoopingSound(m_elytraLoopingSound);
 	m_elytraLoopingSound = nullptr;
 }
 /////////////////////////////////////////////
@@ -793,10 +830,22 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 	m_StreamingAudioInfo.volume = volume;
 	m_StreamingAudioInfo.pitch  = pitch;
 
+	bool bNextCustom = isCustomMusicRequest(name);
+	bool bCurrentCustom = m_musicStreamActive && m_bCurrentStreamIsCustom;
+
 	if(m_StreamState == eMusicStreamState_Playing)
-		m_StreamState = eMusicStreamState_Stop;
+	{
+		if (bCurrentCustom != bNextCustom)
+		{
+			m_StreamState = eMusicStreamState_Fading;
+			m_musicFadeSecondsRemaining = MUSIC_FADE_DURATION_SECONDS;
+			m_musicFadeLastUpdateTime = std::chrono::steady_clock::now();
+		}
+	}
 	else if(m_StreamState == eMusicStreamState_Opening)
+	{
 		m_StreamState = eMusicStreamState_OpeningCancel;
+	}
 
 	if(name.empty())
 	{
@@ -832,61 +881,78 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 		else if(playerInNether)
 			m_musicID = getMusicID(eMusicType_Nether);
 		else
-		    getGameModeMusicID(pMinecraft, i);
+		{
+			bool foundCreative = false;
+			for(unsigned int j = 0; j < MAX_LOCAL_PLAYERS; j++)
+			{
+				if(pMinecraft->localplayers[j] != nullptr &&
+				   pMinecraft->localplayers[j]->abilities.instabuild &&
+				   pMinecraft->localplayers[j]->abilities.mayfly)
+				{
+					m_musicID = getMusicID(eMusicType_Creative);
+					foundCreative = true;
+					break;
+				}
+			}
+			if(!foundCreative)
+			{
+				m_musicID = getMusicID(eMusicType_Overworld);
+			}
+		}
 	}
 	else
 	{
 		// jukebox
-	    m_StreamingAudioInfo.bIs3D=true;
-	    m_musicID=getMusicID(name);
-	    m_iMusicDelay=0;
+		m_StreamingAudioInfo.bIs3D=true;
+		m_musicID=getMusicID(name);
+		m_iMusicDelay=0;
 	}
 }
 
+bool SoundEngine::isCustomMusicRequest(const wstring& name) const
+{
+	if (!name.empty())
+	{
+		return false;
+	}
 
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	if (!pMinecraft)
+	{
+		return false;
+	}
+
+	return pMinecraft->skins->getSelected()->hasAudio();
+}
 
 int SoundEngine::GetRandomishTrack(int iStart,int iEnd)
 {
-	// 4J-PB - make it more likely that we'll get a track we've not heard for a while, although repeating tracks sometimes is fine
-
-	// if all tracks have been heard, clear the flags
 	bool bAllTracksHeard=true;
 	int iVal=iStart;
 	for(size_t i=iStart;i<=iEnd;i++)
 	{
-		if(m_bHeardTrackA[i]==false) 
+		if(m_bHeardTrackA[i]==false)
 		{
 			bAllTracksHeard=false;
-			//app.DebugPrintf("Not heard all tracks yet\n");
 			break;
 		}
 	}
 
 	if(bAllTracksHeard)
 	{
-		//app.DebugPrintf("Heard all tracks - resetting the tracking array\n");
-
 		for(size_t i=iStart;i<=iEnd;i++)
 		{
 			m_bHeardTrackA[i]=false;
 		}
 	}
 
-	// trying to get a track we haven't heard, but not too hard		
 	for(size_t i=0;i<=((iEnd-iStart)/2);i++)
 	{
-		// random->nextInt(1) will always return 0
 		iVal=random->nextInt((iEnd-iStart)+1)+iStart;
 		if(m_bHeardTrackA[iVal]==false)
 		{
-			// not heard this
-			//app.DebugPrintf("(%d) Not heard track %d yet, so playing it now\n",i,iVal);
 			m_bHeardTrackA[iVal]=true;
 			break;
-		}
-		else
-		{
-			//app.DebugPrintf("(%d) Skipping track %d already heard it recently\n",i,iVal);
 		}
 	}
 
@@ -1331,7 +1397,38 @@ void SoundEngine::playMusicUpdate()
 			if (m_StreamingAudioInfo.bIs3D)
 			{
 				ma_sound_set_spatialization_enabled(&m_musicStream, MA_TRUE);
-				ma_sound_set_position(&m_musicStream, m_StreamingAudioInfo.x, m_StreamingAudioInfo.y, m_StreamingAudioInfo.z);
+				if (m_validListenerCount > 1)
+				{
+					int iClosestListener = 0;
+					float fClosestDist = 1e6f;
+
+					for (size_t i = 0; i < MAX_LOCAL_PLAYERS; i++)
+					{
+						if (m_ListenerA[i].bValid)
+						{
+							float dx = m_StreamingAudioInfo.x - m_ListenerA[i].vPosition.x;
+							float dy = m_StreamingAudioInfo.y - m_ListenerA[i].vPosition.y;
+							float dz = m_StreamingAudioInfo.z - m_ListenerA[i].vPosition.z;
+							float dist = sqrtf(dx*dx + dy*dy + dz*dz);
+
+							if (dist < fClosestDist)
+							{
+								fClosestDist = dist;
+								iClosestListener = i;
+							}
+						}
+					}
+
+					float relX = m_StreamingAudioInfo.x - m_ListenerA[iClosestListener].vPosition.x;
+					float relY = m_StreamingAudioInfo.y - m_ListenerA[iClosestListener].vPosition.y;
+					float relZ = m_StreamingAudioInfo.z - m_ListenerA[iClosestListener].vPosition.z;
+
+					ma_sound_set_position(&m_musicStream, relX, relY, relZ);
+				}
+				else
+				{
+					ma_sound_set_position(&m_musicStream, m_StreamingAudioInfo.x, m_StreamingAudioInfo.y, m_StreamingAudioInfo.z);
+				}
 			}
 			else
 			{
@@ -1344,6 +1441,7 @@ void SoundEngine::playMusicUpdate()
 
 			ma_sound_set_volume(&m_musicStream, finalVolume);
 			ma_result startResult = ma_sound_start(&m_musicStream);
+			m_bCurrentStreamIsCustom = Minecraft::GetInstance() && Minecraft::GetInstance()->skins->getSelected()->hasAudio();
 			app.DebugPrintf("ma_sound_start result: %d\n", startResult);
 
 			m_StreamState=eMusicStreamState_Playing;
@@ -1368,6 +1466,36 @@ void SoundEngine::playMusicUpdate()
 		SetIsPlayingStreamingCDMusic(false);
 		SetIsPlayingStreamingGameMusic(false);
 
+		m_StreamState = eMusicStreamState_Idle;
+	break;
+	case eMusicStreamState_Fading:
+		if (m_musicStreamActive)
+		{
+			const auto now = std::chrono::steady_clock::now();
+			const float elapsedSeconds = std::chrono::duration<float>(now - m_musicFadeLastUpdateTime).count();
+			if (elapsedSeconds > 0.0f)
+			{
+				m_musicFadeSecondsRemaining = (elapsedSeconds >= m_musicFadeSecondsRemaining)
+					? 0.0f
+					: m_musicFadeSecondsRemaining - elapsedSeconds;
+				m_musicFadeLastUpdateTime = now;
+			}
+
+			if (m_musicFadeSecondsRemaining > 0.0f)
+			{
+				const float fadeFactor = m_musicFadeSecondsRemaining / MUSIC_FADE_DURATION_SECONDS;
+				const float finalVolume = m_StreamingAudioInfo.volume * getMasterMusicVolume() * fadeFactor;
+				ma_sound_set_volume(&m_musicStream, finalVolume);
+				break;
+			}
+
+			ma_sound_stop(&m_musicStream);
+			ma_sound_uninit(&m_musicStream);
+			m_musicStreamActive = false;
+		}
+
+		SetIsPlayingStreamingCDMusic(false);
+		SetIsPlayingStreamingGameMusic(false);
 		m_StreamState = eMusicStreamState_Idle;
 	break;
 	case eMusicStreamState_Stopping:
@@ -1557,7 +1685,7 @@ void SoundEngine::playMusicUpdate()
 			}
 			else
 			{
-			    m_musicID = getMusicID(eMusicType_Overworld);
+			    getGameModeMusicID(pMinecraft, i);
 				SetIsPlayingNetherMusic(false);
 				SetIsPlayingEndMusic(false);
 			}

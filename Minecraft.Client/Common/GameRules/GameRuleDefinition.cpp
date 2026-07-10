@@ -59,6 +59,7 @@ void GameRuleDefinition::addAttribute(const wstring &attributeName, const wstrin
 	{
 		m_descriptionId = attributeValue;
 #ifndef _CONTENT_PACKAGE
+		if (m_descriptionId == L"IDS_COLLECTED_MUSIC_DISCS") m_descriptionId = L"You have found {*progress*} of {*goal*} Music Discs!";
 		wprintf(L"GameRuleDefinition: Adding parameter descriptionId=%ls\n",m_descriptionId.c_str());
 #endif
 	}
@@ -73,6 +74,11 @@ void GameRuleDefinition::addAttribute(const wstring &attributeName, const wstrin
 	{
 		m_4JDataValue = _fromString<int>(attributeValue);
 		app.DebugPrintf("GameRuleDefinition: Adding parameter m_4JDataValue=%d\n",m_4JDataValue);
+	}
+	else if(attributeName.compare(L"goalType") == 0)
+	{
+		m_4JDataValue = _fromString<int>(attributeValue);
+		app.DebugPrintf("GameRuleDefinition: Adding parameter goalType=%d\n",m_4JDataValue);
 	}
 	else
 	{

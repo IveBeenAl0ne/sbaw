@@ -164,7 +164,7 @@ void LivingEntity::checkFallDamage(double ya, bool onGround)
 		updateInWaterState();
 	}
 
-	if (onGround && fallDistance > 0)
+	if (onGround)
 	{
 		int xt = Mth::floor(x);
 		int yt = Mth::floor(y - 0.2f - heightOffset);
@@ -179,9 +179,14 @@ void LivingEntity::checkFallDamage(double ya, bool onGround)
 			}
 		}
 
-		if (t > 0)
+		Tile *tile = Tile::tiles[t];
+		if (t > 0 && tile != nullptr) // tu31 tutorial world fix
 		{
-			Tile::tiles[t]->fallOn(level, xt, yt, zt, shared_from_this(), fallDistance);
+			if (fallDistance > 0 || t == Tile::slimeBlock->id)
+			{
+				auto ent = shared_from_this();
+				Tile::tiles[t]->fallOn(level, xt, yt, zt, ent, fallDistance);
+			}
 		}
 	}
 
@@ -201,6 +206,15 @@ void LivingEntity::baseTick()
 	if (isAlive() && isInWall())
 	{
 		hurt(DamageSource::inWall, 1);
+	}
+
+	if (!level->isClientSide && isAlive() && onGround && !isSneaking() && tickCount % 10 == 0)
+	{
+		int tileBelow = level->getTile(Mth::floor(x), Mth::floor(bb->y0) - 1, Mth::floor(z));
+		if (tileBelow == Tile::magma_Id)
+		{
+			hurt(DamageSource::inFire, 1);
+		}
 	}
 
 	if (isFireImmune() || level->isClientSide) clearFire();
@@ -282,6 +296,16 @@ void LivingEntity::baseTick()
 	tickEffects();
 
 	animStepO = animStep;
+
+	if (!level->isClientSide && isAlive())
+	{
+		int frostWalkerLevel = EnchantmentHelper::getFrostWalker(dynamic_pointer_cast<LivingEntity>(shared_from_this()));
+		if (frostWalkerLevel > 0)
+		{
+			FrostWalkerEnchantment::freezeNearby(dynamic_pointer_cast<LivingEntity>(shared_from_this()), level,
+				Mth::floor(x), Mth::floor(y), Mth::floor(z), frostWalkerLevel);
+		}
+	}
 
 	yBodyRotO = yBodyRot;
 	yHeadRotO = yHeadRot;
@@ -1560,10 +1584,12 @@ void LivingEntity::travel(float xa, float ya)
 		if (onGround)
 		{
 			frictionTile = level->getTile(Mth::floor(x), Mth::floor(bb->y0) - 1, Mth::floor(z));
+			Tile *tile = Tile::tiles[frictionTile];
 			friction = 0.6f * 0.91f;
 			if (frictionTile > 0)
 			{
-				friction = Tile::tiles[frictionTile]->friction * 0.91f;
+				if (tile == nullptr) tile = Tile::tiles[1];
+				friction = tile->friction * 0.91f;
 			}
 		}
 
@@ -1586,8 +1612,10 @@ void LivingEntity::travel(float xa, float ya)
 		{
 			friction = 0.6f * 0.91f;
 			if (frictionTile > 0)
-			{
-				friction = Tile::tiles[frictionTile]->friction * 0.91f;
+			{	
+				Tile *tile = Tile::tiles[frictionTile];
+				if (tile == nullptr) tile = Tile::tiles[1];
+				friction = tile->friction * 0.91f;
 			}
 		}
 		if (onLadder())

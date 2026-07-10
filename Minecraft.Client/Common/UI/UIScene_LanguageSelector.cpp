@@ -37,6 +37,7 @@ UIScene_LanguageSelector::UIScene_LanguageSelector(int iPad, void *initData, UIL
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
 
+	m_bNeedsLanguageReload = false;
 	m_buttonListHowTo.init(eControl_Buttons);
 
 	for(unsigned int i = 0; i < eLanguageSelector_MAX; ++i)
@@ -49,6 +50,18 @@ wstring UIScene_LanguageSelector::getMoviePath()
 {
 	if (app.GetLocalPlayerCount() > 1)	return L"LanguagesMenuSplit";
 	else								return L"LanguagesMenu";
+}
+
+void UIScene_LanguageSelector::tick()
+{
+	UIScene::tick();
+
+	if(m_bNeedsLanguageReload)
+	{
+		m_bNeedsLanguageReload = false;
+		app.loadStringTable();
+		reloadMovie();
+	}
 }
 
 void UIScene_LanguageSelector::updateTooltips()
@@ -125,5 +138,6 @@ void UIScene_LanguageSelector::handlePress(F64 controlId, F64 childId)
 		app.SetMinecraftLocale(m_iPad, newLocale);
 
 		app.CheckGameSettingsChanged(true, m_iPad);
+		m_bNeedsLanguageReload = true;
 	}
 }

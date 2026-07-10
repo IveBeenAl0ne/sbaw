@@ -40,7 +40,7 @@ public:
 	void getRenderDimensions(S32 &width, S32 &height);
 
 	void DestroyAll();
-	void ReloadAll(bool force = false);
+	void ReloadAll(bool force = false, UIScene *skipScene = nullptr);
 
 	// NAVIGATION
 	bool NavigateToScene(int iPad, EUIScene scene, void *initData);

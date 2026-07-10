@@ -20,12 +20,17 @@ void TimeCommand::execute(shared_ptr<CommandSender> source, byteArray commandDat
 	ByteArrayInputStream bais(commandData);
 	DataInputStream dis(&bais);
 
-	bool night = dis.readBoolean();
-
-	bais.reset();
-
 	int amount = 0;
-	if(night) amount = 12500;
+	if (commandData.length >= sizeof(int))
+	{
+		amount = dis.readInt();
+	}
+	else
+	{
+		bool night = dis.readBoolean();
+		amount = night ? 12500 : 0;
+	}
+
 	doSetTime(source, amount);
 	//logAdminAction(source, "commands.time.set", amount);
 	logAdminAction(source, ChatPacket::e_ChatCustom, L"commands.time.set");

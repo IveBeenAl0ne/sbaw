@@ -2,12 +2,45 @@
 #include "UI.h"
 #include "UIScene.h"
 #include "UISplitScreenHelpers.h"
+#include "TexturePackRepository.h"
+#include "UILayer.h"
 
 #include "../../Lighting.h"
 #include "../../LocalPlayer.h"
 #include "../../ItemRenderer.h"
 #include "../../../Minecraft.World/net.minecraft.world.item.h"
 #include "UIScene_BookAndQuillMenu.h"
+
+bool UIScene::SceneShouldUse1080p(const std::wstring &moviePath)
+{
+#if defined(_WINDOWS64)
+	int primaryPad = ProfileManager.GetPrimaryPad();
+	if(primaryPad < 0 || primaryPad >= XUSER_MAX_COUNT)
+		primaryPad = 0;
+	const int controlType = app.GetGameSettings(primaryPad, eGameSetting_ControlType);
+	const bool force720ForControlType = (controlType == 3 || controlType == 5);
+	const bool isTutorialPopupMovie = (moviePath.find(L"TutorialPopup") == 0);
+ 	
+	// dont refresh gui elements when the player
+	// is in the settings menu [resolution mismatch creates artifacts]
+ 	if(moviePath.find(L"SettingsUIMenu") == 0)
+ 	{
+ 		return (ui.getScreenHeight() > 720.0f) && (!force720ForControlType || isTutorialPopupMovie);
+	}
+
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	TexturePack *selectedPack = nullptr;
+	if(pMinecraft && pMinecraft->skins)
+	{
+		selectedPack = pMinecraft->skins->getSelected();
+	}
+	const bool isMarioWorld = (selectedPack && selectedPack->getId() == 1034);
+	return !isMarioWorld && (ui.getScreenHeight() > 720.0f) && (!force720ForControlType || isTutorialPopupMovie);
+#else
+	(void)moviePath;
+	return true;
+#endif
+}
 
 UIScene::UIScene(int iPad, UILayer *parentLayer)
 {
@@ -19,6 +52,7 @@ UIScene::UIScene(int iPad, UILayer *parentLayer)
 	bHasFocus = false;
 	m_hasTickedOnce = false;
 	m_bFocussedOnce = false;
+	m_bPanoramaUsesDefaultPlatformSkin = false;
 	m_bVisible = true;
 	m_bCanHandleInput = false;
 	m_bIsReloading = false;
@@ -34,10 +68,17 @@ UIScene::UIScene(int iPad, UILayer *parentLayer)
 	m_needsCacheRendered = true;
 	m_expectedCachedSlotCount = 0;
 	m_callbackUniqueId = 0;
+	m_bWasMarioWorld = false;
 }
 
 UIScene::~UIScene()
 {
+	if(m_bPanoramaUsesDefaultPlatformSkin)
+	{
+		ui.PopDefaultPlatformSkinForPanorama();
+		m_bPanoramaUsesDefaultPlatformSkin = false;
+	}
+
 	/* Destroy the Iggy player. */
 	IggyPlayerDestroy( swf );
 
@@ -56,6 +97,12 @@ UIScene::~UIScene()
 
 void UIScene::destroyMovie()
 {
+	if(m_bPanoramaUsesDefaultPlatformSkin)
+	{
+		ui.PopDefaultPlatformSkinForPanorama();
+		m_bPanoramaUsesDefaultPlatformSkin = false;
+	}
+
 	/* Destroy the Iggy player. */
 	IggyPlayerDestroy( swf );
 	swf = nullptr;
@@ -74,6 +121,12 @@ void UIScene::reloadMovie(bool force)
 	m_bIsReloading = true;
 	if(swf)
 	{
+		if(m_bPanoramaUsesDefaultPlatformSkin)
+		{
+			ui.PopDefaultPlatformSkinForPanorama();
+			m_bPanoramaUsesDefaultPlatformSkin = false;
+		}
+
 		/* Destroy the Iggy player. */
 		IggyPlayerDestroy( swf );
 
@@ -104,7 +157,10 @@ void UIScene::reloadMovie(bool force)
 	value[0].type = IGGY_DATATYPE_number;
 	value[0].number = m_iFocusControl;
 
-	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetFocus , 1 , value );
+	if(swf && m_funcSetFocus)
+	{
+		IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetFocus , 1 , value );
+	}
 
 	m_needsCacheRendered = true;
 	m_bIsReloading = false;
@@ -112,7 +168,26 @@ void UIScene::reloadMovie(bool force)
 
 bool UIScene::needsReloaded()
 {
-	return !swf && (!stealsFocus() || bHasFocus);
+	if(!swf)
+	{
+		return !stealsFocus() || bHasFocus;
+	}
+
+	if(!stealsFocus() || bHasFocus)
+	{
+		const wstring moviePath = getMoviePath();
+		UIScene *topScene = ui.GetTopScene(m_iPad);
+		const bool isSettingsMenuActive = topScene && topScene->getSceneType() == eUIScene_SettingsUIMenu;
+		if(isSettingsMenuActive) return false;
+
+		const bool shouldUse1080 = SceneShouldUse1080p(moviePath);
+		if(shouldUse1080 && m_loadedResolution != eSceneResolution_1080)
+			return true;
+		if(!shouldUse1080 && m_loadedResolution == eSceneResolution_1080)
+			return true;
+	}
+
+	return false;
 }
 
 bool UIScene::hasMovie()
@@ -219,6 +294,8 @@ void UIScene::updateSafeZone()
 
 void UIScene::setSafeZone(S32 safeTop, S32 safeBottom, S32 safeLeft, S32 safeRight)
 {
+	if(!swf) return;
+
 	IggyDataValue result;
 	IggyDataValue value[4];
 
@@ -235,8 +312,12 @@ void UIScene::setSafeZone(S32 safeTop, S32 safeBottom, S32 safeLeft, S32 safeRig
 
 void UIScene::initialiseMovie()
 {
-	loadMovie();
-	mapElementsAndNames();
+	wstring moviePath = getMoviePath();
+	if(!moviePath.empty())
+	{
+		loadMovie();
+		mapElementsAndNames();
+	}
 
 	updateSafeZone();
 
@@ -279,6 +360,15 @@ void UIScene::loadMovie()
 	EnterCriticalSection(&UIController::ms_reloadSkinCS);		// MGH - added to prevent crash loading Iggy movies while the skins were being reloaded
 	wstring moviePath = getMoviePath();
 
+#ifdef _WINDOWS64
+	const bool isPanoramaMovie = (moviePath == L"Panorama" || moviePath == L"PanoramaSplit");
+	if(isPanoramaMovie)
+	{
+		ui.PushDefaultPlatformSkinForPanorama();
+		m_bPanoramaUsesDefaultPlatformSkin = true;
+	}
+#endif
+
 #ifdef __PS3__
 	if(RenderManager.IsWidescreen())
 	{
@@ -294,7 +384,25 @@ void UIScene::loadMovie()
 	moviePath.append(L"Vita.swf");
 	m_loadedResolution = eSceneResolution_Vita;
 #elif defined _WINDOWS64
-	if(ui.getScreenHeight() > 720.0f)
+	int primaryPad = ProfileManager.GetPrimaryPad();
+	if(primaryPad < 0 || primaryPad >= XUSER_MAX_COUNT)
+		primaryPad = 0;
+	const int controlType = app.GetGameSettings(primaryPad, eGameSetting_ControlType);
+	const bool force720ForControlType = (controlType == 3 || controlType == 5);
+	// tutorial popups + HUD elements have inaccuracies + crashes that we need to fix here
+	const bool isTutorialPopupMovie = (moviePath.find(L"TutorialPopup") == 0);
+	const bool isHUDMovie = (moviePath.find(L"HUD") == 0);
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	TexturePack *selectedPack = nullptr;
+	if(pMinecraft && pMinecraft->skins)
+	{
+		selectedPack = pMinecraft->skins->getSelected();
+		// printf("Selected texture pack: %ls\n", selectedPack ? selectedPack->getName().c_str() : L"None");
+	}
+	const bool isMarioWorld = (selectedPack && selectedPack->getId() == 1034);
+	bool use1080 = SceneShouldUse1080p(moviePath);
+	m_bWasMarioWorld = isMarioWorld;
+	if(use1080)
 	{
 		moviePath.append(L"1080.swf");
 		m_loadedResolution = eSceneResolution_1080;
@@ -352,7 +460,7 @@ void UIScene::loadMovie()
 	// Read movie dimensions from the SWF header (available immediately after
 	// CreateFromMemory, no init tick needed).
 	IggyProperties *properties = IggyPlayerProperties ( swf );
-	if(!properties)
+	if(!properties || (uintptr_t)properties < 0x1000)
 	{
 		app.DebugPrintf("ERROR: IggyPlayerProperties returned null for scene '%ls'\n", moviePath.c_str());
 #ifndef _CONTENT_PACKAGE
@@ -477,6 +585,11 @@ void UIScene::PrintTotalMemoryUsage(int64_t &totalStatic, int64_t &totalDynamic)
 void UIScene::tick()
 {
 	if(m_bIsReloading) return;
+	if(needsReloaded())
+	{
+		reloadMovie();
+		return;
+	}
 	if(m_hasTickedOnce) m_bCanHandleInput = true;
 	while(IggyPlayerReadyToTick( swf ))
 	{
@@ -792,7 +905,15 @@ void UIScene::customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iP
 {
 	if (item!= nullptr)
 	{
-		if(m_cacheSlotRenders)
+		bool useCommandBuffers = false;
+#ifdef _XBOX_ONE
+		useCommandBuffers = true;
+
+		m_needsCacheRendered = true;
+#endif
+
+		bool shouldCacheSlotRender = m_cacheSlotRenders && (m_needsCacheRendered || useCommandBuffers);
+		if(shouldCacheSlotRender)
 		{
 			if( (m_cachedSlotDraw.size() + 1) == m_expectedCachedSlotCount)
 			{
@@ -810,14 +931,6 @@ void UIScene::customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iP
 				ui.setupCustomDrawGameState();
 
 				int list = m_parentLayer->m_parentGroup->getCommandBufferList();
-
-				bool useCommandBuffers = false;
-#ifdef _XBOX_ONE
-				useCommandBuffers = true;
-
-				// 4J Stu - Temporary until we fix the glint animation which needs updated if we are just replaying a command buffer
-				m_needsCacheRendered = true;
-#endif
 
 				if(!useCommandBuffers || m_needsCacheRendered)
 				{
@@ -1271,15 +1384,15 @@ void UIScene::externalCallback(IggyExternalFunctionCallUTF16 * call)
 	}
 	else if(wcscmp((wchar_t *)call->function_name.string,L"handleCheckboxToggled")==0)
 	{
-		if(call->num_arguments != 2)
+		if(call->num_arguments < 2 || call->num_arguments > 3)
 		{
-			app.DebugPrintf("Callback for handleCheckboxToggled did not have the correct number of arguments\n");
+			app.DebugPrintf("Callback for handleCheckboxToggled did not have the correct number of arguments (%d)\n", call->num_arguments);
 #ifndef _CONTENT_PACKAGE
 			DEBUG_BREAK();
 #endif
 			return;
 		}
-		if(call->arguments[0].type != IGGY_DATATYPE_number || call->arguments[1].type != IGGY_DATATYPE_boolean)
+		if(call->arguments[0].type != IGGY_DATATYPE_number)
 		{
 			app.DebugPrintf("Arguments for handleCheckboxToggled were not of the correct type\n");
 #ifndef _CONTENT_PACKAGE
@@ -1287,19 +1400,31 @@ void UIScene::externalCallback(IggyExternalFunctionCallUTF16 * call)
 #endif
 			return;
 		}
-		handleCheckboxToggled(call->arguments[0].number, call->arguments[1].boolval);
-	}
-	else if(wcscmp((wchar_t *)call->function_name.string,L"handleSliderMove")==0)
-	{
-		if(call->num_arguments != 2)
+		int selArg = (call->num_arguments == 3) ? 2 : 1;
+		if(call->arguments[selArg].type != IGGY_DATATYPE_boolean && call->arguments[selArg].type != IGGY_DATATYPE_number)
 		{
-			app.DebugPrintf("Callback for handleSliderMove did not have the correct number of arguments\n");
+			app.DebugPrintf("Arguments for handleCheckboxToggled were not of the correct type\n");
 #ifndef _CONTENT_PACKAGE
 			DEBUG_BREAK();
 #endif
 			return;
 		}
-		if(call->arguments[0].type != IGGY_DATATYPE_number || call->arguments[1].type != IGGY_DATATYPE_number)
+		bool selected = (call->arguments[selArg].type == IGGY_DATATYPE_boolean)
+			? call->arguments[selArg].boolval
+			: (call->arguments[selArg].number != 0);
+		handleCheckboxToggled(call->arguments[0].number, selected);
+	}
+	else if(wcscmp((wchar_t *)call->function_name.string,L"handleSliderMove")==0)
+	{
+		if(call->num_arguments < 2 || call->num_arguments > 3)
+		{
+			app.DebugPrintf("Callback for handleSliderMove did not have the correct number of arguments (%d)\n", call->num_arguments);
+#ifndef _CONTENT_PACKAGE
+			DEBUG_BREAK();
+#endif
+			return;
+		}
+		if(call->arguments[0].type != IGGY_DATATYPE_number)
 		{
 			app.DebugPrintf("Arguments for handleSliderMove were not of the correct type\n");
 #ifndef _CONTENT_PACKAGE
@@ -1307,7 +1432,18 @@ void UIScene::externalCallback(IggyExternalFunctionCallUTF16 * call)
 #endif
 			return;
 		}
-		handleSliderMove(call->arguments[0].number, call->arguments[1].number);
+		int idArg = 0;
+		int valArg = (call->num_arguments == 3) ? 2 : 1;
+		if(call->num_arguments == 3) idArg = 1;
+		if(call->arguments[valArg].type != IGGY_DATATYPE_number)
+		{
+			app.DebugPrintf("Arguments for handleSliderMove were not of the correct type\n");
+#ifndef _CONTENT_PACKAGE
+			DEBUG_BREAK();
+#endif
+			return;
+		}
+		handleSliderMove(call->arguments[idArg].number, call->arguments[valArg].number);
 	}
 	else if(wcscmp((wchar_t *)call->function_name.string,L"handleAnimationEnd")==0)
 	{

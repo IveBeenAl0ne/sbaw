@@ -144,7 +144,7 @@ bool DyePowderItem::useOn(shared_ptr<ItemInstance> itemInstance, shared_ptr<Play
 		int tile = level->getTile(x, y, z);
 		int data = level->getData(x, y, z);
 
-		if (tile == Tile::treeTrunk_Id && TreeTile::getWoodType(data) == TreeTile::JUNGLE_TRUNK)
+		if (tile == Tile::log_Id && TreeTile::getWoodType(data) == TreeTile::JUNGLE_TRUNK)
 		{
 			if (face == 0) return false;
 			if (face == 1) return false;
@@ -208,7 +208,7 @@ bool DyePowderItem::growCrop(shared_ptr<ItemInstance> itemInstance, Level *level
 		}
 		return true;
 	}
-	else if (tile == Tile::melonStem_Id || tile == Tile::pumpkinStem_Id)
+	else if (tile == Tile::melon_stem_Id || tile == Tile::pumpkin_stem_Id)
 	{
 		if (level->getData(x, y, z) == 7) return false;
 		if(!bTestUseOnOnly)
@@ -234,12 +234,25 @@ bool DyePowderItem::growCrop(shared_ptr<ItemInstance> itemInstance, Level *level
 		}
 		return true;
 	}
-	else if (tile == Tile::wheat_Id) 
+	else if (tile == Tile::wheat_Id)
 	{
 		if (level->getData(x, y, z) == 7) return false;
 		if(!bTestUseOnOnly)
-		{	
-			if (!level->isClientSide) 
+		{
+			if (!level->isClientSide)
+			{
+				static_cast<CropTile *>(Tile::tiles[tile])->growCrops(level, x, y, z);
+				itemInstance->count--;
+			}
+		}
+		return true;
+	}
+	else if (tile == Tile::beetroots_Id)
+	{
+		if (level->getData(x, y, z) == 3) return false;
+		if (!bTestUseOnOnly)
+		{
+			if (!level->isClientSide)
 			{
 				static_cast<CropTile *>(Tile::tiles[tile])->growCrops(level, x, y, z);
 				itemInstance->count--;
@@ -296,11 +309,11 @@ bool DyePowderItem::growCrop(shared_ptr<ItemInstance> itemInstance, Level *level
 						} 
 						else if (random->nextInt(3) != 0) 
 						{
-							if (Tile::flower->canSurvive(level, xx, yy, zz)) level->setTileAndUpdate(xx, yy, zz, Tile::flower_Id);
+							if (Tile::flower->canSurvive(level, xx, yy, zz)) level->setTileAndUpdate(xx, yy, zz, Tile::yellow_flower_Id);
 						} 
 						else 
 						{
-							if (Tile::rose->canSurvive(level, xx, yy, zz)) level->setTileAndUpdate(xx, yy, zz, Tile::rose_Id);
+							if (Tile::rose->canSurvive(level, xx, yy, zz)) level->setTileAndUpdate(xx, yy, zz, Tile::red_flower_Id);
 						}
 					}
 

@@ -27,7 +27,7 @@ int StainedGlassBlock::getItemAuxValueForBlockData(int data)
 
 int StainedGlassBlock::getRenderLayer()
 {
-	return 2;
+	return 3;
 }
 
 void StainedGlassBlock::registerIcons(IconRegister *iconRegister)

@@ -13,6 +13,7 @@ private:
 	unsigned int m_uiAnimOverrideBitmask;
 	bool m_bIsFree;
 	vector<SKIN_BOX *> m_AdditionalBoxes;
+	vector<SKIN_OFFSET *> m_Offsets;
 	_SkinAdjustments m_skinAdjustments;
 
 public:
@@ -26,6 +27,8 @@ public:
     bool getParameterAsBool(DLCManager::EDLCParameterType type) override;
 	vector<SKIN_BOX *> *getAdditionalBoxes();
 	int getAdditionalBoxesCount();
+	vector<SKIN_OFFSET *> *getOffsets();
+	int getOffsetsCount();
 	unsigned int getAnimOverrideBitmask() { return m_uiAnimOverrideBitmask;}
 	bool isFree() {return m_bIsFree;}
 };

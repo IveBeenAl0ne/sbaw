@@ -430,6 +430,20 @@ void DefineActions(void)
 	InputManager.SetGameJoypadMaps(MAP_STYLE_2,MINECRAFT_ACTION_DPAD_RIGHT,				_360_JOY_BUTTON_DPAD_RIGHT);
 	InputManager.SetGameJoypadMaps(MAP_STYLE_2,MINECRAFT_ACTION_DPAD_UP,				_360_JOY_BUTTON_DPAD_UP);
 	InputManager.SetGameJoypadMaps(MAP_STYLE_2,MINECRAFT_ACTION_DPAD_DOWN,				_360_JOY_BUTTON_DPAD_DOWN);
+
+	for (int pad = 0; pad < 4; pad++)
+	{
+		InputManager.AddMapButtonSwap(pad, 1, 0, _360_JOY_BUTTON_A, _360_JOY_BUTTON_B);
+		InputManager.AddMapButtonSwap(pad, 1, 1, _360_JOY_BUTTON_A, _360_JOY_BUTTON_B);
+		InputManager.AddMapButtonSwap(pad, 1, 2, _360_JOY_BUTTON_A, _360_JOY_BUTTON_B);
+
+		if (pad == 0)
+		{
+			InputManager.AddMapButtonSwap(pad, 0, 0, _360_JOY_BUTTON_LTHUMB, _360_JOY_BUTTON_RTHUMB);
+			InputManager.AddMapButtonSwap(pad, 0, 1, _360_JOY_BUTTON_LTHUMB, _360_JOY_BUTTON_RTHUMB);
+			InputManager.AddMapButtonSwap(pad, 0, 2, _360_JOY_BUTTON_LTHUMB, _360_JOY_BUTTON_RTHUMB);
+		}
+	}
 }
 
 #if 0
@@ -1519,7 +1533,8 @@ static Minecraft* InitialiseMinecraftRuntime()
 		return nullptr;
 
 	app.InitGameSettings();
-	app.InitialiseTips();
+	app.InitialiseTips();    
+	ui.ReloadSkin();
 
 	return pMinecraft;
 }
@@ -2174,6 +2189,12 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		{
 			g_KBMInput.ClearCharBuffer();
 			pMinecraft->setScreen(new ChatScreen());
+			SetFocus(g_hWnd);
+		}
+		if (g_KBMInput.IsKeyPressed(VK_OEM_2) && app.GetGameStarted() && !ui.GetMenuDisplayed(0) && pMinecraft->screen == NULL)
+		{
+			g_KBMInput.ClearCharBuffer();
+			pMinecraft->setScreen(new ChatScreen(L"/"));
 			SetFocus(g_hWnd);
 		}
 

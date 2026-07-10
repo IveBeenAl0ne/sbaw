@@ -13,6 +13,7 @@ class ConsoleSchematicFile;
 class LevelRuleset;
 class BiomeOverride;
 class StartFeature;
+class DLCPack;
 
 class GrSource
 {
@@ -135,6 +136,7 @@ public:
 	void setBaseSavePath(const wstring &x);
 
 	bool ready();
+	DLCPack *getParentDLCPack() { return m_parentDLCPack; }
 
 	void setBaseSaveData(PBYTE pbData, DWORD dwSize);
 	PBYTE getBaseSaveData(DWORD &size);

@@ -3,8 +3,6 @@
 #include "IntCache.h"
 #include "RegionHillsLayer.h"
 
-
-
 RegionHillsLayer::RegionHillsLayer(int64_t seed, shared_ptr<Layer> parent) : Layer(seed)
 {
 	this->parent = parent;
@@ -27,7 +25,7 @@ void RegionHillsLayer::init(int64_t seed)
 
 bool RegionHillsLayer::biomesEqualOrMesaPlateau(int a, int b)
 {
-	return a == b;
+    return isSame(a, b);   // was: a == b
 }
 
 
@@ -125,13 +123,17 @@ intArray RegionHillsLayer::getArea(int xo, int yo, int w, int h)
 				}
 				else if (k == Biome::extremeHills->id)
 				{
-					i1 = Biome::smallerExtremeHills->id;
+					i1 = Biome::extremeHills_plus->id; // NOT smallerExtremeHills
 				}
 				else if (k == Biome::savanna->id)
 				{
 					// Java: savanna → savannaPlateau
 					
 					i1 = Biome::savannaPlateau->id;
+				}
+				else if (Layer::isSame(k, Biome::mesaPlateauF->id))
+				{
+					i1 = Biome::mesa->id;
 				}
 				else if (k == Biome::deepOcean->id && nextRandom(3) == 0)
 				{

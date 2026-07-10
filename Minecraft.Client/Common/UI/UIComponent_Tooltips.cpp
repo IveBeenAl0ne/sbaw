@@ -5,6 +5,10 @@
 
 UIComponent_Tooltips::UIComponent_Tooltips(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
+	m_lastResizeAwareScreenW = -1.0;
+	m_lastResizeAwareScreenH = -1.0;
+	m_lastResizeAwareNudgeActive = false;
+
 	for(int i=0;i<XUSER_MAX_COUNT;i++)
 	{
 		for(int j=0;j<ACTION_MAX_MENU;j++)
@@ -132,6 +136,30 @@ void UIComponent_Tooltips::updateSafeZone()
 		safeBottom = getSafeZoneHalfHeight();
 		safeLeft = getSafeZoneHalfWidth();
 
+#ifdef _WINDOWS64
+		// shift 720p-only 'tooltips' so that they match the HD layouts
+		{
+			const F64 screenW = ui.getScreenWidth();
+			const F64 screenH = ui.getScreenHeight();
+			const bool largerThan720Window = (screenH > 720.0f) || (screenW > 1280.0f);
+			const bool menuContext = ui.GetMenuDisplayed(m_iPad);
+			if(getSceneResolution() == eSceneResolution_720 && largerThan720Window && menuContext)
+			{
+				const F64 widthScale = screenW / 1920.0f;
+				const F64 heightScale = screenH / 1080.0f;
+				const F64 nudgeScale = (widthScale > heightScale) ? widthScale : heightScale;
+				const F64 nudgeX = 31.0 * nudgeScale;
+				const F64 nudgeY = 16.5 * nudgeScale;
+				const F64 spacingNudgeX = 20.0 * nudgeScale;
+				safeLeft = (safeLeft > nudgeX) ? (safeLeft - nudgeX) : 0.0;
+				safeBottom = (safeBottom > nudgeY) ? (safeBottom - nudgeY) : 0.0;
+				// remind me to work on the 'margin' nudge
+				// they dont seem very effective at the moment
+				safeRight += spacingNudgeX;
+			}
+		}
+#endif
+
 		break;
 	}
 	setSafeZone(safeTop, safeBottom, safeLeft, safeRight);
@@ -140,6 +168,37 @@ void UIComponent_Tooltips::updateSafeZone()
 void UIComponent_Tooltips::tick()
 {
 	UIScene::tick();
+
+#ifdef _WINDOWS64
+	if(!m_bSplitscreen && !ui.IsReloadingSkin())
+	{
+		const F64 screenW = ui.getScreenWidth();
+		const F64 screenH = ui.getScreenHeight();
+		const bool largerThan720Window = (screenH > 720.0f) || (screenW > 1280.0f);
+		const bool nudgeActive = (getSceneResolution() == eSceneResolution_720) && largerThan720Window && ui.GetMenuDisplayed(m_iPad);
+
+		F64 dW = screenW - m_lastResizeAwareScreenW;
+		if(dW < 0.0) dW = -dW;
+		F64 dH = screenH - m_lastResizeAwareScreenH;
+		if(dH < 0.0) dH = -dH;
+
+		const F64 baseW = (m_lastResizeAwareScreenW > 1.0) ? m_lastResizeAwareScreenW : 1.0;
+		const F64 baseH = (m_lastResizeAwareScreenH > 1.0) ? m_lastResizeAwareScreenH : 1.0;
+		const bool significantResize =
+			(m_lastResizeAwareScreenW < 0.0) || (m_lastResizeAwareScreenH < 0.0) ||
+			(dW >= 20.0) || (dH >= 20.0) ||
+			((dW / baseW) >= 0.01) || ((dH / baseH) >= 0.01);
+
+		if(significantResize || (nudgeActive != m_lastResizeAwareNudgeActive))
+		{
+			updateSafeZone();
+			_Relayout();
+			m_lastResizeAwareScreenW = screenW;
+			m_lastResizeAwareScreenH = screenH;
+			m_lastResizeAwareNudgeActive = nudgeActive;
+		}
+	}
+#endif
 
 	// set the opacity of the tooltip items
 	unsigned char ucAlpha=app.GetGameSettings(ProfileManager.GetPrimaryPad(),eGameSetting_InterfaceOpacity);
@@ -367,6 +426,10 @@ void UIComponent_Tooltips::_Relayout()
 {
 	IggyDataValue result;
 	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcUpdateLayout, 0 , nullptr );
+
+#ifdef _WINDOWS64
+	doHorizontalResizeCheck();
+#endif
 
 #ifdef __PSVITA__
 	// rebuild touchboxes

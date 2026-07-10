@@ -19,9 +19,8 @@ ResourceLocation EntityRenderer::SHADOW_LOCATION = ResourceLocation(TN__CLAMP__M
 EntityRenderer::EntityRenderer()
 {
 	model = nullptr;
+	modelWide = nullptr;
 	modelSlim = nullptr;
-	newModel = nullptr;
-	newModelSlim = nullptr;
 	tileRenderer = new TileRenderer();
 	shadowRadius = 0;
 	shadowStrength = 1.0f;
@@ -213,9 +212,11 @@ void EntityRenderer::renderShadow(shared_ptr<Entity> e, double x, double y, doub
 			for (int zt = z0; zt <= z1; zt++)
 			{				
 				int t = level->getTile(xt, yt - 1, zt);
+				Tile *tile = Tile::tiles[t];
+				if (tile == nullptr) continue; // tu31 tutorial world fix
 				if (t > 0 && level->getRawBrightness(xt, yt, zt) > 3)
 				{
-					renderTileShadow(Tile::tiles[t], x, y + e->getShadowHeightOffs() + fYLocalPlayerShadowOffset, z, xt, yt , zt, pow, r, xo, yo + e->getShadowHeightOffs() + fYLocalPlayerShadowOffset, zo);
+					renderTileShadow(tile, x, y + e->getShadowHeightOffs() + fYLocalPlayerShadowOffset, z, xt, yt , zt, pow, r, xo, yo + e->getShadowHeightOffs() + fYLocalPlayerShadowOffset, zo);
 				}			
 			}
 	tt->end();
@@ -405,6 +406,13 @@ Font *EntityRenderer::getFont()
 
 void EntityRenderer::registerTerrainTextures(IconRegister *iconRegister)
 {
+}
+
+Model *EntityRenderer::getModel(int modelType)
+{
+	if (modelType == 2) return modelSlim;
+	else if (modelType == 1) return modelWide;
+	else return model;
 }
 
 

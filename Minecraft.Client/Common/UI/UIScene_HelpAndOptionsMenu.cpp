@@ -135,6 +135,7 @@ void UIScene_HelpAndOptionsMenu::handleReload()
 	{
 		// We should show the reinstall menu
 		app.DebugPrintf("Reinstall Menu required...\n");
+		removeControl( &m_buttons[BUTTON_HAO_REINSTALL], false);
 	}
 	else
 	{

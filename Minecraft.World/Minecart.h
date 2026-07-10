@@ -2,7 +2,8 @@
 #include "Entity.h"
 
 class DamageSource;
-class Tickable;
+class MinecartSoundInstance;
+class RidingMinecartSoundInstance;
 
 class Minecart : public Entity
 {
@@ -30,7 +31,8 @@ private:
 	static const int DATA_ID_CUSTOM_DISPLAY = 22;
 
 	bool flipped;
-	Tickable *soundUpdater;
+	MinecartSoundInstance *m_rollingSound;
+	RidingMinecartSoundInstance *m_ridingSound;
 	wstring name;
 
 protected:

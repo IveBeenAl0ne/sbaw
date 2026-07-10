@@ -44,6 +44,7 @@
 
 // 1.8.2
 #include "AuxDataTileItem.h"
+#include "BannerItem.h"
 #include "ColoredTileItem.h"
 #include "UseAnim.h"
 

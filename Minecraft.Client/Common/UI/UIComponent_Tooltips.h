@@ -7,6 +7,12 @@ class UIComponent_Tooltips : public UIScene
 private:
 	bool m_bSplitscreen;
 
+#ifdef _WINDOWS64
+	F64 m_lastResizeAwareScreenW;
+	F64 m_lastResizeAwareScreenH;
+	bool m_lastResizeAwareNudgeActive;
+#endif
+
 protected:
 	typedef struct _TooltipValues
 	{

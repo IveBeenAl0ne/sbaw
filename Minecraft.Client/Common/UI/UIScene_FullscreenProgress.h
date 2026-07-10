@@ -47,6 +47,7 @@ public:
 	virtual EUIScene getSceneType() { return eUIScene_FullscreenProgress;}
 	virtual void updateTooltips();
 	virtual void handleDestroy();
+	virtual bool needsReloaded();
 
 	void tick();
 

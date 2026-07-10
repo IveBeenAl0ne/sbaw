@@ -988,6 +988,13 @@ int CGameNetworkManager::RunNetworkGameThreadProc( void* lpParameter )
 int CGameNetworkManager::ServerThreadProc( void* lpParameter )
 {
     int64_t seed = 0;
+
+	Compression::UseDefaultThreadStorage();
+	if (Compression::getCompression() == nullptr)
+	{
+		Compression::CreateNewThreadStorage();
+	}
+
     if (lpParameter != nullptr)
 	{
 		NetworkGameInitData *param = static_cast<NetworkGameInitData *>(lpParameter);
@@ -995,18 +1002,13 @@ int CGameNetworkManager::ServerThreadProc( void* lpParameter )
 		app.SetGameHostOption(eGameHostOption_All,param->settings);
 
 		// 4J Stu - If we are loading a DLC save that's separate from the texture pack, load
-		if (param != nullptr && param->levelGen != nullptr && param->levelGen->isFromDLC())
+		if( param->levelGen != nullptr && (param->texturePackId == 0 || param->levelGen->getRequiredTexturePackId() != param->texturePackId) )
 		{
 			while((Minecraft::GetInstance()->skins->needsUIUpdate() || ui.IsReloadingSkin()))
 			{
 				Sleep(1);
 			}
 			param->levelGen->loadBaseSaveData();
-
-			while (!param->levelGen->hasLoadedData())
-			{
-				Sleep(1);
-			}
 		}
 	}
 
@@ -1027,6 +1029,7 @@ int CGameNetworkManager::ServerThreadProc( void* lpParameter )
 	AABB::ReleaseThreadStorage();
 	Vec3::ReleaseThreadStorage();
 	IntCache::ReleaseThreadStorage();
+	Compression::ReleaseThreadStorage();
 	Level::destroyLightingCache();
 
 	if(lpParameter != nullptr) delete lpParameter;

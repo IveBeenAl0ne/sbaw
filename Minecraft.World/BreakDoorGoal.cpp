@@ -16,6 +16,8 @@ bool BreakDoorGoal::canUse()
 {
 	if (!DoorInteractGoal::canUse()) return false;
 	if (!mob->level->getGameRules()->getBoolean(GameRules::RULE_MOBGRIEFING)) return false;
+	// difficulty check
+	if (mob->level->difficulty != Difficulty::HARD) return false;
 	return !doorTile->isOpen(mob->level, doorX, doorY, doorZ);
 }
 

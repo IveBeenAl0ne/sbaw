@@ -2,6 +2,8 @@
 #include "../../../Minecraft.World/Definitions.h"
 #include "UIScene.h"
 #include "UIControl_PlayerSkinPreview.h"
+#include "UIControl_MultiList.h"
+#include "UIControl_BitmapIcon.h"
 
 class UIScene_SkinSelectMenu : public UIScene
 {
@@ -9,7 +11,7 @@ private:
 	static const WCHAR *wchDefaultNamesA[eDefaultSkins_Count];
 
 	// 4J Stu - How many to show on each side of the main control
-	static const BYTE sidePreviewControls = 4;
+	static const BYTE sidePreviewControls = 2;
 
 #ifdef __PSVITA__
 	enum ETouchInput
@@ -33,45 +35,37 @@ private:
 
 	enum ECharacters
 	{
-		eCharacter_Current,
-		eCharacter_Next1,
-		eCharacter_Next2,
-		eCharacter_Next3,
-		eCharacter_Next4,
-		eCharacter_Previous1,
-		eCharacter_Previous2,
-		eCharacter_Previous3,
-		eCharacter_Previous4,
+		eCharacter_Current = 0,
+		eCharacter_Next1 = 1,
+		eCharacter_Next2 = 2,
+		eCharacter_Previous1 = 4,
+		eCharacter_Previous2 = 5,
 
-		eCharacter_COUNT,
+		eCharacter_COUNT = 7,
 	};
 
 	UIControl_PlayerSkinPreview m_characters[eCharacter_COUNT];
 	UIControl_Label m_labelSkinName, m_labelSkinOrigin;
-	UIControl_Label m_labelSelected;
-	UIControl m_controlSkinNamePlate, m_controlSelectedPanel, m_controlIggyCharacters, m_controlTimer;
-#ifdef __PSVITA__
-	UIControl_Touch m_TouchTabLeft, m_TouchTabRight, m_TouchTabCenter, m_TouchIggyCharacters;
-#endif
+	UIControl m_controlBlocked, m_controlFavourite, m_controlLocked, m_controlSelected;
+	UIControl_Label m_labelPackName, m_labelPackType;
+	UIControl_MultiList m_controlSkinButtonList;
+	UIControl_BitmapIcon m_controlTexturePackIcon;
+	UIControl m_controlIggyCharacters, m_controlTimer;
 	IggyName m_funcSetPlayerCharacterSelected, m_funcSetCharacterLocked;
-	IggyName m_funcSetLeftLabel, m_funcSetRightLabel, m_funcSetCentreLabel;
+	IggyName m_funcSetCharacterFavourite, m_funcSetCharacterBlocked;
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
-#ifdef __PSVITA__
-		UI_MAP_ELEMENT( m_TouchTabLeft, "TouchTabLeft" )
-		UI_MAP_ELEMENT( m_TouchTabRight, "TouchTabRight" )
-		UI_MAP_ELEMENT( m_TouchTabCenter, "TouchTabCenter" )
-		UI_MAP_ELEMENT( m_TouchIggyCharacters, "TouchIggyCharacters" )
-#endif
-		UI_MAP_ELEMENT( m_controlSkinNamePlate, "SkinNamePlate")
-		UI_BEGIN_MAP_CHILD_ELEMENTS( m_controlSkinNamePlate )
-			UI_MAP_ELEMENT( m_labelSkinName, "SkinTitle1")
-			UI_MAP_ELEMENT( m_labelSkinOrigin, "SkinTitle2")
-		UI_END_MAP_CHILD_ELEMENTS()
-		
-		UI_MAP_ELEMENT( m_controlSelectedPanel, "SelectedPanel" )
-		UI_BEGIN_MAP_CHILD_ELEMENTS( m_controlSelectedPanel )
-			UI_MAP_ELEMENT( m_labelSelected, "SelectedPanelLabel" )
-		UI_END_MAP_CHILD_ELEMENTS()
+		UI_MAP_ELEMENT( m_controlBlocked, "Blocked" )
+		UI_MAP_ELEMENT( m_controlFavourite, "Favourite" )
+		UI_MAP_ELEMENT( m_controlLocked, "Locked" )
+		UI_MAP_ELEMENT( m_controlSelected, "Selected" )
+
+		UI_MAP_ELEMENT( m_labelSkinName, "SkinTitle1" )
+		UI_MAP_ELEMENT( m_labelSkinOrigin, "SkinTitle2" )
+		UI_MAP_ELEMENT( m_labelPackName, "Pack_Name" )
+		UI_MAP_ELEMENT( m_labelPackType, "Pack_Type" )
+
+		UI_MAP_ELEMENT( m_controlTexturePackIcon, "TexturePackIcon" )
+		UI_MAP_ELEMENT( m_controlSkinButtonList, "SkinButtonList" )
 
 		UI_MAP_ELEMENT( m_controlTimer, "Timer" )
 
@@ -79,24 +73,16 @@ private:
 		UI_MAP_ELEMENT( m_controlIggyCharacters, "IggyCharacters" )
 		UI_BEGIN_MAP_CHILD_ELEMENTS( m_controlIggyCharacters )
 			UI_MAP_ELEMENT( m_characters[eCharacter_Current], "iggy_Character0" )
-
 			UI_MAP_ELEMENT( m_characters[eCharacter_Next1], "iggy_Character1" )
 			UI_MAP_ELEMENT( m_characters[eCharacter_Next2], "iggy_Character2" )
-			UI_MAP_ELEMENT( m_characters[eCharacter_Next3], "iggy_Character3" )
-			UI_MAP_ELEMENT( m_characters[eCharacter_Next4], "iggy_Character4" )
-		
-			UI_MAP_ELEMENT( m_characters[eCharacter_Previous1], "iggy_Character5" )
-			UI_MAP_ELEMENT( m_characters[eCharacter_Previous2], "iggy_Character6" )
-			UI_MAP_ELEMENT( m_characters[eCharacter_Previous3], "iggy_Character7" )
-			UI_MAP_ELEMENT( m_characters[eCharacter_Previous4], "iggy_Character8" )
+			UI_MAP_ELEMENT( m_characters[eCharacter_Previous1], "iggy_Character6" )
+			UI_MAP_ELEMENT( m_characters[eCharacter_Previous2], "iggy_Character5" )
 		UI_END_MAP_CHILD_ELEMENTS()
 
 		UI_MAP_NAME( m_funcSetPlayerCharacterSelected, L"SetPlayerCharacterSelected" )
 		UI_MAP_NAME( m_funcSetCharacterLocked, L"SetCharacterLocked" )
-
-		UI_MAP_NAME( m_funcSetLeftLabel, L"SetLeftLabel" )
-		UI_MAP_NAME( m_funcSetCentreLabel, L"SetCenterLabel" )
-		UI_MAP_NAME( m_funcSetRightLabel, L"SetRightLabel" )
+		UI_MAP_NAME( m_funcSetCharacterFavourite, L"SetCharacterFavourite" )
+		UI_MAP_NAME( m_funcSetCharacterBlocked, L"SetCharacterBlocked" )
 	UI_END_MAP_ELEMENTS_AND_NAMES()
 
 	DLCPack *m_currentPack;
@@ -104,6 +90,7 @@ private:
 	DWORD m_originalSkinId;
 	wstring m_currentSkinPath, m_selectedSkinPath, m_selectedCapePath;
 	vector<SKIN_BOX *> *m_vAdditionalSkinBoxes;
+	vector<SKIN_OFFSET *> *m_vSkinOffsets;
 
 	bool m_bSlidingSkins, m_bAnimatingMove;
 	ESkinSelectNavigation m_currentNavigation;
@@ -112,7 +99,10 @@ private:
 	DWORD m_currentPackCount;
 	bool m_bIgnoreInput;
 	bool m_bSkinIndexChanged;
-	wstring m_leftLabel, m_centreLabel, m_rightLabel;
+	bool m_bFocusDirty;
+	bool m_bNeedButtonListRefresh;
+	bool m_bHasTexturePack;
+	int m_iTexturePackIndex;
 
 	S32 m_iTouchXStart;
 	bool m_bTouchScrolled;
@@ -131,6 +121,7 @@ public:
 
 	virtual void handleAnimationEnd();
 
+	virtual void handleFocusChange(F64 controlId, F64 childId);
 
 protected:
 	// TODO: This should be pure virtual in this class
@@ -156,10 +147,14 @@ private:
 
 	void setCharacterSelected(bool selected);
 	void setCharacterLocked(bool locked);
-
-	void setLeftLabel(const wstring &label);
-	void setCentreLabel(const wstring &label);
-	void setRightLabel(const wstring &label);
+	void setCharacterFavourite(bool favourite);
+	void setCharacterBlocked(bool blocked);
+	void SetSkinPackButtonList();
+	void setPackLabel();
+	int relativePackIndex(DWORD base, int offset);
+	void handlePress(F64 controlId, F64 childId);
+	void setActivePackIndex();
+	bool registerTexture(const wstring &texturePath);
 
 	virtual void HandleDLCMountingComplete();
 	virtual void HandleDLCInstalled();
@@ -174,6 +169,8 @@ private:
 	void AddFavoriteSkin(int iPad,int iSkinID);
 
 	void InputActionOK(unsigned int iPad);
+	void InputActionFavorite(unsigned int iPad);
+	void SetFavoriteSkin(unsigned int pad, int skinId);
 #ifdef __PSVITA__
 	virtual void handleTouchInput(unsigned int iPad, S32 x, S32 y, int iId, bool bPressed, bool bRepeat, bool bReleased);
 #endif //__PSVITA__

@@ -170,6 +170,8 @@ private:
 protected:
 	// 4J Added so that client side simulations on the host are not affected by zero-lag
 	bool m_ignoreVerticalCollisions;
+	bool m_clearFallDamageThisTick;
+	bool m_ignoreFallDamageUntilGround;
 
 	bool m_ignorePortal;
 
@@ -253,6 +255,7 @@ protected:
 
 public:
 	bool isFireImmune();
+	void clearFallDamageQueue();
 
 protected:
 	virtual void causeFallDamage(float distance);

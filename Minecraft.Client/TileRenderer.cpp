@@ -9,13 +9,24 @@
 #include "../Minecraft.World/net.minecraft.world.level.material.h"
 #include "../Minecraft.World/net.minecraft.h"
 #include "../Minecraft.World/net.minecraft.world.h"
+#include "../Minecraft.World/JavaMath.h"
 #include "Tesselator.h"
 #include "EntityTileRenderer.h"
+#include "LevelRenderer.h"
 #include "Options.h"
+#include "../Minecraft.World/TallGrass2.h"
 
 bool TileRenderer::fancy = true;
 
 const float smallUV = ( 1.0f / 16.0f );
+
+static inline void tessColor(Tesselator* t, float r, float g, float b, float a)
+{
+	if (a >= 0.999f)
+		t->color(r, g, b);
+	else
+		t->color(r, g, b, a);
+}
 
 void TileRenderer::_init()
 {
@@ -40,6 +51,8 @@ void TileRenderer::_init()
 	fixedShape = false;
 	smoothShapeLighting = false;
 	minecraft = Minecraft::GetInstance();
+
+	fixedTextureAlpha = 1.0f;
 
 	xMin = 0;
 	yMin = 0;
@@ -108,7 +121,7 @@ int TileRenderer::getLightColor( Tile *tt, LevelSource *level, int x, int y, int
 		{
 			// Don't use the cache for liquid tiles, as they are the only type that seem to have their own implementation of getLightColor that actually is important.
 			// Without this we get patches of dark water where their lighting value is 0, it needs to pull in light from the tile above to work
-			if( ( tt->id >= Tile::water_Id ) && ( tt->id <= Tile::calmLava_Id ) ) return tt->getLightColor(level, x, y, z);
+			if( ( tt->id >= Tile::flowing_water_Id ) && ( tt->id <= Tile::lava_Id ) ) return tt->getLightColor(level, x, y, z);
 
 			if( cache[id] & cache_getLightColor_valid ) return cache[id] & cache_getLightColor_mask;
 
@@ -297,8 +310,8 @@ bool TileRenderer::tesselateInWorld( Tile* tt, int x, int y, int z, int forceDat
 				// these block types can take advantage of a faster version of shouldRenderFace
 				// there are others but this is an easy check which covers the majority
 				// Note: This now covers rock, grass, dirt, stoneBrice, wood, sapling, unbreakable, sand, gravel, goldOre, ironOre, coalOre, treeTrunk
-				if( ( tt->id <= Tile::unbreakable_Id  ) ||
-					( ( tt->id >= Tile::sand_Id ) && ( tt->id <= Tile::treeTrunk_Id ) ) )
+				if( ( tt->id <= Tile::bedrock_Id  ) ||
+					( ( tt->id >= Tile::sand_Id ) && ( tt->id <= Tile::log_Id ) ) )
 				{
 					faceFlags = tt->getFaceFlags( level, x, y, z );
 				}
@@ -335,6 +348,9 @@ bool TileRenderer::tesselateInWorld( Tile* tt, int x, int y, int z, int forceDat
 		break;
 	case Tile::SHAPE_CACTUS:
 		retVal = tesselateCactusInWorld( tt, x, y, z );
+		break;
+	case Tile::SHAPE_SLIME:
+		retVal = tesselateSlimeBlockInWorld( tt, x, y, z );
 		break;
 	case Tile::SHAPE_CROSS_TEXTURE:
 		retVal = tesselateCrossInWorld( tt, x, y, z );
@@ -2893,7 +2909,7 @@ bool TileRenderer::tesselateDustInWorld( Tile* tt, int x, int y, int z )
 	{
 		const float yStretch = .35f / 16.0f;
 
-		if ( level->isSolidBlockingTile( x - 1, y, z ) && level->getTile( x - 1, y + 1, z ) == Tile::redStoneDust_Id )
+		if ( level->isSolidBlockingTile( x - 1, y, z ) && level->getTile( x - 1, y + 1, z ) == Tile::redstone_wire_Id )
 		{
 			t->color( br * red, br * green, br * blue );
 			t->vertexUV( ( float )( x + dustOffset ), ( float )( y + 1 + yStretch ), static_cast<float>(z + 1), lineTexture->getU1(true), lineTexture->getV0(true) );
@@ -2907,7 +2923,7 @@ bool TileRenderer::tesselateDustInWorld( Tile* tt, int x, int y, int z )
 			t->vertexUV( ( float )( x + overlayOffset ), static_cast<float>(y + 0), static_cast<float>(z + 0), lineTextureOverlay->getU0(true), lineTextureOverlay->getV1(true) );
 			t->vertexUV( ( float )( x + overlayOffset ), ( float )( y + 1 + yStretch ), static_cast<float>(z + 0), lineTextureOverlay->getU1(true), lineTextureOverlay->getV1(true) );
 		}
-		if ( level->isSolidBlockingTile( x + 1, y, z ) && level->getTile( x + 1, y + 1, z ) == Tile::redStoneDust_Id )
+		if ( level->isSolidBlockingTile( x + 1, y, z ) && level->getTile( x + 1, y + 1, z ) == Tile::redstone_wire_Id )
 		{
 			t->color( br * red, br * green, br * blue );
 			t->vertexUV( ( float )( x + 1 - dustOffset ), static_cast<float>(y + 0), static_cast<float>(z + 1), lineTexture->getU0(true), lineTexture->getV1(true) );
@@ -2921,7 +2937,7 @@ bool TileRenderer::tesselateDustInWorld( Tile* tt, int x, int y, int z )
 			t->vertexUV( ( float )( x + 1 - overlayOffset ), ( float )( y + 1 + yStretch ), static_cast<float>(z + 0), lineTextureOverlay->getU1(true), lineTextureOverlay->getV0(true) );
 			t->vertexUV( ( float )( x + 1 - overlayOffset ), static_cast<float>(y + 0), static_cast<float>(z + 0), lineTextureOverlay->getU0(true), lineTextureOverlay->getV0(true) );
 		}
-		if ( level->isSolidBlockingTile( x, y, z - 1 ) && level->getTile( x, y + 1, z - 1 ) == Tile::redStoneDust_Id )
+		if ( level->isSolidBlockingTile( x, y, z - 1 ) && level->getTile( x, y + 1, z - 1 ) == Tile::redstone_wire_Id )
 		{
 			t->color( br * red, br * green, br * blue );
 			t->vertexUV( static_cast<float>(x + 1), static_cast<float>(y + 0), ( float )( z + dustOffset ), lineTexture->getU0(true), lineTexture->getV1(true) );
@@ -2935,7 +2951,7 @@ bool TileRenderer::tesselateDustInWorld( Tile* tt, int x, int y, int z )
 			t->vertexUV( static_cast<float>(x + 0), ( float )( y + 1 + yStretch ), ( float )( z + overlayOffset ), lineTextureOverlay->getU1(true), lineTextureOverlay->getV0(true) );
 			t->vertexUV( static_cast<float>(x + 0), static_cast<float>(y + 0), ( float )( z + overlayOffset ), lineTextureOverlay->getU0(true), lineTextureOverlay->getV0(true) );
 		}
-		if ( level->isSolidBlockingTile( x, y, z + 1 ) && level->getTile( x, y + 1, z + 1 ) == Tile::redStoneDust_Id )
+		if ( level->isSolidBlockingTile( x, y, z + 1 ) && level->getTile( x, y + 1, z + 1 ) == Tile::redstone_wire_Id )
 		{
 			t->color( br * red, br * green, br * blue );
 			t->vertexUV( static_cast<float>(x + 1), ( float )( y + 1 + yStretch ), ( float )( z + 1 - dustOffset ), lineTexture->getU1(true), lineTexture->getV0(true) );
@@ -4180,6 +4196,105 @@ bool TileRenderer::tesselateCrossInWorld( Tile* tt, int x, int y, int z )
 		zt += ((((seed >> 24) & 0xf) / 15.0f) - 0.5f) * 0.5f;
 	}
 
+	if (tt == Tile::double_plant)
+	{
+		const int data = level->getData(x, y, z);
+		const bool isUpper = (data & TallGrass2::UPPER_BIT) != 0;
+		if (isUpper && level->getTile(x, y - 1, z) != Tile::double_plant_Id)
+		{
+			return true;
+		}
+		int lowerData = data;
+		if (isUpper && level->getTile(x, y - 1, z) == Tile::double_plant_Id)
+		{
+			lowerData = level->getData(x, y - 1, z);
+		}
+		const int variant = lowerData & ~TallGrass2::UPPER_BIT;
+
+		if (isUpper && variant == TallGrass2::SUNFLOWER)
+		{
+			// cut off stem height (i think thats how it was in the original LCE?)
+			const int stemRenderData = (lowerData & ~TallGrass2::UPPER_BIT) | TallGrass2::UPPER_BIT;
+			tesselateCrossStemHeight(tt, stemRenderData, xt, yt, zt, 0.875f);
+			TallGrass2* tallGrass = static_cast<TallGrass2*>(tt);
+			Icon* frontTex = tallGrass->getSunflowerHeadFrontIcon();
+			Icon* backTex = tallGrass->getSunflowerHeadBackIcon();
+			if (frontTex != nullptr && backTex != nullptr)
+			{
+				float fu0 = frontTex->getU0(true);
+				float fu1 = frontTex->getU1(true);
+				float fv0 = frontTex->getV0(true);
+				float fv1 = frontTex->getV1(true);
+
+				float bu0 = backTex->getU0(true);
+				float bu1 = backTex->getU1(true);
+				float bv0 = backTex->getV0(true);
+				float bv1 = backTex->getV1(true);
+
+				const float angle = 22.5f * (PI / 180.0f);
+				const float c = Mth::cos(angle);
+				const float s = Mth::sin(angle);
+				const float ox = xt + 0.5f;
+				const float oy = yt + 0.5f;
+				const float oz = zt + 0.5f;
+
+				auto rotateZ = [&](float &px, float &py)
+				{
+					float dx = px - ox;
+					float dy = py - oy;
+					px = ox + (dx * c - dy * s);
+					py = oy + (dx * s + dy * c);
+				};
+
+				const float z0 = zt + (1.0f / 16.0f);
+				const float z1 = zt + (15.0f / 16.0f);
+				const float y0 = yt - (1.0f / 16.0f);
+				const float y1 = yt + (15.0f / 16.0f);
+
+				const float xPlane = xt + (9.6f / 16.0f);
+				const float depth = 0.001f;
+
+				float fx0 = xPlane + depth, fy0 = y1, fz0 = z0;
+				float fx1 = xPlane + depth, fy1 = y0, fz1 = z0;
+				float fx2 = xPlane + depth, fy2 = y0, fz2 = z1;
+				float fx3 = xPlane + depth, fy3 = y1, fz3 = z1;
+				rotateZ(fx0, fy0);
+				rotateZ(fx1, fy1);
+				rotateZ(fx2, fy2);
+				rotateZ(fx3, fy3);
+
+				t->vertexUV(fx0, fy0, fz0, fu0, fv0);
+				t->vertexUV(fx1, fy1, fz1, fu0, fv1);
+				t->vertexUV(fx2, fy2, fz2, fu1, fv1);
+				t->vertexUV(fx3, fy3, fz3, fu1, fv0);
+
+				float bx0 = xPlane - depth, by0 = y1, bz0 = z0;
+				float bx1 = xPlane - depth, by1 = y0, bz1 = z0;
+				float bx2 = xPlane - depth, by2 = y0, bz2 = z1;
+				float bx3 = xPlane - depth, by3 = y1, bz3 = z1;
+				rotateZ(bx0, by0);
+				rotateZ(bx1, by1);
+				rotateZ(bx2, by2);
+				rotateZ(bx3, by3);
+
+				t->vertexUV(bx3, by3, bz3, bu0, bv0);
+				t->vertexUV(bx2, by2, bz2, bu0, bv1);
+				t->vertexUV(bx1, by1, bz1, bu1, bv1);
+				t->vertexUV(bx0, by0, bz0, bu1, bv0);
+			}
+			return true;
+		}
+
+		int renderData = data;
+		if (isUpper)
+		{
+			renderData = (lowerData & ~TallGrass2::UPPER_BIT) | TallGrass2::UPPER_BIT;
+		}
+
+		tesselateCrossTexture(tt, renderData, xt, yt, zt, 1);
+		return true;
+	}
+
 	tesselateCrossTexture( tt, level->getData( x, y, z ), xt, yt, zt, 1 );
 	return true;
 }
@@ -4357,6 +4472,47 @@ void TileRenderer::tesselateCrossTexture( Tile* tt, int data, float x, float y, 
 	t->vertexUV( ( float )( x0 ), ( float )( y + 0 ), ( float )( z1 ), ( float )( u1 ), ( float )( v1 ) );
 	t->vertexUV( ( float )( x0 ), ( float )( y + scale ), ( float )( z1 ), ( float )( u1 ), ( float )( v0 ) );
 
+}
+
+void TileRenderer::tesselateCrossStemHeight( Tile* tt, int data, float x, float y, float z, float height )
+{
+	Tesselator* t = Tesselator::getInstance();
+
+	Icon *tex = getTexture(tt, 0, data);
+
+	if (hasFixedTexture()) tex = fixedTexture;
+	float u0 = tex->getU0(true);
+	float v0 = tex->getV0(true);
+	float u1 = tex->getU1(true);
+	float v1 = tex->getV(height * SharedConstants::WORLD_RESOLUTION, true);
+
+	float width = 0.45f;
+	float x0 = x + 0.5f - width;
+	float x1 = x + 0.5f + width;
+	float z0 = z + 0.5f - width;
+	float z1 = z + 0.5f + width;
+
+	float topY = y + height;
+
+	t->vertexUV( x0, topY, z0, u0, v0 );
+	t->vertexUV( x0, y + 0, z0, u0, v1 );
+	t->vertexUV( x1, y + 0, z1, u1, v1 );
+	t->vertexUV( x1, topY, z1, u1, v0 );
+
+	t->vertexUV( x1, topY, z1, u0, v0 );
+	t->vertexUV( x1, y + 0, z1, u0, v1 );
+	t->vertexUV( x0, y + 0, z0, u1, v1 );
+	t->vertexUV( x0, topY, z0, u1, v0 );
+
+	t->vertexUV( x0, topY, z1, u0, v0 );
+	t->vertexUV( x0, y + 0, z1, u0, v1 );
+	t->vertexUV( x1, y + 0, z0, u1, v1 );
+	t->vertexUV( x1, topY, z0, u1, v0 );
+
+	t->vertexUV( x1, topY, z0, u0, v0 );
+	t->vertexUV( x1, y + 0, z0, u0, v1 );
+	t->vertexUV( x0, y + 0, z1, u1, v1 );
+	t->vertexUV( x0, topY, z1, u1, v0 );
 }
 
 void TileRenderer::tesselateStemTexture( Tile* tt, int data, float h, float x, float y, float z )
@@ -6279,6 +6435,50 @@ bool TileRenderer::tesselateBlockInWorld( Tile* tt, int x, int y, int z, float r
 
 }
 
+bool TileRenderer::tesselateSlimeBlockInWorld(Tile *tt, int x, int y, int z)
+{
+ 	setFixedTexture(getTexture(Tile::slimeBlock));
+	setShape(0, 0, 0, 1, 1, 1);
+
+	this->fixedTextureAlpha = 0.35f;
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_ALPHA_TEST);
+	glEnable(GL_BLEND);
+
+	glDepthMask(false);
+	tesselateBlockInWorld(tt, x, y, z);
+	glDepthMask(true);
+
+	glEnable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
+
+	this->fixedTextureAlpha = 1.0f;
+	clearFixedTexture();
+
+	return true;
+}
+
+bool TileRenderer::tesselateSlimeInnerInWorld(Tile *tt, int x, int y, int z)
+{
+	const float innerSizeStart = 3.0f / 16.0f;
+	const float innerSizeFinish = 13.0f / 16.0f;
+	setFixedTexture(getTexture(Tile::slimeBlock));
+	setShape(innerSizeStart, innerSizeStart, innerSizeStart, innerSizeFinish, innerSizeFinish, innerSizeFinish);
+	this->fixedTextureAlpha = 0.18f;
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_ALPHA_TEST);
+	glEnable(GL_BLEND);
+	glDepthMask(false);
+	bool result = tesselateBlockInWorld(tt, x, y, z);
+	glDepthMask(true);
+	glEnable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
+	this->fixedTextureAlpha = 1.0f;
+	clearFixedTexture();
+	return result;
+}
+
 bool TileRenderer::tesselateBeaconInWorld(Tile *tt, int x, int y, int z)
 {
 	float obsHeight = 3.0f / 16.0f;
@@ -6299,7 +6499,7 @@ bool TileRenderer::tesselateBeaconInWorld(Tile *tt, int x, int y, int z)
 	noCulling = false;
 
 	clearFixedTexture();
-
+	
 	return true;
 }
 
@@ -6572,8 +6772,8 @@ bool TileRenderer::tesselateFenceGateInWorld(FenceGateTile *tt, int x, int y, in
 	float h20 = 5 / 16.0f;
 	float h21 = 16 / 16.0f;
 
-	if (((direction == Direction::NORTH || direction == Direction::SOUTH) && level->getTile(x - 1, y, z) == Tile::cobbleWall_Id && level->getTile(x + 1, y, z) == Tile::cobbleWall_Id)
-		|| ((direction == Direction::EAST || direction == Direction::WEST) && level->getTile(x, y, z - 1) == Tile::cobbleWall_Id && level->getTile(x, y, z + 1) == Tile::cobbleWall_Id))
+	if (((direction == Direction::NORTH || direction == Direction::SOUTH) && level->getTile(x - 1, y, z) == Tile::cobblestone_wall_Id && level->getTile(x + 1, y, z) == Tile::cobblestone_wall_Id)
+		|| ((direction == Direction::EAST || direction == Direction::WEST) && level->getTile(x, y, z - 1) == Tile::cobblestone_wall_Id && level->getTile(x, y, z + 1) == Tile::cobblestone_wall_Id))
 	{
 		h00 -= 3.0f / 16.0f;
 		h01 -= 3.0f / 16.0f;
@@ -7285,16 +7485,16 @@ void TileRenderer::renderFaceDown( Tile* tt, double x, double y, double z, Icon 
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z1), static_cast<float>(u10), static_cast<float>(v10) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z0), ( float )( u00 ), ( float )( v00 ) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y0), static_cast<float>(z0), static_cast<float>(u01), static_cast<float>(v01) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y0), static_cast<float>(z1), ( float )( u11 ), ( float )( v11 ) );
 	}
@@ -7397,16 +7597,16 @@ void TileRenderer::renderFaceUp( Tile* tt, double x, double y, double z, Icon *t
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(z1), ( float )( u11 ), ( float )( v11 ) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(z0), ( float )( u01 ), ( float )( v01 ) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z0), ( float )( u00 ), ( float )( v00 ) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z1), ( float )( u10 ), ( float )( v10 ) );
 	}
@@ -7516,16 +7716,16 @@ void TileRenderer::renderNorth( Tile* tt, double x, double y, double z, Icon *te
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z0), static_cast<float>(u01), static_cast<float>(v01) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(z0), static_cast<float>(u00), static_cast<float>(v00) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y0), static_cast<float>(z0), static_cast<float>(u10), static_cast<float>(v10) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z0), static_cast<float>(u11), static_cast<float>(v11) );
 	}
@@ -7635,16 +7835,16 @@ void TileRenderer::renderSouth( Tile* tt, double x, double y, double z, Icon *te
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z1), static_cast<float>(u00), static_cast<float>(v00) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z1), static_cast<float>(u10), static_cast<float>(v10) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y0), static_cast<float>(z1), static_cast<float>(u11), static_cast<float>(v11) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(z1), static_cast<float>(u01), static_cast<float>(v01) );
 	}
@@ -7753,16 +7953,16 @@ void TileRenderer::renderWest( Tile* tt, double x, double y, double z, Icon *tex
 		}
 #endif
 
-		t->color( c1r, c1g, c1b );
+		tessColor(t, c1r, c1g, c1b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc1 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z1), static_cast<float>(u01), static_cast<float>(v01) );
-		t->color( c2r, c2g, c2b );
+		tessColor(t, c2r, c2g, c2b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc2 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y1), static_cast<float>(z0), static_cast<float>(u00), static_cast<float>(v00) );
-		t->color( c3r, c3g, c3b );
+		tessColor(t, c3r, c3g, c3b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc3 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z0), static_cast<float>(u10), static_cast<float>(v10) );
-		t->color( c4r, c4g, c4b );
+		tessColor(t, c4r, c4g, c4b, this->fixedTextureAlpha);
 		if ( SharedConstants::TEXTURE_LIGHTING ) t->tex2( tc4 );
 		t->vertexUV( static_cast<float>(x0), static_cast<float>(y0), static_cast<float>(z1), static_cast<float>(u11), static_cast<float>(v11) );
 	}
@@ -8105,6 +8305,56 @@ void TileRenderer::renderTile( Tile* tile, int data, float brightness, float fAl
 		t->normal(0, -1, 0);
 		tile->updateDefaultShape();
 		t->end();
+	}
+	else if (shape == Tile::SHAPE_SLIME)
+	{
+		tile->updateDefaultShape();
+		glTranslatef(-0.5f, -0.5f, -0.5f);
+
+		bool hadFixedTexture = hasFixedTexture();
+		Icon *savedFixedTexture = fixedTexture;
+
+		setFixedTexture(getTexture(Tile::slimeBlock));
+		setShape(3.0f / 16.0f, 3.0f / 16.0f, 3.0f / 16.0f, 13.0f / 16.0f, 13.0f / 16.0f, 13.0f / 16.0f);
+		t->begin();
+		t->normal(0.0f, -1.0f, 0.0f);
+		renderFaceDown(tile, 0, 0, 0, getTexture(tile, 0, data));
+		t->normal(0.0f, 1.0f, 0.0f);
+		renderFaceUp(tile, 0, 0, 0, getTexture(tile, 1, data));
+		t->normal(0.0f, 0.0f, -1.0f);
+		renderNorth(tile, 0, 0, 0, getTexture(tile, 2, data));
+		t->normal(0.0f, 0.0f, 1.0f);
+		renderSouth(tile, 0, 0, 0, getTexture(tile, 3, data));
+		t->normal(-1.0f, 0.0f, 0.0f);
+		renderWest(tile, 0, 0, 0, getTexture(tile, 4, data));
+		t->normal(1.0f, 0.0f, 0.0f);
+		renderEast(tile, 0, 0, 0, getTexture(tile, 5, data));
+		t->end();
+
+		setFixedTexture(getTexture(Tile::slimeBlock));
+		setShape(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+		glColor4f(brightness, brightness, brightness, fAlpha * 0.5f);
+		t->begin();
+		t->normal(0.0f, -1.0f, 0.0f);
+		renderFaceDown(tile, 0, 0, 0, getTexture(tile, 0, data));
+		t->normal(0.0f, 1.0f, 0.0f);
+		renderFaceUp(tile, 0, 0, 0, getTexture(tile, 1, data));
+		t->normal(0.0f, 0.0f, -1.0f);
+		renderNorth(tile, 0, 0, 0, getTexture(tile, 2, data));
+		t->normal(0.0f, 0.0f, 1.0f);
+		renderSouth(tile, 0, 0, 0, getTexture(tile, 3, data));
+		t->normal(-1.0f, 0.0f, 0.0f);
+		renderWest(tile, 0, 0, 0, getTexture(tile, 4, data));
+		t->normal(1.0f, 0.0f, 0.0f);
+		renderEast(tile, 0, 0, 0, getTexture(tile, 5, data));
+		t->end();
+
+		if (hadFixedTexture)
+			setFixedTexture(savedFixedTexture);
+		else
+			clearFixedTexture();
+
+		glColor4f(brightness, brightness, brightness, fAlpha);
 	}
 	else if ( shape == Tile::SHAPE_CACTUS )
 	{
@@ -8557,6 +8807,7 @@ bool TileRenderer::canRender( int renderShape )
 	if ( renderShape == Tile::SHAPE_BLOCK ) return true;
 	if ( renderShape == Tile::SHAPE_TREE ) return true;
 	if ( renderShape == Tile::SHAPE_QUARTZ) return true;
+	if ( renderShape == Tile::SHAPE_SLIME ) return true;
 	if ( renderShape == Tile::SHAPE_CACTUS ) return true;
 	if ( renderShape == Tile::SHAPE_STAIRS ) return true;
 	if ( renderShape == Tile::SHAPE_FENCE ) return true;

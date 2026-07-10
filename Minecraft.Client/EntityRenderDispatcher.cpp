@@ -82,6 +82,8 @@
 #include "BatRenderer.h"
 #include "CaveSpiderRenderer.h"
 #include "RabbitRenderer.h"
+#include "PolarBearRenderer.h"
+#include "PolarBearModel.h"
 
 #include "ArmorStandRenderer.h"
 #include "EndermiteRenderer.h"
@@ -142,6 +144,7 @@ EntityRenderDispatcher::EntityRenderDispatcher()
 	renderers[eTYPE_WITHERBOSS] = new WitherBossRenderer();
 
 	renderers[eTYPE_RABBIT] = new RabbitRenderer();
+	renderers[eTYPE_POLARBEAR] = new PolarBearRenderer(new PolarBearModel(), 0.7f);
 	
 
 	renderers[eTYPE_ENTITY] = new DefaultRenderer();
@@ -149,12 +152,12 @@ EntityRenderDispatcher::EntityRenderDispatcher()
 	renderers[eTYPE_ITEM_FRAME] = new ItemFrameRenderer();
 	renderers[eTYPE_LEASHFENCEKNOT] = new LeashKnotRenderer();
 	renderers[eTYPE_ARROW] = new ArrowRenderer();
-	renderers[eTYPE_SNOWBALL] = new ItemSpriteRenderer(Item::snowBall);
-	renderers[eTYPE_THROWNENDERPEARL] = new ItemSpriteRenderer(Item::enderPearl);
-	renderers[eTYPE_EYEOFENDERSIGNAL] = new ItemSpriteRenderer(Item::eyeOfEnder);
+	renderers[eTYPE_SNOWBALL] = new ItemSpriteRenderer(Item::snowball);
+	renderers[eTYPE_THROWNENDERPEARL] = new ItemSpriteRenderer(Item::ender_pearl);
+	renderers[eTYPE_EYEOFENDERSIGNAL] = new ItemSpriteRenderer(Item::eye_of_ender);
 	renderers[eTYPE_THROWNEGG] = new ItemSpriteRenderer(Item::egg);
 	renderers[eTYPE_THROWNPOTION] = new ItemSpriteRenderer(Item::potion, PotionBrewing::THROWABLE_MASK);
-	renderers[eTYPE_THROWNEXPBOTTLE] = new ItemSpriteRenderer(Item::expBottle);
+	renderers[eTYPE_THROWNEXPBOTTLE] = new ItemSpriteRenderer(Item::experience_bottle);
 	renderers[eTYPE_FIREWORKS_ROCKET] = new ItemSpriteRenderer(Item::fireworks);
 	renderers[eTYPE_LARGE_FIREBALL] = new FireballRenderer(2.0f);
 	renderers[eTYPE_SMALL_FIREBALL] = new FireballRenderer(0.5f);

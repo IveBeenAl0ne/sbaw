@@ -23,8 +23,12 @@ ClockTexture::ClockTexture(int iPad, ClockTexture *dataTexture) : StitchedTextur
 
 void ClockTexture::cycleFrames()
 {
-
 	Minecraft *mc = Minecraft::GetInstance();
+	int frameCount = getFrames();
+	if (frameCount <= 0)
+	{
+		return;
+	}
 
 	double rott = 0;
 	if (m_iPad >= 0 && m_iPad < XUSER_MAX_COUNT && mc->level != nullptr && mc->localplayers[m_iPad] != nullptr)
@@ -57,10 +61,10 @@ void ClockTexture::cycleFrames()
 	// 4J Stu - We share data with another texture
 	if(m_dataTexture != nullptr)
 	{
-		int newFrame = static_cast<int>((rot + 1.0) * m_dataTexture->frames->size()) % m_dataTexture->frames->size();
+		int newFrame = static_cast<int>((rot + 1.0) * frameCount) % frameCount;
 		while (newFrame < 0)
 		{
-			newFrame = (newFrame + m_dataTexture->frames->size()) % m_dataTexture->frames->size();
+			newFrame = (newFrame + frameCount) % frameCount;
 		}
 		if (newFrame != frame)
 		{
@@ -70,10 +74,10 @@ void ClockTexture::cycleFrames()
 	}
 	else
 	{
-		int newFrame = static_cast<int>((rot + 1.0) * frames->size()) % frames->size();
+		int newFrame = static_cast<int>((rot + 1.0) * frameCount) % frameCount;
 		while (newFrame < 0)
 		{
-			newFrame = (newFrame + frames->size()) % frames->size();
+			newFrame = (newFrame + frameCount) % frameCount;
 		}
 		if (newFrame != frame)
 		{

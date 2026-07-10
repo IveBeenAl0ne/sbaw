@@ -92,7 +92,7 @@ void Biome::staticCtor()
     Biome::sky = (new TheEndBiome(9))->setColor(0x8080ff)->setName(L"Sky")->setNoRain()->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Sky, eMinecraftColour_Foliage_Sky, eMinecraftColour_Water_Sky,eMinecraftColour_Sky_Sky);
     Biome::frozenOcean = (new OceanBiome(10))->setColor(0x9090a0)->setName(L"Frozen Ocean")->setSnowCovered()->setDepthAndScale(-1, 0.5f)->setTemperatureAndDownfall(0, 0.5f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_FrozenOcean, eMinecraftColour_Foliage_FrozenOcean, eMinecraftColour_Water_FrozenOcean,eMinecraftColour_Sky_FrozenOcean);
     Biome::frozenRiver = (new RiverBiome(11))->setColor(0xa0a0ff)->setName(L"Frozen River")->setSnowCovered()->setDepthAndScale(-0.5f, 0)->setTemperatureAndDownfall(0, 0.5f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_FrozenRiver, eMinecraftColour_Foliage_FrozenRiver, eMinecraftColour_Water_FrozenRiver,eMinecraftColour_Sky_FrozenRiver);
-    Biome::iceFlats = (new IceBiome(12))->setColor(0xffffff)->setName(L"Ice Plains")->setSnowCovered()->setTemperatureAndDownfall(0, 0.5f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_IcePlains, eMinecraftColour_Foliage_IcePlains, eMinecraftColour_Water_IcePlains,eMinecraftColour_Sky_IcePlains);
+    Biome::iceFlats = (new IceBiome(12))->setColor(0xffffff)->setName(L"Ice Plains")->setSnowCovered()->setDepthAndScale(0, 0.5f)->setTemperatureAndDownfall(0, 0.5f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_IcePlains, eMinecraftColour_Foliage_IcePlains, eMinecraftColour_Water_IcePlains,eMinecraftColour_Sky_IcePlains);
     Biome::iceMountains = (new IceBiome(13))->setColor(0xa0a0a0)->setName(L"Ice Mountains")->setSnowCovered()->setDepthAndScale(0.3f, 1.3f)->setTemperatureAndDownfall(0, 0.5f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_IceMountains, eMinecraftColour_Foliage_IceMountains, eMinecraftColour_Water_IceMountains,eMinecraftColour_Sky_IceMountains);
     Biome::mushroomIsland = (new MushroomIslandBiome(14))->setColor(0xff00ff)->setName(L"Mushroom Island")->setTemperatureAndDownfall(0.9f, 1.0f)->setDepthAndScale(0.2f, 1.0f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_MushroomIsland, eMinecraftColour_Foliage_MushroomIsland, eMinecraftColour_Water_MushroomIsland,eMinecraftColour_Sky_MushroomIsland);
     Biome::mushroomIslandShore = (new MushroomIslandBiome(15))->setColor(0xa000ff)->setName(L"Mushroom Island Shore")->setTemperatureAndDownfall(0.9f, 1.0f)->setDepthAndScale(-1, 0.1f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_MushroomIslandShore, eMinecraftColour_Foliage_MushroomIslandShore, eMinecraftColour_Water_MushroomIslandShore,eMinecraftColour_Sky_MushroomIslandShore);
@@ -109,9 +109,10 @@ void Biome::staticCtor()
     Biome::smallerExtremeHills = (new ExtremeHillsBiome(20))->setColor(0x72789a)->setName(L"Extreme Hills Edge")->setDepthAndScale(0.2f, 0.8f)->setTemperatureAndDownfall(0.2f, 0.3f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_ExtremeHillsEdge, eMinecraftColour_Foliage_ExtremeHillsEdge, eMinecraftColour_Water_ExtremeHillsEdge,eMinecraftColour_Sky_ExtremeHillsEdge);
     Biome::jungle = (new JungleBiome(21, false))->setColor(0x537b09)->setName(L"Jungle")->setLeafColor(0x537b09)->setTemperatureAndDownfall(1.2f, 0.9f)->setDepthAndScale(0.2f, 0.4f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Jungle, eMinecraftColour_Foliage_Jungle, eMinecraftColour_Water_Jungle,eMinecraftColour_Sky_Jungle);
     Biome::jungleHills = (new JungleBiome(22, false))->setColor(0x2c4205)->setName(L"Jungle Hills")->setLeafColor(0x537b09)->setTemperatureAndDownfall(1.2f, 0.9f)->setDepthAndScale(1.8f, 0.5f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_JungleHills, eMinecraftColour_Foliage_JungleHills, eMinecraftColour_Water_JungleHills,eMinecraftColour_Sky_JungleHills);
-    Biome::jungleEdge = (new JungleBiome(23, true))->setColor(0x6458135)->setName(L"Jungle Edge")->setLeafColor(0x5470985)->setTemperatureAndDownfall(0.95F, 0.8F);
+    Biome::jungleEdge = (new JungleBiome(23, true))->setColor(0x628b17)->setName(L"Jungle Edge")->setLeafColor(0x537b09)->setTemperatureAndDownfall(0.95F, 0.8F)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Jungle, eMinecraftColour_Foliage_Jungle, eMinecraftColour_Water_JungleEdge,eMinecraftColour_Sky_JungleEdge);
     Biome::deepOcean= (new OceanBiome(24))->setName(L"Deep Ocean")->setDepthAndScale(-1.8,0.1f)->setColor(0x000070)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Ocean, eMinecraftColour_Foliage_Ocean, eMinecraftColour_Water_Ocean,eMinecraftColour_Sky_Ocean);;
     //public static final BiomeGenBase stoneBeach = (new BiomeGenStoneBeach(25)).setColor(10658436).setBiomeName("Stone Beach").setTemperatureRainfall(0.2F, 0.3F).setHeight(height_RockyWaters);
+    Biome::stoneBeach = (new StoneBeachBiome(25))->setColor(0xa2a284)->setName(L"Stone Beach")->setTemperatureAndDownfall(0.2f, 0.3f)->setDepthAndScale(0.1f, 0.8f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Beach, eMinecraftColour_Foliage_Beach, eMinecraftColour_Water_Beach, eMinecraftColour_Sky_Beach);
     Biome::coldBeach = (new BeachBiome(26))->setColor(0xFAF0C0)->setName(L"Cold Beach")->setTemperatureAndDownfall(0.05F, 0.3F)->setDepthAndScale(0.0F, 0.025F)->setSnowCovered()->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_IcePlains, eMinecraftColour_Foliage_IcePlains, eMinecraftColour_Water_IcePlains, eMinecraftColour_Sky_IcePlains);
     Biome::birchForest=(new ForestBiome(27, 2))->setColor(0x307444)->setName(L"Birch Forest")->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Forest, eMinecraftColour_Foliage_Birch, eMinecraftColour_Water_Forest, eMinecraftColour_Sky_Forest);
     Biome::birchForestHills=(new ForestBiome(28, 2))->setColor(0x1f5f32)->setName(L"Birch Forest Hills")->setDepthAndScale(0.45f, 0.3f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_ForestHills, eMinecraftColour_Foliage_Birch, eMinecraftColour_Water_Forest, eMinecraftColour_Sky_ForestHills);
@@ -137,7 +138,7 @@ void Biome::staticCtor()
     Biome::swamplandM = (new SwampBiome(134))->setColor(0x07F9B2)->setName(L"Swampland M")->setLeafColor(0x8BAF48)->setDepthAndScale(-0.1f, 0.3f)->setTemperatureAndDownfall(0.8f, 0.9f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Swampland, eMinecraftColour_Foliage_Swampland, eMinecraftColour_Water_Swampland,eMinecraftColour_Sky_Swampland);
     Biome::iceSpikes = (new IceBiome(140,true))->setColor(0xffffff)->setName(L"Ice Spikes")->setSnowCovered()->setTemperatureAndDownfall(0, 0.5f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_IcePlains, eMinecraftColour_Foliage_IcePlains, eMinecraftColour_Water_IcePlains,eMinecraftColour_Sky_IcePlains);
     Biome::jungleM = (new JungleBiome(149, false))->setColor(0x537b09)->setName(L"Jungle M")->setLeafColor(0x537b09)->setTemperatureAndDownfall(1.2f, 0.9f)->setDepthAndScale(0.2f, 0.4f)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Jungle, eMinecraftColour_Foliage_Jungle, eMinecraftColour_Water_Jungle,eMinecraftColour_Sky_Jungle);
-    Biome::jungleEdgeM = (new JungleBiome(151, true))->setColor(0x6458135)->setName(L"Jungle Edge M")->setLeafColor(0x5470985)->setTemperatureAndDownfall(0.95F, 0.8F);
+    Biome::jungleEdgeM = (new JungleBiome(151, true))->setColor(0x628b17)->setName(L"Jungle Edge M")->setLeafColor(0x537b09)->setTemperatureAndDownfall(0.95F, 0.8F)->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Jungle, eMinecraftColour_Foliage_Jungle, eMinecraftColour_Water_JungleEdge, eMinecraftColour_Sky_JungleEdge);
     Biome::birchForestM=(new ForestBiome::MutatedBirchForestBiome(155, biomes[27]))->setColor(0x47875a)->setName(L"Birch Forest M")->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_Forest, eMinecraftColour_Foliage_Birch, eMinecraftColour_Water_Forest, eMinecraftColour_Sky_Forest);
     Biome::birchForestHillsM=(new ForestBiome::MutatedBirchForestBiome(156, biomes[28]))->setColor(0x47875a)->setName(L"Birch Forest Hills M")->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_ForestHills, eMinecraftColour_Foliage_Birch, eMinecraftColour_Water_Forest, eMinecraftColour_Sky_ForestHills);
     Biome::roofedForestM=(new ForestBiome::MutatedForestBiome(157, biomes[29]))->setColor(0x177a35)->setName(L"Roofed Forest M")->setLeafFoliageWaterSkyColor(eMinecraftColour_Grass_RoofedForest, eMinecraftColour_Foliage_RoofedForest, eMinecraftColour_Water_Forest, eMinecraftColour_Sky_Forest);
@@ -410,7 +411,7 @@ void Biome::buildSurfaceAtDefault(Level *level, Random *random, byte* chunkBlock
 
         if (y <= 1 + random->nextInt(2))
         {
-            chunkBlocks[index] = static_cast<byte>(Tile::unbreakable_Id);
+            chunkBlocks[index] = static_cast<byte>(Tile::bedrock_Id);
             continue;
         }
 
@@ -444,7 +445,7 @@ void Biome::buildSurfaceAtDefault(Level *level, Random *random, byte* chunkBlock
                     if (this->getTemperature(x, y, z) < 0.15f)
                         topState = static_cast<byte>(Tile::ice_Id);
                     else
-                        topState = static_cast<byte>(Tile::calmWater_Id);
+                        topState = static_cast<byte>(Tile::water_Id);
                     topStateData = 0;
                 }
 
@@ -482,7 +483,7 @@ void Biome::buildSurfaceAtDefault(Level *level, Random *random, byte* chunkBlock
                     }
                     else    
                     {
-                        fillerState     = static_cast<byte>(Tile::sandStone_Id);
+                        fillerState     = static_cast<byte>(Tile::sandstone_Id);
                         fillerStateData = 0;
                     }
                 }
@@ -542,9 +543,9 @@ Feature *Biome::getFlowerFeature(Random *random, int x, int y, int z)
     
     if (random->nextInt(3) > 0)
     {
-        return new FlowerFeature(Tile::flower_Id); 
+        return new FlowerFeature(Tile::yellow_flower_Id); 
     }
-    return new FlowerFeature(Tile::rose_Id); 
+    return new FlowerFeature(Tile::red_flower_Id); 
 }
 
 int Biome::getRandomDoublePlantType(Random *random)

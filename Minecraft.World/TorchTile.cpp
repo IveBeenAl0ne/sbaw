@@ -6,6 +6,7 @@
 
 TorchTile::TorchTile(int id) : Tile(id, Material::decoration,isSolidRender())
 {
+	setLightBlock(0);
 	this->setTicking(true);
 }
 
@@ -77,7 +78,7 @@ bool TorchTile::isConnection(Level *level, int x, int y, int z)
 	int tile = level->getTile(x, y, z);
     Tile *below = (tile >= 0 && tile < Tile::TILE_NUM_COUNT) ? Tile::tiles[tile] : nullptr;
 	if (below != nullptr && below->getRenderShape() == Tile::SHAPE_FENCE
-		|| tile == Tile::glass_Id || tile == Tile::cobbleWall_Id)
+		|| tile == Tile::glass_Id || tile == Tile::cobblestone_wall_Id)
 	{
 		return true;
 	}

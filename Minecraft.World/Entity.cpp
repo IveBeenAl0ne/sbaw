@@ -356,6 +356,8 @@ void Entity::_init(bool useSmallId, Level *level)
 
 	// 4J Added
 	m_ignoreVerticalCollisions = false;
+	m_clearFallDamageThisTick = false;
+	m_ignoreFallDamageUntilGround = false;
 	m_uiAnimOverrideBitmask = 0L;
 	m_ignorePortal = false;
 }
@@ -372,7 +374,11 @@ Entity::Entity(Level *level, bool useSmallId)	// 4J - added useSmallId parameter
 
 	if (level != nullptr)
 	{
-		dimension = level->dimension->id;
+		auto dimensionPtr = level->dimension;
+		if (dimensionPtr != nullptr)
+		{
+			dimension = dimensionPtr->id;
+		}
 	}
 
 	if( entityData )
@@ -892,7 +898,20 @@ void Entity::move(double xa, double ya, double za, bool noEntityCubes)   // 4J -
 	checkFallDamage(ya, onGround);
 
 	if (xaOrg != xa) xd = 0;
-	if (yaOrg != ya) yd = 0;
+	if (yaOrg != ya) {
+		// Fireblade - updated logic here cause previous check completely broke head hitter logic
+		bool isSlimeBlock = false;
+		if (level != nullptr) {
+			int blockBelowX = Mth::floor(x);
+			int blockBelowY = Mth::floor(y - 0.1f - heightOffset);
+			int blockBelowZ = Mth::floor(z);
+			int blockId = level->getTile(blockBelowX, blockBelowY, blockBelowZ);
+			isSlimeBlock = (blockId == Tile::slimeBlock->id);
+		}
+		if (!isSlimeBlock) {
+			yd = 0;
+		}
+	}
 	if (zaOrg != za) zd = 0;
 
 	double xm = x - xo;
@@ -932,7 +951,9 @@ void Entity::move(double xa, double ya, double za, bool noEntityCubes)   // 4J -
 				playSound(eSoundType_LIQUID_SWIM, speed, 1 + (random->nextFloat() - random->nextFloat()) * 0.4f);
 			}
 			playStepSound(xt, yt, zt, t);
-			Tile::tiles[t]->stepOn(level, xt, yt, zt, self);
+			Tile *tile = Tile::tiles[t];
+			if (tile == nullptr && t != 0) return; // tu31 tutorial world fix
+			tile->stepOn(level, xt, yt, zt, self);
 		}
 	}
 
@@ -981,9 +1002,10 @@ void Entity::checkInsideTiles()
 				for (int z = z0; z <= z1; z++)
 				{
 					int t = level->getTile(x, y, z);
-					if (t > 0)
+					Tile *tile = Tile::tiles[t];
+					if (t > 0 && tile != nullptr) // tu31 tutorial world fix
 					{
-						Tile::tiles[t]->entityInside(level, x, y, z, self);
+						tile->entityInside(level, x, y, z, self);
 					}
 				}
 	}
@@ -992,6 +1014,8 @@ void Entity::checkInsideTiles()
 
 void Entity::playStepSound(int xt, int yt, int zt, int t)
 {
+	Tile *tile = Tile::tiles[t];
+	if (tile == nullptr && t != 0) return; // tu31 tutorial world fix
 	const Tile::SoundType *soundType = Tile::tiles[t]->soundType;
 	MemSect(31);
 
@@ -1006,7 +1030,7 @@ void Entity::playStepSound(int xt, int yt, int zt, int t)
 		}
 
 	}
-	if (level->getTile(xt, yt + 1, zt) == Tile::topSnow_Id)
+	if (level->getTile(xt, yt + 1, zt) == Tile::snow_layer_Id)
 	{
 		soundType = Tile::topSnow->soundType;
 		playSound(soundType->getStepSound(), soundType->getVolume() * 0.15f, soundType->getPitch());
@@ -1031,6 +1055,24 @@ bool Entity::makeStepSound()
 
 void Entity::checkFallDamage(double ya, bool onGround)
 {
+	if (m_clearFallDamageThisTick)
+	{
+		m_clearFallDamageThisTick = false;
+		fallDistance = 0;
+		return;
+	}
+	if (m_ignoreFallDamageUntilGround)
+	{
+		if (ya < 0)
+		{
+			m_ignoreFallDamageUntilGround = false;
+			fallDistance = 0;
+		}
+		else
+		{
+			return;
+		}
+	}
 	if (onGround)
 	{
 		if (fallDistance > 0)
@@ -1061,6 +1103,13 @@ void Entity::burn(int dmg)
 bool Entity::isFireImmune()
 {
 	return fireImmune;
+}
+
+void Entity::clearFallDamageQueue()
+{
+	fallDistance = 0.0f;
+	m_clearFallDamageThisTick = true;
+	m_ignoreFallDamageUntilGround = true;
 }
 
 void Entity::causeFallDamage(float distance)
@@ -1122,7 +1171,9 @@ bool Entity::isUnderLiquid(Material *material)
 	int yt = Mth::floor(yp);	// 4J - this used to be a nested pair of floors for some reason
 	int zt = Mth::floor(z);
 	int t = level->getTile(xt, yt, zt);
-	if (t != 0 && Tile::tiles[t]->material == material) {
+	Tile *tile = Tile::tiles[t];
+	if (tile == nullptr) return false; // tu31 tutorial world fix
+	if (t != 0 && tile->material == material) {
 		float hh = LiquidTile::getHeight(level->getData(xt, yt, zt)) - 1 / 9.0f;
 		float h = yt + 1 - hh;
 		return yp < h;
@@ -1161,6 +1212,8 @@ void Entity::moveRelative(float xa, float za, float speed)
 // 4J - change brought forward from 1.8.2
 int Entity::getLightColor(float a)
 {
+	if (level == nullptr) return 0;
+
 	int xTile = Mth::floor(x);
 	int zTile = Mth::floor(z);
 
@@ -1176,6 +1229,8 @@ int Entity::getLightColor(float a)
 // 4J - changes brought forward from 1.8.2
 float Entity::getBrightness(float a)
 {
+	if (level == nullptr) return 0.0f;
+
 	int xTile = Mth::floor(x);
 	int zTile = Mth::floor(z);
 	if (level->hasChunkAt(xTile, 0, zTile))

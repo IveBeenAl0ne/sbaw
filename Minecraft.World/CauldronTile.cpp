@@ -14,9 +14,36 @@ const wstring CauldronTile::TEXTURE_BOTTOM = L"cauldron_bottom";
 
 CauldronTile::CauldronTile(int id) : Tile(id, Material::metal, isSolidRender())
 {
+	setLightBlock(0);
 	iconInner = nullptr;
 	iconTop = nullptr;
 	iconBottom = nullptr;
+}
+
+void CauldronTile::createBlockStateDefinition()
+{
+	if (!m_blockStateDefinition)
+		m_blockStateDefinition = new BlockStateDefinition(this);
+}
+
+int CauldronTile::defaultBlockState()
+{
+	return 0;
+}
+
+int CauldronTile::convertBlockStateToLegacyData(BlockState *state)
+{
+	return state ? (state->value & 0x3) : 0;
+}
+
+Tile::BlockState CauldronTile::getBlockState(int data)
+{
+	return Tile::BlockState(data & 0x3);
+}
+
+Tile::BlockState CauldronTile::getBlockState(LevelSource *level, int x, int y, int z)
+{
+	return Tile::BlockState(level->getData(x, y, z) & 0x3);
 }
 
 Icon *CauldronTile::getTexture(int face, int data)
@@ -123,13 +150,13 @@ bool CauldronTile::use(Level *level, int x, int y, int z, shared_ptr<Player> pla
 	int currentData = level->getData(x, y, z);
 	int fillLevel = getFillLevel(currentData);
 
-	if (item->id == Item::bucket_water_Id)
+	if (item->id == Item::water_bucket_Id)
 	{
 		if (fillLevel < 3)
 		{
 			if (!player->abilities.instabuild)
 			{
-				player->inventory->setItem(player->inventory->selected, std::make_shared<ItemInstance>(Item::bucket_empty));
+				player->inventory->setItem(player->inventory->selected, std::make_shared<ItemInstance>(Item::bucket));
 			}
 
 			level->setData(x, y, z, 3, Tile::UPDATE_CLIENTS);
@@ -137,7 +164,7 @@ bool CauldronTile::use(Level *level, int x, int y, int z, shared_ptr<Player> pla
 		}
 		return true;
 	}
-	else if (item->id == Item::glassBottle_Id)
+	else if (item->id == Item::glass_bottle_Id)
 	{
 		if (fillLevel > 0)
 		{

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
+cmake_policy(SET CMP0057 NEW)
 
 project(LCE-Revelations LANGUAGES C CXX RC ASM_MASM)
 set(CMAKE_CXX_STANDARD 17)
@@ -159,6 +160,41 @@ if(PLATFORM_NAME STREQUAL "Windows64") # Server is only supported on Windows for
   add_subdirectory(Minecraft.Server)
 endif()
 
+if(TARGET Minecraft.Client)
+  add_custom_target(AssetTitleUpdateColourOverride ALL
+    COMMAND ${CMAKE_COMMAND} -E remove "$<TARGET_FILE_DIR:Minecraft.Client>/Common/res/TitleUpdate/res/colours.col"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_SOURCE_DIR}/Minecraft.Client/Common/res/TitleUpdate/res/colours.xml"
+      "$<TARGET_FILE_DIR:Minecraft.Client>/Common/res/TitleUpdate/res/colours.xml"
+    VERBATIM
+  )
+  add_dependencies(AssetTitleUpdateColourOverride AssetFolderCopy_Minecraft.Client)
+  add_dependencies(Minecraft.Client AssetTitleUpdateColourOverride)
+  set_property(TARGET AssetTitleUpdateColourOverride PROPERTY FOLDER "Build")
+endif()
+
+if(TARGET Minecraft.Server)
+  add_custom_target(AssetTitleUpdateColourOverride_Minecraft.Server ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_SOURCE_DIR}/Minecraft.Client/Common/res/TitleUpdate/res/colours.xml"
+      "$<TARGET_FILE_DIR:Minecraft.Server>/Common/res/TitleUpdate/res/colours.xml"
+    VERBATIM
+  )
+  add_dependencies(Minecraft.Server AssetTitleUpdateColourOverride_Minecraft.Server)
+  set_property(TARGET AssetTitleUpdateColourOverride_Minecraft.Server PROPERTY FOLDER "Build")
+endif()
+
+if(TARGET Minecraft.Server.FourKit)
+  add_custom_target(AssetTitleUpdateColourOverride_Minecraft.Server.FourKit ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_SOURCE_DIR}/Minecraft.Client/Common/res/TitleUpdate/res/colours.xml"
+      "$<TARGET_FILE_DIR:Minecraft.Server.FourKit>/Common/res/TitleUpdate/res/colours.xml"
+    VERBATIM
+  )
+  add_dependencies(Minecraft.Server.FourKit AssetTitleUpdateColourOverride_Minecraft.Server.FourKit)
+  set_property(TARGET AssetTitleUpdateColourOverride_Minecraft.Server.FourKit PROPERTY FOLDER "Build")
+endif()
+
 if(TARGET GenerateStringsHeader_Minecraft.Client)
   add_dependencies(Minecraft.World GenerateStringsHeader_Minecraft.Client)
 endif()
@@ -234,6 +270,8 @@ if(TARGET Minecraft.Server)
   add_dependencies(Minecraft.Server GenerateStringIdLookup)
 endif()
 
+# item.h takes priority as some tile.h blocks are not meant to be accessed
+# for example: the wheat 'block' (stage 1 wheat crop) is NOT supposed to override the normal wheat item
 set(_item_map_inputs
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.World/Item.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.World/Tile.h"
@@ -265,40 +303,6 @@ add_dependencies(Minecraft.World GenerateItemNameMap)
 if(PLATFORM_NAME STREQUAL "Windows64")
   add_dependencies(Minecraft.Server GenerateItemNameMap)
 endif()
-
-#neo: added - SDK generation
-set(SDK_INPUT_DIRS
-  "${CMAKE_SOURCE_DIR}/Minecraft.World"
-  "${CMAKE_SOURCE_DIR}/Minecraft.Client"
-  "${CMAKE_SOURCE_DIR}/include"
-  "${CMAKE_SOURCE_DIR}/Minecraft.Client/${PLATFORM_NAME}/4JLibs"
-)
-
-set(SDK_OUTPUT "${CMAKE_BINARY_DIR}/Minecraft.Client/$<CONFIG>/sdk.h")
-add_custom_command(
-  OUTPUT "${SDK_OUTPUT}"
-  COMMAND ${CMAKE_COMMAND}
-    "-DINPUT_DIRS=${SDK_INPUT_DIRS}"
-    "-DOUTPUT_FILE=${SDK_OUTPUT}"
-    -P "${CMAKE_SOURCE_DIR}/cmake/GenerateSdk.cmake"
-  DEPENDS
-    "${CMAKE_SOURCE_DIR}/cmake/GenerateSdk.cmake"
-  COMMENT "Generating sdk.h..."
-  VERBATIM
-)
-
-add_custom_target(GenerateSdk ALL
-  DEPENDS "${SDK_OUTPUT}"
-)
-
-set_property(TARGET GenerateSdk PROPERTY FOLDER "Build")
-target_include_directories(Minecraft.Client PRIVATE
-  "${CMAKE_CURRENT_BINARY_DIR}/generated"
-)
-
-target_include_directories(Minecraft.Server PRIVATE
-  "${CMAKE_CURRENT_BINARY_DIR}/generated"
-)
 
 # ---
 # Project organisation

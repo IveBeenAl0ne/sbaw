@@ -765,7 +765,7 @@ UIScene_LoadCreateJoinMenu::UIScene_LoadCreateJoinMenu(int iPad, void *initData,
 
     m_controlSavesTimer.setVisible( true );
 
-    m_controlNewGameTimer.setVisible( true );
+    m_controlNewGameTimer.setVisible( false );
 
     m_controlJoinTimer.setVisible( false );
 
@@ -2256,23 +2256,7 @@ void UIScene_LoadCreateJoinMenu::tick()
 
 
 
-                    HANDLE hFile = CreateFileW(filePath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
-
-                    DWORD fileSize = 0;
-
-
-
-                    if (hFile != INVALID_HANDLE_VALUE) {
-
-                        fileSize = GetFileSize(hFile, nullptr);
-
-                        if (fileSize < 12 || fileSize == INVALID_FILE_SIZE) fileSize = 0;
-
-                        CloseHandle(hFile);
-
-                    }
-
-                    m_spaceIndicatorSaves.addSave(fileSize);
+                    m_spaceIndicatorSaves.addSave(m_pSaveDetails->SaveInfoA[origIdx].metaData.dataSize);
 
 #elif defined(__ORBIS__)
 
@@ -3143,11 +3127,12 @@ void UIScene_LoadCreateJoinMenu::handleInput(int iPad, int key, bool repeat, boo
 
             if(StorageManager.EnoughSpaceForAMinSaveGame() && !StorageManager.GetSaveDisabled())
             {
-                UINT uiIDA[3];
+                UINT uiIDA[4];
                 uiIDA[0]=IDS_CONFIRM_CANCEL;
                 uiIDA[1]=IDS_TITLE_RENAMESAVE;
                 uiIDA[2]=IDS_TOOLTIPS_DELETESAVE;
-                ui.RequestAlertMessage(IDS_TOOLTIPS_SAVEOPTIONS, IDS_TEXT_SAVEOPTIONS, uiIDA, 3, iPad,&UIScene_LoadCreateJoinMenu::SaveOptionsDialogReturned,this);
+                uiIDA[3]=IDS_COPYSAVE;
+                ui.RequestAlertMessage(IDS_TOOLTIPS_SAVEOPTIONS, IDS_TEXT_SAVEOPTIONS, uiIDA, 4, iPad,&UIScene_LoadCreateJoinMenu::SaveOptionsDialogReturned,this);
             }
             else
             {
@@ -4675,7 +4660,7 @@ void UIScene_LoadCreateJoinMenu::RebuildJoinGamesListVisual(bool syncFocus)
         m_buttonListGames.getItemCount() - 1,
         L"lceheadwer.png",
         L"lceheadwer");
-
+    RefreshServerListHtmlPatch();
 #endif
 
     if (m_currentSessions == nullptr || m_currentSessions->empty())
@@ -4756,7 +4741,10 @@ void UIScene_LoadCreateJoinMenu::RebuildJoinGamesListVisual(bool syncFocus)
             }
         }
 
-        m_buttonListGames.addItem(sessionInfo->displayLabel, modeIconName, tpIconName);
+        wstring htmlLabel = app.EscapeHTMLString(sessionInfo->displayLabel);
+        htmlLabel = app.FormatColoredString(htmlLabel);
+
+        m_buttonListGames.addItem(htmlLabel, modeIconName, tpIconName);
 
         if (memcmp(&selectedSessionId, &sessionInfo->sessionId, sizeof(SessionID)) == 0)
 
@@ -4777,6 +4765,8 @@ void UIScene_LoadCreateJoinMenu::RebuildJoinGamesListVisual(bool syncFocus)
         ++sessionIndex;
 
     }
+
+    RefreshServerListHtmlPatch();
 
     if(syncFocus)
         m_buttonListGames.updateChildFocus(m_buttonListGames.getCurrentSelection());
@@ -5825,30 +5815,6 @@ int UIScene_LoadCreateJoinMenu::SaveOptionsDialogReturned(void *pParam,int iPad,
 
 
 
-#ifdef SONY_REMOTE_STORAGE_UPLOAD
-
-    case C4JStorage::EMessage_ResultFourthOption: // upload to cloud
-
-        {
-
-			UINT uiIDA[2];
-
-			uiIDA[0]=IDS_CONFIRM_OK;
-
-			uiIDA[1]=IDS_CONFIRM_CANCEL;
-
-
-
-			ui.RequestAlertMessage(IDS_TOOLTIPS_SAVETRANSFER_UPLOAD, IDS_SAVE_TRANSFER_TEXT, uiIDA, 2, iPad,&UIScene_LoadCreateJoinMenu::SaveTransferDialogReturned,pClass);
-
-        }
-
-        break;
-
-#endif // SONY_REMOTE_STORAGE_UPLOAD
-
-#if defined _XBOX_ONE  || defined __ORBIS__
-
     case C4JStorage::EMessage_ResultFourthOption: // copy save
 
         {
@@ -5867,7 +5833,6 @@ int UIScene_LoadCreateJoinMenu::SaveOptionsDialogReturned(void *pParam,int iPad,
 
         break;
 
-#endif
 
 
 
@@ -8691,7 +8656,7 @@ void UIScene_LoadCreateJoinMenu::HandleDLCLicenseChange()
 
 
 
-#if defined _XBOX_ONE || defined __ORBIS__
+#if defined _XBOX_ONE || defined __ORBIS__ || defined(_WINDOWS64)
 
 int UIScene_LoadCreateJoinMenu::CopySaveDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result)
 
@@ -8875,53 +8840,9 @@ int UIScene_LoadCreateJoinMenu::CopySaveDataReturned(LPVOID lpParam, bool succes
 
 		{
 
-#ifdef __ORBIS__
-
-			UINT uiIDA[1];
-
-			// you cancelled the save on exit after choosing exit and save? You go back to the Exit choices then.
-
-			uiIDA[0]=IDS_OK;
-
-
-
-			if( stat == C4JStorage::ESaveGame_CopyCompleteFailLocalStorage )
-
-			{
-
-				ui.LeaveCallbackIdCriticalSection();
-
-				ui.RequestErrorMessage(IDS_COPYSAVE_FAILED_TITLE, IDS_COPYSAVE_FAILED_LOCAL, uiIDA, 1, ProfileManager.GetPrimaryPad(), CopySaveErrorDialogFinishedCallback, lpParam);
-
-			}
-
-			else if( stat == C4JStorage::ESaveGame_CopyCompleteFailQuota )
-
-			{
-
-				ui.LeaveCallbackIdCriticalSection();
-
-				ui.RequestErrorMessage(IDS_COPYSAVE_FAILED_TITLE, IDS_COPYSAVE_FAILED_QUOTA, uiIDA, 1, ProfileManager.GetPrimaryPad(), CopySaveErrorDialogFinishedCallback, lpParam);
-
-			}
-
-			else
-
-			{
-
-				pClass->m_bCopying = false;
-
-				ui.LeaveCallbackIdCriticalSection();
-
-			}
-
-#else
-
 			pClass->m_bCopying = false;
 
 			ui.LeaveCallbackIdCriticalSection();
-
-#endif
 
 		}
 
@@ -9206,6 +9127,21 @@ int UIScene_LoadCreateJoinMenu::AddServerKeyboardCallback(LPVOID lpParam, bool b
 
     return 0;
 
+}
+
+void UIScene_LoadCreateJoinMenu::RefreshServerListHtmlPatch() {
+    S32 arrayItems = 0;
+    IggyValueGetArrayLengthRS(m_buttonListGames.getIggyValuePath(), 0, "m_aItems", &arrayItems);
+
+    IggyValuePath listPath;
+    IggyValuePathMakeNameRef(&listPath, m_buttonListGames.getIggyValuePath(), "m_aItems");
+
+    for (int i = 0; i < arrayItems; i++) {
+        IggyValuePath listItem;
+        IggyValuePathMakeArrayRef(&listItem, &listPath, i);
+
+        IggyValueSetBooleanRS(&listItem, 0, "m_bUseHtmlText", true);
+    }
 }
 
 

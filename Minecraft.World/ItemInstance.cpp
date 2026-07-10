@@ -13,6 +13,109 @@
 #include "Item.h"
 #include "ItemInstance.h"
 #include "HtmlString.h"
+#include "../Minecraft.Client/Common/Consoles_App.h"
+#include "ItemNameMap.h"
+#include <cwctype>
+#include <string>
+
+namespace
+{
+wstring NormalizeItemNameId(const wstring &rawName)
+{
+	if (rawName.empty())
+	{
+		return rawName;
+	}
+
+	wstring normalized = rawName;
+	for (size_t i = 0; i < normalized.size(); ++i)
+	{
+		normalized[i] = static_cast<wchar_t>(towlower(normalized[i]));
+	}
+
+	size_t namespaceSep = normalized.find(L':');
+	if (namespaceSep != wstring::npos && namespaceSep + 1 < normalized.size())
+	{
+		normalized = normalized.substr(namespaceSep + 1);
+	}
+
+	return normalized;
+}
+
+wstring ToSnakeCase(const wstring &value)
+{
+	if (value.empty())
+	{
+		return value;
+	}
+
+	wstring out;
+	out.reserve(value.size() * 2);
+	for (size_t i = 0; i < value.size(); ++i)
+	{
+		const wchar_t c = value[i];
+		if (c >= L'A' && c <= L'Z')
+		{
+			if (i > 0)
+			{
+				out.push_back(L'_');
+			}
+			out.push_back(static_cast<wchar_t>(towlower(c)));
+		}
+		else
+		{
+			out.push_back(c);
+		}
+	}
+
+	return NormalizeItemNameId(out);
+}
+
+int ResolveLegacyItemIdFromStringName(const wstring &rawName)
+{
+	const wstring name = NormalizeItemNameId(rawName);
+	int id = GetItemIdByName(name);
+	if (id >= 0)
+	{
+		return id;
+	}
+
+	const wstring snakeName = ToSnakeCase(rawName);
+	return GetItemIdByName(snakeName);
+}
+
+int ParseNumericItemId(const wstring &idString, bool &parsed)
+{
+	parsed = false;
+	if (idString.empty())
+	{
+		return 0;
+	}
+
+	try
+	{
+		size_t parseEnd = 0;
+		long parsedValue = std::stol(idString, &parseEnd, 10);
+		if (parseEnd == idString.size())
+		{
+			parsed = true;
+			return static_cast<int>(parsedValue);
+		}
+	}
+	catch (...)
+	{
+	}
+
+	return 0;
+}
+
+int ByteSwapShortToInt(short value)
+{
+	unsigned short raw = static_cast<unsigned short>(value);
+	unsigned short swapped = static_cast<unsigned short>((raw >> 8) | (raw << 8));
+	return static_cast<int>(swapped);
+}
+}
 
 const wstring ItemInstance::ATTRIBUTE_MODIFIER_FORMAT = L"#.###";
 
@@ -79,9 +182,22 @@ ItemInstance::ItemInstance(int id, int count, int damage)
 
 shared_ptr<ItemInstance> ItemInstance::fromTag(CompoundTag *itemTag)
 {
+	if (!itemTag)
+	{
+		app.DebugPrintf("[ItemInstance] NULL itemTag\n");
+		return nullptr;
+	}
+
 	shared_ptr<ItemInstance> itemInstance = shared_ptr<ItemInstance>(new ItemInstance());
 	itemInstance->load(itemTag);
-	return itemInstance->getItem() != nullptr ? itemInstance : nullptr;
+
+	Item *item = itemInstance->getItem();
+	if (item == nullptr && itemInstance->id != 0) // air is not relevant
+	{
+		app.DebugPrintf("[ItemInstance] Missing item while loading: id=%d count=%d damage=%d\n", itemInstance->id, itemInstance->count, itemInstance->auxValue);
+	}
+
+	return item != nullptr ? itemInstance : nullptr;
 }
 
 ItemInstance::~ItemInstance()
@@ -105,6 +221,11 @@ shared_ptr<ItemInstance> ItemInstance::remove(int count)
 
 Item *ItemInstance::getItem() const
 {
+	if (id < 0 || id >= Item::items.length)
+	{
+		return nullptr;
+	}
+
 	return Item::items[id];
 }
 
@@ -155,7 +276,62 @@ CompoundTag *ItemInstance::save(CompoundTag *compoundTag)
 void ItemInstance::load(CompoundTag *compoundTag)
 {
 	popTime = 0;
-	id = compoundTag->getShort(L"id");
+	id = 0;
+	Tag *idTag = compoundTag->get(L"id");
+	if (idTag != nullptr)
+	{
+		switch (idTag->getId())
+		{
+		case Tag::TAG_Int:
+			id = compoundTag->getInt(L"id");
+			break;
+		case Tag::TAG_Short:
+		{
+			short rawId = compoundTag->getShort(L"id");
+			id = rawId;
+
+			if ((id < 0 || id >= Item::items.length || Item::items[id] == nullptr) && rawId != 0)
+			{
+				int swappedId = ByteSwapShortToInt(rawId);
+				if (swappedId >= 0 && swappedId < Item::items.length && Item::items[swappedId] != nullptr)
+				{
+					app.DebugPrintf("[ItemInstance] Recovered byte-swapped short item id: raw=%d swapped=%d\n", id, swappedId);
+					id = swappedId;
+				}
+			}
+			break;
+		}
+		case Tag::TAG_String:
+		{
+			wstring idString = compoundTag->getString(L"id");
+
+			int mappedId = ResolveLegacyItemIdFromStringName(idString);
+			if (mappedId >= 0)
+			{
+				id = mappedId;
+				break;
+			}
+
+			bool parsedNumeric = false;
+			id = ParseNumericItemId(idString, parsedNumeric);
+			if (!parsedNumeric)
+			{
+				app.DebugPrintf("[ItemInstance] Unsupported string item id '%ls' (expected numeric legacy id)\n", idString.c_str());
+				id = 0;
+			}
+			break;
+		}
+		default:
+			app.DebugPrintf("[ItemInstance] Unsupported item id tag type %d\n", idTag->getId());
+			id = 0;
+			break;
+		}
+	}
+//	else
+//	{
+//		app.DebugPrintf("[ItemInstance] Missing item id tag\n");
+//	}
+
 	count = compoundTag->getByte(L"Count");
 	auxValue = compoundTag->getShort(L"Damage");
 	if (auxValue < 0)
@@ -560,9 +736,13 @@ vector<HtmlString> *ItemInstance::getHoverText(shared_ptr<Player> player, bool a
 {
 	vector<HtmlString> *lines = new vector<HtmlString>();
 	Item *item = Item::items[id];
-	HtmlString title = HtmlString(getHoverName());
 
-	if (hasCustomHoverName())
+	wstring hoverName = getHoverName();
+	HtmlString title = HtmlString(L"");
+	title.text = app.EscapeHTMLString(hoverName);
+	title.text = app.FormatColoredString(title.text);
+
+	if (hasCustomHoverName() && !(hoverName[0] == L'\u00A7' && hoverName[1] == L'r'))
 	{
 		title.italics = true;
 	}
@@ -615,19 +795,12 @@ vector<HtmlString> *ItemInstance::getHoverText(shared_ptr<Player> player, bool a
 		{
 			CompoundTag *display = tag->getCompound(L"display");
 
-			//if (display->contains(L"color"))
-			//{
-			//	if (advanced)
-			//	{
-			//		wchar_t text [256];
-			//		swprintf(text, 256, L"Color: LOCALISE #%08X", display->getInt(L"color"));
-			//		lines->push_back(HtmlString(text));
-			//	}
-			//	else
-			//	{
-			//		lines->push_back(HtmlString(L"Dyed LOCALISE", eMinecraftColour_NOT_SET, true));
-			//	}
-			//}
+			if (display->contains(L"color") && advanced)
+			{
+				wchar_t text[256];
+				swprintf(text, 256, L"Color: LOCALISE #%08X", display->getInt(L"color"));
+				lines->push_back(HtmlString(text));
+			}
 
 			if (display->contains(L"Lore"))
 			{
@@ -637,7 +810,10 @@ vector<HtmlString> *ItemInstance::getHoverText(shared_ptr<Player> player, bool a
 					for (int i = 0; i < lore->size(); i++)
 					{
 						//lines->push_back(ChatFormatting::DARK_PURPLE + "" + ChatFormatting::ITALIC + lore->get(i)->data);
-						lines->push_back(lore->get(i)->data);
+						HtmlString loreString = HtmlString(L"");
+						loreString.text = app.EscapeHTMLString(lore->get(i)->data);
+						loreString.text = app.EscapeHTMLString(loreString.text);
+						lines->push_back(loreString);
 					}
 				}
 			}

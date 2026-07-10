@@ -35,6 +35,107 @@ wstring AbstractTexturePack::trim(wstring line)
 	return line;
 }
 
+namespace {
+	class XmlColourTableCallback : public ATG::ISAXCallback
+	{
+	public:
+		HRESULT StartDocument() override { return S_OK; }
+		HRESULT EndDocument() override { return S_OK; }
+
+		HRESULT ElementBegin(CONST WCHAR *strName, UINT NameLen, CONST ATG::XMLAttribute *pAttributes, UINT NumAttributes) override
+		{
+			const wstring elementName(strName, NameLen);
+			if (!equalsIgnoreCase(elementName, L"colour"))
+			{
+				return S_OK;
+			}
+
+			wstring colourName;
+			wstring colourValueText;
+			for(UINT i = 0; i < NumAttributes; ++i)
+			{
+				const ATG::XMLAttribute &attribute = pAttributes[i];
+				if (attribute.strValue == nullptr)
+				{
+					continue;
+				}
+
+				const wstring attributeName(attribute.strName, attribute.NameLen);
+				if (equalsIgnoreCase(attributeName, L"name"))
+				{
+					colourName.assign(attribute.strValue, attribute.ValueLen);
+				}
+				else if (equalsIgnoreCase(attributeName, L"value"))
+				{
+					colourValueText.assign(attribute.strValue, attribute.ValueLen);
+				}
+			}
+
+			if (!colourName.empty() && !colourValueText.empty())
+			{
+				if (colourValueText[0] == L'#')
+				{
+					colourValueText = colourValueText.substr(1);
+				}
+				int colourValue = _fromHEXString<int>(colourValueText);
+				m_colours.emplace_back(colourName, colourValue);
+			}
+
+			return S_OK;
+		}
+
+		HRESULT ElementContent(CONST WCHAR *, UINT, BOOL) override { return S_OK; }
+		HRESULT ElementEnd(CONST WCHAR *, UINT) override { return S_OK; }
+		HRESULT CDATABegin() override { return S_OK; }
+		HRESULT CDATAData(CONST WCHAR *, UINT, BOOL) override { return S_OK; }
+		HRESULT CDATAEnd() override { return S_OK; }
+
+		VOID Error(HRESULT hError, CONST CHAR *strMessage) override
+		{
+			app.DebugPrintf("colours.xml parse error (%08X): %s\n", hError, strMessage ? strMessage : "(unknown)");
+		}
+
+		vector<pair<wstring,int>> m_colours;
+	};
+
+	static bool loadColourTableFromXmlFile(File xmlFile, ColourTable *&outTable)
+	{
+		FileInputStream fis(xmlFile);
+		DWORD dwLength = xmlFile.length();
+		if(dwLength == 0) return false;
+
+		byteArray textData(static_cast<unsigned int>(dwLength));
+		fis.read(textData, 0, dwLength);
+		fis.close();
+
+		ATG::XMLParser parser;
+		XmlColourTableCallback callback;
+		parser.RegisterSAXCallbackInterface(&callback);
+
+		HRESULT hr = parser.ParseXMLBuffer(reinterpret_cast<const CHAR *>(textData.data), static_cast<UINT>(dwLength));
+		delete [] textData.data;
+
+		if (FAILED(hr) || callback.m_colours.empty())
+			return false;
+			
+		ByteArrayOutputStream baos;
+		DataOutputStream dos(&baos);
+		dos.writeInt(1);
+		dos.writeInt(static_cast<int>(callback.m_colours.size()));
+		for (const auto &entry : callback.m_colours)
+		{
+			dos.writeUTF(entry.first);
+			dos.writeInt(entry.second);
+		}
+
+		byteArray binaryData = baos.toByteArray();
+		outTable = new ColourTable(binaryData.data, binaryData.length);
+		delete [] binaryData.data;
+
+		return true;
+	}
+}
+
 void AbstractTexturePack::loadIcon()
 {
 #ifdef _XBOX
@@ -223,7 +324,7 @@ wstring AbstractTexturePack::getAnimationString(const wstring &textureName, cons
 BufferedImage *AbstractTexturePack::getImageResource(const wstring& File, bool filenameHasExtension /*= false*/, bool bTitleUpdateTexture /*=false*/, const wstring &drive /*=L""*/)
 {
 	const char *pchTexture=wstringtofilename(File);
-	app.DebugPrintf("AbstractTexturePack::getImageResource - %s, drive is %s\n",pchTexture, wstringtofilename(drive));
+	// app.DebugPrintf("AbstractTexturePack::getImageResource - %s, drive is %s\n",pchTexture, wstringtofilename(drive));
 
 	return new BufferedImage(TexturePack::getResource(L"/" + File),filenameHasExtension,bTitleUpdateTexture,drive);
 }
@@ -261,11 +362,11 @@ void AbstractTexturePack::loadDefaultColourTable()
 #ifdef __PS3__
 	// need to check if it's a BD build, so pass in the name
 	File coloursFile(AbstractTexturePack::getPath(true,app.GetBootedFromDiscPatch()?"colours.col":nullptr).append(L"res/colours.col"));
-
+	File coloursXmlFile(AbstractTexturePack::getPath(true,app.GetBootedFromDiscPatch()?"colours.xml":nullptr).append(L"res/colours.xml"));
 #else
 	File coloursFile(AbstractTexturePack::getPath(true).append(L"res/colours.col"));
+	File coloursXmlFile(AbstractTexturePack::getPath(true).append(L"res/colours.xml"));
 #endif
-
 
 	if(coloursFile.exists())
 	{
@@ -279,6 +380,16 @@ void AbstractTexturePack::loadDefaultColourTable()
 		m_colourTable = new ColourTable(data.data, dwLength);
 
 		delete [] data.data;
+	}
+	else if(coloursXmlFile.exists())
+	{
+		app.DebugPrintf("Default colours table not found, loading colours.xml fallback\n");
+		if(m_colourTable != nullptr) delete m_colourTable;
+		if(!loadColourTableFromXmlFile(coloursXmlFile, m_colourTable))
+		{
+			app.DebugPrintf("Failed to load colours.xml as a fallback\n");
+			app.FatalLoadError();
+		}
 	}
 	else
 	{

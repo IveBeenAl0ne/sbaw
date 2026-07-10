@@ -574,7 +574,20 @@ void ClientConnection::handleAddEntity(shared_ptr<AddEntityPacket> packet)
 			int iz = (int) z;
 		app.DebugPrintf("ClientConnection ITEM_FRAME xyz %d,%d,%d\n",ix,iy,iz);
 		}
-		e = std::make_shared<ItemFrame>(level, (int)x, (int)y, (int)z, packet->data);
+		{
+			int dir = packet->data & 0xFF;
+			bool placedByPlayer = (packet->data & 0x100) != 0;
+			e = std::make_shared<ItemFrame>(level, (int)x, (int)y, (int)z, dir);
+			shared_ptr<ItemFrame> frame = dynamic_pointer_cast<ItemFrame>(e);
+			if (frame != nullptr)
+			{
+				frame->placedByPlayer = placedByPlayer;
+				if (placedByPlayer)
+				{
+					frame->setDir(dir);
+				}
+			}
+		}
 		packet->data = 0;
 		setRot = false;
 		break;
@@ -706,7 +719,7 @@ void ClientConnection::handleAddEntity(shared_ptr<AddEntityPacket> packet)
 	if (packet->type == AddEntityPacket::ENDER_CRYSTAL) e = shared_ptr<Entity>( new EnderCrystal(level, x, y, z) );
 	if (packet->type == AddEntityPacket::FALLING_SAND) e = shared_ptr<Entity>( new FallingTile(level, x, y, z, Tile::sand->id) );
 	if (packet->type == AddEntityPacket::FALLING_GRAVEL) e = shared_ptr<Entity>( new FallingTile(level, x, y, z, Tile::gravel->id) );
-	if (packet->type == AddEntityPacket::FALLING_EGG) e = shared_ptr<Entity>( new FallingTile(level, x, y, z, Tile::dragonEgg_Id) );
+	if (packet->type == AddEntityPacket::FALLING_EGG) e = shared_ptr<Entity>( new FallingTile(level, x, y, z, Tile::dragon_egg_Id) );
 
 	*/
 
@@ -828,6 +841,11 @@ void ClientConnection::handleAddGlobalEntity(shared_ptr<AddGlobalEntityPacket> p
 void ClientConnection::handleAddPainting(shared_ptr<AddPaintingPacket> packet)
 {
 	shared_ptr<Painting> painting = std::make_shared<Painting>(level, packet->x, packet->y, packet->z, packet->dir, packet->motive);
+	painting->placedByPlayer = packet->placedByPlayer;
+	if (packet->placedByPlayer)
+	{
+		painting->setDir(packet->dir);
+	}
 	level->putEntity(packet->id, painting);
 	m_trackedEntityIds.insert(packet->id);
 }
@@ -1337,11 +1355,11 @@ void ClientConnection::handleChunkTilesUpdate(shared_ptr<ChunkTilesUpdatePacket>
 
 			// Don't bother setting this to dirty if it isn't going to visually change - we get a lot of
 			// water changing from static to dynamic for instance
-			if(!( ( ( prevTile == Tile::water_Id )		&& ( tile == Tile::calmWater_Id ) ) ||
-				  ( ( prevTile == Tile::calmWater_Id )  && ( tile == Tile::water_Id ) )		||
-				  ( ( prevTile == Tile::lava_Id )		&& ( tile == Tile::calmLava_Id ) )	||
-				  ( ( prevTile == Tile::calmLava_Id )	&& ( tile == Tile::calmLava_Id ) ) ||
-				  ( ( prevTile == Tile::calmLava_Id )	&& ( tile == Tile::lava_Id ) ) ) )
+			if(!( ( ( prevTile == Tile::flowing_water_Id )		&& ( tile == Tile::water_Id ) ) ||
+				  ( ( prevTile == Tile::water_Id )  && ( tile == Tile::flowing_water_Id ) )		||
+				  ( ( prevTile == Tile::flowing_lava_Id )		&& ( tile == Tile::lava_Id ) )	||
+				  ( ( prevTile == Tile::lava_Id )	&& ( tile == Tile::lava_Id ) ) ||
+				  ( ( prevTile == Tile::lava_Id )	&& ( tile == Tile::flowing_lava_Id ) ) ) )
 			{
 				dimensionLevel->setTilesDirty(x + xo, y, z + zo, x + xo, y, z + zo);
 			}
@@ -1637,7 +1655,7 @@ void ClientConnection::handleChat(shared_ptr<ChatPacket> packet)
 			message = packet->m_stringArgs[0];
 
 			message = app.EscapeHTMLString(message); //do this to enforce escaped string
-			message = app.FormatChatMessage(message); //this needs to be last cause it converts colors to html colors that would have been escaped
+			message = app.FormatColoredString(message); //this needs to be last cause it converts colors to html colors that would have been escaped
 		} else {
 			message = L"";
 		}
@@ -2805,7 +2823,7 @@ void ClientConnection::handleTextureAndGeometry(shared_ptr<TextureAndGeometryPac
 			{
 				unsigned int uiAnimOverrideBitmask= app.GetAnimOverrideBitmask(packet->dwSkinID);
 
-				send(std::make_shared<TextureAndGeometryPacket>(packet->textureName, pbData, dwBytes, app.GetAdditionalSkinBoxes(packet->dwSkinID), uiAnimOverrideBitmask));
+				send(std::make_shared<TextureAndGeometryPacket>(packet->textureName, pbData, dwBytes, app.GetAdditionalSkinBoxes(packet->dwSkinID), app.GetSkinOffsets(packet->dwSkinID), uiAnimOverrideBitmask));
 			}
 		}
 	}
@@ -2821,6 +2839,11 @@ void ClientConnection::handleTextureAndGeometry(shared_ptr<TextureAndGeometryPac
 		if(packet->dwBoxC!=0)
 		{
 			app.SetAdditionalSkinBoxes(packet->dwSkinID,packet->BoxDataA,packet->dwBoxC);
+		}
+		// Add the offet data
+		if(packet->dwOffsetC!=0)
+		{
+			app.SetSkinOffsets(packet->dwSkinID,packet->OffsetDataA,packet->dwOffsetC);
 		}
 		// Add the anim override
 		app.SetAnimOverrideBitmask(packet->dwSkinID,packet->uiAnimOverrideBitmask);
@@ -3155,10 +3178,10 @@ void ClientConnection::handleContainerOpen(shared_ptr<ContainerOpenPacket> packe
 		break;
 	case ContainerOpenPacket::BREWING_STAND:
 		{
-			shared_ptr<BrewingStandTileEntity> brewingStand = std::make_shared<BrewingStandTileEntity>();
-			if (packet->customName) brewingStand->setCustomName(packet->title);
+			shared_ptr<BrewingStandTileEntity> brewing_stand = std::make_shared<BrewingStandTileEntity>();
+			if (packet->customName) brewing_stand->setCustomName(packet->title);
 
-			if( player->openBrewingStand(brewingStand))
+			if( player->openBrewingStand(brewing_stand))
 			{
 				player->containerMenu->containerId = packet->containerId;
 			}
@@ -3458,6 +3481,10 @@ void ClientConnection::handleTileEntityData(shared_ptr<TileEntityDataPacket> pac
 			else if (packet->type == TileEntityDataPacket::TYPE_SKULL && dynamic_pointer_cast<SkullTileEntity>(te) != nullptr)
 			{
 				dynamic_pointer_cast<SkullTileEntity>(te)->load(packet->tag);
+			}
+			else if (packet->type == TileEntityDataPacket::TYPE_BANNER && dynamic_pointer_cast<BannerTileEntity>(te) != nullptr)
+			{
+				dynamic_pointer_cast<BannerTileEntity>(te)->load(packet->tag);
 			}
 		}
 	}
@@ -4323,7 +4350,8 @@ void ClientConnection::handleSetPlayerTeamPacket(shared_ptr<SetPlayerTeamPacket>
 
 void ClientConnection::handleParticleEvent(shared_ptr<LevelParticlesPacket> packet)
 {
-	ePARTICLE_TYPE particleId = (ePARTICLE_TYPE)Integer::parseInt(packet->getName());
+    wstring particleName = packet->getName();
+    ePARTICLE_TYPE particleId = (ePARTICLE_TYPE)Integer::parseInt(particleName);
 
 	for (int i = 0; i < packet->getCount(); i++)
 	{

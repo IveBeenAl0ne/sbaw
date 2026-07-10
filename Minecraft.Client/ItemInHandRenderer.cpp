@@ -12,6 +12,8 @@
 #include "Minimap.h"
 #include "MultiPlayerLevel.h"
 #include "SkullTileRenderer.h"
+#include "BannerRenderer.h"
+#include "../Minecraft.World/BannerItem.h"
 #include "../Minecraft.World/Facing.h"
 #include "../Minecraft.World/net.minecraft.world.item.h"
 #include "../Minecraft.World/net.minecraft.world.level.tile.h"
@@ -228,7 +230,7 @@ void ItemInHandRenderer::renderItem(shared_ptr<LivingEntity> mob, shared_ptr<Ite
 {
 	// 4J - code borrowed from render method below, although not factoring in brightness as that should already be being taken into account
 	// by texture lighting. This is for colourising things held in 3rd person view.
-    if ( (setColor) && (item != nullptr) )
+	if ( (setColor) && (item != nullptr) )
 	{
         int col = Item::items[item->id]->getColor(item, layer);
         float red = ((col >> 16) & 0xff) / 255.0f;
@@ -240,15 +242,28 @@ void ItemInHandRenderer::renderItem(shared_ptr<LivingEntity> mob, shared_ptr<Ite
 
     glPushMatrix();
 
-	/*if (item->id == Item::skull_Id && SkullTileRenderer::instance != nullptr)
+	if (dynamic_cast<SkullItem*>(item->getItem()) != nullptr && SkullTileRenderer::instance != nullptr)
 	{
-		wstring extra = L"";
+		std::wstring extra = L"";
 		if (item->hasTag() && item->getTag()->contains(L"SkullOwner"))
 			extra = item->getTag()->getString(L"SkullOwner");
-		SkullTileRenderer::instance->renderSkull(-0.5f, 0.0f, -0.5f, Facing::UP, 0.0f, item->getAuxValue(), extra);
+		glRotatef(-45, 1, 1, 0);
+		glRotatef(-70, 0, 1, 0); // lower = rotate left
+		glRotatef(5, 1, 0, 0); 
+		glRotatef(-20, 0, 0, 1); 
+		SkullTileRenderer::instance->renderSkull(-1.0f, -0.9f, 0.0f, Facing::UP, 0.0f, item->getAuxValue(), extra);
+		glScalef(0.5f, 0.5f, 0.5f);
 		glPopMatrix();
 		return;
-	}*/
+	}
+
+	if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
+	{
+		int baseColor = item->getAuxValue() & 15;
+		BannerRenderer::instance->renderBannerForHand(1.0f, baseColor);
+		glPopMatrix();
+		return;
+	}
 
 	Tile *tile = Tile::tiles[item->id];
     if ((item->getIconType() == Icon::TYPE_TERRAIN && tile != nullptr && TileRenderer::canRender(tile->getRenderShape())) && item->id != AirTile::barrier_Id)
@@ -399,8 +414,8 @@ void ItemInHandRenderer::renderItem3D(Tesselator *t, float u0, float v0, float u
 
 void ItemInHandRenderer::render(float a)
 {
-    float h = oHeight + (height - oHeight) * a;
-    shared_ptr<Player> player = minecraft->player;
+	float h = oHeight + (height - oHeight) * a;
+	shared_ptr<Player> player = minecraft->player;
 
 	if (player == nullptr)
 	{
@@ -692,16 +707,29 @@ void ItemInHandRenderer::render(float a)
 
             renderItem(player, item, 1, false);
         }
-		//else if (item->id == Item::skull_Id && SkullTileRenderer::instance != nullptr)
-		//{
-		//	wstring extra = L"";
-		//	if (item->hasTag() && item->getTag()->contains(L"SkullOwner"))
-		//		extra = item->getTag()->getString(L"SkullOwner");
-		//	glEnable(GL_RESCALE_NORMAL);
-		//	glScalef(2.0f, 2.0f, 2.0f);
-		//	SkullTileRenderer::instance->renderSkull(-0.5f, 0.0f, -0.5f, Facing::UP, 0.0f, item->getAuxValue(), extra);
-		//	glDisable(GL_RESCALE_NORMAL);
-		//}
+		else if (item->id == Item::skull_Id && SkullTileRenderer::instance != nullptr)
+		{
+			std::wstring extra = L"";
+			if (item->hasTag() && item->getTag()->contains(L"SkullOwner"))
+				extra = item->getTag()->getString(L"SkullOwner");
+			glRotatef(-49.5f, 0.0f, 1.0f, 0.0f);
+			glRotatef(5.0f, 0.0f, 0.0f, 1.0f);
+			glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
+			SkullTileRenderer::instance->renderSkull(-1.0f, 0.26f, 0.35f, Facing::UP, 0.0f, item->getAuxValue(), extra);
+			glPopMatrix();
+			return;
+		}
+		else if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
+		{
+			int baseColor = item->getAuxValue() & 15;
+			glRotatef(50.0f, 0.0f, 1.0f, 0.0f);
+			glTranslatef(0.0f, 0.05f, 0.0f);
+			const float bs = 0.6f;
+			glScalef(bs, -bs, -bs);
+			BannerRenderer::instance->renderBannerForHand(1.0f, baseColor);
+			glPopMatrix();
+			return;
+		}
 		else
 		{
             renderItem(player, item, 0, false);
@@ -900,8 +928,8 @@ void ItemInHandRenderer::renderFire(float a)
 	unsigned int col = Minecraft::GetInstance()->getColourTable()->getColor( eMinecraftColour_Fire_Overlay );
 	float aCol = ( (col>>24)&0xFF )/255.0f;
 	float rCol = ( (col>>16)&0xFF )/255.0f;
-	float gCol = ( (col>>8)&0xFF )/255.0;
-	float bCol = ( col&0xFF )/255.0;
+	float gCol = ( (col>>8)&0xFF )/255.0f;
+	float bCol = ( col&0xFF )/255.0f;
 
     glColor4f(rCol, gCol, bCol, aCol);
     glEnable(GL_BLEND);

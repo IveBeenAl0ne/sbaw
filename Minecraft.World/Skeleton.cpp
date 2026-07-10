@@ -188,7 +188,7 @@ void Skeleton::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	if (getSkeletonType() == TYPE_WITHER)
 	{
-		// drop some arrows
+		// drop some coal
 		int count = random->nextInt(3 + playerBonusLevel) - 1;
 		for (int i = 0; i < count; i++)
 		{
@@ -237,7 +237,7 @@ MobGroupData *Skeleton::finalizeMobSpawn(MobGroupData *groupData, int extraData 
 		goalSelector.addGoal(4, meleeGoal, false);
 
 		setSkeletonType(TYPE_WITHER);
-		setEquippedSlot(SLOT_WEAPON, std::make_shared<ItemInstance>(Item::sword_stone));
+		setEquippedSlot(SLOT_WEAPON, std::make_shared<ItemInstance>(Item::stone_sword));
 		getAttribute(SharedMonsterAttributes::ATTACK_DAMAGE)->setBaseValue(4);
 	}
 	else

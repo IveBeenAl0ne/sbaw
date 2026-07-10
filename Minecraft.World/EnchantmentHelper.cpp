@@ -36,7 +36,7 @@ int EnchantmentHelper::getEnchantmentLevel(int enchantmentId, shared_ptr<ItemIns
 unordered_map<int, int> *EnchantmentHelper::getEnchantments(shared_ptr<ItemInstance> item)
 {
 	unordered_map<int, int> *result = new unordered_map<int, int>();
-	ListTag<CompoundTag> *list = item->id == Item::enchantedBook_Id ? Item::enchantedBook->getEnchantments(item) : item->getEnchantmentTags();
+	ListTag<CompoundTag> *list = item->id == Item::enchanted_book_Id ? Item::enchanted_book->getEnchantments(item) : item->getEnchantmentTags();
 
 	if (list != nullptr)
 	{
@@ -67,15 +67,15 @@ void EnchantmentHelper::setEnchantments(unordered_map<int, int> *enchantments, s
 
 		list->add(tag);
 
-		if (item->id == Item::enchantedBook_Id)
+		if (item->id == Item::enchanted_book_Id)
 		{
-			Item::enchantedBook->addEnchantment(item, new EnchantmentInstance(id, it.second));
+			Item::enchanted_book->addEnchantment(item, new EnchantmentInstance(id, it.second));
 		}
 	}
 
 	if (list->size() > 0)
 	{
-		if (item->id != Item::enchantedBook_Id)
+		if (item->id != Item::enchanted_book_Id)
 		{
 			item->addTagElement(L"ench", list);
 		}
@@ -239,9 +239,39 @@ int EnchantmentHelper::getWaterWalker(shared_ptr<LivingEntity> source)
     return getEnchantmentLevel(Enchantment::waterWalker->id, source->getEquipmentSlots() );
 }
 
+int EnchantmentHelper::getFrostWalker(shared_ptr<LivingEntity> source)
+{
+	return getEnchantmentLevel(Enchantment::frostWalker->id, source->getEquipmentSlots());
+}
+
 int EnchantmentHelper::getArmorThorns(shared_ptr<LivingEntity> source)
 {
 	return getEnchantmentLevel(Enchantment::thorns->id, source->getEquipmentSlots());
+}
+
+shared_ptr<ItemInstance> EnchantmentHelper::getMendingItem(shared_ptr<LivingEntity> source)
+{
+	int mendId = Enchantment::mending->id;
+	vector<shared_ptr<ItemInstance>> candidates;
+
+	shared_ptr<ItemInstance> held = source->getCarriedItem();
+	if (held != nullptr && held->isDamaged() && getEnchantmentLevel(mendId, held) > 0)
+	{
+		candidates.push_back(held);
+	}
+
+	ItemInstanceArray armor = source->getEquipmentSlots();
+	for (unsigned int i = 0; i < armor.length; ++i)
+	{
+		shared_ptr<ItemInstance> piece = armor[i];
+		if (piece != nullptr && piece->isDamaged() && getEnchantmentLevel(mendId, piece) > 0)
+		{
+			candidates.push_back(piece);
+		}
+	}
+
+	if (candidates.empty()) return nullptr;
+	return candidates[random.nextInt((int)candidates.size())];
 }
 
 shared_ptr<ItemInstance> EnchantmentHelper::getRandomItemWith(Enchantment *enchantment, shared_ptr<LivingEntity> source)
@@ -304,7 +334,7 @@ shared_ptr<ItemInstance> EnchantmentHelper::enchantItem(Random *random, shared_p
 	vector<EnchantmentInstance *> *newEnchantment = EnchantmentHelper::selectEnchantment(random, itemInstance, enchantmentCost);
 	bool isBook = itemInstance->id == Item::book_Id;
 
-	if (isBook) itemInstance->id = Item::enchantedBook_Id;
+	if (isBook) itemInstance->id = Item::enchanted_book_Id;
 
 	if ( newEnchantment )
 	{
@@ -314,7 +344,7 @@ shared_ptr<ItemInstance> EnchantmentHelper::enchantItem(Random *random, shared_p
 			{
 				if (isBook)
 				{
-					Item::enchantedBook->addEnchantment(itemInstance, e);
+					Item::enchanted_book->addEnchantment(itemInstance, e);
 				}
 				else
 				{

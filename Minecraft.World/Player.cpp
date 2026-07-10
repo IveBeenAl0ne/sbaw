@@ -110,6 +110,10 @@ void Player::_init()
 	m_bCheckedForModelParts=false;
 	m_bCheckedDLCForModelParts=false;
 
+	m_ppSkinOffsets=nullptr;
+	m_bCheckedForSkinOffsets=false;
+	m_bCheckedDLCForSkinOffsets=false;
+
 #if defined(__PS3__) || defined(__ORBIS__)
 	m_ePlayerNameValidState=ePlayerNameValid_NotSet;
 #endif
@@ -384,7 +388,7 @@ void Player::tick()
 			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::map) ) );
 			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_01) ) );
 			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_02) ) );
-			this->drop( shared_ptr<ItemInstance>(new ItemInstance( Item::pickAxe_diamond, 1 )) );
+			this->drop( shared_ptr<ItemInstance>(new ItemInstance( Item::diamond_pickaxe, 1 )) );
 #endif
 
 #ifdef __PS3__
@@ -394,7 +398,7 @@ void Player::tick()
 			// 		this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::map) ) );
 			// 		this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_01) ) );
 			// 		this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_02) ) );
-			// 		this->drop( shared_ptr<ItemInstance>(new ItemInstance( Item::pickAxe_diamond, 1 )) );
+			// 		this->drop( shared_ptr<ItemInstance>(new ItemInstance( Item::diamond_pickaxe, 1 )) );
 			// #endif
 #endif
 
@@ -404,11 +408,11 @@ void Player::tick()
 			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::map) ) );
 			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_01) ) );
 			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_02) ) );
-			this->drop( shared_ptr<ItemInstance>(new ItemInstance( Item::pickAxe_diamond, 1 )) );
+			this->drop( shared_ptr<ItemInstance>(new ItemInstance( Item::diamond_pickaxe, 1 )) );
 #endif
 #endif
 			// 4J-PB - Throw items out at the start of the level
-			//this->drop( new ItemInstance( Item::pickAxe_diamond, 1 ) );
+			//this->drop( new ItemInstance( Item::diamond_pickaxe, 1 ) );
 			//this->drop( new ItemInstance( Tile::workBench, 1 ) );
 			//this->drop( new ItemInstance( Tile::treeTrunk, 8 ) );
 			//this->drop( shared_ptr<ItemInstance>( new ItemInstance( Item::milk, 3 ) ) );
@@ -456,7 +460,7 @@ void Player::tick()
 			//        increaseXp(10);
 
 			{
-				//            ItemInstance itemInstance = new ItemInstance(Item.pickAxe_diamond);
+				//            ItemInstance itemInstance = new ItemInstance(Item.diamond_pickaxe);
 				//            itemInstance.enchant(Enchantment.diggingBonus, 3);
 				//            inventory.add(itemInstance);
 			}
@@ -475,16 +479,16 @@ void Player::tick()
 			int poweredCount = 0;
 			for(int i = 10; i < 2800; ++i)
 			{
-				level->setTileAndData(x+i,y-1,z-2,Tile::quartzBlock_Id,0,Tile::UPDATE_CLIENTS);
-				level->setTileAndData(x+i,y,z-2,Tile::quartzBlock_Id,0,Tile::UPDATE_CLIENTS);
-				level->setTileAndData(x+i,y+1,z-2,Tile::quartzBlock_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y-1,z-2,Tile::quartz_block_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y,z-2,Tile::quartz_block_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y+1,z-2,Tile::quartz_block_Id,0,Tile::UPDATE_CLIENTS);
 				level->setTileAndData(x+i,y+2,z-2,Tile::glowstone_Id,0,Tile::UPDATE_CLIENTS);
-				level->setTileAndData(x+i,y+3,z-2,Tile::quartzBlock_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y+3,z-2,Tile::quartz_block_Id,0,Tile::UPDATE_CLIENTS);
 
-				level->setTileAndData(x+i,y-1,z-1,Tile::stoneBrick_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y-1,z-1,Tile::stonebrick_Id,0,Tile::UPDATE_CLIENTS);
 				if(i%20 == 0)
 				{
-					level->setTileAndData(x+i,y,z-1,Tile::redstoneTorch_on_Id,0,Tile::UPDATE_CLIENTS);
+					level->setTileAndData(x+i,y,z-1,Tile::redstone_torch_Id,0,Tile::UPDATE_CLIENTS);
 					poweredCount = 4;
 				}
 				else
@@ -495,10 +499,10 @@ void Player::tick()
 				level->setTileAndData(x+i,y+2,z-1,0,0,Tile::UPDATE_CLIENTS);
 				level->setTileAndData(x+i,y+3,z-1,0,0,Tile::UPDATE_CLIENTS);
 
-				level->setTileAndData(x+i,y-1,z,Tile::stoneBrick_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y-1,z,Tile::stonebrick_Id,0,Tile::UPDATE_CLIENTS);
 				if(poweredCount>0)
 				{
-					level->setTileAndData(x+i,y,z,Tile::goldenRail_Id,0,Tile::UPDATE_CLIENTS);
+					level->setTileAndData(x+i,y,z,Tile::golden_rail_Id,0,Tile::UPDATE_CLIENTS);
 					--poweredCount;
 				}
 				else
@@ -509,7 +513,7 @@ void Player::tick()
 				level->setTileAndData(x+i,y+2,z,0,0,Tile::UPDATE_CLIENTS);
 				level->setTileAndData(x+i,y+3,z,0,0,Tile::UPDATE_CLIENTS);
 
-				level->setTileAndData(x+i,y-1,z+1,Tile::stoneBrick_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y-1,z+1,Tile::stonebrick_Id,0,Tile::UPDATE_CLIENTS);
 				if((i+5)%20 == 0)
 				{
 					level->setTileAndData(x+i,y,z+1,Tile::torch_Id,0,Tile::UPDATE_CLIENTS);
@@ -522,11 +526,11 @@ void Player::tick()
 				level->setTileAndData(x+i,y+2,z+1,0,0,Tile::UPDATE_CLIENTS);
 				level->setTileAndData(x+i,y+3,z+1,0,0,Tile::UPDATE_CLIENTS);
 
-				level->setTileAndData(x+i,y-1,z+2,Tile::quartzBlock_Id,0,Tile::UPDATE_CLIENTS);
-				level->setTileAndData(x+i,y,z+2,Tile::quartzBlock_Id,0,Tile::UPDATE_CLIENTS);
-				level->setTileAndData(x+i,y+1,z+2,Tile::quartzBlock_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y-1,z+2,Tile::quartz_block_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y,z+2,Tile::quartz_block_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y+1,z+2,Tile::quartz_block_Id,0,Tile::UPDATE_CLIENTS);
 				level->setTileAndData(x+i,y+2,z+2,Tile::glowstone_Id,0,Tile::UPDATE_CLIENTS);
-				level->setTileAndData(x+i,y+3,z+2,Tile::quartzBlock_Id,0,Tile::UPDATE_CLIENTS);
+				level->setTileAndData(x+i,y+3,z+2,Tile::quartz_block_Id,0,Tile::UPDATE_CLIENTS);
 			}
 			madeTrack = true;
 		}
@@ -724,7 +728,9 @@ void Player::setCustomSkin(DWORD skinId)
 	m_bCheckedDLCForModelParts=false;
 	this->SetAdditionalModelParts(nullptr);
 
-
+	m_bCheckedForSkinOffsets=false;
+	m_bCheckedDLCForSkinOffsets=false;
+	this->SetSkinOffsets(nullptr);
 }
 
 unsigned int Player::getSkinAnimOverrideBitmask(DWORD skinId)
@@ -1548,7 +1554,7 @@ void Player::openTextEdit(shared_ptr<TileEntity> sign)
 {
 }
 
-bool Player::openBrewingStand(shared_ptr<BrewingStandTileEntity> brewingStand)
+bool Player::openBrewingStand(shared_ptr<BrewingStandTileEntity> brewing_stand)
 {
 	return true;
 }
@@ -2494,9 +2500,9 @@ void Player::makeStuckInWeb()
 Icon *Player::getItemInHandIcon(shared_ptr<ItemInstance> item, int layer)
 {
 	Icon *icon = LivingEntity::getItemInHandIcon(item, layer);
-	if (item->id == Item::fishingRod->id && fishing != nullptr)
+	if (item->id == Item::fishing_rod->id && fishing != nullptr)
 	{
-		icon = Item::fishingRod->getEmptyIcon();
+		icon = Item::fishing_rod->getEmptyIcon();
 	}
 	else if (item->getItem()->hasMultipleSpriteLayers())
 	{
@@ -2903,25 +2909,25 @@ int Player::getTexture()
 	case eDefaultSkins_Skin7:
 		return TN_MOB_CHAR7; // 4J - was L"/mob/char7.png";
 	case eDefaultSkins_Skin8:
-		return TN_MOB_CHAR8; // 4J - was L"/mob/char8.png";
+		return TN_MOB_ALEX; // 4J - was L"/mob/alex.png";
 	case eDefaultSkins_Skin9:
-		return TN_MOB_CHAR9; // 4J - was L"/mob/char9.png";
+		return TN_MOB_ALEX1; // 4J - was L"/mob/alex1.png";
 	case eDefaultSkins_Skin10:
-		return TN_MOB_CHAR10; // 4J - was L"/mob/char10.png";
+		return TN_MOB_ALEX2; // 4J - was L"/mob/alex2.png";
 	case eDefaultSkins_Skin11:
-		return TN_MOB_CHAR11; // 4J - was L"/mob/char11.png";
+		return TN_MOB_ALEX3; // 4J - was L"/mob/alex3.png";
 	case eDefaultSkins_Skin12:
-		return TN_MOB_CHAR12; // 4J - was L"/mob/char12.png";
+		return TN_MOB_ALEX4; // 4J - was L"/mob/alex4.png";
 	case eDefaultSkins_Skin13:
-		return TN_MOB_CHAR13; // 4J - was L"/mob/char13.png";
+		return TN_MOB_ALEX5; // 4J - was L"/mob/alex5.png";
 	case eDefaultSkins_Skin14:
-		return TN_MOB_CHAR14; // 4J - was L"/mob/char14.png";
+		return TN_MOB_ALEX6; // 4J - was L"/mob/alex6.png";
 	case eDefaultSkins_Skin15:
-		return TN_MOB_CHAR15; // 4J - was L"/mob/char15.png";
+		return TN_MOB_ALEX7; // 4J - was L"/mob/alex7.png";
 	case eDefaultSkins_Skin16:
-		return TN_MOB_CHAR16; // 4J - was L"/mob/char16.png";
+		return TN_MOB_DEVALEX; // 4J - was L"/mob/DevAlex.png";
 	case eDefaultSkins_Skin17:
-		return TN_MOB_CHAR17; // 4J - was L"/mob/char17.png";
+		return TN_MOB_DEVSTEVE; // 4J - was L"/mob/DevSteve.png";
 
 	default:
 		return TN_MOB_CHAR; // 4J - was L"/mob/char.png";
@@ -3075,11 +3081,11 @@ bool Player::isAllowedToUse(Tile *tile)
 		{
 			switch(tile->id)
 			{
-			case Tile::door_wood_Id:
-			case Tile::button_stone_Id:
-			case Tile::button_wood_Id:
+			case Tile::wooden_door_Id:
+			case Tile::stone_button_Id:
+			case Tile::wooden_button_Id:
 			case Tile::lever_Id:
-			case Tile::fenceGate_Id:
+			case Tile::fence_gate_Id:
 			case Tile::trapdoor_Id:
 				allowed = true;
 				break;
@@ -3092,13 +3098,13 @@ bool Player::isAllowedToUse(Tile *tile)
 			{
 			case Tile::chest_Id:
 			case Tile::furnace_Id:
-			case Tile::furnace_lit_Id:
+			case Tile::lit_furnace_Id:
 			case Tile::dispenser_Id:
-			case Tile::brewingStand_Id:
-			case Tile::enchantTable_Id:
-			case Tile::workBench_Id:
+			case Tile::brewing_stand_Id:
+			case Tile::enchanting_table_Id:
+			case Tile::crafting_table_Id:
 			case Tile::anvil_Id:
-			case Tile::enderChest_Id:
+			case Tile::ender_chest_Id:
 				allowed = true;
 				break;
 			}
@@ -3108,21 +3114,21 @@ bool Player::isAllowedToUse(Tile *tile)
 		{
 			switch(tile->id)
 			{
-			case Tile::door_wood_Id:
-			case Tile::button_stone_Id:
-			case Tile::button_wood_Id:
+			case Tile::wooden_door_Id:
+			case Tile::stone_button_Id:
+			case Tile::wooden_button_Id:
 			case Tile::lever_Id:
-			case Tile::fenceGate_Id:
+			case Tile::fence_gate_Id:
 			case Tile::trapdoor_Id:
 			case Tile::chest_Id:
 			case Tile::furnace_Id:
-			case Tile::furnace_lit_Id:
+			case Tile::lit_furnace_Id:
 			case Tile::dispenser_Id:
-			case Tile::brewingStand_Id:
-			case Tile::enchantTable_Id:
-			case Tile::workBench_Id:
+			case Tile::brewing_stand_Id:
+			case Tile::enchanting_table_Id:
+			case Tile::crafting_table_Id:
 			case Tile::anvil_Id:
-			case Tile::enderChest_Id:
+			case Tile::ender_chest_Id:
 				allowed =  false;
 				break;
 			default:
@@ -3149,28 +3155,28 @@ bool Player::isAllowedToUse(shared_ptr<ItemInstance> item)
 		switch(item->id)
 		{
 			// food
-		case Item::mushroomStew_Id:
+		case Item::mushroom_stew_Id:
 		case Item::apple_Id:
 		case Item::bread_Id:
-		case Item::porkChop_raw_Id:
-		case Item::porkChop_cooked_Id:
-		case Item::apple_gold_Id:
-		case Item::fish_raw_Id:
-		case Item::fish_cooked_Id:
+		case Item::porkchop_Id:
+		case Item::cooked_porkchop_Id:
+		case Item::golden_apple_Id:
+		case Item::fish_Id:
+		case Item::cooked_fish_Id:
 		case Item::cookie_Id:
-		case Item::beef_cooked_Id:
-		case Item::beef_raw_Id:
-		case Item::chicken_cooked_Id:
-		case Item::chicken_raw_Id:
-		case Item::melon_Id:
+		case Item::cooked_beef_Id:
+		case Item::beef_Id:
+		case Item::cooked_chicken_Id:
+		case Item::chicken_Id:
+		case Item::melon_block_Id:
 		case Item::rotten_flesh_Id:
 			// bow
 		case Item::bow_Id:
-		case Item::sword_diamond_Id:
-		case Item::sword_gold_Id:
-		case Item::sword_iron_Id:
-		case Item::sword_stone_Id:
-		case Item::sword_wood_Id:
+		case Item::diamond_sword_Id:
+		case Item::golden_sword_Id:
+		case Item::iron_sword_Id:
+		case Item::stone_sword_Id:
+		case Item::wooden_sword_Id:
 			allowed = true;
 			break;
 		}
@@ -3389,9 +3395,69 @@ vector<ModelPart *> *Player::GetAdditionalModelParts()
 	return m_ppAdditionalModelParts;
 }
 
+vector<SKIN_OFFSET *> *Player::GetSkinOffsets()
+{
+	if(m_ppSkinOffsets==nullptr && !m_bCheckedForSkinOffsets)
+	{
+		bool hasCustomTexture = !customTextureUrl.empty();
+		bool customTextureIsDefaultSkin = customTextureUrl.substr(0,3).compare(L"def") == 0;
+
+		// see if we can find the parts
+		m_ppSkinOffsets=app.GetSkinOffsets(m_dwSkinId);
+
+		// If it's a default texture (which has no parts), we have the parts, or we already have the texture (in which case we should have parts if there are any) then we are done
+		if(!hasCustomTexture || customTextureIsDefaultSkin || m_ppSkinOffsets != nullptr || app.IsFileInMemoryTextures(customTextureUrl))
+		{
+			m_bCheckedForSkinOffsets=true;
+		}
+		if(m_ppSkinOffsets == nullptr && !m_bCheckedDLCForSkinOffsets)
+		{
+			m_bCheckedDLCForSkinOffsets = true;
+
+			// we don't have the data from the dlc skin yet
+			app.DebugPrintf("m_bCheckedForModelOffsets Couldn't get skin offsets for skin %X\n",m_dwSkinId);
+
+			// do we have it from the DLC pack?
+			DLCSkinFile *pDLCSkinFile = app.m_dlcManager.getSkinFile(this->customTextureUrl);
+
+			if(pDLCSkinFile!=nullptr)
+			{
+				DWORD dwOffsetC=pDLCSkinFile->getOffsetsCount();
+				if(dwOffsetC!=0)
+				{
+					app.DebugPrintf("m_bCheckedForSkinOffsets Got skin offsets from DLCskin for skin %X\n",m_dwSkinId);
+					m_ppSkinOffsets=app.SetSkinOffsets(m_dwSkinId,pDLCSkinFile->getOffsets());
+				}
+
+				m_bCheckedForSkinOffsets=true;
+			}
+		}
+	}
+	return m_ppSkinOffsets;
+}
+
+int Player::GetModelTypeFromAnimBitmask(unsigned int animBitmask)
+{
+	if (animBitmask&(1<<HumanoidModel::eAnim_SlimModel)) return 2;
+	else if (animBitmask&(1<<HumanoidModel::eAnim_WideModel)) return 1;
+	else return 0;
+}
+
+int Player::GetModelTypeFromTextureId(int textureId)
+{
+	if (textureId > 8 && textureId < 18) return 2;
+	else if (textureId == 18) return 1;
+	else return 0;
+}
+
 void Player::SetAdditionalModelParts(vector<ModelPart *> *ppAdditionalModelParts)
 {
 	m_ppAdditionalModelParts=ppAdditionalModelParts;
+}
+
+void Player::SetSkinOffsets(vector<SKIN_OFFSET *> *ppSkinOffsets)
+{
+	m_ppSkinOffsets=ppSkinOffsets;
 }
 
 #if defined(__PS3__) || defined(__ORBIS__)

@@ -39,6 +39,18 @@ int ChestTile::getRenderShape()
 	return Tile::SHAPE_ENTITYTILE_ANIMATED;
 }
 
+AABB *ChestTile::getTileAABB(Level *level, int x, int y, int z)
+{
+	updateShape(level, x, y, z, -1, shared_ptr<TileEntity>());
+	return Tile::getTileAABB(level, x, y, z);
+}
+
+AABB *ChestTile::getAABB(Level *level, int x, int y, int z)
+{
+	updateShape(level, x, y, z, -1, shared_ptr<TileEntity>());
+	return Tile::getAABB(level, x, y, z);
+}
+
 void ChestTile::updateShape(LevelSource *level, int x, int y, int z, int forceData, shared_ptr<TileEntity> forceEntity)
 {
 	if (level->getTile(x, y, z - 1) == id)

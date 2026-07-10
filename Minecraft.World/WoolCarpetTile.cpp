@@ -6,6 +6,7 @@
 
 WoolCarpetTile::WoolCarpetTile(int id) : Tile(id, Material::clothDecoration, isSolidRender() )
 {
+	setLightBlock(0);
 	setShape(0, 0, 0, 1, 1 / 16.0f, 1);
 	setTicking(true);
 	updateShape(0);

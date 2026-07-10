@@ -3,6 +3,7 @@
 
 BarrierTile::BarrierTile(int id, Material *material, bool allowSame) : HalfTransparentTile(id, L"barrier", material, allowSame)
 {
+	setLightBlock(0);
 }
 
 int BarrierTile::getResourceCount(Random *random)

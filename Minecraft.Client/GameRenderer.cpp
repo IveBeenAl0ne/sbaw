@@ -163,6 +163,8 @@ GameRenderer::GameRenderer(Minecraft *mc)
 		lightTexture[i] = mc->textures->getTexture(img);		// 4J - changed to one light texture per level to support split screen
 	}
 	delete img;
+#endif
+#ifndef MINECRAFT_SERVER_BUILD
 #ifdef __PS3__
 	// we're using the RSX now to upload textures to vram, so we need the main ram textures allocated from io space
 	for(int i=0;i<NUM_LIGHT_TEXTURES;i++)
@@ -1656,6 +1658,18 @@ void GameRenderer::renderLevel(float a, int64_t until)
 				PIXEndNamedEvent();
 			}
 
+			glBlendFunc(GL_ZERO, GL_ONE);
+			PIXBeginNamedEvent(0,"Fourth pass level render");
+			int visibleTopTransparentChunksLayer3 = levelRenderer->render(cameraEntity, 3, a, updateChunks);
+			PIXEndNamedEvent();
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			if (visibleTopTransparentChunksLayer3 > 0)
+			{
+				PIXBeginNamedEvent(0,"Fourth pass level direct render");
+				levelRenderer->renderChunksDirect(3, a);
+				PIXEndNamedEvent();
+			}
+
 			GL11::glShadeModel(GL11::GL_FLAT);
 		}
 		else
@@ -1665,6 +1679,9 @@ void GameRenderer::renderLevel(float a, int64_t until)
 			PIXEndNamedEvent();
 			PIXBeginNamedEvent(0,"Third pass level render");
 			levelRenderer->render(cameraEntity, 2, a, updateChunks);
+			PIXEndNamedEvent();
+			PIXBeginNamedEvent(0,"Fourth pass level render");
+			levelRenderer->render(cameraEntity, 3, a, updateChunks);
 			PIXEndNamedEvent();
 		}
 

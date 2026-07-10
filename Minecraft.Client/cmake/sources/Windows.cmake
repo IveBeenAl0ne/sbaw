@@ -181,6 +181,8 @@ set(_MINECRAFT_CLIENT_WINDOWS_COMMON_UI_SCENES_FRONTEND_MENU_SCREENS
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_SaveMessage.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_TrialExitUpsell.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_TrialExitUpsell.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIControl_MultiList.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIControl_MultiList.h"
 )
 source_group("Common/UI/Scenes/Frontend Menu screens" FILES ${_MINECRAFT_CLIENT_WINDOWS_COMMON_UI_SCENES_FRONTEND_MENU_SCREENS})
 
@@ -201,8 +203,6 @@ set(_MINECRAFT_CLIENT_WINDOWS_COMMON_UI_SCENES_HELP__OPTIONS
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_ReinstallMenu.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_SettingsAudioMenu.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_SettingsAudioMenu.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_SettingsControlMenu.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_SettingsControlMenu.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_SettingsGraphicsMenu.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_SettingsGraphicsMenu.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_SettingsMenu.cpp"

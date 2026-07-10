@@ -72,16 +72,16 @@ const wchar_t *Textures::preLoaded[TN_COUNT] =
 	L"mob/char5",
 	L"mob/char6",
 	L"mob/char7",
-	L"mob/char8",
-	L"mob/char9",
-	L"mob/char10",
-	L"mob/char11",
-	L"mob/char12",
-	L"mob/char13",
-	L"mob/char14",
-	L"mob/char15",
-	L"mob/char16",
-	L"mob/char17",
+	L"mob/alex",
+	L"mob/alex1",
+	L"mob/alex2",
+	L"mob/alex3",
+	L"mob/alex4",
+	L"mob/alex5",
+	L"mob/alex6",
+	L"mob/alex7",
+	L"mob/DevAlex",
+	L"mob/DevSteve",
 	L"terrain/moon",
 	L"terrain/sun",
 	L"armor/power",
@@ -194,6 +194,8 @@ const wchar_t *Textures::preLoaded[TN_COUNT] =
 	L"mob/guardian",
 	L"mob/guardian_elder",
 	L"mob/guardian_beam",
+	L"mob/bear/polarbear",
+	L"mob/banner/banner_base",
 
 #ifdef _LARGE_WORLDS
 	L"misc/additionalmapicons",
@@ -1129,24 +1131,32 @@ void Textures::removeHttpTexture(const wstring& url)
 // 4J-PB - adding for texture in memory (from global title storage)
 int Textures::loadMemTexture(const wstring& url, const wstring& backup)
 {
+	wstring effectiveUrl = url;
+	if(effectiveUrl.empty())
+	{
+		wchar_t lookup[32];
+		swprintf(lookup, 32, L"__backup_%s", backup.c_str());
+		effectiveUrl = lookup;
+	}
+
 	MemTexture *texture = nullptr;
-    auto it = memTextures.find(url);
+    auto it = memTextures.find(effectiveUrl);
     if (it != memTextures.end())
 	{
 		texture = (*it).second;
 	}
-	if(texture == nullptr && app.IsFileInMemoryTextures(url))
+	if(texture == nullptr && !effectiveUrl.empty() && app.IsFileInMemoryTextures(effectiveUrl))
 	{
 		// If we haven't loaded it yet, but we have the data for it then add it
-		texture = addMemTexture(url, new MobSkinMemTextureProcessor() );
+		texture = addMemTexture(effectiveUrl, new MobSkinMemTextureProcessor() );
 	}
 	if(texture != nullptr)
 	{
 		if (texture->loadedImage != nullptr && !texture->isLoaded)
 		{
 			// 4J - Disable mipmapping in general for skins & capes. Have seen problems with edge-on polys for some eg mumbo jumbo
-			if( ( url.substr(0,7) == L"dlcskin" ) ||
-				( url.substr(0,7) == L"dlccape" ) )
+			if( ( effectiveUrl.substr(0,7) == L"dlcskin" ) ||
+				( effectiveUrl.substr(0,7) == L"dlccape" ) )
 			{
 				MIPMAP = false;
 			}
@@ -1173,16 +1183,24 @@ int Textures::loadMemTexture(const wstring& url, const wstring& backup)
 
 int Textures::loadMemTexture(const wstring& url, int backup)
 {
+	wstring effectiveUrl = url;
+	if(effectiveUrl.empty())
+	{
+		wchar_t lookup[32];
+		swprintf(lookup, 32, L"__backup_%d", backup);
+		effectiveUrl = lookup;
+	}
+
 	MemTexture *texture = nullptr;
-    auto it = memTextures.find(url);
+    auto it = memTextures.find(effectiveUrl);
     if (it != memTextures.end())
 	{
 		texture = (*it).second;
 	}
-	if(texture == nullptr && app.IsFileInMemoryTextures(url))
+	if(texture == nullptr && !effectiveUrl.empty() && app.IsFileInMemoryTextures(effectiveUrl))
 	{
 		// If we haven't loaded it yet, but we have the data for it then add it
-		texture = addMemTexture(url, new MobSkinMemTextureProcessor() );
+		texture = addMemTexture(effectiveUrl, new MobSkinMemTextureProcessor() );
 	}
 	if(texture != nullptr)
 	{
@@ -1190,8 +1208,8 @@ int Textures::loadMemTexture(const wstring& url, int backup)
 		if (texture->loadedImage != nullptr && !texture->isLoaded)
 		{
 			// 4J - Disable mipmapping in general for skins & capes. Have seen problems with edge-on polys for some eg mumbo jumbo
-			if( ( url.substr(0,7) == L"dlcskin" ) ||
-				( url.substr(0,7) == L"dlccape" ) )
+			if( ( effectiveUrl.substr(0,7) == L"dlcskin" ) ||
+				( effectiveUrl.substr(0,7) == L"dlccape" ) )
 			{
 				MIPMAP = false;
 			}
@@ -1216,24 +1234,32 @@ int Textures::loadMemTexture(const wstring& url, int backup)
 
 int Textures::getHeight(const wstring& url, int backup)
 {
+	wstring effectiveUrl = url;
+	if(effectiveUrl.empty())
+	{
+		wchar_t lookup[32];
+		swprintf(lookup, 32, L"__backup_%d", backup);
+		effectiveUrl = lookup;
+	}
+
 	MemTexture *texture = nullptr;
-    auto it = memTextures.find(url);
+    auto it = memTextures.find(effectiveUrl);
     if (it != memTextures.end())
 	{
 		texture = (*it).second;
 	}
-	if(texture == nullptr && app.IsFileInMemoryTextures(url))
+	if(texture == nullptr && !effectiveUrl.empty() && app.IsFileInMemoryTextures(effectiveUrl))
 	{
 		// If we haven't loaded it yet, but we have the data for it then add it
-		texture = addMemTexture(url, new MobSkinMemTextureProcessor() );
+		texture = addMemTexture(effectiveUrl, new MobSkinMemTextureProcessor() );
 	}
 	if(texture != nullptr)
 	{
 		if (texture->loadedImage != nullptr && !texture->isLoaded)
 		{
 			// 4J - Disable mipmapping in general for skins & capes. Have seen problems with edge-on polys for some eg mumbo jumbo
-			if( ( url.substr(0,7) == L"dlcskin" ) ||
-				( url.substr(0,7) == L"dlccape" ) )
+			if( ( effectiveUrl.substr(0,7) == L"dlcskin" ) ||
+				( effectiveUrl.substr(0,7) == L"dlccape" ) )
 			{
 				MIPMAP = false;
 			}
@@ -1263,7 +1289,7 @@ int Textures::getHeight(const wstring& url, int backup)
 
 			int h = img->getHeight();
 			//delete img; // commenting this out and inserting the loaded texture to memTextures unordered_map
-			this->memTextures[url] = _texture;
+			this->memTextures[effectiveUrl] = _texture;
 			return h;
 		}
 
@@ -1703,16 +1729,16 @@ TEXTURE_NAME OriginalImages[] =
 	TN_MOB_CHAR5,
 	TN_MOB_CHAR6,
 	TN_MOB_CHAR7,
-	TN_MOB_CHAR8,
-	TN_MOB_CHAR9,
-	TN_MOB_CHAR10,
-	TN_MOB_CHAR11,
-	TN_MOB_CHAR12,
-	TN_MOB_CHAR13,
-	TN_MOB_CHAR14,
-	TN_MOB_CHAR15,
-	TN_MOB_CHAR16,
-	TN_MOB_CHAR17,
+	TN_MOB_ALEX,
+	TN_MOB_ALEX1,
+	TN_MOB_ALEX2,
+	TN_MOB_ALEX3,
+	TN_MOB_ALEX4,
+	TN_MOB_ALEX5,
+	TN_MOB_ALEX6,
+	TN_MOB_ALEX7,
+	TN_MOB_DEVALEX,
+	TN_MOB_DEVSTEVE,
 
 	TN_MISC_MAPBG,
 

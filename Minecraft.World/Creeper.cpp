@@ -145,7 +145,7 @@ void Creeper::die(DamageSource *source)
 
 	if ( source->getEntity() != nullptr && source->getEntity()->instanceof(eTYPE_SKELETON) )
 	{
-		int recordId = Item::record_01_Id + random->nextInt(Item::record_12_Id - Item::record_01_Id + 1);
+		int recordId = Item::record_13_Id + random->nextInt(Item::record_wait_Id - Item::record_13_Id + 1);
 		spawnAtLocation(recordId, 1);
 	}
 
@@ -207,7 +207,7 @@ bool Creeper::mobInteract(shared_ptr<Player> player)
 {
 	shared_ptr<ItemInstance> item = player->inventory->getSelected();
 
-	if (item == nullptr || item->id != Item::flintAndSteel_Id)
+	if (item == nullptr || item->id != Item::flint_and_steel_Id)
 		return Mob::mobInteract(player);
 
 	playSound(eSoundType_FIRE_NEWIGNITE, 1, random->nextFloat() * 0.4f + 0.8f);

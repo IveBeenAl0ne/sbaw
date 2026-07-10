@@ -90,6 +90,7 @@ const wchar_t *ColourTable::ColourTableElements[eMinecraftColour_COUNT] =
 	L"Water_ExtremeHillsEdge",
 	L"Water_Jungle",
 	L"Water_JungleHills",
+	L"Water_JungleEdge",
 	L"Water_Mesa",
 
 	L"Sky_Ocean",
@@ -115,6 +116,7 @@ const wchar_t *ColourTable::ColourTableElements[eMinecraftColour_COUNT] =
 	L"Sky_ExtremeHillsEdge",
 	L"Sky_Jungle",
 	L"Sky_JungleHills",
+	L"Sky_JungleEdge",
 
 	L"Tile_RedstoneDust",
 	L"Tile_RedstoneDustUnlit",
@@ -342,6 +344,8 @@ const wchar_t *ColourTable::ColourTableElements[eMinecraftColour_COUNT] =
 	L"Color_EnchantTextFocus",
 	L"Color_EnchantTextDisabled",
 	L"Color_RenamedItemTitle",
+	L"Mob_PolarBear_Colour1",
+	L"Mob_PolarBear_Colour2",
 };
 
 void ColourTable::staticCtor()
