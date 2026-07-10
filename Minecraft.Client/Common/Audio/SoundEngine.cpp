@@ -57,6 +57,7 @@ void SoundEngine::playUI(int iSound, float volume, float pitch) {}
 
 void SoundEngine::updateMusicVolume(float fVal) {}
 void SoundEngine::updateSoundEffectVolume(float fVal) {}
+void SoundEngine::stopStreamingNow() {}
 
 void SoundEngine::add(const wstring& name, File *file) {}
 void SoundEngine::addMusic(const wstring& name, File *file) {}
@@ -66,6 +67,22 @@ bool SoundEngine::isStreamingWavebankReady() { return true; }
 void SoundEngine::playMusicTick() {};
 
 #else
+void SoundEngine::stopStreamingNow()
+{
+	if (m_musicStreamActive)
+	{
+		ma_sound_stop(&m_musicStream);
+		ma_sound_uninit(&m_musicStream);
+		m_musicStreamActive = false;
+	}
+
+	SetIsPlayingStreamingCDMusic(false);
+	SetIsPlayingStreamingGameMusic(false);
+
+	m_StreamState = eMusicStreamState_Idle;
+	m_musicID = -1;
+	m_iMusicDelay = 0;
+}
 
 #ifdef _WINDOWS64
 char SoundEngine::m_szSoundPath[]={"Windows64Media\\Sound\\"};
@@ -904,8 +921,15 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 	{
 		// jukebox
 		m_StreamingAudioInfo.bIs3D=true;
-		m_musicID=getMusicID(name);
-		m_iMusicDelay=0;
+		m_musicID = getMusicID(name);
+		m_iMusicDelay = 0;
+		
+		if (m_StreamState == eMusicStreamState_Playing || m_StreamState == eMusicStreamState_Opening || m_musicStreamActive)
+		{
+			m_StreamState = eMusicStreamState_Fading;
+			m_musicFadeSecondsRemaining = MUSIC_FADE_DURATION_SECONDS;
+			m_musicFadeLastUpdateTime = std::chrono::steady_clock::now();
+		}
 	}
 }
 

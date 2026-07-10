@@ -3648,6 +3648,149 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 			}
 		}
 
+#ifdef _WINDOWS64
+		static bool wasMiddleMouseDown = false;
+		const bool middleMouseDown = (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseGrabbed() && g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_MIDDLE));
+		const bool pickBlockPressed = middleMouseDown && !wasMiddleMouseDown;
+		wasMiddleMouseDown = middleMouseDown;
+
+		if (pickBlockPressed && gameMode->hasInfiniteItems() && hitResult != nullptr)
+		{
+			int pickedId = -1;
+			int pickedData = 0;
+
+			if (hitResult->type == HitResult::TILE)
+			{
+				const int hitX = hitResult->x;
+				const int hitY = hitResult->y;
+				const int hitZ = hitResult->z;
+				const int tileId = level->getTile(hitX, hitY, hitZ);
+
+				if (tileId > 0 && tileId < Tile::TILE_NUM_COUNT && Tile::tiles[tileId] != nullptr)
+				{
+					Tile *pickedTile = Tile::tiles[tileId];
+					const int tileData = level->getData(hitX, hitY, hitZ);
+
+					if (pickedTile->mayPick(tileData, false))
+					{
+						pickedId = pickedTile->cloneTileId(level, hitX, hitY, hitZ);
+						pickedData = pickedTile->cloneTileData(level, hitX, hitY, hitZ);
+					}
+				}
+			}
+			else if (hitResult->type == HitResult::ENTITY && hitResult->entity != nullptr)
+			{
+				shared_ptr<Entity> pickedEntity = hitResult->entity;
+				int eggAux = EntityIO::eTypeToIoid(pickedEntity->GetType());
+
+				if (eggAux >= 0)
+				{
+					if (pickedEntity->instanceof(eTYPE_GUARDIAN))
+					{
+						shared_ptr<Guardian> pickedGuardian = dynamic_pointer_cast<Guardian>(pickedEntity);
+						if (pickedGuardian != nullptr && pickedGuardian->isElder())
+						{
+							eggAux = EntityIO::eTypeToIoid(eTYPE_ELDER_GUARDIAN);
+						}
+					}
+					else if (pickedEntity->instanceof(eTYPE_HORSE))
+					{
+						shared_ptr<EntityHorse> pickedHorse = dynamic_pointer_cast<EntityHorse>(pickedEntity);
+						if (pickedHorse != nullptr)
+						{
+							const int horseType = pickedHorse->getType();
+							if (horseType != EntityHorse::TYPE_HORSE)
+							{
+								eggAux = (eggAux & 0xFFF) | ((horseType + 1) << 12);
+							}
+						}
+					}
+					else if (pickedEntity->instanceof(eTYPE_OCELOT))
+					{
+						shared_ptr<Ocelot> pickedOcelot = dynamic_pointer_cast<Ocelot>(pickedEntity);
+						if (pickedOcelot != nullptr)
+						{
+							const int catType = pickedOcelot->getCatType();
+							if (catType != Ocelot::TYPE_OCELOT)
+							{
+								eggAux = (eggAux & 0xFFF) | ((catType + 1) << 12);
+							}
+						}
+					}
+
+					auto spawnEggIt = EntityIO::idsSpawnableInCreative.find(eggAux);
+					if (spawnEggIt == EntityIO::idsSpawnableInCreative.end())
+					{
+						const int fallbackEggAux = eggAux & 0xFFF;
+						auto fallbackIt = EntityIO::idsSpawnableInCreative.find(fallbackEggAux);
+						if (fallbackIt != EntityIO::idsSpawnableInCreative.end())
+						{
+							eggAux = fallbackEggAux;
+						}
+						else
+						{
+							eggAux = -1;
+						}
+					}
+
+					if (eggAux >= 0 && Item::spawn_egg_Id >= 0 && Item::spawn_egg_Id < Item::items.length && Item::items[Item::spawn_egg_Id] != nullptr)
+					{
+						pickedId = Item::spawn_egg_Id;
+						pickedData = eggAux;
+					}
+				}
+			}
+
+			if (pickedId >= 0 && pickedId < Item::items.length && Item::items[pickedId] != nullptr)
+			{
+				shared_ptr<Inventory> playerInventory = player->inventory;
+				const int previousSelected = playerInventory->selected;
+				const int fallbackSelected = (previousSelected >= 0 && previousSelected < Inventory::getSelectionSize()) ? previousSelected : 0;
+				int targetSlot = -1;
+
+				for (int slot = 0; slot < Inventory::getSelectionSize(); ++slot)
+				{
+					shared_ptr<ItemInstance> hotbarItem = playerInventory->items[slot];
+					if (hotbarItem != nullptr && hotbarItem->id == pickedId &&
+						(!hotbarItem->isStackedByData() || hotbarItem->getAuxValue() == pickedData))
+					{
+						targetSlot = slot;
+						break;
+					}
+				}
+
+				if (targetSlot < 0)
+				{
+					for (int slot = 0; slot < Inventory::getSelectionSize(); ++slot)
+					{
+						if (playerInventory->items[slot] == nullptr)
+						{
+							targetSlot = slot;
+							break;
+						}
+					}
+
+					if (targetSlot < 0)
+					{
+						targetSlot = fallbackSelected;
+					}
+
+					playerInventory->items[targetSlot] = std::make_shared<ItemInstance>(Item::items[pickedId], 1, pickedData);
+					gameMode->handleCreativeModeItemAdd(playerInventory->items[targetSlot], 36 + targetSlot);
+				}
+
+				playerInventory->selected = targetSlot;
+
+				if( gameMode != nullptr && gameMode->getTutorial() != nullptr )
+				{
+					gameMode->getTutorial()->onSelectedItemChanged(playerInventory->getSelected());
+				}
+
+				player->updateRichPresence();
+			}
+		}
+#endif
+
 		if( gameMode->isInputAllowed(MINECRAFT_ACTION_ACTION) )
 		{
 			if((player->ullButtonsPressed&(1LL<<MINECRAFT_ACTION_ACTION)))
