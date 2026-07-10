@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<loot_table>
+  <pools>
+    <pool>
+      <rolls>1</rolls>
+      <entries>
+        <entrie>
+          <type>item</type>
+          <name>minecraft:rotten_flesh</name>
+        </entrie>
+      </entries>
+    </pool>
+  </pools>
+</loot_table>
