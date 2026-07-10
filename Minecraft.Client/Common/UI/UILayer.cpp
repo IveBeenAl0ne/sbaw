@@ -178,17 +178,23 @@ void UILayer::DestroyAll()
 	}
 }
 
-void UILayer::ReloadAll(bool force)
+void UILayer::ReloadAll(bool force, UIScene *skipScene)
 {
 	for(auto& it : m_components)
 	{
-		it->reloadMovie(force);
+		if(it != skipScene)
+		{
+			it->reloadMovie(force);
+		}
 	}
 	if(!m_sceneStack.empty())
 	{
 		for(auto& lowestRenderable : m_sceneStack)
 		{
-			lowestRenderable->reloadMovie(force);
+			if(lowestRenderable != skipScene)
+			{
+				lowestRenderable->reloadMovie(force);
+			}
 		}
 	}
 }

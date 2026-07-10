@@ -149,5 +149,6 @@
 #include "BeetrootTile.h"
 #include "MagmaTile.h"
 #include "BoneBlockTile.h"
+#include "BannerTile.h"
 
 

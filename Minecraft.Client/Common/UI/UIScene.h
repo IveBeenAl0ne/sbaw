@@ -94,6 +94,7 @@ protected:
 	int m_movieWidth, m_movieHeight;
 	int m_renderWidth, m_renderHeight;
 	vector<UIControl *> m_controls;
+	bool m_bWasMarioWorld;
 
 protected:
 	UILayer *m_parentLayer;
@@ -109,6 +110,8 @@ public:
 	virtual bool needsReloaded();
 	virtual bool hasMovie();
 	virtual void updateSafeZone();
+
+	static bool SceneShouldUse1080p(const std::wstring &moviePath);
 
 	int getRenderWidth() { return m_renderWidth; }
 	int getRenderHeight() { return m_renderHeight; }

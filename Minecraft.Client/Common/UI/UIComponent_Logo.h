@@ -10,6 +10,10 @@ public:
 protected:
 	// TODO: This should be pure virtual in this class
 	virtual wstring getMoviePath();
+	virtual bool needsReloaded();
+
+private:
+	bool m_bFullscreenProgressLogoRefreshed;
 
 public:
 	virtual EUIScene getSceneType() { return eUIComponent_Logo;}

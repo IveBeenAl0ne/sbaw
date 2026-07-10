@@ -968,11 +968,7 @@ bool MinecraftServer::loadLevel(LevelStorageSource *storageSource, const wstring
 
 		storage = shared_ptr<McRegionLevelStorage>(new McRegionLevelStorage(newFormatSave, File(L"."), name, true));
 #else
-		ConsoleSaveFileOriginal* pSave = new ConsoleSaveFileOriginal(L"");
-
-		pSave->ConvertToLocalPlatform();
-		storage = std::make_shared<McRegionLevelStorage>(pSave, File(L"."), name, true);
-	
+		storage = std::make_shared<McRegionLevelStorage>(new ConsoleSaveFileOriginal(L""), File(L"."), name, true);
 #endif
 	}
 

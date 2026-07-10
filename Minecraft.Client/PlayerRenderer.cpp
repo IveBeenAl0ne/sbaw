@@ -627,6 +627,13 @@ void PlayerRenderer::additionalRendering(shared_ptr<LivingEntity> _mob, float a)
 				glRotatef(45, 0, 1, 0);
 				glScalef(-s, -s, s);
 			}
+			else if (dynamic_cast<BannerItem*>(Item::items[item->id]) != nullptr)
+			{
+				glTranslatef(0 / 16.0f, 2 / 16.0f, -4 / 16.0f);
+				glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+				glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+				glScalef(0.22f, 0.22f, 0.22f);
+			}
 			else
 			{
 				float s = 6 / 16.0f;

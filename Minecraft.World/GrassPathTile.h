@@ -4,6 +4,7 @@
 class GrassPathTile : public Tile
 {
 	Icon *iconTop;
+	Icon *iconBottom;
 
 public:
 	GrassPathTile(int id);

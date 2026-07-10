@@ -277,6 +277,8 @@ BoneBlockTile* Tile::bone_block = nullptr;
 
 Tile* Tile::barrier = nullptr;
 TallGrass2* Tile::double_plant = nullptr;
+BannerTile* Tile::standing_banner = nullptr;
+BannerTile* Tile::wall_banner = nullptr;
 
 DWORD Tile::tlsIdxShape = TlsAlloc();
 
@@ -618,6 +620,11 @@ void Tile::staticCtor()
 	Tile::prismarine = (new PrismarineTile(168))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(1.5f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"prismarine")->setDescriptionId(IDS_TILE_PRISMARINE)->setUseDescriptionId(IDS_DESC_PRISMARINE);
 
 	Tile::double_plant = static_cast<TallGrass2*>((new TallGrass2(175))->setDestroyTime(0.0f)->setSoundType(Tile::SOUND_GRASS)->setIconName(L"tallgrass2_tall_grass_upper")->setDescriptionId(IDS_DESC_DOUBLE_TALL_GRASS)->setUseDescriptionId(IDS_DESC_TALL_GRASS)->disableMipmap()->sendTileData(0xFF));
+
+	Tile::standing_banner = static_cast<BannerTile*>((new BannerTile(176, true))->setDestroyTime(1.0f)->setSoundType(Tile::SOUND_WOOD)->setIconName(L"planks_oak")->setNotCollectStatistics()->sendTileData()->setUseDescriptionId(IDS_DESC_SIGN));
+	Tile::wall_banner    = static_cast<BannerTile*>((new BannerTile(177, false))->setDestroyTime(1.0f)->setSoundType(Tile::SOUND_WOOD)->setIconName(L"planks_oak")->setNotCollectStatistics()->sendTileData()->setUseDescriptionId(IDS_DESC_SIGN));
+
+	Item::items[standing_banner_Id] = (new BannerItem(standing_banner_Id - 256))->setIconName(L"sign")->setDescriptionId(IDS_TILE_BANNER)->setUseDescriptionId(IDS_DESC_SIGN);
 
 	// Special cases for certain items since they can have different icons
 	Item::items[wool_Id]				= ( new WoolTileItem(Tile::wool_Id- 256) )->setIconName(L"cloth")->setDescriptionId(IDS_TILE_CLOTH)->setUseDescriptionId(IDS_DESC_WOOL);

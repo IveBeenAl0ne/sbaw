@@ -415,6 +415,8 @@ set(_MINECRAFT_SERVER_COMMON_ROOT
   "${_MS_SRC}/../Minecraft.Client/RabbitRenderer.cpp"
   "${_MS_SRC}/../Minecraft.Client/PolarBearModel.cpp"
   "${_MS_SRC}/../Minecraft.Client/PolarBearRenderer.cpp"
+  "${_MS_SRC}/../Minecraft.Client/BannerModel.cpp"
+  "${_MS_SRC}/../Minecraft.Client/BannerRenderer.cpp"
   "${_MS_SRC}/../Minecraft.Client/Rect2i.cpp"
   "${_MS_SRC}/../Minecraft.Client/RedDustParticle.cpp"
   "${_MS_SRC}/../Minecraft.Client/RemotePlayer.cpp"

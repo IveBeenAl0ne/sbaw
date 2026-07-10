@@ -22,7 +22,7 @@ jobs:
         run: |
           git fetch --all
           for branch in $(git for-each-ref --format='%(refname:short)' refs/remotes/origin/); do
-            if [[ "$branch" == "origin/exp/"* || "$branch" == "origin/feat/"* || "$branch" == "origin/experimental" ]]; then
+            if [[ "$branch" == "origin/exp/"* || "$branch" == "origin/feat/"* || "$branch" == "origin/experimental" || "$branch" == "origin/TU"* ]]; then
               local_branch="${branch#origin/}"
               git checkout -B "$local_branch" "$branch"
               if git merge origin/main --no-edit; then

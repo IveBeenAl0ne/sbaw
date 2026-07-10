@@ -3712,7 +3712,7 @@ Can also be used for low-level lighting.</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY">
-		<value>Stained Clay</value>
+		<value>Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_HAY">
@@ -3728,67 +3728,67 @@ Can also be used for low-level lighting.</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_BLACK">
-		<value>Black Stained Clay</value>
+		<value>Black Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_RED">
-		<value>Red Stained Clay</value>
+		<value>Red Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_GREEN">
-		<value>Green Stained Clay</value>
+		<value>Green Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_BROWN">
-		<value>Brown Stained Clay</value>
+		<value>Brown Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_BLUE">
-		<value>Blue Stained Clay</value>
+		<value>Blue Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_PURPLE">
-		<value>Purple Stained Clay</value>
+		<value>Purple Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_CYAN">
-		<value>Cyan Stained Clay</value>
+		<value>Cyan Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_SILVER">
-		<value>Light Gray Stained Clay</value>
+		<value>Light Gray Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_GRAY">
-		<value>Gray Stained Clay</value>
+		<value>Gray Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_PINK">
-		<value>Pink Stained Clay</value>
+		<value>Pink Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_LIME">
-		<value>Lime Stained Clay</value>
+		<value>Lime Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_YELLOW">
-		<value>Yellow Stained Clay</value>
+		<value>Yellow Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_LIGHT_BLUE">
-		<value>Light Blue Stained Clay</value>
+		<value>Light Blue Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_MAGENTA">
-		<value>Magenta Stained Clay</value>
+		<value>Magenta Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_ORANGE">
-		<value>Orange Stained Clay</value>
+		<value>Orange Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_CLAY_WHITE">
-		<value>White Stained Clay</value>
+		<value>White Hardened Clay</value>
 	</data>	
 
 	<data name="IDS_TILE_STAINED_GLASS">
@@ -9693,5 +9693,73 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 
     <data name="IDS_TOOLTIPS_REMOVE_FAVORITE">
 		<value>Remove Favorite</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER">
+		<value>Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_BLACK">
+		<value>Black Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_RED">
+		<value>Red Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_GREEN">
+		<value>Green Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_BROWN">
+		<value>Brown Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_BLUE">
+		<value>Blue Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_PURPLE">
+		<value>Purple Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_CYAN">
+		<value>Cyan Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_SILVER">
+		<value>Light Gray Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_GRAY">
+		<value>Gray Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_PINK">
+		<value>Pink Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_LIME">
+		<value>Lime Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_YELLOW">
+		<value>Yellow Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_LIGHT_BLUE">
+		<value>Light Blue Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_MAGENTA">
+		<value>Magenta Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_ORANGE">
+		<value>Orange Banner</value>
+	</data>
+
+	<data name="IDS_TILE_BANNER_WHITE">
+		<value>White Banner</value>
 	</data>
 </root>

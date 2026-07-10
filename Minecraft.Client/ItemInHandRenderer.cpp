@@ -12,6 +12,8 @@
 #include "Minimap.h"
 #include "MultiPlayerLevel.h"
 #include "SkullTileRenderer.h"
+#include "BannerRenderer.h"
+#include "../Minecraft.World/BannerItem.h"
 #include "../Minecraft.World/Facing.h"
 #include "../Minecraft.World/net.minecraft.world.item.h"
 #include "../Minecraft.World/net.minecraft.world.level.tile.h"
@@ -251,6 +253,14 @@ void ItemInHandRenderer::renderItem(shared_ptr<LivingEntity> mob, shared_ptr<Ite
 		glRotatef(-20, 0, 0, 1); 
 		SkullTileRenderer::instance->renderSkull(-1.0f, -0.9f, 0.0f, Facing::UP, 0.0f, item->getAuxValue(), extra);
 		glScalef(0.5f, 0.5f, 0.5f);
+		glPopMatrix();
+		return;
+	}
+
+	if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
+	{
+		int baseColor = item->getAuxValue() & 15;
+		BannerRenderer::instance->renderBannerForHand(1.0f, baseColor);
 		glPopMatrix();
 		return;
 	}
@@ -706,6 +716,17 @@ void ItemInHandRenderer::render(float a)
 			glRotatef(5.0f, 0.0f, 0.0f, 1.0f);
 			glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
 			SkullTileRenderer::instance->renderSkull(-1.0f, 0.26f, 0.35f, Facing::UP, 0.0f, item->getAuxValue(), extra);
+			glPopMatrix();
+			return;
+		}
+		else if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
+		{
+			int baseColor = item->getAuxValue() & 15;
+			glRotatef(50.0f, 0.0f, 1.0f, 0.0f);
+			glTranslatef(0.0f, 0.05f, 0.0f);
+			const float bs = 0.6f;
+			glScalef(bs, -bs, -bs);
+			BannerRenderer::instance->renderBannerForHand(1.0f, baseColor);
 			glPopMatrix();
 			return;
 		}

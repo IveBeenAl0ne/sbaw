@@ -311,6 +311,20 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM(Tile::bookshelf_Id)
 		ITEM(Item::flower_pot_Id)
 		ITEM(Tile::hay_block_Id)
+		ITEM_AUX(Tile::standing_banner_Id, 1)	// Red
+		ITEM_AUX(Tile::standing_banner_Id, 14)	// Orange
+		ITEM_AUX(Tile::standing_banner_Id, 11)	// Yellow
+		ITEM_AUX(Tile::standing_banner_Id, 10)	// Green
+		ITEM_AUX(Tile::standing_banner_Id, 12)	// Light Blue
+		ITEM_AUX(Tile::standing_banner_Id, 6)	// Cyan
+		ITEM_AUX(Tile::standing_banner_Id, 4)	// Blue
+		ITEM_AUX(Tile::standing_banner_Id, 5)	// Purple
+		ITEM_AUX(Tile::standing_banner_Id, 13)	// Magenta
+		ITEM_AUX(Tile::standing_banner_Id, 9)	// Pink
+		ITEM_AUX(Tile::standing_banner_Id, 15)	// White
+		ITEM_AUX(Tile::standing_banner_Id, 8)	// Dark Grey
+		ITEM_AUX(Tile::standing_banner_Id, 7)	// Light Grey
+		ITEM_AUX(Tile::standing_banner_Id, 0)	// Black
 		ITEM_AUX(Tile::wool_Id,14)	// Red
 		ITEM_AUX(Tile::wool_Id,1)	// Orange
 		ITEM_AUX(Tile::wool_Id,4)	// Yellow
@@ -378,6 +392,7 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM_AUX(Tile::stained_glass_pane_Id,15)	// Black
 		ITEM_AUX(Tile::stained_glass_pane_Id,13)	// Green
 		ITEM_AUX(Tile::stained_glass_pane_Id,12)	// Brown
+
 
 #ifndef _CONTENT_PACKAGE
 	DEF(eCreativeInventory_ArtToolsDecorations)

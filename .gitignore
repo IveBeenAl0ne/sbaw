@@ -441,5 +441,6 @@ result-*
 # macOS
 .DS_Store
 
+
 # stop dlcs from prs
 Minecraft.Client/Windows64Media/DLC/*

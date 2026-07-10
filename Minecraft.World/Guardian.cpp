@@ -206,7 +206,10 @@ float Guardian::getSpikesAnimation(float partialTicks)
 
 void Guardian::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
-    //loot (prismarine, sponge) 
+    if (isElder())
+    {
+        spawnAtLocation(make_shared<ItemInstance>(Tile::sponge_Id, 1, 0), 0.0f);
+    }
 }
 
 float Guardian::getEyeHeight()
