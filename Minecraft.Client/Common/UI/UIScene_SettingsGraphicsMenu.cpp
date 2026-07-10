@@ -232,7 +232,7 @@ void UIScene_SettingsGraphicsMenu::handleSliderMove(F64 sliderId, F64 currentVal
 	int sliderIdInt = static_cast<int>(sliderId);
 	int value = static_cast<int>(currentValue);
 
-	ui.PlayUISFX(eSFX_Scroll);
+	m_multiList.handleSliderMove(sliderIdInt, value);
 
 	switch (sliderIdInt)
 	{
