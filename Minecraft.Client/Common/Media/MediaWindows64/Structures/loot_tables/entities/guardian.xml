@@ -4,7 +4,7 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:prismarine_shard</name>
           <weight>1</weight>
@@ -24,13 +24,13 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:fish</name>
           <weight>2</weight>
@@ -43,8 +43,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:prismarine_crystals</name>
           <weight>2</weight>
@@ -57,11 +57,11 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>empty</type>
           <weight>1</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
@@ -77,11 +77,11 @@
       </conditions>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>loot_table</type>
           <name>minecraft:gameplay/fishing/fish</name>
           <weight>1</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

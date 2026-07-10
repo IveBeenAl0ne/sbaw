@@ -4,7 +4,7 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:rotten_flesh</name>
           <weight>1</weight>
@@ -24,13 +24,13 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:gold_nugget</name>
           <weight>1</weight>
@@ -50,7 +50,7 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
@@ -66,11 +66,11 @@
       </conditions>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:gold_ingot</name>
           <weight>1</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

@@ -4,7 +4,7 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:rabbit_hide</name>
           <weight>1</weight>
@@ -24,13 +24,13 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:rabbit</name>
           <weight>1</weight>
@@ -55,7 +55,7 @@
               </conditions>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
@@ -71,11 +71,11 @@
       </conditions>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:rabbit_foot</name>
           <weight>1</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

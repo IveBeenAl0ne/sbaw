@@ -7,17 +7,17 @@
         <max>3</max>
       </rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:saddle</name>
           <weight>20</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:golden_apple</name>
           <weight>15</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:golden_apple</name>
           <weight>2</weight>
@@ -27,38 +27,38 @@
               <data>1</data>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:record_13</name>
           <weight>15</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:record_cat</name>
           <weight>15</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:name_tag</name>
           <weight>20</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:golden_horse_armor</name>
           <weight>10</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_horse_armor</name>
           <weight>15</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_horse_armor</name>
           <weight>5</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:book</name>
           <weight>10</weight>
@@ -67,7 +67,7 @@
               <function>enchant_randomly</function>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
@@ -76,7 +76,7 @@
         <max>4</max>
       </rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_ingot</name>
           <weight>10</weight>
@@ -89,8 +89,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:gold_ingot</name>
           <weight>5</weight>
@@ -103,13 +103,13 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:bread</name>
           <weight>20</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:wheat</name>
           <weight>20</weight>
@@ -122,13 +122,13 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:bucket</name>
           <weight>10</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:redstone</name>
           <weight>15</weight>
@@ -141,8 +141,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:coal</name>
           <weight>15</weight>
@@ -155,8 +155,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:melon_seeds</name>
           <functions>
@@ -169,8 +169,8 @@
             </function>
           </functions>
           <weight>10</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:pumpkin_seeds</name>
           <functions>
@@ -183,8 +183,8 @@
             </function>
           </functions>
           <weight>10</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:beetroot_seeds</name>
           <functions>
@@ -197,13 +197,13 @@
             </function>
           </functions>
           <weight>10</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
       <rolls>3</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:bone</name>
           <weight>10</weight>
@@ -216,8 +216,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:gunpowder</name>
           <weight>10</weight>
@@ -230,8 +230,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:rotten_flesh</name>
           <weight>10</weight>
@@ -244,8 +244,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:string</name>
           <weight>10</weight>
@@ -258,7 +258,7 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

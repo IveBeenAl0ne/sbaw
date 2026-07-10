@@ -4,7 +4,7 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:dye</name>
           <weight>1</weight>
@@ -28,7 +28,7 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

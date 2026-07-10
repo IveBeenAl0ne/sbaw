@@ -7,7 +7,7 @@
         <max>4</max>
       </rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_ingot</name>
           <functions>
@@ -20,8 +20,8 @@
             </function>
           </functions>
           <weight>10</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:gold_ingot</name>
           <functions>
@@ -34,8 +34,8 @@
             </function>
           </functions>
           <weight>5</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:redstone</name>
           <functions>
@@ -48,8 +48,8 @@
             </function>
           </functions>
           <weight>5</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:coal</name>
           <functions>
@@ -62,8 +62,8 @@
             </function>
           </functions>
           <weight>10</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:bread</name>
           <functions>
@@ -76,8 +76,8 @@
             </function>
           </functions>
           <weight>15</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:apple</name>
           <functions>
@@ -90,13 +90,13 @@
             </function>
           </functions>
           <weight>15</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_pickaxe</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:book</name>
           <weight>1</weight>
@@ -107,7 +107,7 @@
               <treasure>True</treasure>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

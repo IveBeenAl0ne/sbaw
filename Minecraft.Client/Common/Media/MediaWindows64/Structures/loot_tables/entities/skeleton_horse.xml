@@ -4,10 +4,10 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:bone</name>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

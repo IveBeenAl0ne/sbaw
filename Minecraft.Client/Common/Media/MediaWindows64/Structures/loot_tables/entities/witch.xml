@@ -7,7 +7,7 @@
         <max>3</max>
       </rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:glowstone_dust</name>
           <weight>1</weight>
@@ -27,8 +27,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:sugar</name>
           <weight>1</weight>
@@ -48,8 +48,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:redstone</name>
           <weight>1</weight>
@@ -69,8 +69,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:spider_eye</name>
           <weight>1</weight>
@@ -90,8 +90,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:glass_bottle</name>
           <weight>1</weight>
@@ -111,8 +111,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:gunpowder</name>
           <weight>1</weight>
@@ -132,8 +132,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:stick</name>
           <weight>2</weight>
@@ -153,7 +153,7 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

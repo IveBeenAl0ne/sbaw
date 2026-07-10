@@ -4,7 +4,7 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:rotten_flesh</name>
           <weight>1</weight>
@@ -24,7 +24,7 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
@@ -40,21 +40,21 @@
       </conditions>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_ingot</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:carrot</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:potato</name>
           <weight>1</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

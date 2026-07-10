@@ -5,7 +5,7 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:blaze_rod</name>
           <weight>1</weight>
@@ -25,7 +25,7 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
       <conditions>
         <condition>
@@ -37,7 +37,7 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:glowstone_dust</name>
           <weight>1</weight>
@@ -57,7 +57,7 @@
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
       <conditions>
         <condition>

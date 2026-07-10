@@ -4,22 +4,22 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:waterlily</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:name_tag</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:saddle</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:bow</name>
           <weight>1</weight>
@@ -37,8 +37,8 @@
               <treasure>True</treasure>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:fishing_rod</name>
           <weight>1</weight>
@@ -56,8 +56,8 @@
               <treasure>True</treasure>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:book</name>
           <weight>1</weight>
@@ -68,7 +68,7 @@
               <treasure>True</treasure>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

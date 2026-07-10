@@ -7,7 +7,7 @@
         <max>10</max>
       </rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:book</name>
           <functions>
@@ -20,8 +20,8 @@
             </function>
           </functions>
           <weight>20</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:paper</name>
           <functions>
@@ -34,18 +34,18 @@
             </function>
           </functions>
           <weight>20</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:map</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:compass</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:book</name>
           <weight>10</weight>
@@ -56,7 +56,7 @@
               <treasure>True</treasure>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

@@ -7,7 +7,7 @@
         <max>6</max>
       </rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond</name>
           <weight>5</weight>
@@ -20,8 +20,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_ingot</name>
           <weight>10</weight>
@@ -34,8 +34,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:gold_ingot</name>
           <weight>15</weight>
@@ -48,8 +48,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:emerald</name>
           <weight>2</weight>
@@ -62,8 +62,8 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:beetroot_seeds</name>
           <weight>5</weight>
@@ -76,28 +76,28 @@
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:saddle</name>
           <weight>3</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_horse_armor</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:golden_horse_armor</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_horse_armor</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_sword</name>
           <weight>3</weight>
@@ -111,8 +111,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_boots</name>
           <weight>3</weight>
@@ -126,8 +126,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_chestplate</name>
           <weight>3</weight>
@@ -141,8 +141,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_leggings</name>
           <weight>3</weight>
@@ -156,8 +156,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_helmet</name>
           <weight>3</weight>
@@ -171,8 +171,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_pickaxe</name>
           <weight>3</weight>
@@ -186,8 +186,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_shovel</name>
           <weight>3</weight>
@@ -201,8 +201,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_sword</name>
           <weight>3</weight>
@@ -216,8 +216,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_boots</name>
           <weight>3</weight>
@@ -231,8 +231,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_chestplate</name>
           <weight>3</weight>
@@ -246,8 +246,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_leggings</name>
           <weight>3</weight>
@@ -261,8 +261,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_helmet</name>
           <weight>3</weight>
@@ -276,8 +276,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_pickaxe</name>
           <weight>3</weight>
@@ -291,8 +291,8 @@
               </levels>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_shovel</name>
           <weight>3</weight>
@@ -306,7 +306,7 @@
               </levels>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

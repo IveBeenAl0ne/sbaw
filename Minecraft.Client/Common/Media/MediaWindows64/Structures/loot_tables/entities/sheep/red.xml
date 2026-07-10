@@ -4,27 +4,27 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:wool</name>
           <weight>1</weight>
           <functions>
             <function>
-              <function>minecraft:set_data</function>
+              <function>set_data</function>
               <data>14</data>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>loot_table</type>
           <name>minecraft:entities/sheep</name>
           <weight>1</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

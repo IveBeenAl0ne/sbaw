@@ -7,7 +7,7 @@
         <max>6</max>
       </rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond</name>
           <functions>
@@ -20,8 +20,8 @@
             </function>
           </functions>
           <weight>3</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_ingot</name>
           <functions>
@@ -34,8 +34,8 @@
             </function>
           </functions>
           <weight>10</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:gold_ingot</name>
           <functions>
@@ -48,8 +48,8 @@
             </function>
           </functions>
           <weight>15</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:emerald</name>
           <functions>
@@ -62,8 +62,8 @@
             </function>
           </functions>
           <weight>2</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:bone</name>
           <functions>
@@ -76,8 +76,8 @@
             </function>
           </functions>
           <weight>20</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:rotten_flesh</name>
           <functions>
@@ -90,28 +90,28 @@
             </function>
           </functions>
           <weight>16</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:saddle</name>
           <weight>3</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:iron_horse_armor</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:golden_horse_armor</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:diamond_horse_armor</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:book</name>
           <weight>1</weight>
@@ -122,7 +122,7 @@
               <treasure>True</treasure>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

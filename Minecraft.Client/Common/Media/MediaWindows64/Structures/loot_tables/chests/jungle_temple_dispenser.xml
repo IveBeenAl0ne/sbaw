@@ -7,7 +7,7 @@
         <max>2</max>
       </rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:arrow</name>
           <functions>
@@ -20,7 +20,7 @@
             </function>
           </functions>
           <weight>30</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

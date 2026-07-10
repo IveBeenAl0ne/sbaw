@@ -4,7 +4,7 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:fish</name>
           <functions>
@@ -14,8 +14,8 @@
             </function>
           </functions>
           <weight>60</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:fish</name>
           <functions>
@@ -25,8 +25,8 @@
             </function>
           </functions>
           <weight>25</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:fish</name>
           <functions>
@@ -36,8 +36,8 @@
             </function>
           </functions>
           <weight>2</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:fish</name>
           <functions>
@@ -47,7 +47,7 @@
             </function>
           </functions>
           <weight>13</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>

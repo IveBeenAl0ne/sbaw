@@ -4,157 +4,157 @@
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:stone_axe</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:wooden_axe</name>
           <weight>3</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
       <rolls>1</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:stone_pickaxe</name>
           <weight>1</weight>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:wooden_pickaxe</name>
           <weight>3</weight>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
       <rolls>3</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:apple</name>
           <weight>5</weight>
           <functions>
             <function>
-              <function>minecraft:set_count</function>
+              <function>set_count</function>
               <count>
                 <min>1</min>
                 <max>2</max>
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:bread</name>
           <weight>3</weight>
           <functions>
             <function>
-              <function>minecraft:set_count</function>
+              <function>set_count</function>
               <count>
                 <min>1</min>
                 <max>2</max>
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:fish</name>
           <weight>3</weight>
           <functions>
             <function>
-              <function>minecraft:set_data</function>
+              <function>set_data</function>
               <data>1</data>
             </function>
             <function>
-              <function>minecraft:set_count</function>
+              <function>set_count</function>
               <count>
                 <min>1</min>
                 <max>2</max>
               </count>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
     <pool>
       <rolls>4</rolls>
       <entries>
-        <entrie>
+        <entry>
           <type>item</type>
           <name>minecraft:stick</name>
           <weight>10</weight>
           <functions>
             <function>
-              <function>minecraft:set_count</function>
+              <function>set_count</function>
               <count>
                 <min>1</min>
                 <max>12</max>
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:planks</name>
           <weight>10</weight>
           <functions>
             <function>
-              <function>minecraft:set_count</function>
+              <function>set_count</function>
               <count>
                 <min>1</min>
                 <max>12</max>
               </count>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:log</name>
           <weight>10</weight>
           <functions>
             <function>
-              <function>minecraft:set_count</function>
+              <function>set_count</function>
               <count>
                 <min>1</min>
                 <max>3</max>
               </count>
             </function>
             <function>
-              <function>minecraft:set_data</function>
+              <function>set_data</function>
               <data>
                 <min>0</min>
                 <max>3</max>
               </data>
             </function>
           </functions>
-        </entrie>
-        <entrie>
+        </entry>
+        <entry>
           <type>item</type>
           <name>minecraft:log2</name>
           <weight>10</weight>
           <functions>
             <function>
-              <function>minecraft:set_count</function>
+              <function>set_count</function>
               <count>
                 <min>1</min>
                 <max>3</max>
               </count>
             </function>
             <function>
-              <function>minecraft:set_data</function>
+              <function>set_data</function>
               <data>
                 <min>0</min>
                 <max>1</max>
               </data>
             </function>
           </functions>
-        </entrie>
+        </entry>
       </entries>
     </pool>
   </pools>
