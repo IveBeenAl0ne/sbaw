@@ -39,7 +39,7 @@ protected:
     virtual int getDeathSound();
 	virtual void playStepSound(int xt, int yt, int zt, int t);
     virtual int getDeathLoot();
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 	
 	virtual void addAdditonalSaveData(CompoundTag *tag);
 	virtual void readAdditionalSaveData(CompoundTag *tag);

@@ -120,6 +120,7 @@ int Chicken::getDeathLoot()
 	return Item::feather->id;
 }
 
+/*
 void Chicken::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	// drop some feathers
@@ -138,6 +139,7 @@ void Chicken::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 		spawnAtLocation(Item::chicken_Id, 1);
 	}
 }
+*/
 
 void Chicken::addAdditonalSaveData(CompoundTag *tag)
 {

@@ -89,14 +89,16 @@ int SnowMan::getDeathLoot()
 }
 
 
+/*
 void SnowMan::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
-	// drop some feathers
+	// drop some snowballs
 	int count = random->nextInt(16);
 	for (int i = 0; i < count; i++) {
 		spawnAtLocation(Item::snowball_Id, 1);
 	}
 }
+*/
 
 void SnowMan::performRangedAttack(shared_ptr<LivingEntity> target, float power)
 {

@@ -31,7 +31,7 @@ protected:
 	virtual void playStepSound(int xt, int yt, int zt, int t);
 	virtual void checkHurtTarget(shared_ptr<Entity> target, float d);
 	virtual int getDeathLoot();
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	virtual bool onLadder();
