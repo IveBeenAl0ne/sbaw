@@ -193,12 +193,6 @@ void UIScene_HelpAndOptionsMenu::handleInput(int iPad, int key, bool repeat, boo
 #ifdef __ORBIS__
 	case ACTION_MENU_TOUCHPAD_PRESS:
 #endif
-	//CD - Added for audio
-	if(pressed)
-	{
-		ui.PlayUISFX(eSFX_Press);
-	}
-
 	case ACTION_MENU_UP:
 	case ACTION_MENU_DOWN:
 		sendInputToMovie(key, repeat, pressed, released);
@@ -208,6 +202,8 @@ void UIScene_HelpAndOptionsMenu::handleInput(int iPad, int key, bool repeat, boo
 
 void UIScene_HelpAndOptionsMenu::handlePress(F64 controlId, F64 childId)
 {
+	ui.PlayUISFX(eSFX_Press);
+
 	switch(static_cast<int>(controlId))
 	{
 	case BUTTON_HAO_CHANGESKIN:
