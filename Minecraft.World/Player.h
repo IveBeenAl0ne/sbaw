@@ -85,13 +85,21 @@ public:
 	float rotateElytraX; 
 	float rotateElytraY;
 	float rotateElytraZ;
-	float m_elytraImpactYd;    
-	bool  m_wasElytraFlying;   
-	int   m_elytraFallProtectTicks; 
+	float m_elytraImpactYd;
+	bool  m_wasElytraFlying;
+	int   m_elytraFallProtectTicks;
+	float m_elytraMaxY;
+
+public:
+	int   m_fireworkBoostTicks;
+	int   m_elytraRocketCooldown;
+public:
+	void startFireworkBoost(shared_ptr<ItemInstance> firework); 
 	bool isElytraFlying();
 	virtual void setElytraFlying(bool flying);
 
 	virtual void onElytraKineticDamage(float damage);
+	virtual void onElytraFallDamage(int amount);
 
 public:
 

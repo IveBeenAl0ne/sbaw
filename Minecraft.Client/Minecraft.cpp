@@ -4342,10 +4342,10 @@ void Minecraft::releaseLevel(int message)
 // time when exiting from an online game
 void Minecraft::forceStatsSave(int idx)
 {
-	//4J Gordon: Force a stats save
+	if (idx < 0 || idx >= 4 || stats[idx] == nullptr) return;
+
 	stats[idx]->save(idx, true);
 
-	//4J Gordon: If the player is signed in, save the leaderboards
 	if( ProfileManager.IsSignedInLive(idx) )
 	{
 		int tempLockedProfile = ProfileManager.GetLockedProfile();

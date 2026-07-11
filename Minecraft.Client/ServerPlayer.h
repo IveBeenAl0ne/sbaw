@@ -31,6 +31,7 @@ public:
 	vector<int> entitiesToRemove;
 	unordered_set<ChunkPos, ChunkPosKeyHash, ChunkPosKeyEq> seenChunks;
 	int spewTimer;
+	bool m_spectatorMode;
 
 	// 4J-Added, for 'Adventure Time' achievement.
 	Biome *currentBiome;

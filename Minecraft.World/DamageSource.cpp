@@ -22,6 +22,7 @@ DamageSource *DamageSource::dragonbreath = (new DamageSource(ChatPacket::e_ChatD
 DamageSource *DamageSource::wither = (new DamageSource(ChatPacket::e_ChatDeathWither))->bypassArmor();
 DamageSource *DamageSource::anvil = (new DamageSource(ChatPacket::e_ChatDeathAnvil));
 DamageSource *DamageSource::fallingBlock = (new DamageSource(ChatPacket::e_ChatDeathFallingBlock));
+DamageSource *DamageSource::flyIntoWall = new DamageSource(ChatPacket::e_ChatDeathFlyIntoWall);
 
 DamageSource *DamageSource::mobAttack(shared_ptr<LivingEntity> mob)
 {

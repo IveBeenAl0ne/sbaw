@@ -14,6 +14,10 @@ void VillageFeature::staticCtor()
 {
 	allowedBiomes.push_back( Biome::plains );
 	allowedBiomes.push_back( Biome::desert );
+	allowedBiomes.push_back( Biome::savanna );
+	allowedBiomes.push_back( Biome::savannaPlateau );
+	allowedBiomes.push_back( Biome::savannaM );
+	allowedBiomes.push_back( Biome::savannaPlateauM );
 }
 
 void VillageFeature::_init(int iXZSize)

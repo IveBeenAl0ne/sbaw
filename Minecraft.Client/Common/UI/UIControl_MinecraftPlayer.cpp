@@ -77,11 +77,28 @@ void UIControl_MinecraftPlayer::render(IggyCustomDrawCallbackRegion *region)
 	glTranslatef(0, pMinecraft->localplayers[containerMenu->getPad()]->heightOffset, 0);
 	EntityRenderDispatcher::instance->playerRotY = 180;
 
+	auto lp = pMinecraft->localplayers[containerMenu->getPad()];
+	float owp  = lp->walkAnimPos;
+	float ows  = lp->walkAnimSpeed;
+	float owsO = lp->walkAnimSpeedO;
+	if (lp->isElytraFlying())
+	{
+		lp->walkAnimPos    = 0.0f;
+		lp->walkAnimSpeed  = 0.0f;
+		lp->walkAnimSpeedO = 0.0f;
+	}
+
 	// 4J Stu - Turning on hideGui while we do this stops the name rendering in split-screen
 	bool wasHidingGui = pMinecraft->options->hideGui;
 	pMinecraft->options->hideGui = true;
-	EntityRenderDispatcher::instance->render(pMinecraft->localplayers[containerMenu->getPad()], 0, 0, 0, 0, 1, false, false);
+	EntityRenderDispatcher::instance->isInventoryRender = true;
+	EntityRenderDispatcher::instance->render(lp, 0, 0, 0, 0, 1, false, false);
+	EntityRenderDispatcher::instance->isInventoryRender = false;
 	pMinecraft->options->hideGui = wasHidingGui;
+
+	lp->walkAnimPos    = owp;
+	lp->walkAnimSpeed  = ows;
+	lp->walkAnimSpeedO = owsO;
 	//pMinecraft->localplayers[m_iPad]->glow = 0;
 
 	pMinecraft->localplayers[containerMenu->getPad()]->yBodyRot = oybr;

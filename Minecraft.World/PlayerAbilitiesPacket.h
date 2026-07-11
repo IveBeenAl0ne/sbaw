@@ -11,11 +11,13 @@ private:
 	static const int FLAG_FLYING = 1 << 1;
 	static const int FLAG_CAN_FLY = 1 << 2;
 	static const int FLAG_INSTABUILD = 1 << 3;
+	static const int FLAG_NOPHYSICS = 1 << 4;
 
 	bool invulnerable;
 	bool _isFlying;
 	bool _canFly;
 	bool instabuild;
+	bool _noPhysics;
 	float flyingSpeed;
 	float walkingSpeed;
 
@@ -40,6 +42,8 @@ public:
 	void setFlyingSpeed(float flySpeed);
 	float getWalkingSpeed();
 	void setWalkingSpeed(float walkingSpeed);
+	bool isNoPhysics();
+	void setNoPhysics(bool noPhysics);
 	bool canBeInvalidated();
 	bool isInvalidatedBy(shared_ptr<Packet> packet);
 

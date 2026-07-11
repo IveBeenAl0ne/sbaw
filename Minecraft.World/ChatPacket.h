@@ -48,6 +48,7 @@ public:
 		e_ChatDeathDragonBreath,
 		e_ChatDeathAnvil,
 		e_ChatDeathFallingBlock,
+		e_ChatDeathFlyIntoWall,
 		e_ChatDeathThorns,
 
 		e_ChatDeathFellAccidentLadder,

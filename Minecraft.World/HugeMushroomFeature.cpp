@@ -19,6 +19,7 @@ bool HugeMushroomFeature::place(Level *level, Random *random, int x, int y, int 
 	if (forcedType >= 0) type = forcedType;
 
 	int treeHeight = random->nextInt(3) + 4;
+	if (random->nextBoolean()) treeHeight *= 2;
 
 	bool free = true;
 	if (y < 1 || y + treeHeight + 1 >= Level::maxBuildHeight) return false;

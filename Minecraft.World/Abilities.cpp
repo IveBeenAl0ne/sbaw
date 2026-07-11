@@ -9,6 +9,7 @@ Abilities::Abilities()
 	mayfly = false;
 	instabuild = false;
 	mayBuild = true;
+	spectatorMode = false;
 	flyingSpeed = 0.05f;
 	walkingSpeed = 0.1f;
 

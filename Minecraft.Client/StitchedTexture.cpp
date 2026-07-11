@@ -43,6 +43,7 @@ StitchedTexture::StitchedTexture(const wstring &name, const wstring &filename) :
 	frameOverride = nullptr;
 	flags = 0;
 	frames = nullptr;
+	m_bInterpolate = false;
 	m_fileName = filename;
 }
 
@@ -84,7 +85,8 @@ void StitchedTexture::init(Texture *source, vector<Texture *> *frames, int x, in
 {
 	this->source = source;
 	this->frames = frames;
-	frame = -1; // Force an update of animated textures
+	frame = -1;
+	m_bInterpolate = false;
 	this->x = x;
 	this->y = y;
 	this->width = width;
@@ -209,12 +211,21 @@ void StitchedTexture::cycleFrames()
 
 			current = frameOverride->at(frame);
 			int newFrame = current.first;
-			if (oldFrame != newFrame && newFrame >= 0 && newFrame < frames->size())
+			if (oldFrame != newFrame && newFrame >= 0 && newFrame < (int)frames->size())
 			{
 				source->blit(x, y, frames->at(newFrame), rotated);
 			}
 		}
-
+		else if (m_bInterpolate)
+		{
+			int curIdx  = current.first;
+			int nextIdx = frameOverride->at((frame + 1) % frameOverride->size()).first;
+			if (curIdx >= 0 && curIdx < (int)frames->size() && nextIdx >= 0 && nextIdx < (int)frames->size())
+			{
+				float t = static_cast<float>(subFrame) / static_cast<float>(current.second);
+				source->blitInterpolated(x, y, frames->at(curIdx), frames->at(nextIdx), t);
+			}
+		}
 	}
 	else
 	{
@@ -324,6 +335,11 @@ void StitchedTexture::loadAnimationFrames(const wstring &string)
 	for(auto& it : tokens)
 	{
 		token = trimString(it);
+		if (token == L"interp:1")
+		{
+			m_bInterpolate = true;
+			continue;
+		}
 		int multiPos = token.find_first_of('*');
 		if (multiPos > 0)
 		{

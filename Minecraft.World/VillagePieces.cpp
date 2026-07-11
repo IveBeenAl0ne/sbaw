@@ -268,6 +268,7 @@ VillagePieces::VillagePiece::VillagePiece()
 	heightPosition = -1;
 	spawnedVillagerCount = 0;
 	isDesertVillage = false;
+	isAcaciaVillage = false;
 	startPiece = nullptr;
 	// for reflection
 }
@@ -276,11 +277,13 @@ VillagePieces::VillagePiece::VillagePiece(StartPiece *startPiece, int genDepth) 
 {
 	heightPosition = -1;
 	isDesertVillage = false;
+	isAcaciaVillage = false;
 	spawnedVillagerCount = 0;
 	this->startPiece = startPiece;
 	if (startPiece != nullptr)
 	{
 		this->isDesertVillage = startPiece->isDesertVillage;
+		this->isAcaciaVillage = startPiece->isAcaciaVillage;
 	}
 }
 
@@ -289,6 +292,7 @@ void VillagePieces::VillagePiece::addAdditonalSaveData(CompoundTag *tag)
 	tag->putInt(L"HPos", heightPosition);
 	tag->putInt(L"VCount", spawnedVillagerCount);
 	tag->putBoolean(L"Desert", isDesertVillage);
+	tag->putBoolean(L"Acacia", isAcaciaVillage);
 }
 
 void VillagePieces::VillagePiece::readAdditonalSaveData(CompoundTag *tag)
@@ -296,6 +300,7 @@ void VillagePieces::VillagePiece::readAdditonalSaveData(CompoundTag *tag)
 	heightPosition = tag->getInt(L"HPos");
 	spawnedVillagerCount = tag->getInt(L"VCount");
 	isDesertVillage = tag->getBoolean(L"Desert");
+	isAcaciaVillage = tag->getBoolean(L"Acacia");
 }
 
 StructurePiece *VillagePieces::VillagePiece::generateHouseNorthernLeft(StartPiece *startPiece, list<StructurePiece *> *pieces, Random *random, int yOff, int zOff)
@@ -413,29 +418,30 @@ int VillagePieces::VillagePiece::biomeBlock(int tile, int data)
 	if (isDesertVillage)
 	{
 		if (tile == Tile::log_Id)
-		{
 			return Tile::sandstone_Id;
-		}
 		else if (tile == Tile::cobblestone_Id)
-		{
 			return Tile::sandstone_Id;
-		}
 		else if (tile == Tile::planks_Id)
-		{
 			return Tile::sandstone_Id;
-		}
 		else if (tile == Tile::oak_stairs_Id)
-		{
 			return Tile::sandstone_stairs_Id;
-		}
 		else if (tile == Tile::stone_stairs_Id)
-		{
 			return Tile::sandstone_stairs_Id;
-		}
 		else if (tile == Tile::gravel_Id)
-		{
 			return Tile::sandstone_Id;
-		}
+	}
+	else if (isAcaciaVillage)
+	{
+		if (tile == Tile::log_Id)
+			return Tile::log2_Id;
+		else if (tile == Tile::planks_Id)
+			return Tile::planks_Id;
+		else if (tile == Tile::oak_stairs_Id)
+			return Tile::acacia_stairs_Id;
+		else if (tile == Tile::fence_Id)
+			return Tile::acacia_fence_Id;
+		else if (tile == Tile::fence_gate_Id)
+			return Tile::acacia_fence_gate_Id;
 	}
 	return tile;
 }
@@ -445,17 +451,18 @@ int VillagePieces::VillagePiece::biomeData(int tile, int data)
 	if (isDesertVillage)
 	{
 		if (tile == Tile::log_Id)
-		{
 			return 0;
-		}
 		else if (tile == Tile::cobblestone_Id)
-		{
 			return SandStoneTile::TYPE_DEFAULT;
-		}
 		else if (tile == Tile::planks_Id)
-		{
 			return SandStoneTile::TYPE_SMOOTHSIDE;
-		}
+	}
+	else if (isAcaciaVillage)
+	{
+		if (tile == Tile::log_Id)
+			return (data & 0xC) | 0;
+		else if (tile == Tile::planks_Id)
+			return 4;
 	}
 	return data;
 }
@@ -580,6 +587,8 @@ VillagePieces::StartPiece::StartPiece(BiomeSource *biomeSource, int genDepth, Ra
 
 	Biome *biome = biomeSource->getBiome(west, north);
 	isDesertVillage = biome == Biome::desert || biome == Biome::desertHills;
+	isAcaciaVillage = biome == Biome::savanna || biome == Biome::savannaPlateau ||
+	                  biome == Biome::savannaM || biome == Biome::savannaPlateauM;
 }
 
 VillagePieces::StartPiece::~StartPiece()
@@ -718,8 +727,21 @@ bool VillagePieces::StraightRoad::postProcess(Level *level, Random *random, Boun
 			if (chunkBB->isInside(x, 64, z))
 			{
 				int y = level->getTopSolidBlock(x, z) - 1;
-				level->setTileAndData(x, y, z, roadTile, 0, Tile::UPDATE_CLIENTS);
-				// level->setTileAndData(x, y - 1, z, baseTile, 0, Tile::UPDATE_CLIENTS);
+				int tileAtY = level->getTile(x, y, z);
+				if (tileAtY == Tile::water_Id || tileAtY == Tile::flowing_water_Id)
+				{
+					level->setTileAndData(x, y, z, Tile::planks_Id, 0, Tile::UPDATE_CLIENTS);
+					int fill = y - 1;
+					while (fill >= 0 && (level->getTile(x, fill, z) == Tile::water_Id || level->getTile(x, fill, z) == Tile::flowing_water_Id))
+					{
+						level->setTileAndData(x, fill, z, Tile::planks_Id, 0, Tile::UPDATE_CLIENTS);
+						fill--;
+					}
+				}
+				else
+				{
+					level->setTileAndData(x, y, z, roadTile, 0, Tile::UPDATE_CLIENTS);
+				}
 			}
 		}
 	}

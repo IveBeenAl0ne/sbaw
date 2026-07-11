@@ -1387,13 +1387,19 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 			if (elytraCrouching)
 			{
 				arm0->xRot = PI;  arm0->yRot = 0.0f; arm0->zRot = 0.0f; arm0->y = 2.0f;
+				if (sleeve0) { sleeve0->xRot = PI; sleeve0->yRot = 0.0f; sleeve0->zRot = 0.0f; sleeve0->y = 2.0f; }
+
 				arm1->xRot = 0.0f; arm1->yRot = 0.0f; arm1->zRot = 0.0f; arm1->y = 2.0f;
+				if (sleeve1) { sleeve1->xRot = 0.0f; sleeve1->yRot = 0.0f; sleeve1->zRot = 0.0f; sleeve1->y = 2.0f; }
+
 				leg0->xRot = 0.0f; leg0->yRot = 0.0f; leg0->zRot = 0.0f;
 				leg1->xRot = 0.0f; leg1->yRot = 0.0f; leg1->zRot = 0.0f;
+				if (pants0) { pants0->xRot = 0.0f; pants0->yRot = 0.0f; pants0->zRot = 0.0f; }
+				if (pants1) { pants1->xRot = 0.0f; pants1->yRot = 0.0f; pants1->zRot = 0.0f; }
 			}
 			else
 			{
-				float elytraTime = (float)(entity->tickCount) * 0.3f;  
+				float elytraTime = (float)(entity->tickCount) * 0.3f;
 				float spd2 = (float)(entity->xd * entity->xd + entity->yd * entity->yd + entity->zd * entity->zd);
 				float fDamp = spd2 / 0.2f;
 				fDamp = fDamp * fDamp * fDamp;
@@ -1404,14 +1410,30 @@ void HumanoidModel::setupAnim(float time, float r, float bob, float yRot, float 
 
 				arm0->xRot = Mth::cos(elytraTime + PI) * armAmp;
 				arm0->yRot = 0.0f; arm0->zRot = 0.0f; arm0->y = 2.0f;
+				if (sleeve0) { sleeve0->xRot = arm0->xRot; sleeve0->yRot = 0.0f; sleeve0->zRot = 0.0f; sleeve0->y = 2.0f; }
+
+				if (attackTime > -9990.0f)
+				{
+					float elytraSwing = 1.0f - attackTime;
+					elytraSwing *= elytraSwing; elytraSwing *= elytraSwing;
+					elytraSwing = 1.0f - elytraSwing;
+					float elytraAA = Mth::sin(elytraSwing * PI);
+					float elytraBB = Mth::sin(attackTime * PI) * -(head->xRot - 0.7f) * 0.75f;
+					arm0->xRot -= elytraAA * 1.2f + elytraBB;
+					arm0->zRot = Mth::sin(attackTime * PI) * -0.4f;
+					if (sleeve0) { sleeve0->xRot -= elytraAA * 1.2f + elytraBB; sleeve0->zRot = Mth::sin(attackTime * PI) * -0.4f; }
+				}
 
 				arm1->xRot = Mth::cos(elytraTime) * armAmp;
 				arm1->yRot = 0.0f; arm1->zRot = 0.0f; arm1->y = 2.0f;
+				if (sleeve1) { sleeve1->xRot = arm1->xRot; sleeve1->yRot = 0.0f; sleeve1->zRot = 0.0f; sleeve1->y = 2.0f; }
 
 				leg0->xRot = Mth::cos(elytraTime) * legAmp;
 				leg0->yRot = 0.0f; leg0->zRot = 0.0f;
 				leg1->xRot = Mth::cos(elytraTime + PI) * legAmp;
 				leg1->yRot = 0.0f; leg1->zRot = 0.0f;
+				if (pants0) { pants0->xRot = leg0->xRot; pants0->yRot = 0.0f; pants0->zRot = 0.0f; }
+				if (pants1) { pants1->xRot = leg1->xRot; pants1->yRot = 0.0f; pants1->zRot = 0.0f; }
 			}
 
 			body->xRot = 0.0f;

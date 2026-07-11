@@ -68,7 +68,8 @@ void FoodData::tick(shared_ptr<Player> player)
 	else if (player->level->getGameRules()->getBoolean(GameRules::RULE_NATURAL_REGENERATION) && foodLevel >= FoodConstants::HEAL_LEVEL && player->isHurt())
 	{
 		tickTimer++;
-		if (tickTimer >= FoodConstants::HEALTH_TICK_COUNT)
+		int threshold = (saturationLevel > 0.0f) ? 10 : FoodConstants::HEALTH_TICK_COUNT;
+		if (tickTimer >= threshold)
 		{
 			player->heal(1);
 			addExhaustion(FoodConstants::EXHAUSTION_HEAL);

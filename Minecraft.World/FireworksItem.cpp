@@ -19,6 +19,25 @@ FireworksItem::FireworksItem(int id) : Item(id)
 {
 }
 
+shared_ptr<ItemInstance> FireworksItem::use(shared_ptr<ItemInstance> instance, Level *level, shared_ptr<Player> player)
+{
+	if (player->isElytraFlying() && player->m_elytraRocketCooldown == 0)
+	{
+		player->m_elytraRocketCooldown = 20;
+		player->startFireworkBoost(instance);
+		player->playSound(eSoundType_FIREWORKS_LAUNCH, 3.0f, 1.0f);
+		if (!level->isClientSide)
+		{
+			shared_ptr<FireworksRocketEntity> rocket(new FireworksRocketEntity(level, player->x, player->y, player->z, instance));
+			level->addEntity(rocket);
+			if (!player->abilities.instabuild)
+				instance->count--;
+		}
+		return instance;
+	}
+	return instance;
+}
+
 bool FireworksItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> player, Level *level, int x, int y, int z, int face, float clickX, float clickY, float clickZ, bool bTestUseOnOnly)
 {
 	// 4J-JEV: Fix for xb1 #173493 - CU7: Content: UI: Missing tooltip for Firework Rocket.

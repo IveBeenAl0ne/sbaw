@@ -70,6 +70,7 @@ private:
 	private:
 		int spawnedVillagerCount;
 		bool isDesertVillage;
+		bool isAcaciaVillage;
 	protected:
 		StartPiece *startPiece;
 
@@ -124,6 +125,7 @@ public:
 		// these fields are only used in generation step and aren't serialized :{
 		BiomeSource *biomeSource;
 		bool isDesertVillage;
+		bool isAcaciaVillage;
 
 		int villageSize;
 		bool isLibraryAdded;

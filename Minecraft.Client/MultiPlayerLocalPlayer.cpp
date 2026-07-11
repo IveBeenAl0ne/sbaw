@@ -4,6 +4,7 @@
 #include "ClientConnection.h"
 #include "../Minecraft.World/net.minecraft.world.level.h"
 #include "../Minecraft.World/net.minecraft.network.h"
+#include "../Minecraft.World/PlayerActionPacket.h"
 #include "../Minecraft.World/Mth.h"
 #include "../Minecraft.World/AABB.h"
 #include "../Minecraft.World/net.minecraft.stats.h"
@@ -76,7 +77,7 @@ void MultiplayerLocalPlayer::tick()
 	{		
 		if (isRiding())
 		{
-			connection->send(std::make_shared<MovePlayerPacket::Rot>(yRot, xRot, onGround, abilities.flying));
+			connection->send(std::make_shared<MovePlayerPacket::Rot>(yRot, xRot, onGround, abilities.flying || isElytraFlying()));
             connection->send(std::make_shared<PlayerInputPacket>(xxa, yya, input->jumping, input->sneaking));
         }
 		else
@@ -131,26 +132,26 @@ void MultiplayerLocalPlayer::sendPosition()
     bool rot = rydd != 0 || rxdd != 0;
     if (riding != nullptr)
 	{
-		connection->send(std::make_shared<MovePlayerPacket::PosRot>(xd, -999, -999, zd, yRot, xRot, onGround, abilities.flying));
+		connection->send(std::make_shared<MovePlayerPacket::PosRot>(xd, -999, -999, zd, yRot, xRot, onGround, abilities.flying || isElytraFlying()));
         move = false;
     }
 	else
 	{
         if (move && rot)
 		{
-            connection->send(std::make_shared<MovePlayerPacket::PosRot>(x, bb->y0, y, z, yRot, xRot, onGround, abilities.flying));
+            connection->send(std::make_shared<MovePlayerPacket::PosRot>(x, bb->y0, y, z, yRot, xRot, onGround, abilities.flying || isElytraFlying()));
         }
 		else if (move)
 		{
-            connection->send(std::make_shared<MovePlayerPacket::Pos>(x, bb->y0, y, z, onGround, abilities.flying));
+            connection->send(std::make_shared<MovePlayerPacket::Pos>(x, bb->y0, y, z, onGround, abilities.flying || isElytraFlying()));
         }
 		else if (rot)
 		{
-            connection->send(std::make_shared<MovePlayerPacket::Rot>(yRot, xRot, onGround, abilities.flying));
+            connection->send(std::make_shared<MovePlayerPacket::Rot>(yRot, xRot, onGround, abilities.flying || isElytraFlying()));
         }
 		else
 		{
-			connection->send(std::make_shared<MovePlayerPacket>(onGround, abilities.flying));
+			connection->send(std::make_shared<MovePlayerPacket>(onGround, abilities.flying || isElytraFlying()));
         }
     }
 
@@ -208,6 +209,21 @@ void MultiplayerLocalPlayer::actuallyHurt(DamageSource *source, float dmg)
 {
 	if (isInvulnerable()) return;
 	setHealth(getHealth() - dmg);
+}
+
+void MultiplayerLocalPlayer::onElytraKineticDamage(float damage)
+{
+	if (damage <= 0.0f) return;
+	int dmg = (int)damage;
+	if ((float)dmg < damage) dmg++;
+	if (dmg < 1) dmg = 1;
+	connection->send(std::make_shared<PlayerActionPacket>(PlayerActionPacket::ELYTRA_IMPACT, dmg, 0, 0, 0));
+}
+
+void MultiplayerLocalPlayer::onElytraFallDamage(int amount)
+{
+	if (amount <= 0) return;
+	connection->send(std::make_shared<PlayerActionPacket>(PlayerActionPacket::ELYTRA_FALL_DAMAGE, amount, 0, 0, 0));
 }
 
 // 4J Added override to capture event for tutorial messages

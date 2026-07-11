@@ -146,6 +146,9 @@ public:
 #endif
 	// INPUT
 	virtual void handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled);
+#ifdef _WINDOWS64
+	virtual bool handleMouseClick(F32 x, F32 y);
+#endif
 	virtual void handleFocusChange(F64 controlId, F64 childId);
 	virtual void handleTimerComplete(int id);
 	static int KeyboardCompleteSeedCallback(LPVOID lpParam,const bool bRes);
@@ -161,6 +164,9 @@ private:
 
 	bool m_bUpdateOnline; // If true, update online settings on next tick
 	void UpdateOnline();
+
+	bool m_bPendingTabSwitch;
+	int  m_iPendingTabIndex;
 
 #ifdef __PSVITA__
 	virtual void handleTouchInput(unsigned int iPad, S32 x, S32 y, int iId, bool bPressed, bool bRepeat, bool bReleased);

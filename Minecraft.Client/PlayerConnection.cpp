@@ -12,6 +12,8 @@
 #include "../Minecraft.World/net.minecraft.world.level.dimension.h"
 #include "../Minecraft.World/net.minecraft.world.item.h"
 #include "../Minecraft.World/net.minecraft.world.item.trading.h"
+#include "../Minecraft.World/net.minecraft.world.damagesource.h"
+#include "../Minecraft.World/net.minecraft.world.effect.h"
 #include "../Minecraft.World/net.minecraft.world.inventory.h"
 #include "../Minecraft.World/net.minecraft.world.level.tile.entity.h"
 #include "../Minecraft.World/net.minecraft.world.level.saveddata.h"
@@ -85,6 +87,8 @@ PlayerConnection::PlayerConnection(MinecraftServer *server, Connection *connecti
 	done = false;
 	tickCount = 0;
 	aboveGroundTickCount = 0;
+	elytraDurabilityTicks = 0;
+	elytraBoostCooldown = 0;
 	xLastOk = yLastOk = zLastOk = 0;
 	synched = true;
 	hasDoneFirstTickFourKit = false;
@@ -460,14 +464,20 @@ void PlayerConnection::handleMovePlayer(shared_ptr<MovePlayerPacket> packet)
 			return;
 		}
 		bool newOk = level->getCubes(player, playerBB->copy()->shrink(r, r, r))->empty();
-		if (oldOk && (fail || !newOk) && !player->isSleeping())
+		if (oldOk && (fail || !newOk) && !player->isSleeping() && !player->abilities.spectatorMode)
 		{
 			teleport(xLastOk, yLastOk, zLastOk, yRotT, xRotT);
 			return;
 		}
+		if (player->abilities.spectatorMode)
+		{
+			xLastOk = xt;
+			yLastOk = yt;
+			zLastOk = zt;
+		}
 		AABB *testBox = playerBB->copy()->grow(r, r, r)->expand(0, -0.55, 0);
 		// && server.level.getCubes(player, testBox).size() == 0
-		if (!server->isFlightAllowed() && !player->gameMode->isCreative() && !level->containsAnyBlocks(testBox) && !player->isAllowedToFly() )
+		if (!server->isFlightAllowed() && !player->gameMode->isCreative() && !level->containsAnyBlocks(testBox) && !player->isAllowedToFly() && !player->abilities.spectatorMode)
 		{
 			if (oyDist >= (-0.5f / 16.0f))
 			{
@@ -490,9 +500,32 @@ void PlayerConnection::handleMovePlayer(shared_ptr<MovePlayerPacket> packet)
 
 		player->onGround = packet->onGround;
 		server->getPlayers()->move(player);
-		player->doCheckFallDamage(player->y - startY, packet->onGround);
+		if (packet->isFlying)
+			player->fallDistance = 0.0f;
+		else
+			player->doCheckFallDamage(player->y - startY, packet->onGround);
+
+		{
+			shared_ptr<ItemInstance> chestItem = player->inventory->armor[LivingEntity::SLOT_CHEST - 1];
+			bool elytraFlying = packet->isFlying && !player->onGround
+				&& chestItem != nullptr && dynamic_cast<ElytraItem*>(chestItem->getItem()) != nullptr;
+			if (elytraFlying)
+			{
+				if (++elytraDurabilityTicks >= 20)
+				{
+					elytraDurabilityTicks = 0;
+					chestItem->hurtAndBreak(1, dynamic_pointer_cast<LivingEntity>(player));
+				}
+				if (elytraBoostCooldown > 0)
+					elytraBoostCooldown--;
+			}
+			else
+			{
+				elytraDurabilityTicks = 0;
+			}
+		}
 	}
-	else if ((tickCount % SharedConstants::TICKS_PER_SECOND) == 0)
+	else if ((tickCount % SharedConstants::TICKS_PER_SECOND) == 0 && !player->abilities.spectatorMode)
 	{
 		teleport(xLastOk, yLastOk, zLastOk, player->yRot, player->xRot);
 	}
@@ -572,6 +605,20 @@ void PlayerConnection::handlePlayerAction(shared_ptr<PlayerActionPacket> packet)
 	else if (packet->action == PlayerActionPacket::RELEASE_USE_ITEM)
 	{
 		player->releaseUsingItem();
+		return;
+	}
+	else if (packet->action == PlayerActionPacket::ELYTRA_IMPACT)
+	{
+		float damage = (float)packet->x;
+		if (damage > 0.0f)
+			player->hurt(DamageSource::flyIntoWall, damage);
+		return;
+	}
+	else if (packet->action == PlayerActionPacket::ELYTRA_FALL_DAMAGE)
+	{
+		float damage = (float)packet->x;
+		if (damage > 0.0f)
+			player->hurt(DamageSource::fall, damage);
 		return;
 	}
 
@@ -668,6 +715,22 @@ void PlayerConnection::handleUseItem(shared_ptr<UseItemPacket> packet)
 		}
 #endif
 		player->gameMode->useItem(player, level, item);
+
+		if (item->getItem() != nullptr && item->getItem()->getBaseItemType() == Item::eBaseItemType_fireworks && !player->abilities.instabuild)
+		{
+			shared_ptr<ItemInstance> chestItem = player->inventory->armor[LivingEntity::SLOT_CHEST - 1];
+			bool elytraFlying = !player->onGround
+				&& chestItem != nullptr
+				&& dynamic_cast<ElytraItem*>(chestItem->getItem()) != nullptr
+				&& ElytraItem::isFlyEnabled(chestItem);
+			if (elytraFlying && elytraBoostCooldown == 0)
+			{
+				elytraBoostCooldown = 20;
+				item->count--;
+				if (item->count <= 0)
+					player->inventory->items[player->inventory->selected] = nullptr;
+			}
+		}
 	}
 	else if ((packet->getY() < server->getMaxBuildHeight() - 1) || (packet->getFace() != Facing::UP && packet->getY() < server->getMaxBuildHeight()))
 	{
@@ -1412,6 +1475,33 @@ if (cmd == L"tp" || cmd == L"teleport")
     	shared_ptr<GameCommandPacket> packet = GiveItemCommand::preparePacket(target, item, amount, aux);
     	server->getCommandDispatcher()->performCommand(player, eGameCommand_Give, packet->data);
 	}
+#ifndef _CONTENT_PACKAGE
+	else if (cmd == L"spectator")
+	{
+		player->m_spectatorMode = !player->m_spectatorMode;
+		if (player->m_spectatorMode)
+		{
+			player->abilities.mayfly = true;
+			player->abilities.flying = true;
+			player->abilities.invulnerable = true;
+			player->abilities.spectatorMode = true;
+			player->abilities.setFlyingSpeed(0.1f);
+			player->noPhysics = true;
+			player->addEffect(new MobEffectInstance(MobEffect::nightVision->id, 0x7fffffff, 0, true));
+			info(L"Spectator mode enabled.");
+		}
+		else
+		{
+			player->gameMode->getGameModeForPlayer()->updatePlayerAbilities(&player->abilities);
+			player->abilities.spectatorMode = false;
+			player->abilities.setFlyingSpeed(0.05f);
+			player->noPhysics = false;
+			player->removeEffect(MobEffect::nightVision->id);
+			info(L"Spectator mode disabled.");
+		}
+		player->onUpdateAbilities();
+	}
+#endif
 }
 
 void PlayerConnection::handleAnimate(shared_ptr<AnimatePacket> packet)

@@ -80,6 +80,8 @@ UIScene_LaunchMoreOptionsMenu::UIScene_LaunchMoreOptionsMenu(int iPad, void *ini
 	m_bUpdateCheats = false;
 	// Update cheat checkboxes
 	UpdateCheats();
+	m_bPendingTabSwitch = false;
+	m_iPendingTabIndex  = -1;
 
 	m_checkboxes[eLaunchCheckbox_Online].init(app.GetString(IDS_ONLINE_GAME),eLaunchCheckbox_Online,bOnlineGame);
 	m_checkboxes[eLaunchCheckbox_InviteOnly].init(app.GetString(IDS_INVITE_ONLY),eLaunchCheckbox_InviteOnly,bInviteOnly);
@@ -240,6 +242,14 @@ void UIScene_LaunchMoreOptionsMenu::tick()
 		UpdateOnline();
 		m_bUpdateOnline = false;
 	}
+	if (m_bPendingTabSwitch)
+	{
+		m_bPendingTabSwitch = false;
+		m_tabIndex = m_iPendingTabIndex;
+		updateTooltips();
+		IggyDataValue result;
+		IggyResult out = IggyPlayerCallMethodRS(getMovie(), &result, IggyPlayerRootPath(getMovie()), m_funcChangeTab, 0, nullptr);
+	}
 }
 
 void UIScene_LaunchMoreOptionsMenu::handleDestroy()
@@ -336,6 +346,42 @@ void UIScene_LaunchMoreOptionsMenu::handleTouchInput(unsigned int iPad, S32 x, S
 			break;
 		}
 	}
+}
+#endif
+
+#ifdef _WINDOWS64
+bool UIScene_LaunchMoreOptionsMenu::handleMouseClick(F32 x, F32 y)
+{
+	if (!hasFocus(m_iPad) || getMovie() == nullptr || g_KBMInput.IsMouseGrabbed() || !g_KBMInput.IsKBMActive())
+		return false;
+
+	if (m_bIgnoreInput)
+		return false;
+
+	float sceneMouseX = x;
+	float sceneMouseY = y;
+
+	if (sceneMouseY >= 190.0f && sceneMouseY <= 270.0f)
+	{
+		int newTab = -1;
+		if (sceneMouseX >= 480.0f && sceneMouseX <= 700.0f)
+			newTab = TAB_WORLD_OPTIONS;
+		else if (sceneMouseX > 700.0f && sceneMouseX <= 960.0f)
+			newTab = TAB_GAME_OPTIONS;
+
+		if (newTab >= 0)
+		{
+			if (m_tabIndex != newTab)
+			{
+				m_bPendingTabSwitch = true;
+				m_iPendingTabIndex  = newTab;
+				ui.PlayUISFX(eSFX_Press);
+			}
+			return true;
+		}
+	}
+
+	return UIScene::handleMouseClick(x, y);
 }
 #endif
 

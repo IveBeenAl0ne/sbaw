@@ -36,6 +36,8 @@
 #include "RoofTreeFeature.h"
 
 #include "DesertWellFeature.h"
+#include "FossilFeature.h"
+#include "IglooFeature.h"
 #include "MegaTreeFeature.h"
 #include "VinesFeature.h"
 #include "GroundBushFeature.h"

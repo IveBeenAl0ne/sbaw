@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "net.minecraft.world.level.levelgen.structure.h"
+#include "net.minecraft.world.level.biome.h"
 #include "JavaMath.h"
 #include "Mth.h"
 
@@ -37,7 +38,16 @@ bool MineShaftFeature::isFeatureChunk(int x, int z, bool bIsSuperflat)
 		forcePlacement = levelGenOptions->isFeatureChunk(x,z,eFeature_Mineshaft);
 	}
 
-	return forcePlacement || (random->nextDouble() < chance && random->nextInt(80) < max(abs(x), abs(z)));
+	double effectiveChance = chance;
+	if (level != nullptr)
+	{
+		Biome *b = level->getBiome(x * 16, z * 16);
+		if (b == Biome::mesa || b == Biome::mesaPlateauF || b == Biome::mesaPlateau ||
+		    b == Biome::mesaBryce || b == Biome::mesaPlateauFM || b == Biome::mesaPlateauM)
+			effectiveChance = 0.9;
+	}
+
+	return forcePlacement || (random->nextDouble() < effectiveChance && random->nextInt(80) < max(abs(x), abs(z)));
 }
 
 StructureStart *MineShaftFeature::createStructureStart(int x, int z)

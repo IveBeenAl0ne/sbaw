@@ -42,6 +42,7 @@ protected:
 protected:
 	int frame;
 	int subFrame;
+	bool m_bInterpolate;
 
 public:
 	static StitchedTexture *create(const wstring &name);

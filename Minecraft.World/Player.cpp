@@ -91,6 +91,9 @@ void Player::_init()
 	m_elytraImpactYd = 0.0f;
 	m_wasElytraFlying = false;
 	m_elytraFallProtectTicks = 0;
+	m_elytraMaxY = 0.0f;
+	m_fireworkBoostTicks = 0;
+	m_elytraRocketCooldown = 0;
 
 	takeXpDelay = 0;
 	experienceLevel = totalExperience = 0;
@@ -1016,6 +1019,7 @@ void Player::aiStep()
 {
 	if (jumpTriggerTime > 0) jumpTriggerTime--;
 	if (m_elytraFallProtectTicks > 0) m_elytraFallProtectTicks--;
+	if (m_elytraRocketCooldown > 0) m_elytraRocketCooldown--;
 
 
 	if (level->difficulty == Difficulty::PEACEFUL && getHealth() < getMaxHealth() && level->getGameRules()->getBoolean(GameRules::RULE_NATURAL_REGENERATION))
@@ -1025,7 +1029,7 @@ void Player::aiStep()
 	inventory->tick();
 	oBob = bob;
 
-	if (jumping && !onGround && yd < 0.0 && !isElytraFlying() && !abilities.flying && jumpTriggerTime == 0)
+	if (jumping && !onGround && yd < 0.0 && fallDistance > 0.0f && !isElytraFlying() && !abilities.flying && jumpTriggerTime == 0)
 	{
 		shared_ptr<ItemInstance> chestItem = inventory->armor[LivingEntity::SLOT_CHEST - 1];
 		if (chestItem != nullptr && chestItem->getItem() != nullptr)
@@ -1044,20 +1048,12 @@ void Player::aiStep()
 	{
 		ticksElytraFlying++;
 
-		if (!level->isClientSide && ticksElytraFlying % 20 == 0)
-		{
-			shared_ptr<ItemInstance> chestItem = inventory->armor[LivingEntity::SLOT_CHEST - 1];
-			if (chestItem != nullptr && dynamic_cast<ElytraItem*>(chestItem->getItem()) != nullptr)
-			{
-				chestItem->hurtAndBreak(1, dynamic_pointer_cast<LivingEntity>(shared_from_this()));
-				if (!ElytraItem::isFlyEnabled(chestItem))
-					setElytraFlying(false);
-			}
-			else
-			{
-				setElytraFlying(false);
-			}
-		}
+		shared_ptr<ItemInstance> chestItem = inventory->armor[LivingEntity::SLOT_CHEST - 1];
+		if (chestItem == nullptr
+			|| chestItem->count <= 0
+			|| dynamic_cast<ElytraItem*>(chestItem->getItem()) == nullptr
+			|| !ElytraItem::isFlyEnabled(chestItem))
+			setElytraFlying(false);
 	}
 
 
@@ -2171,6 +2167,8 @@ void Player::travel(float xa, float ya)
 		double preHorizSpeed = Mth::sqrt(xd * xd + zd * zd);
 
 
+		if ((float)y > m_elytraMaxY) m_elytraMaxY = (float)y;
+
 		if (yd > -0.5)
 			fallDistance = 1.0f;
 
@@ -2217,10 +2215,19 @@ void Player::travel(float xa, float ya)
 		if (jumping && abilities.instabuild)
 			yd += (double)abilities.getFlyingSpeed() * 3.0;
 
-		m_elytraImpactYd = (float)yd; 
+		if (m_fireworkBoostTicks > 0)
+		{
+			Vec3 *look = getLookAngle();
+			xd += look->x * 0.1 + (look->x * 1.5 - xd) * 0.5;
+			yd += look->y * 0.1 + (look->y * 1.5 - yd) * 0.5;
+			zd += look->z * 0.1 + (look->z * 1.5 - zd) * 0.5;
+			m_fireworkBoostTicks--;
+		}
+
+		m_elytraImpactYd = (float)yd;
 		move(xd, yd, zd);
 
-		if (horizontalCollision && !verticalCollision)
+		if (horizontalCollision)
 		{
 			double postHorizSpeed = Mth::sqrt(xd * xd + zd * zd);
 			double speedLost = preHorizSpeed - postHorizSpeed;
@@ -2427,6 +2434,14 @@ void Player::checkFallDamage(double ya, bool onGround)
 void Player::causeFallDamage(float distance)
 {
 	if (abilities.mayfly) return;
+
+	if (isElytraFlying())
+	{
+		int dmg = Mth::ceil(distance - 3.0f);
+		if (dmg > 0)
+			onElytraFallDamage(dmg);
+		return;
+	}
 
 	if (distance >= 2)
 	{
@@ -2835,9 +2850,26 @@ bool Player::isElytraFlying()
 	return getPlayerFlag(FLAG_ELYTRA_FLYING);
 }
 
+void Player::startFireworkBoost(shared_ptr<ItemInstance> firework)
+{
+	int flight = 0;
+	if (firework != nullptr && firework->hasTag())
+	{
+		CompoundTag *fw = firework->getTag()->getCompound(FireworksItem::TAG_FIREWORKS);
+		if (fw != nullptr && fw->contains(FireworksItem::TAG_FLIGHT))
+			flight = fw->getByte(FireworksItem::TAG_FLIGHT);
+	}
+	m_fireworkBoostTicks = (SharedConstants::TICKS_PER_SECOND / 2) * (flight + 1) + random->nextInt(6) + random->nextInt(7);
+}
+
 void Player::onElytraKineticDamage(float damage)
 {
-	hurt(DamageSource::fall, damage);
+	hurt(DamageSource::flyIntoWall, damage);
+}
+
+void Player::onElytraFallDamage(int amount)
+{
+	hurt(DamageSource::fall, (float)amount);
 }
 
 void Player::setElytraFlying(bool flying)
@@ -2846,8 +2878,9 @@ void Player::setElytraFlying(bool flying)
 	if (flying)
 	{
 		m_wasElytraFlying = false;
-		setSize(0.6f, 0.6f);   
-		fallDistance = 0.0f;   
+		setSize(0.6f, 0.6f);
+		fallDistance = 0.0f;
+		m_elytraMaxY = (float)y;
 	}
 	else
 	{
@@ -2855,8 +2888,9 @@ void Player::setElytraFlying(bool flying)
 
 		m_wasElytraFlying = true;
 		m_elytraFallProtectTicks = 60;
-		setSize(0.6f, 1.8f);  
-
+		m_fireworkBoostTicks = 0;
+		m_elytraRocketCooldown = 0;
+		setSize(0.6f, 1.8f);
 	}
 }
 

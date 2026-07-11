@@ -392,7 +392,7 @@ vector<pair<int, int> > *PotionItem::getUniquePotionValues()
 					int effectsHashCode = 1;
 					for(auto& effect : *effects)
 					{
-						effectsHashCode = 31*effectsHashCode + (effect ? 0 : effect->hashCode());
+						effectsHashCode = 31*effectsHashCode + (effect ? effect->hashCode() : 0);
 						delete effect;
 					}
 

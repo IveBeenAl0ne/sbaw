@@ -33,6 +33,7 @@ void TileEntity::staticCtor()
 	TileEntity::setId(HopperTileEntity::create, eTYPE_HOPPERTILEENTITY, L"Hopper");
 	TileEntity::setId(ComparatorTileEntity::create, eTYPE_COMPARATORTILEENTITY, L"Comparator");
 	TileEntity::setId(BannerTileEntity::create, eTYPE_BANNERTILEENTITY, L"Banner");
+	TileEntity::setId(FlowerPotTileEntity::create, eTYPE_FLOWERPOTTILEENTITY, L"FlowerPot");
 }
 
 void TileEntity::setId(tileEntityCreateFn createFn, eINSTANCEOF clas, wstring id)

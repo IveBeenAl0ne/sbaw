@@ -685,9 +685,13 @@ void Gui::render(float a, bool mouseFree, int xMouse, int yMouse)
 			{
 				characterDisplayTimer[iPad] = 30;
 			}
+			else if( minecraft->player->isElytraFlying() )
+			{
+				characterDisplayTimer[iPad] = 30;
+			}
 			else if( minecraft->player->abilities.flying)
 			{
-				characterDisplayTimer[iPad] = 5; // quickly get rid of the player display if they stop flying
+				characterDisplayTimer[iPad] = 5;
 			}
 			else if( characterDisplayTimer[iPad] > 0 )
 			{
@@ -696,8 +700,9 @@ void Gui::render(float a, bool mouseFree, int xMouse, int yMouse)
 			bool displayCrouch = minecraft->player->isSneaking() || ( characterDisplayTimer[iPad] > 0 );
 			bool displaySprint = minecraft->player->isSprinting() || ( characterDisplayTimer[iPad] > 0 );
 			bool displayFlying = minecraft->player->abilities.flying || ( characterDisplayTimer[iPad] > 0 );
+			bool displayElytra = minecraft->player->isElytraFlying() || ( characterDisplayTimer[iPad] > 0 );
 
-			if( bDisplayGui && (displayCrouch || displaySprint || displayFlying) )
+			if( bDisplayGui && (displayCrouch || displaySprint || displayElytra || displayFlying) )
 			{
 				EntityRenderDispatcher::instance->prepare(minecraft->level, minecraft->textures, minecraft->font, minecraft->cameraTargetPlayer, minecraft->crosshairPickMob, minecraft->options, a);
 				glEnable(GL_RESCALE_NORMAL);
@@ -714,7 +719,10 @@ void Gui::render(float a, bool mouseFree, int xMouse, int yMouse)
 #endif
 
 				glPushMatrix();
-				glTranslatef(static_cast<float>(xo), static_cast<float>(yo), 50);
+				float pitchOffset = minecraft->player->isElytraFlying()
+					? -minecraft->player->xRot / 180.0f * 40.0f
+					: 0.0f;
+				glTranslatef(static_cast<float>(xo), static_cast<float>(yo) + pitchOffset, 50);
 				
 				// correct paper doll aspect ratio
 				float ss = 12.0f;
@@ -756,7 +764,8 @@ void Gui::render(float a, bool mouseFree, int xMouse, int yMouse)
 				Lighting::turnOn();
 				glRotatef(-45 - 90, 0, 1, 0);
 
-				const float xRotAngle = -(float) atan(yd / 40.0f) * 20;
+				bool elytraFlying = minecraft->player->isElytraFlying();
+				const float xRotAngle = elytraFlying ? 0.0f : -(float) atan(yd / 40.0f) * 20;
 				glRotatef(xRotAngle, 1, 0, 0);
 				float bodyRot = (minecraft->player->yBodyRotO + (minecraft->player->yBodyRot - minecraft->player->yBodyRotO));
 				// Fixed rotation angle of degrees, adjusted by bodyRot to negate the rotation that occurs in the renderer
@@ -768,7 +777,7 @@ void Gui::render(float a, bool mouseFree, int xMouse, int yMouse)
 				// Set head rotation to body rotation to make head static
 				minecraft->player->yRot = bodyRot;
 				minecraft->player->yRotO = minecraft->player->yRot;
-				minecraft->player->xRot = xRotAngle;
+				minecraft->player->xRot = elytraFlying ? oxr : xRotAngle;
 
 				minecraft->player->onFire = 0;
 				minecraft->player->setSharedFlag(Entity::FLAG_ONFIRE, false);

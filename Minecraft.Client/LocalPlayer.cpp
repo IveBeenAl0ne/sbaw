@@ -128,6 +128,8 @@ LocalPlayer::LocalPlayer(Minecraft *minecraft, Level *level, User *user, int dim
 
 LocalPlayer::~LocalPlayer()
 {
+	if (minecraft != nullptr && minecraft->soundEngine != nullptr)
+		minecraft->soundEngine->stopElytraSound();
 	if( this->input != nullptr )
 		delete input;
 }
@@ -168,6 +170,9 @@ bool LocalPlayer::isEffectiveAi() const
 
 void LocalPlayer::aiStep()
 {
+	if (abilities.spectatorMode)
+		noPhysics = true;
+
 	if (sprintTime > 0)
 	{
 		sprintTime--;

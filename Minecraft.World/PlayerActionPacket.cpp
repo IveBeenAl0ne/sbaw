@@ -10,6 +10,8 @@ const int PlayerActionPacket::STOP_DESTROY_BLOCK = 2;
 const int PlayerActionPacket::DROP_ALL_ITEMS = 3;
 const int PlayerActionPacket::DROP_ITEM = 4;
 const int PlayerActionPacket::RELEASE_USE_ITEM = 5;
+const int PlayerActionPacket::ELYTRA_IMPACT = 6;
+const int PlayerActionPacket::ELYTRA_FALL_DAMAGE = 7;
 
 PlayerActionPacket::PlayerActionPacket()
 {

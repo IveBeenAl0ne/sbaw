@@ -9,6 +9,7 @@ PlayerAbilitiesPacket::PlayerAbilitiesPacket()
 	_isFlying = false;
 	_canFly = false;
 	instabuild = false;
+	_noPhysics = false;
 	flyingSpeed = 0.0f;
 	walkingSpeed = 0.0f;
 }
@@ -19,6 +20,7 @@ PlayerAbilitiesPacket::PlayerAbilitiesPacket(Abilities *abilities)
 	setFlying(abilities->flying);
 	setCanFly(abilities->mayfly);
 	setInstabuild(abilities->instabuild);
+	setNoPhysics(abilities->spectatorMode);
 	setFlyingSpeed(abilities->getFlyingSpeed());
 	setWalkingSpeed(abilities->getWalkingSpeed());
 }
@@ -31,6 +33,7 @@ void PlayerAbilitiesPacket::read(DataInputStream *dis)
 	setFlying((bitfield & FLAG_FLYING) > 0);
 	setCanFly((bitfield & FLAG_CAN_FLY) > 0);
 	setInstabuild((bitfield & FLAG_INSTABUILD) > 0);
+	setNoPhysics((bitfield & FLAG_NOPHYSICS) > 0);
 	setFlyingSpeed(dis->readFloat());
 	setWalkingSpeed(dis->readFloat());
 }
@@ -43,6 +46,7 @@ void PlayerAbilitiesPacket::write(DataOutputStream *dos)
 	if (isFlying()) bitfield |= FLAG_FLYING;
 	if (canFly()) bitfield |= FLAG_CAN_FLY;
 	if (canInstabuild()) bitfield |= FLAG_INSTABUILD;
+	if (isNoPhysics()) bitfield |= FLAG_NOPHYSICS;
 
 	dos->writeByte(bitfield);
 	dos->writeFloat(flyingSpeed);
@@ -122,6 +126,16 @@ float PlayerAbilitiesPacket::getWalkingSpeed()
 void PlayerAbilitiesPacket::setWalkingSpeed(float walkingSpeed)
 {
 	this->walkingSpeed = walkingSpeed;
+}
+
+bool PlayerAbilitiesPacket::isNoPhysics()
+{
+	return _noPhysics;
+}
+
+void PlayerAbilitiesPacket::setNoPhysics(bool noPhysics)
+{
+	_noPhysics = noPhysics;
 }
 
 bool PlayerAbilitiesPacket::canBeInvalidated()

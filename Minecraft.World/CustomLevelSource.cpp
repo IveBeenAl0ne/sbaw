@@ -569,6 +569,15 @@ void CustomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 	}
 	PIXEndNamedEvent();
 
+	if (true)
+	{
+		int fx = xo + pprandom->nextInt(16) + 8;
+		int fy = 40 + pprandom->nextInt(10);
+		int fz = zo + pprandom->nextInt(16) + 8;
+		FossilFeature fossil;
+		fossil.place(level, pprandom, fx, fy, fz);
+	}
+
 	PIXBeginNamedEvent(0,"Biome decorate");
 	biome->decorate(level, pprandom, xo, zo);
 	PIXEndNamedEvent();

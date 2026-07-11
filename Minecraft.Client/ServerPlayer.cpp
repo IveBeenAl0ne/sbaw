@@ -191,6 +191,7 @@ ServerPlayer::ServerPlayer(MinecraftServer *server, Level *level, const wstring&
 	connection = nullptr;
 	lastMoveX = lastMoveZ = 0;
 	spewTimer = 0;
+	m_spectatorMode = false;
 	lastRecordedHealthAndAbsorption = FLT_MIN;
 	lastSentHealth = -99999999;
 	lastSentFood = -99999999;

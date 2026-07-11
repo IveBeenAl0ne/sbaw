@@ -15,6 +15,7 @@
 #include "LevelRenderer.h"
 #include "Options.h"
 #include "../Minecraft.World/TallGrass2.h"
+#include "../Minecraft.World/FlowerPotTileEntity.h"
 
 bool TileRenderer::fancy = true;
 
@@ -932,9 +933,6 @@ bool TileRenderer::tesselateFlowerPotInWorld(FlowerPotTile *tt, int x, int y, in
 
 		switch (type)
 		{
-		case FlowerPotTile::TYPE_FLOWER_RED:
-			plant = Tile::rose;
-			break;
 		case FlowerPotTile::TYPE_FLOWER_YELLOW:
 			plant = Tile::flower;
 			break;
@@ -954,7 +952,32 @@ bool TileRenderer::tesselateFlowerPotInWorld(FlowerPotTile *tt, int x, int y, in
 		}
 		else
 		{
-			if (type == FlowerPotTile::TYPE_CACTUS)
+			if (type == FlowerPotTile::TYPE_FLOWER_RED)
+			{
+				int aux = 0;
+				shared_ptr<TileEntity> te = level->getTileEntity(x, y, z);
+				shared_ptr<FlowerPotTileEntity> fpte = te ? std::dynamic_pointer_cast<FlowerPotTileEntity>(te) : nullptr;
+				if (fpte && fpte->hasFlower())
+					aux = fpte->getFlowerAuxValue();
+				tesselateCrossTexture(Tile::rose, aux, x, y, z, 0.75f);
+			}
+			else if (type == FlowerPotTile::TYPE_FLOWER_BLUE_ORCHID)
+			{
+				tesselateCrossTexture(Tile::rose, Rose::BLUE_ORCHID, x, y, z, 0.75f);
+			}
+			else if (type == FlowerPotTile::TYPE_FLOWER_ALLIUM)
+			{
+				tesselateCrossTexture(Tile::rose, Rose::ALLIUM, x, y, z, 0.75f);
+			}
+			else if (type == FlowerPotTile::TYPE_FLOWER_AZURE_BLUET)
+			{
+				tesselateCrossTexture(Tile::rose, Rose::AZURE_BLUET, x, y, z, 0.75f);
+			}
+			else if (type == FlowerPotTile::TYPE_FLOWER_OXEYE_DAISY)
+			{
+				tesselateCrossTexture(Tile::rose, Rose::OXEYE_DAISY, x, y, z, 0.75f);
+			}
+			else if (type == FlowerPotTile::TYPE_CACTUS)
 			{
 
 				// Force drawing of all faces else the cactus misses faces

@@ -9,6 +9,7 @@
 #include "ExperienceOrb.h"
 
 #include "GenericStats.h"
+#include "EntityEvent.h"
 
 BreedGoal::BreedGoal(Animal *animal, double speedModifier)
 {
@@ -108,15 +109,8 @@ void BreedGoal::breed()
 	offspring->setDespawnProtected();
 	level->addEntity(offspring);
 
-	Random *random = animal->getRandom();
-	for (int i = 0; i < 7; i++)
-	{
-		double xa = random->nextGaussian() * 0.02;
-		double ya = random->nextGaussian() * 0.02;
-		double za = random->nextGaussian() * 0.02;
-		level->addParticle(eParticleType_heart, animal->x + random->nextFloat() * animal->bbWidth * 2 - animal->bbWidth, animal->y + .5f + random->nextFloat() * animal->bbHeight, animal->z + random->nextFloat()
-			* animal->bbWidth * 2 - animal->bbWidth, xa, ya, za);
-	}
+	level->broadcastEntityEvent(animal->shared_from_this(), EntityEvent::IN_LOVE_HEARTS);
 	// 4J-PB - Fix for 106869- Customer Encountered: TU12: Content: Gameplay: Breeding animals does not give any Experience Orbs.
+	Random *random = animal->getRandom();
 	level->addEntity(std::make_shared<ExperienceOrb>(level, animal->x, animal->y, animal->z, random->nextInt(7) + 1));
 }

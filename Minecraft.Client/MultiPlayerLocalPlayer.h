@@ -44,6 +44,8 @@ public:
     virtual void respawn();
 protected:
 	virtual void actuallyHurt(DamageSource *source, float dmg);
+	virtual void onElytraKineticDamage(float damage);
+	virtual void onElytraFallDamage(int amount);
 
 	// 4J Added override to capture event for tutorial messages
 	virtual void completeUsingItem();

@@ -70,6 +70,11 @@ set_source_files_properties(compat_shims.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS 
 
 configure_compiler_target(Minecraft.Client)
 
+if(PLATFORM_NAME STREQUAL "Windows64")
+  target_compile_options(Minecraft.Client PRIVATE $<$<CONFIG:Release>:/Zi>)
+  target_link_options(Minecraft.Client PRIVATE $<$<CONFIG:Release>:/DEBUG /OPT:REF /OPT:ICF>)
+endif()
+
 set(MINECRAFT_CLIENT_USE_4J_DEBUG_LIBS TRUE)
 if(CMAKE_CROSSCOMPILING AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(MINECRAFT_CLIENT_USE_4J_DEBUG_LIBS FALSE)
@@ -88,6 +93,7 @@ if(MINECRAFT_CLIENT_USE_4J_DEBUG_LIBS)
     d3dcompiler
     XInput9_1_0
     wsock32
+    dbghelp
     legacy_stdio_definitions
     4JLibs.${PLATFORM_NAME}.Input
     4JLibs.${PLATFORM_NAME}.Profile
@@ -102,6 +108,7 @@ else()
     d3dcompiler
     XInput9_1_0
     wsock32
+    dbghelp
     legacy_stdio_definitions
     "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}/4JLibs/libs/4J_Input.lib"
     "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}/4JLibs/libs/4J_Storage.lib"

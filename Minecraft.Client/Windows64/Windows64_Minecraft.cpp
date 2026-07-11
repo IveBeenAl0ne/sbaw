@@ -1547,6 +1547,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
+	Logger::init();
+
 	// 4J-Win64: set CWD to exe dir so asset paths resolve correctly
 	{
 		char szExeDir[MAX_PATH] = {};
@@ -1718,6 +1720,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	if( FAILED( InitDevice() ) )
 	{
 		CleanupDevice();
+		Logger::shutdown();
 		return 0;
 	}
 	// Restore fullscreen state from previous session. Route through the
@@ -1747,6 +1750,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		}
 	}
 
+	Logger::shutdown();
 	return (int) msg.wParam;
 #endif
 
@@ -1787,6 +1791,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	if (pMinecraft == nullptr)
 	{
 		CleanupDevice();
+		Logger::shutdown();
 		return 1;
 	}
 	g_bResizeReady = true;
