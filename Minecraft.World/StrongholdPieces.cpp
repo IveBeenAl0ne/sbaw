@@ -8,6 +8,7 @@
 #include "net.minecraft.world.level.levelgen.structure.h"
 #include "net.minecraft.world.item.h"
 #include "WeighedTreasure.h"
+#include "LootTableManager.h"
 #include "FileHeader.h"
 #include "Facing.h"
 
@@ -715,30 +716,6 @@ bool StrongholdPieces::Straight::postProcess(Level *level, Random *random, Bound
 	return true;
 }
 
-WeighedTreasure *StrongholdPieces::ChestCorridor::treasureItems[TREASURE_ITEMS_COUNT] =
-{
-	new WeighedTreasure(Item::ender_pearl_Id, 0, 1, 1, 10),
-	new WeighedTreasure(Item::diamond_Id, 0, 1, 3, 3),
-	new WeighedTreasure(Item::iron_ingot_Id, 0, 1, 5, 10),
-	new WeighedTreasure(Item::gold_ingot_Id, 0, 1, 3, 5),
-	new WeighedTreasure(Item::redstone_Id, 0, 4, 9, 5),
-	new WeighedTreasure(Item::bread_Id, 0, 1, 3, 15),
-	new WeighedTreasure(Item::apple_Id, 0, 1, 3, 15),
-	new WeighedTreasure(Item::iron_pickaxe_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::iron_sword_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::iron_chestplate_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::iron_helmet_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::iron_leggings_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::iron_boots_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::golden_apple_Id, 0, 1, 1, 1),
-	// very rare for strongholds ...
-	new WeighedTreasure(Item::saddle_Id, 0, 1, 1, 1),
-	new WeighedTreasure(Item::iron_horse_armor_Id, 0, 1, 1, 1),
-	new WeighedTreasure(Item::golden_horse_armor_Id, 0, 1, 1, 1),
-	new WeighedTreasure(Item::diamond_horse_armor_Id, 0, 1, 1, 1),
-	// ...
-};
-
 StrongholdPieces::ChestCorridor::ChestCorridor()
 {
 	// for reflection
@@ -816,7 +793,9 @@ bool StrongholdPieces::ChestCorridor::postProcess(Level *level, Random *random, 
 		if (chunkBB->isInside(x, y, z))
 		{
 			hasPlacedChest = true;
-			createChest(level, chunkBB, random, 3, 2, 3, WeighedTreasure::addToTreasure(WeighedTreasureArray(treasureItems,TREASURE_ITEMS_COUNT), Item::enchanted_book->createForRandomTreasure(random)), 2 + random->nextInt(2));
+			createChest(level, chunkBB, random, 3, 2, 3,
+				LootTableManager::Get().ResolveDrops("chests/stronghold_corridor", false, 0,
+					[random](int bound) { return random->nextInt(bound); }));
 		}
 	}
 
@@ -1044,17 +1023,6 @@ StrongholdPieces::RoomCrossing *StrongholdPieces::RoomCrossing::createPiece(list
 	return new RoomCrossing(genDepth, random, box, direction);
 }
 
-WeighedTreasure *StrongholdPieces::RoomCrossing::smallTreasureItems[SMALL_TREASURE_ITEMS_COUNT] =
-{
-	new WeighedTreasure(Item::iron_ingot_Id, 0, 1, 5, 10),
-	new WeighedTreasure(Item::gold_ingot_Id, 0, 1, 3, 5),
-	new WeighedTreasure(Item::redstone_Id, 0, 4, 9, 5),
-	new WeighedTreasure(Item::coal_Id, CoalItem::STONE_COAL, 3, 8, 10),
-	new WeighedTreasure(Item::bread_Id, 0, 1, 3, 15),
-	new WeighedTreasure(Item::apple_Id, 0, 1, 3, 15),
-	new WeighedTreasure(Item::iron_pickaxe_Id, 0, 1, 1, 1),
-};
-
 bool StrongholdPieces::RoomCrossing::postProcess(Level *level, Random *random, BoundingBox *chunkBB)
 {
 	if (edgesLiquid(level, chunkBB))
@@ -1153,7 +1121,9 @@ bool StrongholdPieces::RoomCrossing::postProcess(Level *level, Random *random, B
 			placeBlock(level, Tile::ladder_Id, getOrientationData(Tile::ladder_Id, Facing::WEST), 9, 2, 3, chunkBB);
 			placeBlock(level, Tile::ladder_Id, getOrientationData(Tile::ladder_Id, Facing::WEST), 9, 3, 3, chunkBB);
 
-			createChest(level, chunkBB, random, 3, 4, 8, WeighedTreasure::addToTreasure(WeighedTreasureArray(smallTreasureItems,SMALL_TREASURE_ITEMS_COUNT), Item::enchanted_book->createForRandomTreasure(random)), 1 + random->nextInt(4));
+			createChest(level, chunkBB, random, 3, 4, 8,
+				LootTableManager::Get().ResolveDrops("chests/stronghold_crossing", false, 0,
+					[random](int bound) { return random->nextInt(bound); }));
 			// System.out.println("Created chest at " + getWorldX(3, 8) +
 			// "," + getWorldY(4) + "," + getWorldZ(3, 8));
 
@@ -1282,14 +1252,6 @@ StrongholdPieces::Library *StrongholdPieces::Library::createPiece(list<Structure
 	return new Library(genDepth, random, box, direction);
 }
 
-WeighedTreasure *StrongholdPieces::Library::libraryTreasureItems[LIBRARY_TREASURE_ITEMS_COUNT] =
-{
-	new WeighedTreasure(Item::book_Id, 0, 1, 3, 20),
-	new WeighedTreasure(Item::paper_Id, 0, 2, 7, 20),
-	new WeighedTreasure(Item::map_Id, 0, 1, 1, 1),
-	new WeighedTreasure(Item::compass_Id, 0, 1, 1, 1),
-};
-
 bool StrongholdPieces::Library::postProcess(Level *level, Random *random, BoundingBox *chunkBB)
 {
 	if (edgesLiquid(level, chunkBB))
@@ -1407,11 +1369,15 @@ bool StrongholdPieces::Library::postProcess(Level *level, Random *random, Boundi
 	}
 
 	// place chests
-	createChest(level, chunkBB, random, 3, 3, 5, WeighedTreasure::addToTreasure(WeighedTreasureArray(libraryTreasureItems,LIBRARY_TREASURE_ITEMS_COUNT), Item::enchanted_book->createForRandomTreasure(random, 1, 5, 2)), 1 + random->nextInt(4));
+	createChest(level, chunkBB, random, 3, 3, 5,
+		LootTableManager::Get().ResolveDrops("chests/stronghold_library", false, 0,
+			[random](int bound) { return random->nextInt(bound); }));
 	if (isTall)
 	{
 		placeBlock(level, 0, 0, width - 2, tallHeight - 2, 1, chunkBB);
-		createChest(level, chunkBB, random, width - 2, tallHeight - 3, 1, WeighedTreasure::addToTreasure(WeighedTreasureArray(libraryTreasureItems,LIBRARY_TREASURE_ITEMS_COUNT), Item::enchanted_book->createForRandomTreasure(random, 1, 5, 2)), 1 + random->nextInt(4));
+		createChest(level, chunkBB, random, width - 2, tallHeight - 3, 1,
+			LootTableManager::Get().ResolveDrops("chests/stronghold_library", false, 0,
+				[random](int bound) { return random->nextInt(bound); }));
 	}
 
 	return true;

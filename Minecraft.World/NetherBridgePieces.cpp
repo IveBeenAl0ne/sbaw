@@ -7,6 +7,7 @@
 #include "net.minecraft.world.level.storage.h"
 #include "net.minecraft.world.level.levelgen.structure.h"
 #include "WeighedTreasure.h"
+#include "LootTableManager.h"
 #include "NetherBridgePieces.h"
 #include "Direction.h"
 
@@ -135,20 +136,6 @@ NetherBridgePieces::NetherBridgePiece *NetherBridgePieces::findAndCreateBridgePi
 	}
 	return structurePiece;
 }
-
-WeighedTreasure *NetherBridgePieces::NetherBridgePiece::fortressTreasureItems[FORTRESS_TREASURE_ITEMS_COUNT] = {
-	new WeighedTreasure(Item::diamond_Id, 0, 1, 3, 5),
-	new WeighedTreasure(Item::iron_ingot_Id, 0, 1, 5, 5),
-	new WeighedTreasure(Item::gold_ingot_Id, 0, 1, 3, 15),
-	new WeighedTreasure(Item::golden_sword_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::golden_chestplate_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::flint_and_steel_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::netherwart_seeds_Id, 0, 3, 7, 5),
-	new WeighedTreasure(Item::saddle_Id, 0, 1, 1, 10),
-	new WeighedTreasure(Item::golden_horse_armor_Id, 0, 1, 1, 8),
-	new WeighedTreasure(Item::iron_horse_armor_Id, 0, 1, 1, 5),
-	new WeighedTreasure(Item::diamond_horse_armor_Id, 0, 1, 1, 3),
-};
 
 NetherBridgePieces::NetherBridgePiece::NetherBridgePiece()
 {
@@ -1381,7 +1368,9 @@ bool NetherBridgePieces::CastleSmallCorridorRightTurnPiece::postProcess(Level *l
 		if (chunkBB->isInside(x, y, z))
 		{
 			isNeedingChest = false;
-			createChest(level, chunkBB, random, 1, 2, 3, WeighedTreasureArray(fortressTreasureItems,FORTRESS_TREASURE_ITEMS_COUNT), 2 + random->nextInt(4));
+			createChest(level, chunkBB, random, 1, 2, 3,
+				LootTableManager::Get().ResolveDrops("chests/nether_bridge", false, 0,
+					[random](int bound) { return random->nextInt(bound); }));
 		}
 	}
 
@@ -1473,7 +1462,9 @@ bool NetherBridgePieces::CastleSmallCorridorLeftTurnPiece::postProcess(Level *le
 		if (chunkBB->isInside(x, y, z))
 		{
 			isNeedingChest = false;
-			createChest(level, chunkBB, random, 3, 2, 3, WeighedTreasureArray(fortressTreasureItems,FORTRESS_TREASURE_ITEMS_COUNT), 2 + random->nextInt(4));
+			createChest(level, chunkBB, random, 3, 2, 3,
+				LootTableManager::Get().ResolveDrops("chests/nether_bridge", false, 0,
+					[random](int bound) { return random->nextInt(bound); }));
 		}
 	}
 

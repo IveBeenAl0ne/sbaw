@@ -29,7 +29,7 @@ static bool IsValidDirectory(const fs::path &path)
 
 namespace
 {
-// route everything through debugprintf
+// route everything through printf cause debugprintf sucks on linux
 void LootLog(const char *format, ...)
 {
 #if LOOT_TABLE_VERBOSE_LOGGING
@@ -38,7 +38,7 @@ void LootLog(const char *format, ...)
     va_start(args, format);
     vsnprintf(buffer, sizeof(buffer), format, args);
     va_end(args);
-    app.DebugPrintf("%s", buffer);
+    printf("%s", buffer);
 #else
     (void)format;
 #endif
@@ -316,7 +316,8 @@ public:
             }
         }
 
-        if ((elementName == "entrie" || elementName == "entry") && m_currentPoolIndex >= 0)
+        // entrie as fallback now since the xmls have been 'cleansed'
+        if ((elementName == "entry" || elementName == "entrie") && m_currentPoolIndex >= 0)
         {
             pool->entries.push_back(LootTableEntryDefinition());
             m_currentEntryIndex = static_cast<int>(pool->entries.size() - 1);
@@ -378,7 +379,7 @@ public:
         }
 
         // then come entry tags
-        if (elementName == "weight" || elementName == "type" || elementName == "name")
+        if (elementName == "weight" || elementName == "type" || elementName == "name" || elementName == "quality")
         {
             m_captureText = true;
             m_captureTag = elementName;
@@ -397,6 +398,26 @@ public:
             m_captureText = false;
             m_captureTag.clear();
             m_currentCountContext = 0;
+            return S_OK;
+        }
+
+        // <data> (set_data), <damage> (set_damage), and <levels>
+        // (enchant_with_levels) can either be plain values and/or min/max ranges
+        if ((elementName == "data" || elementName == "damage" || elementName == "levels") && m_currentFunctionIndex >= 0)
+        {
+            m_captureText = true;
+            m_captureTag = elementName;
+            m_captureBuffer.clear();
+            return S_OK;
+        }
+
+        // <treasure> (enchant_with_levels), <tag> (set_nbt), and <limit>
+        // (looting_enchant) is always a regular value(?)
+        if ((elementName == "treasure" || elementName == "tag" || elementName == "limit") && m_currentFunctionIndex >= 0)
+        {
+            m_captureText = true;
+            m_captureTag = elementName;
+            m_captureBuffer.clear();
             return S_OK;
         }
 
@@ -476,7 +497,13 @@ public:
             }
             else if (elementName == "function" && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
             {
-                (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex].functionName = trimmedValue;
+                // just in case
+                std::string functionName = trimmedValue;
+                if (functionName.find("minecraft:") == 0)
+                {
+                    functionName = functionName.substr(10);
+                }
+                (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex].functionName = functionName;
             }
             else if (elementName == "condition" && m_currentFunctionConditionIndex >= 0 && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
             {
@@ -501,6 +528,30 @@ public:
             else if (elementName == "max" && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
             {
                 (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex].maxCount = ParseInt(trimmedValue);
+            }
+            else if ((elementName == "data" || elementName == "damage" || elementName == "levels") && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
+            {
+                // plain values only to prevent being overwritten
+                const int value = ParseInt(trimmedValue);
+                LootTableFunctionDefinition &function = (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex];
+                function.minCount = value;
+                function.maxCount = value;
+            }
+            else if (elementName == "treasure" && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
+            {
+                (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex].treasureOnly = IsTrueValue(trimmedValue);
+            }
+            else if (elementName == "tag" && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
+            {
+                (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex].nbtTag = trimmedValue;
+            }
+            else if (elementName == "limit" && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
+            {
+                (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex].limit = ParseInt(trimmedValue);
+            }
+            else if (elementName == "quality" && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0)
+            {
+                (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].quality = ParseInt(trimmedValue);
             }
             else if (m_currentRollCountContext > 0 && m_currentPoolIndex >= 0 && m_currentTableIndex >= 0 && m_currentRollRange)
             {
@@ -762,181 +813,259 @@ std::vector<LootTableDropResult> LootTableManager::ResolveDrops(
         return drops;
     }
 
-    for (size_t poolIndex = 0; poolIndex < table->pools.size(); ++poolIndex)
+    // some entries have type="loot_table" instead of type="item"
+    const int kMaxLootTableRecursionDepth = 8;
+    std::function<void(const LootTableDefinition *, int, std::vector<LootTableDropResult> &)> resolveTable =
+        [&](const LootTableDefinition *currentTable, int depth, std::vector<LootTableDropResult> &outDrops)
     {
-        const LootTablePoolDefinition &pool = table->pools[poolIndex];
-
-        bool hasKilledByPlayerCondition = false;
-        bool poolConditionsPass = true;
-        for (std::vector<LootTablePoolConditionDefinition>::const_iterator condIt = pool.conditions.begin(); condIt != pool.conditions.end(); ++condIt)
+        if (currentTable == nullptr || depth > kMaxLootTableRecursionDepth)
         {
-            LootLog("[LootDbg] pool[%zu] condition entry: '%s' chance=%f lootingMultiplier=%f\n",
-                poolIndex, condIt->conditionName.c_str(), condIt->chance, condIt->lootingMultiplier);
+            return;
+        }
 
-            if (condIt->conditionName == "killed_by_player")
+        for (size_t poolIndex = 0; poolIndex < currentTable->pools.size(); ++poolIndex)
+        {
+            const LootTablePoolDefinition &pool = currentTable->pools[poolIndex];
+
+            bool hasKilledByPlayerCondition = false;
+            bool poolConditionsPass = true;
+            for (std::vector<LootTablePoolConditionDefinition>::const_iterator condIt = pool.conditions.begin(); condIt != pool.conditions.end(); ++condIt)
             {
-                hasKilledByPlayerCondition = true;
-                if (!wasKilledByPlayer)
+                LootLog("[LootDbg] pool[%zu] condition entry: '%s' chance=%f lootingMultiplier=%f\n",
+                    poolIndex, condIt->conditionName.c_str(), condIt->chance, condIt->lootingMultiplier);
+
+                if (condIt->conditionName == "killed_by_player")
+                {
+                    hasKilledByPlayerCondition = true;
+                    if (!wasKilledByPlayer)
+                    {
+                        poolConditionsPass = false;
+                        break;
+                    }
+                }
+                else if (condIt->conditionName == "random_chance_with_looting")
+                {
+                    double adjustedChance = condIt->chance + condIt->lootingMultiplier * playerBonusLevel;
+                    if (!RandomChance(adjustedChance, randomInt))
+                    {
+                        poolConditionsPass = false;
+                        break;
+                    }
+                }
+                else if (!condIt->conditionName.empty())
+                {
+                    // dont comment this debug print out pls
+                    app.DebugPrintf("[LootDbg] pool[%zu] condition '%s' not implemented, skipping pool\n",
+                        poolIndex, condIt->conditionName.c_str());
+                    poolConditionsPass = false;
+                    break;
+                }
+                else
                 {
                     poolConditionsPass = false;
                     break;
                 }
             }
-            else if (condIt->conditionName == "random_chance_with_looting")
+
+            if (!poolConditionsPass)
             {
-                double adjustedChance = condIt->chance + condIt->lootingMultiplier * playerBonusLevel;
-                if (!RandomChance(adjustedChance, randomInt))
-                {
-                    poolConditionsPass = false;
-                    break;
-                }
-            }
-            else if (!condIt->conditionName.empty())
-            {
-                app.DebugPrintf("[LootDbg] pool[%zu] condition '%s' not implemented, skipping pool\n",
-                    poolIndex, condIt->conditionName.c_str());
-                poolConditionsPass = false;
-                break;
-            }
-            else
-            {
-                poolConditionsPass = false;
-                break;
-            }
-        }
-
-        if (!poolConditionsPass)
-        {
-            LootLog("[LootDbg] pool[%zu]: skipped due to condition failure\n", poolIndex);
-            continue;
-        }
-
-        LootLog("[LootDbg]   pool[%zu]: rolls=%d entries=%zu hasKilledByPlayerCondition=%d\n",
-            poolIndex, pool.rolls, pool.entries.size(), hasKilledByPlayerCondition);
-
-        if (pool.minRolls != pool.maxRolls)
-        {
-            LootLog("[LootDbg] pool[%zu]: rolls range min=%d max=%d\n", poolIndex, pool.minRolls, pool.maxRolls);
-        }
-
-        if (hasKilledByPlayerCondition && !wasKilledByPlayer)
-        {
-            LootLog("[LootDbg] pool[%zu]: skipped (requires killed_by_player)\n", poolIndex);
-            continue;
-        }
-
-        int poolRolls = pool.rolls;
-        if (pool.minRolls != pool.maxRolls)
-        {
-            int range = pool.maxRolls - pool.minRolls + 1;
-            if (range > 0)
-            {
-                poolRolls = pool.minRolls + randomInt(range);
-            }
-        }
-
-        for (int roll = 0; roll < poolRolls; ++roll)
-        {
-            int totalWeight = 0;
-            for (std::vector<LootTableEntryDefinition>::const_iterator entryIt = pool.entries.begin(); entryIt != pool.entries.end(); ++entryIt)
-            {
-                totalWeight += entryIt->weight;
-            }
-
-            LootLog("[LootDbg] roll %d: totalWeight=%d\n", roll, totalWeight);
-
-            if (totalWeight <= 0)
-            {
-                LootLog("[LootDbg] roll %d: SKIPPED (totalWeight <= 0)\n", roll);
+                LootLog("[LootDbg] pool[%zu]: skipped due to condition failure\n", poolIndex);
                 continue;
             }
 
-            int choice = randomInt(totalWeight);
-            LootLog("[LootDbg] roll %d: choice=%d\n", roll, choice);
+            LootLog("[LootDbg]   pool[%zu]: rolls=%d entries=%zu hasKilledByPlayerCondition=%d\n",
+                poolIndex, pool.rolls, pool.entries.size(), hasKilledByPlayerCondition);
 
-            int runningWeight = 0;
-            for (std::vector<LootTableEntryDefinition>::const_iterator entryIt = pool.entries.begin(); entryIt != pool.entries.end(); ++entryIt)
+            if (pool.minRolls != pool.maxRolls)
             {
-                runningWeight += entryIt->weight;
-                if (choice < runningWeight)
+                LootLog("[LootDbg] pool[%zu]: rolls range min=%d max=%d\n", poolIndex, pool.minRolls, pool.maxRolls);
+            }
+
+            if (hasKilledByPlayerCondition && !wasKilledByPlayer)
+            {
+                LootLog("[LootDbg] pool[%zu]: skipped (requires killed_by_player)\n", poolIndex);
+                continue;
+            }
+
+            int poolRolls = pool.rolls;
+            if (pool.minRolls != pool.maxRolls)
+            {
+                int range = pool.maxRolls - pool.minRolls + 1;
+                if (range > 0)
                 {
-                    LootTableDropResult result;
-                    result.itemId = ResolveItemId(entryIt->name);
-                    result.count = 1;
+                    poolRolls = pool.minRolls + randomInt(range);
+                }
+            }
 
-                    LootLog("[LootDbg] selected entry name='%s' weight=%d itemId=%d\n",
-                        entryIt->name.c_str(), entryIt->weight, result.itemId);
+            for (int roll = 0; roll < poolRolls; ++roll)
+            {
+                int totalWeight = 0;
+                for (std::vector<LootTableEntryDefinition>::const_iterator entryIt = pool.entries.begin(); entryIt != pool.entries.end(); ++entryIt)
+                {
+                    totalWeight += entryIt->weight;
+                }
 
-                    for (std::vector<LootTableFunctionDefinition>::const_iterator functionIt = entryIt->functions.begin(); functionIt != entryIt->functions.end(); ++functionIt)
+                LootLog("[LootDbg] roll %d: totalWeight=%d\n", roll, totalWeight);
+
+                if (totalWeight <= 0)
+                {
+                    LootLog("[LootDbg] roll %d: SKIPPED (totalWeight <= 0)\n", roll);
+                    continue;
+                }
+
+                int choice = randomInt(totalWeight);
+                LootLog("[LootDbg] roll %d: choice=%d\n", roll, choice);
+
+                int runningWeight = 0;
+                for (std::vector<LootTableEntryDefinition>::const_iterator entryIt = pool.entries.begin(); entryIt != pool.entries.end(); ++entryIt)
+                {
+                    runningWeight += entryIt->weight;
+                    if (choice < runningWeight)
                     {
-                        bool shouldApplyFunction = true;
-                        for (std::vector<LootTableConditionDefinition>::const_iterator conditionIt = functionIt->conditions.begin(); conditionIt != functionIt->conditions.end(); ++conditionIt)
+                        if (entryIt->type == "empty")
                         {
-                            if (!EvaluateCondition(*conditionIt, entityIsOnFire))
-                            {
-                                shouldApplyFunction = false;
-                                LootLog("[LootDbg] skipping function '%s' due to condition '%s'\n",
-                                    functionIt->functionName.c_str(), conditionIt->conditionName.c_str());
-                                break;
-                            }
+                            LootLog("[LootDbg] selected entry type=empty -> no drop\n");
+                            break;
                         }
 
-                        if (!shouldApplyFunction)
+                        if (entryIt->type == "loot_table")
                         {
-                            continue;
+                            // table path, NOT an item
+                            const std::string referencedTableName =
+                                (entryIt->name.find("minecraft:") == 0) ? entryIt->name.substr(10) : entryIt->name;
+                            const LootTableDefinition *referencedTable = GetTable(referencedTableName);
+                            LootLog("[LootDbg] selected entry type=loot_table name='%s' -> %s\n",
+                                referencedTableName.c_str(), referencedTable ? "resolved" : "NOT FOUND");
+                            resolveTable(referencedTable, depth + 1, outDrops);
+                            break;
                         }
 
-                        if (functionIt->functionName == "set_count")
+                        LootTableDropResult result;
+                        result.itemId = ResolveItemId(entryIt->name);
+                        result.count = 1;
+
+                        LootLog("[LootDbg] selected entry name='%s' weight=%d itemId=%d\n",
+                            entryIt->name.c_str(), entryIt->weight, result.itemId);
+
+                        for (std::vector<LootTableFunctionDefinition>::const_iterator functionIt = entryIt->functions.begin(); functionIt != entryIt->functions.end(); ++functionIt)
                         {
-                            if (functionIt->maxCount >= functionIt->minCount)
+                            bool shouldApplyFunction = true;
+                            for (std::vector<LootTableConditionDefinition>::const_iterator conditionIt = functionIt->conditions.begin(); conditionIt != functionIt->conditions.end(); ++conditionIt)
                             {
-                                const int range = functionIt->maxCount - functionIt->minCount + 1;
-                                result.count = functionIt->minCount + (range > 0 ? randomInt(range) : 0);
-                                LootLog("[LootDbg] set_count min=%d max=%d -> count=%d\n",
-                                    functionIt->minCount, functionIt->maxCount, result.count);
-                            }
-                        }
-                        else if (functionIt->functionName == "looting_enchant")
-                        {
-                            if (playerBonusLevel > 0 && functionIt->maxCount >= functionIt->minCount)
-                            {
-                                const int range = functionIt->maxCount - functionIt->minCount + 1;
-                                LootLog("[LootDbg] looting_enchant min=%d max=%d bonus=%d range=%d\n",
-                                    functionIt->minCount, functionIt->maxCount, playerBonusLevel, range);
-                                for (int i = 0; i < playerBonusLevel; ++i)
+                                if (!EvaluateCondition(*conditionIt, entityIsOnFire))
                                 {
-                                    if (range > 0)
-                                    {
-                                        const int lootingRoll = functionIt->minCount + randomInt(range);
-                                        result.count += lootingRoll;
-                                        LootLog("[LootDbg] looting roll %d: +%d -> count=%d\n", i + 1, lootingRoll, result.count);
-                                    }
+                                    shouldApplyFunction = false;
+                                    LootLog("[LootDbg] skipping function '%s' due to condition '%s'\n",
+                                        functionIt->functionName.c_str(), conditionIt->conditionName.c_str());
+                                    break;
                                 }
                             }
-                            else
+
+                            if (!shouldApplyFunction)
                             {
-                                LootLog("[LootDbg] looting_enchant SKIPPED (playerBonusLevel=%d)\n", playerBonusLevel);
+                                continue;
+                            }
+
+                            if (functionIt->functionName == "set_count")
+                            {
+                                if (functionIt->maxCount >= functionIt->minCount)
+                                {
+                                    const int range = functionIt->maxCount - functionIt->minCount + 1;
+                                    result.count = functionIt->minCount + (range > 0 ? randomInt(range) : 0);
+                                    LootLog("[LootDbg] set_count min=%d max=%d -> count=%d\n",
+                                        functionIt->minCount, functionIt->maxCount, result.count);
+                                }
+                            }
+                            else if (functionIt->functionName == "looting_enchant")
+                            {
+                                if (playerBonusLevel > 0 && functionIt->maxCount >= functionIt->minCount)
+                                {
+                                    const int range = functionIt->maxCount - functionIt->minCount + 1;
+                                    LootLog("[LootDbg] looting_enchant min=%d max=%d bonus=%d range=%d\n",
+                                        functionIt->minCount, functionIt->maxCount, playerBonusLevel, range);
+                                    for (int i = 0; i < playerBonusLevel; ++i)
+                                    {
+                                        if (range > 0)
+                                        {
+                                            const int lootingRoll = functionIt->minCount + randomInt(range);
+                                            result.count += lootingRoll;
+                                            LootLog("[LootDbg] looting roll %d: +%d -> count=%d\n", i + 1, lootingRoll, result.count);
+                                        }
+                                    }
+                                    if (functionIt->limit > 0 && result.count > functionIt->limit)
+                                    {
+                                        LootLog("[LootDbg] looting_enchant capped by limit=%d (was count=%d)\n",
+                                            functionIt->limit, result.count);
+                                        result.count = functionIt->limit;
+                                    }
+                                }
+                                else
+                                {
+                                    LootLog("[LootDbg] looting_enchant SKIPPED (playerBonusLevel=%d)\n", playerBonusLevel);
+                                }
+                            }
+                            else if (functionIt->functionName == "furnace_smelt")
+                            {
+                                result.itemId = ResolveSmeltedItemId(entryIt->name, result.itemId);
+                                LootLog("[LootDbg] furnace_smelt -> itemId=%d\n", result.itemId);
+                            }
+                            else if (functionIt->functionName == "set_data")
+                            {
+                                if (functionIt->maxCount >= functionIt->minCount)
+                                {
+                                    const int range = functionIt->maxCount - functionIt->minCount + 1;
+                                    result.data = functionIt->minCount + (range > 0 ? randomInt(range) : 0);
+                                    LootLog("[LootDbg] set_data min=%d max=%d -> data=%d\n",
+                                        functionIt->minCount, functionIt->maxCount, result.data);
+                                }
+                            }
+                            else if (functionIt->functionName == "set_damage")
+                            {
+                                if (functionIt->maxCount >= functionIt->minCount)
+                                {
+                                    const int range = functionIt->maxCount - functionIt->minCount + 1;
+                                    result.damage = functionIt->minCount + (range > 0 ? randomInt(range) : 0);
+                                    LootLog("[LootDbg] set_damage min=%d max=%d -> damage=%d\n",
+                                        functionIt->minCount, functionIt->maxCount, result.damage);
+                                }
+                            }
+                            else if (functionIt->functionName == "set_nbt")
+                            {
+                                result.nbtTag = functionIt->nbtTag;
+                                LootLog("[LootDbg] set_nbt -> tag='%s'\n", result.nbtTag.c_str());
+                            }
+                            else if (functionIt->functionName == "enchant_with_levels")
+                            {
+                                if (functionIt->maxCount >= functionIt->minCount)
+                                {
+                                    const int range = functionIt->maxCount - functionIt->minCount + 1;
+                                    result.enchantLevels = functionIt->minCount + (range > 0 ? randomInt(range) : 0);
+                                    result.treasureEnchant = functionIt->treasureOnly;
+                                    LootLog("[LootDbg] enchant_with_levels min=%d max=%d treasure=%d -> levels=%d\n",
+                                        functionIt->minCount, functionIt->maxCount, functionIt->treasureOnly, result.enchantLevels);
+                                }
+                            }
+                            else if (functionIt->functionName == "enchant_randomly")
+                            {
+                                LootLog("[LootDbg] enchant_randomly -> deferred to enchantment system\n");
                             }
                         }
-                        else if (functionIt->functionName == "furnace_smelt")
+
+                        LootLog("[LootDbg] final result: itemId=%d count=%d (will drop=%d)\n",
+                            result.itemId, result.count, (result.itemId != 0 && result.count > 0));
+
+                        if (result.itemId != 0 && result.count > 0)
                         {
-                            result.itemId = ResolveSmeltedItemId(entryIt->name, result.itemId);
-                            LootLog("[LootDbg] furnace_smelt -> itemId=%d\n", result.itemId);
+                            outDrops.push_back(result);
                         }
+                        break;
                     }
-
-                    LootLog("[LootDbg] final result: itemId=%d count=%d (will drop=%d)\n",
-                        result.itemId, result.count, (result.itemId != 0 && result.count > 0));
-
-                    if (result.itemId != 0 && result.count > 0)
-                    {
-                        drops.push_back(result);
-                    }
-                    break;
                 }
             }
         }
-    }
+    };
+
+    resolveTable(table, 0, drops);
 
     LootLog("[LootDbg] ResolveDrops: returning %zu drop(s)\n", drops.size());
     return drops;

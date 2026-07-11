@@ -5,26 +5,8 @@
 #include "net.minecraft.world.level.tile.entity.h"
 #include "net.minecraft.world.item.h"
 #include "WeighedTreasure.h"
+#include "LootTableManager.h"
 #include "MonsterRoomFeature.h"
-
-WeighedTreasure *MonsterRoomFeature::monsterRoomTreasure[MonsterRoomFeature::TREASURE_ITEMS_COUNT] = 
-{
-		new WeighedTreasure(Item::saddle_Id, 0, 1, 1, 10),
-		new WeighedTreasure(Item::iron_ingot_Id, 0, 1, 4, 10),
-		new WeighedTreasure(Item::bread_Id, 0, 1, 1, 10),
-		new WeighedTreasure(Item::wheat_Id, 0, 1, 4, 10),
-		new WeighedTreasure(Item::gunpowder_Id, 0, 1, 4, 10),
-		new WeighedTreasure(Item::string_Id, 0, 1, 4, 10),
-		new WeighedTreasure(Item::bucket_Id, 0, 1, 1, 10),
-		new WeighedTreasure(Item::golden_apple_Id, 0, 1, 1, 1),
-		new WeighedTreasure(Item::redstone_Id, 0, 1, 4, 10),
-		new WeighedTreasure(Item::record_13_Id, 0, 1, 1, 10),
-		new WeighedTreasure(Item::record_cat_Id, 0, 1, 1, 10),
-		new WeighedTreasure(Item::name_tag_Id, 0, 1, 1, 10),
-		new WeighedTreasure(Item::golden_horse_armor_Id, 0, 1, 1, 2),
-		new WeighedTreasure(Item::iron_horse_armor_Id, 0, 1, 1, 5),
-		new WeighedTreasure(Item::diamond_horse_armor_Id, 0, 1, 1, 1),
-};
 
 bool MonsterRoomFeature::place(Level *level, Random *random, int x, int y, int z)
 {
@@ -107,12 +89,13 @@ bool MonsterRoomFeature::place(Level *level, Random *random, int x, int y, int z
 			if (count != 1) continue;
 
 			level->setTileAndData(xc, yc, zc, Tile::chest_Id, 0, Tile::UPDATE_CLIENTS);
-			WeighedTreasureArray wrapperArray(monsterRoomTreasure, TREASURE_ITEMS_COUNT);
-			WeighedTreasureArray treasure = WeighedTreasure::addToTreasure(wrapperArray, Item::enchanted_book->createForRandomTreasure(random));
 			shared_ptr<ChestTileEntity> chest = dynamic_pointer_cast<ChestTileEntity >( level->getTileEntity(xc, yc, zc) );
 			if (chest != nullptr )
 			{
-				WeighedTreasure::addChestItems(random, treasure, chest, 8);
+				WeighedTreasure::addChestItems(random,
+					LootTableManager::Get().ResolveDrops("chests/simple_dungeon", false, 0,
+						[random](int bound) { return random->nextInt(bound); }),
+					chest);
 			}
 
 			break;

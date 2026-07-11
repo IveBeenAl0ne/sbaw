@@ -19,6 +19,10 @@ struct LootTableFunctionDefinition
     int minCount = 0;
     int maxCount = 0;
     std::vector<LootTableConditionDefinition> conditions;
+
+    std::string nbtTag;       // set_nbt
+    int limit = 0;            // looting_enchant
+    bool treasureOnly = false; // enchant_with_levels
 };
 
 struct LootTableEntryDefinition
@@ -26,6 +30,7 @@ struct LootTableEntryDefinition
     std::string type;
     std::string name;
     int weight = 1;
+    int quality = 0; // only used by type="loot_table" entries it seems like
     std::vector<LootTableFunctionDefinition> functions;
 };
 
@@ -55,6 +60,12 @@ struct LootTableDropResult
 {
     int itemId = 0;
     int count = 0;
+
+    int data = 0;                  // set_data
+    int damage = 0;                // set_damage
+    std::string nbtTag;            // set_nbt
+    int enchantLevels = 0;         // enchant_with_levels: target enchantment level
+    bool treasureEnchant = false;  // enchant_with_levels: treasure-only allowlist
 };
 
 class LootTableManager

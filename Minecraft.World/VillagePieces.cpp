@@ -9,6 +9,7 @@
 #include "net.minecraft.world.level.dimension.h"
 #include "net.minecraft.world.entity.npc.h"
 #include "WeighedTreasure.h"
+#include "LootTableManager.h"
 #include "VillagePieces.h"
 #include "VillageFeature.h"
 #include "Direction.h"
@@ -1712,7 +1713,9 @@ bool VillagePieces::Smithy::postProcess(Level *level, Random *random, BoundingBo
 		if (chunkBB->isInside(x, y, z))
 		{
 			hasPlacedChest = true;
-			createChest(level, chunkBB, random, 5, 1, 5, treasureItems, 3 + random->nextInt(6));
+			createChest(level, chunkBB, random, 5, 1, 5,
+				LootTableManager::Get().ResolveDrops("chests/village_blacksmith", false, 0,
+					[random](int bound) { return random->nextInt(bound); }));
 		}
 	}
 

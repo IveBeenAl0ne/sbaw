@@ -75,7 +75,7 @@ public:
 		virtual void addChildren(StructurePiece *startPiece, list<StructurePiece *> *pieces, Random *random);
 
 	protected:
-		virtual bool createChest(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, WeighedTreasureArray treasure, int numRolls);
+		virtual bool createChest(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, const std::vector<LootTableDropResult> &drops);
 
 	public:
 		virtual bool postProcess(Level *level, Random *random, BoundingBox *chunkBB);

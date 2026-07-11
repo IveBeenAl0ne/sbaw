@@ -1001,7 +1001,7 @@ void ServerLevel::generateBonusItemsNearSpawn()
 			}
 		}
 
-		BonusChestFeature *feature = new BonusChestFeature(RANDOM_BONUS_ITEMS, 16);
+		BonusChestFeature *feature = new BonusChestFeature("chests/spawn_bonus_chest");
 		for (int attempt = 0; attempt < 16; attempt++)
 		{
 			int x = levelData->getXSpawn() + random->nextInt(6) - random->nextInt(6);

@@ -17,6 +17,8 @@
 #include "Minecraft.World.h"
 #include "../Minecraft.Client/ServerLevel.h"
 
+#include "LootTableManager.h"
+
 #ifdef _DURANGO
 #include "DurangoStats.h"
 #else
@@ -27,6 +29,12 @@ void MinecraftWorld_RunStaticCtors()
 {
 	// The ordering of these static ctors can be important. If they are within statement blocks then
 	// DO NOT CHANGE the ordering - 4J Stu
+
+	// preload loot tables so bonus chests dont appear empty upon world generation
+	if (!LootTableManager::Get().LoadFromDisk(""))
+	{
+		app.DebugPrintf("FATAL: LootTableManager failed to load loot tables\n");
+	}
 
 	Packet::staticCtor();
 

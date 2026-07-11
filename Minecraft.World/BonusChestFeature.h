@@ -1,6 +1,8 @@
 #pragma once
 #include "Feature.h"
 
+#include <string>
+
 class Random;
 class Level;
 
@@ -8,12 +10,11 @@ class BonusChestFeature : public Feature
 {
 
 private:
-	const WeighedTreasureArray treasureList;
-    const int numRolls;
+	const std::string lootTableName;
 
 public:
-	BonusChestFeature(WeighedTreasureArray treasureList, int numRolls);
+	explicit BonusChestFeature(const std::string &lootTableName);
 
-    virtual bool place(Level *level, Random *random, int x, int y, int z);
-	bool place(Level *level, Random *random, int x, int y, int z, bool force);		// 4J added this method with extra force parameter
+	virtual bool place(Level *level, Random *random, int x, int y, int z);
+	bool place(Level *level, Random *random, int x, int y, int z, bool force);      // 4J added this method with extra force parameter
 };
