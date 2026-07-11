@@ -408,6 +408,10 @@ public:
             m_captureText = true;
             m_captureTag = elementName;
             m_captureBuffer.clear();
+            if (elementName == "damage")
+            {
+                m_currentDamageContext = true;
+            }
             return S_OK;
         }
 
@@ -523,19 +527,43 @@ public:
             }
             else if (elementName == "min" && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
             {
-                (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex].minCount = ParseInt(trimmedValue);
+                LootTableFunctionDefinition &function = (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex];
+                if (m_currentDamageContext)
+                {
+                    function.minDamageFraction = ParseFloat(trimmedValue);
+                }
+                else
+                {
+                    function.minCount = ParseInt(trimmedValue);
+                }
             }
             else if (elementName == "max" && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
             {
-                (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex].maxCount = ParseInt(trimmedValue);
+                LootTableFunctionDefinition &function = (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex];
+                if (m_currentDamageContext)
+                {
+                    function.maxDamageFraction = ParseFloat(trimmedValue);
+                }
+                else
+                {
+                    function.maxCount = ParseInt(trimmedValue);
+                }
             }
             else if ((elementName == "data" || elementName == "damage" || elementName == "levels") && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
             {
-                // plain values only to prevent being overwritten
-                const int value = ParseInt(trimmedValue);
                 LootTableFunctionDefinition &function = (*m_tables)[m_currentTableIndex].pools[m_currentPoolIndex].entries[m_currentEntryIndex].functions[m_currentFunctionIndex];
-                function.minCount = value;
-                function.maxCount = value;
+                if (elementName == "damage")
+                {
+                    const double value = ParseFloat(trimmedValue);
+                    function.minDamageFraction = value;
+                    function.maxDamageFraction = value;
+                }
+                else
+                {
+                    const int value = ParseInt(trimmedValue);
+                    function.minCount = value;
+                    function.maxCount = value;
+                }
             }
             else if (elementName == "treasure" && m_currentPoolIndex >= 0 && m_currentEntryIndex >= 0 && m_currentFunctionIndex >= 0)
             {
@@ -589,6 +617,10 @@ public:
                 m_currentRollCountContext = 0;
             }
             m_currentCountContext = 0;
+            if (elementName == "damage")
+            {
+                m_currentDamageContext = false;
+            }
             if (!m_captureStack.empty())
             {
                 m_captureText = m_captureStack.back().first;
@@ -669,6 +701,7 @@ private:
     int m_currentCountContext = 0;
     int m_currentRollCountContext = 0;
     bool m_currentRollRange = false;
+    bool m_currentDamageContext = false;
     bool m_captureText = false;
     std::string m_captureTag;
     std::string m_captureBuffer;
@@ -1021,12 +1054,18 @@ std::vector<LootTableDropResult> LootTableManager::ResolveDrops(
                             }
                             else if (functionIt->functionName == "set_damage")
                             {
-                                if (functionIt->maxCount >= functionIt->minCount)
+                                if (functionIt->maxDamageFraction >= functionIt->minDamageFraction)
                                 {
-                                    const int range = functionIt->maxCount - functionIt->minCount + 1;
-                                    result.damage = functionIt->minCount + (range > 0 ? randomInt(range) : 0);
-                                    LootLog("[LootDbg] set_damage min=%d max=%d -> damage=%d\n",
-                                        functionIt->minCount, functionIt->maxCount, result.damage);
+                                    const double range = functionIt->maxDamageFraction - functionIt->minDamageFraction;
+                                    double fraction = functionIt->minDamageFraction;
+                                    if (range > 0.0)
+                                    {
+                                        const int precision = 1000000;
+                                        fraction += (range * randomInt(precision)) / static_cast<double>(precision);
+                                    }
+                                    result.damageFraction = fraction;
+                                    LootLog("[LootDbg] set_damage min=%f max=%f -> damageFraction=%f\n",
+                                        functionIt->minDamageFraction, functionIt->maxDamageFraction, result.damageFraction);
                                 }
                             }
                             else if (functionIt->functionName == "set_nbt")

@@ -50,7 +50,7 @@ class FishingHelper
 		WeighedRandomItemArray fishingTreasuresArray;
 
 		CatchWeighedItem* getRandCatch(CatchType catchType, Random* random);
-		std::shared_ptr<ItemInstance> handleCatch(CatchWeighedItem* weighedCatch, CatchType catchType, Random* random);
+		std::shared_ptr<ItemInstance> handleCatch(const LootTableDropResult &drop, Random* random);
 		CatchType getRandCatchType(int luckLevel, int lureLevel, Random* random);
 	public:
 		// Setup singleton

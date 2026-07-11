@@ -677,6 +677,14 @@ void IUIScene_CreativeMenu::staticCtor()
 			debugSword->enchant( Enchantment::damageBonus, 50 );
 			debugSword->setHoverName(L"Sword of Debug");
 			list->push_back(debugSword);
+
+			/*
+			shared_ptr<ItemInstance> debugRod = std::make_shared<ItemInstance>(Item::fishing_rod_Id, 1, 0);
+			debugRod->enchant( Enchantment::lure, 50 );
+			debugRod->enchant( Enchantment::luckOfTheSea, 50 );
+			debugRod->setHoverName(L"Rod of Debug");
+			list->push_back(debugRod);
+			*/
 		}
 #endif
 

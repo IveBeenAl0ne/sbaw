@@ -23,6 +23,9 @@ struct LootTableFunctionDefinition
     std::string nbtTag;       // set_nbt
     int limit = 0;            // looting_enchant
     bool treasureOnly = false; // enchant_with_levels
+
+    double minDamageFraction = 0.0; // set_damage
+	double maxDamageFraction = 0.0; // set_damage
 };
 
 struct LootTableEntryDefinition
@@ -62,10 +65,11 @@ struct LootTableDropResult
     int count = 0;
 
     int data = 0;                  // set_data
-    int damage = 0;                // set_damage
-    std::string nbtTag;            // set_nbt
-    int enchantLevels = 0;         // enchant_with_levels: target enchantment level
-    bool treasureEnchant = false;  // enchant_with_levels: treasure-only allowlist
+	int damage = 0;                // unused (replaced by set_damage)
+	double damageFraction = 0.0;   // set_damage: 0.0 = undamaged, 1.0 = fully damaged
+	std::string nbtTag;            // set_nbt
+	int enchantLevels = 0;         // enchant_with_levels: target enchantment level
+	bool treasureEnchant = false;  // enchant_with_levels: treasure-only allowlist
 };
 
 class LootTableManager
