@@ -23,6 +23,7 @@
 #include "../Minecraft.Client/EntityTracker.h"
 #include "com.mojang.nbt.h"
 #include "Mob.h"
+#include "LootTableManager.h"
 #include "../Minecraft.Client/Textures.h"
 #include "SoundTypes.h"
 #include "BasicTypeContainers.h"
@@ -257,6 +258,47 @@ int Mob::getDeathLoot()
 
 void Mob::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
+	const wstring entityName = getName();
+	const wstring encodedId = getEncodeId();
+	const wchar_t* nameToPrint = entityName.empty()
+		? (encodedId.empty() ? L"unknown" : encodedId.c_str())
+		: entityName.c_str();
+
+	wstring loweredName = nameToPrint;
+	std::transform(loweredName.begin(), loweredName.end(), loweredName.begin(), ::towlower);
+	std::replace(loweredName.begin(), loweredName.end(), L' ', L'_');
+
+	const std::string loweredNameNarrow(loweredName.begin(), loweredName.end());
+	const std::string lootTableName = "entities/" + loweredNameNarrow;
+
+    LootTableManager &lootTables = LootTableManager::Get();
+    if (!lootTables.HasLoadedTables())
+    {
+        lootTables.LoadFromDisk();
+    }
+
+    const LootTableDefinition *table = lootTables.GetTable(lootTableName);
+    if (table != nullptr)
+    {
+        const std::vector<LootTableDropResult> drops = lootTables.ResolveDrops(
+            lootTableName,
+            wasKilledByPlayer,
+            playerBonusLevel,
+            [this](int maxExclusive) -> int { return random->nextInt(maxExclusive); },
+			isOnFire());
+			
+
+        if (!drops.empty())
+        {
+            for (auto it = drops.begin(); it != drops.end(); ++it)
+            {
+                spawnAtLocation(it->itemId, it->count);
+            }
+            return;
+        }
+    }
+
+	/*
 	int loot = getDeathLoot();
 	if (loot > 0)
 	{
@@ -268,6 +310,7 @@ void Mob::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 		for (int i = 0; i < count; i++)
 			spawnAtLocation(loot, 1);
 	}
+			*/
 }
 
 void Mob::addAdditonalSaveData(CompoundTag *entityTag)

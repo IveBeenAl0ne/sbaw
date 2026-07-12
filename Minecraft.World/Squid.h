@@ -38,7 +38,7 @@ protected:
 	virtual float getSoundVolume();
 	virtual int getDeathLoot();
 	virtual bool makeStepSound();
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	virtual bool isInWater();

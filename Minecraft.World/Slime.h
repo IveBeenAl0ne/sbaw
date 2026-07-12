@@ -61,6 +61,7 @@ protected:
 	virtual int getHurtSound();
 	virtual int getDeathSound();
 	virtual int getDeathLoot();
+	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	virtual bool canSpawn();

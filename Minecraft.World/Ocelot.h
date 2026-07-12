@@ -71,8 +71,8 @@ public:
 	virtual bool doHurtTarget(shared_ptr<Entity> target);
 	virtual bool hurt(DamageSource *source, float dmg);
 
-protected:
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+// protected:
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	virtual bool mobInteract(shared_ptr<Player> player);

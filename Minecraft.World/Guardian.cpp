@@ -200,10 +200,7 @@ float Guardian::getSpikesAnimation(float partialTicks)
     return isMoving() ? 1.0f : 0.0f;
 }
 
-
-
-
-
+/*
 void Guardian::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
     if (isElder())
@@ -211,6 +208,7 @@ void Guardian::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
         spawnAtLocation(make_shared<ItemInstance>(Tile::sponge_Id, 1, 0), 0.0f);
     }
 }
+*/
 
 float Guardian::getEyeHeight()
 {

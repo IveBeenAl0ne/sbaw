@@ -243,8 +243,6 @@ public:
 		static const int width = 5;
 		static const int height = 5;
 		static const int depth = 7;
-		static const int TREASURE_ITEMS_COUNT = 18;
-		static WeighedTreasure *treasureItems[TREASURE_ITEMS_COUNT];
 
 		bool hasPlacedChest;
 
@@ -340,10 +338,6 @@ public:
 		static StructurePiece *Create() { return new RoomCrossing(); }
 		virtual EStructurePiece GetType() { return eStructurePiece_StrongholdRoomCrossing; }
 
-	private:
-		static const int SMALL_TREASURE_ITEMS_COUNT = 7;	// 4J added
-		static WeighedTreasure *smallTreasureItems[SMALL_TREASURE_ITEMS_COUNT];
-
 	protected:
 		static const int width = 11;
 		static const int height = 7;
@@ -400,10 +394,6 @@ public:
 	public:
 		static StructurePiece *Create() { return new Library(); }
 		virtual EStructurePiece GetType() { return eStructurePiece_Library; }
-
-	private:
-		static const int LIBRARY_TREASURE_ITEMS_COUNT = 4;	// 4J added
-		static WeighedTreasure *libraryTreasureItems[LIBRARY_TREASURE_ITEMS_COUNT];
 
 	protected:
 		static const int width = 14;

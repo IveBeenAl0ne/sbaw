@@ -48,7 +48,7 @@ public:
 
 protected:
 	virtual int getDeathLoot();
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	bool hasSaddle();

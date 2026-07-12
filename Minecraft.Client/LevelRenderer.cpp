@@ -3566,8 +3566,9 @@ void LevelRenderer::levelEvent(shared_ptr<Player> source, int type, int x, int y
 			else
 			{
 				// 4J-PB - only play streaming music if there isn't already some playing - the CD playing may have finished, and game music started playing already
-				if(!mc->soundEngine->GetIsPlayingStreamingGameMusic())
+				if(mc->soundEngine->GetIsPlayingStreamingCDMusic())
 				{
+					mc->soundEngine->stopStreamingNow();
 					level[playerIndex]->playStreamingMusic(L"", x, y, z);	// 4J - used to pass nullptr, but using empty string here now instead
 				}
 			}

@@ -51,7 +51,7 @@ protected:
 	virtual int getHurtSound();
 	virtual int getDeathSound();
 	virtual void playStepSound(int xt, int yt, int zt, int t);
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	virtual int getOfferFlowerTick();

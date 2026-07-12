@@ -133,6 +133,19 @@ set(ASSET_FOLDER_PAIRS
 )
 setup_asset_folder_copy(Minecraft.Client "${ASSET_FOLDER_PAIRS}")
 
+set(LOOT_TABLES_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/Common/Media/MediaWindows64/Structures/loot_tables")
+set(LOOT_TABLES_DEST "$<TARGET_FILE_DIR:Minecraft.Client>/Common/Media/MediaWindows64/Structures/loot_tables")
+add_custom_target(AssetLootTablesCopy_Minecraft.Client ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${LOOT_TABLES_DEST}"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+    "${LOOT_TABLES_SOURCE}"
+    "${LOOT_TABLES_DEST}"
+  COMMENT "Copying loot table XML assets into build folder..."
+  VERBATIM
+)
+add_dependencies(Minecraft.Client AssetLootTablesCopy_Minecraft.Client)
+set_property(TARGET AssetLootTablesCopy_Minecraft.Client PROPERTY FOLDER "Build")
+
 # copy prebuilt loc folder and use it lmao
 if(PLATFORM_NAME STREQUAL "Windows64")
   add_custom_target(AssetLocalizationCopy_Minecraft.Client ALL

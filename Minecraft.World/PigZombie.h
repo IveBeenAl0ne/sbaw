@@ -47,13 +47,13 @@ protected:
 	virtual int getAmbientSound();
 	virtual int getHurtSound();
 	virtual int getDeathSound();
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	virtual bool mobInteract(shared_ptr<Player> player);
 
 protected:
-	virtual void dropRareDeathLoot(int rareLootLevel);
+	// virtual void dropRareDeathLoot(int rareLootLevel);
 	virtual int getDeathLoot();
 	virtual void populateDefaultEquipmentSlots();
 

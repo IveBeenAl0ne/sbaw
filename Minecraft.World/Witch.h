@@ -41,7 +41,7 @@ public:
 
 protected:
 	virtual float getDamageAfterMagicAbsorb(DamageSource *damageSource, float damage);
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	virtual void performRangedAttack(shared_ptr<LivingEntity> target, float power);

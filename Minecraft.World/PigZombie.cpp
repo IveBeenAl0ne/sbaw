@@ -143,6 +143,7 @@ int PigZombie::getDeathSound()
 	return eSoundType_MOB_ZOMBIEPIG_DEATH;
 }
 
+/*
 void PigZombie::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	int count = random->nextInt(2 + playerBonusLevel);
@@ -156,16 +157,19 @@ void PigZombie::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 		spawnAtLocation(Item::gold_nugget_Id, 1);
 	}
 }
+*/
 
 bool PigZombie::mobInteract(shared_ptr<Player> player)
 {
 	return false;
 }
 
+/*
 void PigZombie::dropRareDeathLoot(int rareLootLevel)
 {
 	spawnAtLocation(Item::gold_ingot_Id, 1);
 }
+*/
 
 int PigZombie::getDeathLoot()
 {

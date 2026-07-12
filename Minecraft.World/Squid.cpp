@@ -76,6 +76,7 @@ bool Squid::makeStepSound()
 	return false;
 }
 
+/*
 void Squid::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	int count = random->nextInt(3 + playerBonusLevel) + 1;
@@ -84,6 +85,7 @@ void Squid::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 		spawnAtLocation(std::make_shared<ItemInstance>(Item::dye, 1, DyePowderItem::BLACK), 0.0f);
 	}
 }
+*/
 
 bool Squid::isInWater() 
 {

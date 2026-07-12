@@ -7,6 +7,7 @@
 #include "net.minecraft.world.level.tile.h"
 #include "net.minecraft.world.level.levelgen.structure.h"
 #include "WeighedTreasure.h"
+#include "LootTableManager.h"
 #include "ScatteredFeaturePieces.h"
 
 void ScatteredFeaturePieces::loadStatic()
@@ -101,22 +102,6 @@ bool ScatteredFeaturePieces::ScatteredFeaturePiece::updateAverageGroundHeight(Le
 	boundingBox->move(0, heightPosition - boundingBox->y0 + offset, 0);
 	return true;
 }
-
-WeighedTreasure *ScatteredFeaturePieces::DesertPyramidPiece::treasureItems[ScatteredFeaturePieces::DesertPyramidPiece::TREASURE_ITEMS_COUNT] = 
-{
-	new WeighedTreasure(Item::diamond_Id, 0, 1, 3, 3),
-	new WeighedTreasure(Item::iron_ingot_Id, 0, 1, 5, 10),
-	new WeighedTreasure(Item::gold_ingot_Id, 0, 2, 7, 15),
-	new WeighedTreasure(Item::emerald_Id, 0, 1, 3, 2),
-	new WeighedTreasure(Item::bone_Id, 0, 4, 6, 20),
-	new WeighedTreasure(Item::rotten_flesh_Id, 0, 3, 7, 16),
-	// very rare for pyramids ...
-	new WeighedTreasure(Item::saddle_Id, 0, 1, 1, 3),
-	new WeighedTreasure(Item::iron_horse_armor_Id, 0, 1, 1, 1),
-	new WeighedTreasure(Item::golden_horse_armor_Id, 0, 1, 1, 1),
-	new WeighedTreasure(Item::diamond_horse_armor_Id, 0, 1, 1, 1),
-	// ...
-};
 
 ScatteredFeaturePieces::DesertPyramidPiece::DesertPyramidPiece()
 {
@@ -360,35 +345,14 @@ bool ScatteredFeaturePieces::DesertPyramidPiece::postProcess(Level *level, Rando
 		{
 			int xo = Direction::STEP_X[i] * 2;
 			int zo = Direction::STEP_Z[i] * 2;
-			hasPlacedChest[i] = createChest(level, chunkBB, random, 10 + xo, -11, 10 + zo, WeighedTreasure::addToTreasure(WeighedTreasureArray(treasureItems,TREASURE_ITEMS_COUNT), Item::enchanted_book->createForRandomTreasure(random)), 2 + random->nextInt(5));
+			hasPlacedChest[i] = createChest(level, chunkBB, random, 10 + xo, -11, 10 + zo,
+			LootTableManager::Get().ResolveDrops("chests/desert_pyramid", false, 0,
+				[random](int bound) { return random->nextInt(bound); }));
 		}
 	}
 
 	return true;
 }
-
-WeighedTreasure *ScatteredFeaturePieces::JunglePyramidPiece::treasureItems[ScatteredFeaturePieces::JunglePyramidPiece::TREASURE_ITEMS_COUNT] = 
-{
-	new WeighedTreasure(Item::diamond_Id, 0, 1, 3, 3),
-	new WeighedTreasure(Item::iron_ingot_Id, 0, 1, 5, 10),
-	new WeighedTreasure(Item::gold_ingot_Id, 0, 2, 7, 15),
-	new WeighedTreasure(Item::emerald_Id, 0, 1, 3, 2),
-	new WeighedTreasure(Item::bone_Id, 0, 4, 6, 20),
-	new WeighedTreasure(Item::rotten_flesh_Id, 0, 3, 7, 16),
-	// very rare for pyramids ...
-	new WeighedTreasure(Item::saddle_Id, 0, 1, 1, 3),
-	new WeighedTreasure(Item::iron_horse_armor_Id, 0, 1, 1, 1),
-	new WeighedTreasure(Item::golden_horse_armor_Id, 0, 1, 1, 1),
-	new WeighedTreasure(Item::diamond_horse_armor_Id, 0, 1, 1, 1),
-	// ...
-};
-
-
-WeighedTreasure *ScatteredFeaturePieces::JunglePyramidPiece::dispenserItems[ScatteredFeaturePieces::JunglePyramidPiece::DISPENSER_ITEMS_COUNT] = 
-{
-	new WeighedTreasure(Item::arrow_Id, 0, 2, 7, 30),
-	//            new WeighedTreasure(Item.fireball.id, 0, 1, 1, 10),
-};
 
 ScatteredFeaturePieces::JunglePyramidPiece::JunglePyramidPiece()
 {
@@ -566,7 +530,9 @@ bool ScatteredFeaturePieces::JunglePyramidPiece::postProcess(Level *level, Rando
 	placeBlock(level, Tile::mossy_cobblestone_Id, 0, 3, -3, 1, chunkBB);
 	if (!placedTrap1)
 	{
-		placedTrap1 = createDispenser(level, chunkBB, random, 3, -2, 1, Facing::NORTH, WeighedTreasureArray(dispenserItems,DISPENSER_ITEMS_COUNT), 2);
+		placedTrap1 = createDispenser(level, chunkBB, random, 3, -2, 1, Facing::NORTH,
+		LootTableManager::Get().ResolveDrops("chests/jungle_temple_dispenser", false, 0,
+			[random](int bound) { return random->nextInt(bound); }));
 	}
 	placeBlock(level, Tile::vine_Id, 0xf, 3, -2, 2, chunkBB);
 
@@ -583,13 +549,17 @@ bool ScatteredFeaturePieces::JunglePyramidPiece::postProcess(Level *level, Rando
 	placeBlock(level, Tile::redstone_wire_Id, 0, 9, -2, 4, chunkBB);
 	if (!placedTrap2)
 	{
-		placedTrap2 = createDispenser(level, chunkBB, random, 9, -2, 3, Facing::WEST, WeighedTreasureArray(dispenserItems,DISPENSER_ITEMS_COUNT), 2);
+		placedTrap2 = createDispenser(level, chunkBB, random, 9, -2, 3, Facing::WEST,
+		LootTableManager::Get().ResolveDrops("chests/jungle_temple_dispenser", false, 0,
+			[random](int bound) { return random->nextInt(bound); }));
 	}
 	placeBlock(level, Tile::vine_Id, 0xf, 8, -1, 3, chunkBB);
 	placeBlock(level, Tile::vine_Id, 0xf, 8, -2, 3, chunkBB);
 	if (!placedMainChest)
 	{
-		placedMainChest = createChest(level, chunkBB, random, 8, -3, 3, WeighedTreasure::addToTreasure(WeighedTreasureArray(treasureItems,TREASURE_ITEMS_COUNT), Item::enchanted_book->createForRandomTreasure(random)), 2 + random->nextInt(5));
+		placedMainChest = createChest(level, chunkBB, random, 8, -3, 3,
+		LootTableManager::Get().ResolveDrops("chests/jungle_temple", false, 0,
+			[random](int bound) { return random->nextInt(bound); }));
 	}
 	placeBlock(level, Tile::mossy_cobblestone_Id, 0, 9, -3, 2, chunkBB);
 	placeBlock(level, Tile::mossy_cobblestone_Id, 0, 8, -3, 1, chunkBB);
@@ -622,7 +592,9 @@ bool ScatteredFeaturePieces::JunglePyramidPiece::postProcess(Level *level, Rando
 	placeBlock(level, Tile::unpowered_repeater_Id, getOrientationData(Tile::unpowered_repeater_Id, Direction::NORTH), 10, -2, 10, chunkBB);
 	if (!placedHiddenChest)
 	{
-		placedHiddenChest = createChest(level, chunkBB, random, 9, -3, 10, WeighedTreasure::addToTreasure(WeighedTreasureArray(treasureItems,TREASURE_ITEMS_COUNT), Item::enchanted_book->createForRandomTreasure(random)), 2 + random->nextInt(5));
+		placedHiddenChest = createChest(level, chunkBB, random, 9, -3, 10,
+		LootTableManager::Get().ResolveDrops("chests/jungle_temple", false, 0,
+			[random](int bound) { return random->nextInt(bound); }));
 	}
 
 	return true;

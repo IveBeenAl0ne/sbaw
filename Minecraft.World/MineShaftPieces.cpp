@@ -6,6 +6,7 @@
 #include "net.minecraft.world.level.tile.entity.h"
 #include "net.minecraft.world.item.h"
 #include "JavaMath.h"
+#include "LootTableManager.h"
 #include "WeighedTreasure.h"
 #include "MineShaftPieces.h"
 
@@ -423,7 +424,7 @@ void MineShaftPieces::MineShaftCorridor::addChildren(StructurePiece *startPiece,
 	}
 }
 
-bool MineShaftPieces::MineShaftCorridor::createChest(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, WeighedTreasureArray treasure, int numRolls)
+bool MineShaftPieces::MineShaftCorridor::createChest(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, const std::vector<LootTableDropResult> &drops)
 {
 	int worldX = getWorldX(x, z);
 	int worldY = getWorldY(y);
@@ -435,7 +436,7 @@ bool MineShaftPieces::MineShaftCorridor::createChest(Level *level, BoundingBox *
 		{
 			level->setTileAndData(worldX, worldY, worldZ, Tile::rail_Id, getOrientationData(Tile::rail_Id, random->nextBoolean() ? RailTile::DIR_FLAT_X : RailTile::DIR_FLAT_Z), Tile::UPDATE_CLIENTS);
 			shared_ptr<MinecartChest> chest = std::make_shared<MinecartChest>(level, worldX + 0.5f, worldY + 0.5f, worldZ + 0.5f);
-			WeighedTreasure::addChestItems(random, treasure, chest, numRolls);
+			WeighedTreasure::addChestItems(random, drops, chest);
 			level->addEntity(chest);
 			return true;
 		}
@@ -498,11 +499,15 @@ bool MineShaftPieces::MineShaftCorridor::postProcess(Level *level, Random *rando
 
 		if (random->nextInt(100) == 0)
 		{
-			createChest(level, chunkBB, random, x1, y0, z - 1, WeighedTreasure::addToTreasure(smallTreasureItems, Item::enchanted_book->createForRandomTreasure(random)), 3 + random->nextInt(4));
+			createChest(level, chunkBB, random, x1, y0, z - 1,
+				LootTableManager::Get().ResolveDrops("chests/abandoned_mineshaft", false, 0,
+					[random](int bound) { return random->nextInt(bound); }));
 		}
 		if (random->nextInt(100) == 0)
 		{
-			createChest(level, chunkBB, random, x0, y0, z + 1, WeighedTreasure::addToTreasure(smallTreasureItems, Item::enchanted_book->createForRandomTreasure(random)), 3 + random->nextInt(4));
+			createChest(level, chunkBB, random, x0, y0, z + 1,
+				LootTableManager::Get().ResolveDrops("chests/abandoned_mineshaft", false, 0,
+					[random](int bound) { return random->nextInt(bound); }));
 		}
 
 		if (spiderCorridor && !hasPlacedSpider)

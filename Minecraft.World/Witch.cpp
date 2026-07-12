@@ -178,21 +178,13 @@ float Witch::getDamageAfterMagicAbsorb(DamageSource *damageSource, float damage)
 	return damage;
 }
 
+/*
 void Witch::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
-	int passes = random->nextInt(3) + 1;
-	for (int pass = 0; pass < passes; pass++)
-	{
-		int count = random->nextInt(3);
-		int type = DEATH_LOOT[random->nextInt(DEATH_LOOT_COUNT)];
-		if (playerBonusLevel > 0) count += random->nextInt(playerBonusLevel + 1);
-
-		for (int i = 0; i < count; i++)
-		{
-			spawnAtLocation(type, 1);
-		}
-	}
+	// use loot table system instead of dropping entire inventory
+	Monster::dropDeathLoot(wasKilledByPlayer, playerBonusLevel);
 }
+*/
 
 void Witch::performRangedAttack(shared_ptr<LivingEntity> target, float power)
 {

@@ -70,6 +70,7 @@ bool Rabbit::useNewAi() {
     return true; 
 }
 
+/*
 void Rabbit::dropDeathLoot(bool wasKilledByPlayer, int lootingLevel) {
     
     int meatCount = random->nextInt(2) + random->nextInt(lootingLevel + 1);
@@ -86,6 +87,7 @@ void Rabbit::dropDeathLoot(bool wasKilledByPlayer, int lootingLevel) {
         spawnAtLocation(Item::rabbit_foot_Id, 1);
     }
 }
+*/
 
 void Rabbit::tick() {
     Animal::tick();

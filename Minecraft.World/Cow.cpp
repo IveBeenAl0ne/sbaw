@@ -80,6 +80,7 @@ int Cow::getDeathLoot()
 	return Item::leather->id;
 }
 
+/*
 void Cow::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	// drop some leather
@@ -102,6 +103,7 @@ void Cow::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 		}
 	}
 }
+*/
 
 bool Cow::mobInteract(shared_ptr<Player> player) 
 {
