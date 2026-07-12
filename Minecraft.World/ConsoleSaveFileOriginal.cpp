@@ -222,10 +222,7 @@ ConsoleSaveFileOriginal::ConsoleSaveFileOriginal(const wstring &fileName, LPVOID
 
 		header.ReadHeader( pvSaveMem, plat );
 
-		if (bLevelGenBaseSave)
-		{
-			header.AddFile(L"region_format_16");
-		}
+		// fireblade: removed region_format_16 stamp
 	}
 	else
 	{
