@@ -239,13 +239,6 @@ jobs:
           curl -L "$url" -o "artifacts/$filename"
         done < artifacts/server.txt
         rm artifacts/server.txt
-    
-    - name: Attest artifacts
-      uses: actions/attest-build-provenance@v2
-      with:
-        subject-path: |
-          artifacts/neoLegacyServerWindows64.zip
-          artifacts/neoLegacyServerWindows64-FourKit.zip
 
     - name: Fetch information
       id: vars
@@ -296,12 +289,6 @@ jobs:
           curl -L "$url" -o "artifacts/$filename"
         done < artifacts/client.txt
         rm artifacts/client.txt
-
-    - name: Attest artifacts
-      uses: actions/attest-build-provenance@v2
-      with:
-        subject-path: |
-          artifacts/neoLegacyWindows64.zip
 
     - name: Fetch information
       id: vars
