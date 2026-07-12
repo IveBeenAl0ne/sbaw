@@ -9,6 +9,11 @@
 #include <time.h>
 #include <intrin.h>
 
+// stop clang from overwriting cpuid
+#if defined(__cpuid)
+#undef __cpuid
+#endif
+
 static FILE            *s_logFile = nullptr;
 static CRITICAL_SECTION s_cs;
 static bool             s_csInit  = false;
@@ -76,9 +81,9 @@ static void getCpuName(char *buf, size_t size)
 {
     int regs[4] = {};
     char name[49] = {};
-    __cpuid(regs, 0x80000002); memcpy(name,      regs, 16);
-    __cpuid(regs, 0x80000003); memcpy(name + 16, regs, 16);
-    __cpuid(regs, 0x80000004); memcpy(name + 32, regs, 16);
+    __cpuidex(regs, 0x80000002, 0); memcpy(name,      regs, 16);
+    __cpuidex(regs, 0x80000003, 0); memcpy(name + 16, regs, 16);
+    __cpuidex(regs, 0x80000004, 0); memcpy(name + 32, regs, 16);
     name[48] = '\0';
     const char *p = name;
     while (*p == ' ') p++;

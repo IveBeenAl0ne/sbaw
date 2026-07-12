@@ -83,6 +83,7 @@ function(configure_lce_server_target target)
       d3dcompiler
       XInput9_1_0
       wsock32
+      dbghelp
       legacy_stdio_definitions
       4JLibs.${PLATFORM_NAME}.Input
       4JLibs.${PLATFORM_NAME}.Profile
@@ -97,6 +98,7 @@ function(configure_lce_server_target target)
       d3dcompiler
       XInput9_1_0
       wsock32
+      dbghelp
       legacy_stdio_definitions
       "${CMAKE_SOURCE_DIR}/Minecraft.Client/${PLATFORM_NAME}/4JLibs/libs/4J_Input.lib"
       "${CMAKE_SOURCE_DIR}/Minecraft.Client/${PLATFORM_NAME}/4JLibs/libs/4J_Storage.lib"

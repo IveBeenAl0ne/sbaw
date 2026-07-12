@@ -5,6 +5,7 @@
 #include "Biome.h"
 #include "Item.h"
 #include "ItemInstance.h"
+#include "LootTableManager.h"
 #include "WeighedTreasure.h"
 #include "Villager.h"
 #include "Zombie.h"
@@ -144,18 +145,10 @@ void IglooFeature::placeBasement(Level *level, Random *random, int x, int y, int
 	auto chestEntity = dynamic_pointer_cast<ChestTileEntity>(level->getTileEntity(x + 2, by + 1, rz - 2));
 	if (chestEntity)
 	{
-		static WeighedTreasure *iglooTreasure[] = {
-			new WeighedTreasure(Item::coal_Id,        0, 1, 4, 15),
-			new WeighedTreasure(Item::apple_Id,       0, 1, 3, 15),
-			new WeighedTreasure(Item::wheat_Id,       0, 2, 3, 10),
-			new WeighedTreasure(Item::gold_nugget_Id, 0, 1, 3, 10),
-			new WeighedTreasure(Item::rotten_flesh_Id,0, 1, 1, 10),
-			new WeighedTreasure(Item::stone_axe_Id,   0, 1, 1,  2),
-			new WeighedTreasure(Item::emerald_Id,     0, 1, 1,  1),
-		};
-		WeighedTreasureArray treasureArray(iglooTreasure, 7);
-		int rolls = 2 + random->nextInt(7);
-		WeighedTreasure::addChestItems(random, treasureArray, chestEntity, rolls);
+		std::vector<LootTableDropResult> drops = LootTableManager::Get().ResolveDrops(
+			"chests/igloo_chest", false, 0,
+			[random](int bound) { return random->nextInt(bound); });
+		WeighedTreasure::addChestItems(random, drops, chestEntity);
 		chestEntity->setItem(0, make_shared<ItemInstance>(Item::golden_apple_Id, 1, 0));
 	}
 
