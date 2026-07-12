@@ -187,11 +187,12 @@ jobs:
       - name: Stage artifacts
         shell: pwsh
         run: |
+          Remove-Item -Recurse -Force staging -ErrorAction SilentlyContinue
           New-Item -ItemType Directory -Force -Path staging
           Copy-Item neoLegacyServerWindows64.zip staging/
           Copy-Item neoLegacyServerWindows64-FourKit.zip staging/
 
-      - name: Upload Artifacts
+      - name: Upload artifacts
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path upload
