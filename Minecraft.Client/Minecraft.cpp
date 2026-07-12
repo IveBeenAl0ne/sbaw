@@ -4541,7 +4541,11 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 #endif
 
 	// Stop menu music and transition to game music for the new level
-	soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
+	if (soundEngine != nullptr)
+	{
+		soundEngine->stopStreamingNow();
+		soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
+	}
 
 	// 4J - stop update thread from processing this level, which blocks until it is safe to move on - will be re-enabled if we set the level to be non-nullptr
 	gameRenderer->DisableUpdateThread();

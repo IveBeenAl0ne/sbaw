@@ -19,6 +19,7 @@
 #include "../Minecraft.Client/Textures.h"
 #include "MobCategory.h"
 #include "GenericStats.h"
+#include "ColoredTile.h"
 
 const float Sheep::COLOR[Sheep::COLOR_LENGTH][3] =
 {
@@ -105,6 +106,37 @@ void Sheep::defineSynchedData()
 
 void Sheep::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
+	const int colorData = getColor();
+	const int dyeAuxValue = ColoredTile::getItemAuxValueForTileData(colorData);
+	const std::wstring colorName = DyePowderItem::COLOR_TEXTURES[dyeAuxValue];
+	const std::string tableName = "entities/sheep/" + std::string(colorName.begin(), colorName.end())	;
+
+	LootTableManager &lootTables = LootTableManager::Get();
+	if (!lootTables.HasLoadedTables())
+	{
+		lootTables.LoadFromDisk();
+	}
+	const LootTableDefinition *table = lootTables.GetTable(tableName);
+	if (table != nullptr)
+	{
+		const std::vector<LootTableDropResult> drops = lootTables.ResolveDrops(
+			tableName,
+			wasKilledByPlayer,
+			playerBonusLevel,
+			[this](int maxExclusive) -> int { return random->nextInt(maxExclusive); },
+			isOnFire());
+		if (!drops.empty())
+		{
+			for (std::vector<LootTableDropResult>::const_iterator it = drops.begin(); it != drops.end(); ++it)
+			{
+				shared_ptr<ItemInstance> item = std::make_shared<ItemInstance>(it->itemId, it->count, it->data);
+				spawnAtLocation(item, 0.0f);
+			}
+			return;
+		}
+	}
+
+	/*
 	if(!isSheared())
 	{
 		// killing a non-sheared sheep will drop a single block of cloth
@@ -124,6 +156,7 @@ void Sheep::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 			spawnAtLocation(Item::mutton_Id, 1);
 		}
 	}
+	*/
 }
 
 int Sheep::getDeathLoot()
