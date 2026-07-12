@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build-client-and-server:
     name: Build Client and Server
-    runs-on: fireblade-server
+    runs-on: windows-10
 
     steps:
       - name: Checkout
@@ -232,6 +232,7 @@ jobs:
     - name: Download release files
       shell: bash
       run: |
+        sed -i 's/\r$//' artifacts/server.txt
         while IFS='=' read -r filename url; do
           echo "Downloading $filename..."
           curl -L "$url" -o "artifacts/$filename"
@@ -288,6 +289,7 @@ jobs:
     - name: Download release files
       shell: bash
       run: |
+        sed -i 's/\r$//' artifacts/client.txt
         while IFS='=' read -r filename url; do
           echo "Downloading $filename..."
           curl -L "$url" -o "artifacts/$filename"
