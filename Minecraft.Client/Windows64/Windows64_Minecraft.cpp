@@ -53,6 +53,8 @@
 #include "Common/UI/UI.h"
 #include "stb_image_write.h"
 
+#include "TUIPP.hpp"
+
 // Forward-declare the internal Renderer class and its global instance from 4J_Render_PC_d.lib.
 // C4JRender (RenderManager) is a stateless wrapper — all D3D state lives in InternalRenderManager.
 class Renderer;
@@ -1539,6 +1541,36 @@ static Minecraft* InitialiseMinecraftRuntime()
 	return pMinecraft;
 }
 
+class dbgRT : public tui::Startup, public tui::Console {
+public:
+	dbgRT() : tui::Console(_T("neoLegacy Console-dbgRT"), tui::Vec2w(240, 66), tui::Vec2w(8, 16), tui::Console::Type::GL_1_1) {
+		Console::insertComponent(tui::Panel::createInstance(_T("main"), 120, 32));
+	}
+
+	virtual int main() override {
+		tui::Intrusive<tui::Panel> panel = Console::getComponent<tui::Panel>(_T("main"));
+
+		while (Console::isOpen()) {
+
+			panel->clear(0x2591, 0x1F);
+			panel->renderText(10, 10, _T("Neo Legacy Developer Console v1.0.0"), 0x1F);
+
+			Console::clear();
+
+			Console::display();
+		}
+
+		return 0;
+	}
+
+};
+
+DWORD APIENTRY dbgRTProc(LPVOID lpParam) {
+	dbgRT dbgrt;
+	DWORD ret = dbgrt.main();
+	return ret;
+}
+
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					   _In_opt_ HINSTANCE hPrevInstance,
 					   _In_ LPTSTR    lpCmdLine,
@@ -1546,6 +1578,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
+	HANDLE hThread_dbgRT = CreateThread(0, 0, dbgRTProc, nullptr, CREATE_SUSPENDED, 0);
+	ResumeThread(hThread_dbgRT);
 
 	// 4J-Win64: set CWD to exe dir so asset paths resolve correctly
 	{
@@ -1783,6 +1817,10 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	}
 
 #endif
+	
+	COLORREF color = RGB(144, 185, 253);
+	DwmSetWindowAttribute(g_hWnd, DWMWA_CAPTION_COLOR, &color, sizeof(color));
+
 	Minecraft *pMinecraft = InitialiseMinecraftRuntime();
 	if (pMinecraft == nullptr)
 	{
