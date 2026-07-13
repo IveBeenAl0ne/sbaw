@@ -2206,6 +2206,29 @@ int Level::getTopSolidBlock(int x, int z)
 	return -1;
 }
 
+int Level::getTopSolidOrLiquidBlock(int x, int z)
+{
+    LevelChunk *levelChunk = getChunkAt(x, z);
+
+    int y = levelChunk->getHighestSectionPosition() + 15;
+
+    x &= 15;
+    z &= 15;
+
+    while (y > 0)
+    {
+        int t = levelChunk->getTile(x, y, z);
+        if (t == 0 || Tile::tiles[t]->material == Material::leaves)
+        {
+            y--;
+        }
+        else
+        {
+            return y + 1;
+        }
+    }
+    return -1;
+}
 
 int Level::getLightDepth(int x, int z)
 {
