@@ -757,7 +757,7 @@ bool VillagePieces::StraightRoad::postProcess(Level *level, Random *random, Boun
 					int fill = y - 1;
 					while (fill >= 0 && (level->getTile(x, fill, z) == Tile::water_Id || level->getTile(x, fill, z) == Tile::flowing_water_Id))
 					{
-						level->setTileAndData(x, fill, z, Tile::planks_Id, 0, Tile::UPDATE_CLIENTS);
+						level->setTileAndData(x, y, z, Tile::planks_Id, 0, Tile::UPDATE_CLIENTS);
 						fill--;
 					}
 				}
