@@ -322,9 +322,18 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Cleanup artifacts
-        uses: geekyeggo/delete-artifact@v5
-        with:
-          name: |
-            client-release
-            server-release
+      - name: Delete build artifacts
+        env:
+          FORGE_TOKEN: ${{ gitea.token }}
+          REPO: ${{ gitea.repository }}
+          API: ${{ gitea.server_url }}/api/v1
+        run: |
+          AUTH="Authorization: token $FORGE_TOKEN"
+
+          ARTIFACTS=$(curl -s -H "$AUTH" \
+            "$API/repos/$REPO/actions/artifacts?name=build-windows64")
+
+          for ARTIFACT_ID in $(echo "$ARTIFACTS" | jq -r '.artifacts[].id // empty'); do
+            curl -s -X DELETE -H "$AUTH" \
+              "$API/repos/$REPO/actions/artifacts/$ARTIFACT_ID"
+          done
