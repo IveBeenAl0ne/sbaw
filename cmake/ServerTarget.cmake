@@ -116,6 +116,23 @@ function(configure_lce_server_target target)
   setup_asset_folder_copy(${target} "${_asset_folder_pairs}")
   #setup_asset_file_copy(${target} "${_asset_files_pairs}")
 
+  # The shared asset copy above excludes *.xml - which is every loot table - so
+  # copy the loot table XMLs in explicitly, mirroring the client's
+  # AssetLootTablesCopy step. Without this the dedicated server has no loot
+  # tables on disk and mobs/chests/fishing drop nothing.
+  set(_loot_tables_source "${CMAKE_SOURCE_DIR}/Minecraft.Client/Common/Media/MediaWindows64/Structures/loot_tables")
+  set(_loot_tables_dest "$<TARGET_FILE_DIR:${target}>/Common/Media/MediaWindows64/Structures/loot_tables")
+  add_custom_target(AssetLootTablesCopy_${target} ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${_loot_tables_dest}"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+      "${_loot_tables_source}"
+      "${_loot_tables_dest}"
+    COMMENT "Copying loot table XML assets into server build folder..."
+    VERBATIM
+  )
+  add_dependencies(${target} AssetLootTablesCopy_${target})
+  set_property(TARGET AssetLootTablesCopy_${target} PROPERTY FOLDER "Build")
+
   if(PLATFORM_NAME STREQUAL "Windows64")
     add_custom_target(AssetLocalizationCopy_${target} ALL
       COMMAND ${CMAKE_COMMAND}

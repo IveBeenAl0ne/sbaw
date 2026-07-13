@@ -182,7 +182,13 @@ bool UIScene::needsReloaded()
 
 		const bool shouldUse1080 = SceneShouldUse1080p(moviePath);
 		if(shouldUse1080 && m_loadedResolution != eSceneResolution_1080)
-			return true;
+		{
+			// Only request the 1080 upgrade if a 1080 asset actually exists.
+			// Otherwise a 720-only movie (e.g. classic crafting) would loop
+			// forever reloading itself at 1080p and never render (blank screen).
+			if(app.hasArchiveFile(getMoviePath() + L"1080.swf"))
+				return true;
+		}
 		if(!shouldUse1080 && m_loadedResolution == eSceneResolution_1080)
 			return true;
 	}

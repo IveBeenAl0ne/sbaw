@@ -202,6 +202,7 @@ void IglooFeature::placeBasement(Level *level, Random *random, int x, int y, int
 
 	auto zombieVillager = std::make_shared<Zombie>(level);
 	zombieVillager->setVillager(true);
+	zombieVillager->setPersistenceRequired();   // captured NPC - must not despawn
 	zombieVillager->moveTo(x - 1 + 0.5, by + 1, rz + 3 + 0.5, 0, 0);
 	level->addEntity(zombieVillager);
 

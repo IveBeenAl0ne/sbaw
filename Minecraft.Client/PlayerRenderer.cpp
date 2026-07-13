@@ -448,7 +448,12 @@ void PlayerRenderer::additionalRendering(shared_ptr<LivingEntity> _mob, float a)
 	/*boolean loaded = mob->getCloakTexture()->isLoaded();
 	boolean b1 = !mob->isInvisible();
 	boolean b2 = !mob->isCapeHidden();*/
-	if (bindTexture(mob->customTextureUrl2, L"") && !mob->isInvisible())
+	// Hide the cape while an elytra is equipped (matches vanilla LayerCape) - the
+	// elytra occupies the same slot, and rendering the cape during fast flight
+	// swings it up over the head.
+	shared_ptr<ItemInstance> capeChestItem = mob->inventory->armor[LivingEntity::SLOT_CHEST - 1];
+	bool wearingElytra = capeChestItem != nullptr && dynamic_cast<ElytraItem*>(capeChestItem->getItem()) != nullptr;
+	if (!wearingElytra && bindTexture(mob->customTextureUrl2, L"") && !mob->isInvisible())
 	{
 		glPushMatrix();
 		glTranslatef(0, 0, 2 / 16.0f);
@@ -479,6 +484,15 @@ void PlayerRenderer::additionalRendering(shared_ptr<LivingEntity> _mob, float a)
 
 		// 4J Stu - Fix for sprint-flying causing the cape to rotate up by 180 degrees or more
 		float xRot = 6.0f + lean / 2 + flap;
+		// During creative flight only, ease the cape smoothly toward 90 (horizontal)
+		// so it never swings up over the head; all other cape motion stays vanilla.
+		const float kneeRot = 70.0f;
+		const float maxRot  = 90.0f;
+		if (mob->abilities.flying && xRot > kneeRot)
+		{
+			float over = xRot - kneeRot;
+			xRot = kneeRot + (maxRot - kneeRot) * (over / (over + (maxRot - kneeRot)));
+		}
 		glRotatef(xRot, 1, 0, 0);
 		glRotatef(lean2 / 2, 0, 0, 1);
 		glRotatef(-lean2 / 2, 0, 1, 0);
