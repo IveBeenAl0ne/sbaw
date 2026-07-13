@@ -791,13 +791,24 @@ void RandomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 		fossil.place(level, pprandom, fx, fy, fz);
 	}
 
-	if (pprandom->nextInt(48) == 0)
 	{
-		int ix = xo + pprandom->nextInt(16) + 8;
-		int iy = level->maxBuildHeight;
-		int iz = zo + pprandom->nextInt(16) + 8;
-		IglooFeature igloo;
-		igloo.place(level, pprandom, ix, iy, iz);
+		int rx = xt;
+		int rz = zt;
+		if (rx < 0) rx -= 31;
+		if (rz < 0) rz -= 31;
+		int regionX = rx / 32;
+		int regionZ = rz / 32;
+		Random featureRand(regionX * 341873128712LL + regionZ * 132897987541LL + level->getSeed() + 14357617LL);
+		int candX = regionX * 32 + featureRand.nextInt(32 - 8);
+		int candZ = regionZ * 32 + featureRand.nextInt(32 - 8);
+		if (xt == candX && zt == candZ)
+		{
+			int ix = xo + pprandom->nextInt(16) + 8;
+			int iy = level->maxBuildHeight;
+			int iz = zo + pprandom->nextInt(16) + 8;
+			IglooFeature igloo;
+			igloo.place(level, pprandom, ix, iy, iz);
+		}
 	}
 
 	PIXBeginNamedEvent(0,"Biome decorate");

@@ -182,7 +182,10 @@ bool UIScene::needsReloaded()
 
 		const bool shouldUse1080 = SceneShouldUse1080p(moviePath);
 		if(shouldUse1080 && m_loadedResolution != eSceneResolution_1080)
-			return true;
+		{
+			if(app.hasArchiveFile(getMoviePath() + L"1080.swf"))
+				return true;
+		}
 		if(!shouldUse1080 && m_loadedResolution == eSceneResolution_1080)
 			return true;
 	}

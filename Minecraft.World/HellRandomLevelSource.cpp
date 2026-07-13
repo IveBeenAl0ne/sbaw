@@ -491,7 +491,7 @@ void HellRandomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 	for (int i = 0; i < 4; i++)
 	{
 		int x = xo + pprandom->nextInt(16);
-		int y = pprandom->nextInt(9) + 27;
+		int y = pprandom->nextInt(10) + 27;
 		int z = zo + pprandom->nextInt(16);
 		magmaFeature.place(level, pprandom, x, y, z);
 	}

@@ -2162,7 +2162,7 @@ void Player::travel(float xa, float ya)
 
 	m_elytraImpactYd = (float)yd;
 
-	if (isElytraFlying() && riding == nullptr)
+	if (isElytraFlying() && riding == nullptr && !isInWater() && !isInLava())
 	{
 		double preHorizSpeed = Mth::sqrt(xd * xd + zd * zd);
 

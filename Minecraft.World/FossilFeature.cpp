@@ -206,14 +206,25 @@ static const FossilStructure spineStructures[4] = {
 bool FossilFeature::place(Level *level, Random *random, int x, int y, int z)
 {
 	bool useSpine = random->nextInt(2) == 0;
-	bool useCoal  = random->nextInt(2) == 0;
 	int variant   = random->nextInt(4);
 
 	const FossilStructure &s = useSpine ? spineStructures[variant] : skullStructures[variant];
 
 	int ox = x - s.width  / 2;
-	int oy = y;
 	int oz = z - s.length / 2;
+
+	int surface = Level::maxBuildHeight;
+	for (int dx = 0; dx < s.width; dx++)
+		for (int dz = 0; dz < s.length; dz++)
+		{
+			int h = level->getHeightmap(ox + dx, oz + dz);
+			if (h > 0 && h < surface) surface = h;
+		}
+	if (surface >= Level::maxBuildHeight)
+		surface = level->getSeaLevel();
+
+	int oy = surface - 15 - random->nextInt(10);
+	if (oy < 10) oy = 10;
 
 	for (int i = 0; i < s.blockCount; i++)
 	{
@@ -225,7 +236,13 @@ bool FossilFeature::place(Level *level, Random *random, int x, int y, int z)
 		if (by < 1 || by >= Level::maxBuildHeight)
 			continue;
 
-		if (useCoal)
+		if (level->getMaterial(bx, by, bz)->isLiquid())
+			continue;
+
+		int roll = random->nextInt(10);
+		if (roll == 1)
+			continue;
+		else if (roll == 0)
 			level->setTileAndData(bx, by, bz, Tile::coal_ore_Id, 0, Tile::UPDATE_CLIENTS);
 		else
 			level->setTileAndData(bx, by, bz, Tile::bone_block_Id, b.data, Tile::UPDATE_CLIENTS);
