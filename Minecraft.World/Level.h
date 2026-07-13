@@ -331,6 +331,7 @@ public:
 	Vec3 *getFogColor(float a);
 	int getTopRainBlock(int x, int z);
 	int getTopSolidBlock(int x, int z);
+	int getTopSolidOrLiquidBlock(int x, int z);
 	bool biomeHasRain(int x, int z);	// 4J added
 	bool biomeHasSnow(int x, int z);	// 4J added
 	int getLightDepth(int x, int z);
