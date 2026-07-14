@@ -702,15 +702,18 @@ void UIScene_CreateWorldMenu::handleSliderMove(F64 sliderId, F64 currentValue)
 		case 0: // Survival
 			m_iGameModeId = GameType::SURVIVAL->getId();
 			m_bGameModeCreative = false;
+			m_MoreOptionsParams.bHostPrivileges = FALSE;
 			break;
 		case 1: // Creative
 			m_iGameModeId = GameType::CREATIVE->getId();
 			m_bGameModeCreative = true;
+			m_MoreOptionsParams.bHostPrivileges = TRUE;
 			break;
 #ifdef _ADVENTURE_MODE_ENABLED
 		case 2: // Adventure
 			m_iGameModeId = GameType::ADVENTURE->getId();
 			m_bGameModeCreative = false;
+			m_MoreOptionsParams.bHostPrivileges = FALSE;
 			break;
 #endif
 		};
