@@ -184,7 +184,6 @@ void TextureAndGeometryPacket::read(DataInputStream *dis) //throws IOException
 	uiAnimOverrideBitmask = dis->readInt();
 
 	short rawBoxC = dis->readShort();
-	short rawOffsetC = dis->readShort();
     if (rawBoxC <= 0)
     {
         dwBoxC = 0;
@@ -197,26 +196,11 @@ void TextureAndGeometryPacket::read(DataInputStream *dis) //throws IOException
             dwBoxC = 0; // sane limit for skin boxes
         }
     }
-	if (rawOffsetC <= 0)
-    {
-        dwOffsetC = 0;
-    }
-    else
-    {
-        dwOffsetC = (DWORD)(unsigned short)rawOffsetC;
-        if (dwOffsetC > 256)
-        {
-            dwOffsetC = 0; // sane limit for skin offsets
-        }
-    }
+	
 
 	if(dwBoxC>0)
 	{
 		this->BoxDataA= new SKIN_BOX [dwBoxC];
-	}
-	if(dwOffsetC>0)
-	{
-		this->OffsetDataA= new SKIN_OFFSET [dwOffsetC];
 	}
 
 	for(DWORD i=0;i<dwBoxC;i++)
@@ -234,6 +218,27 @@ void TextureAndGeometryPacket::read(DataInputStream *dis) //throws IOException
 		this->BoxDataA[i].fM = dis->readFloat();
 		this->BoxDataA[i].fS = dis->readFloat();
 	}
+
+	short rawOffsetC = dis->readShort();
+
+	if (rawOffsetC <= 0)
+	{
+		dwOffsetC = 0;
+	}
+	else
+	{
+		dwOffsetC = (DWORD)(unsigned short)rawOffsetC;
+		if (dwOffsetC > 256)
+		{
+			dwOffsetC = 0; // sane limit for skin offsets
+		}
+	}
+
+	if (dwOffsetC > 0)
+	{
+		this->OffsetDataA = new SKIN_OFFSET[dwOffsetC];
+	}
+
 	for(DWORD i=0;i<dwOffsetC;i++)
 	{
 		this->OffsetDataA[i].ePart = static_cast<eBodyOffset>(dis->readShort());
