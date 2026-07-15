@@ -10,22 +10,22 @@
 
 const unsigned int BannerItem::COLOR_DESCS[16] =
 {
-	IDS_TILE_BANNER_BLACK,
-	IDS_TILE_BANNER_RED,
-	IDS_TILE_BANNER_GREEN,
-	IDS_TILE_BANNER_BROWN,
-	IDS_TILE_BANNER_BLUE,
-	IDS_TILE_BANNER_PURPLE,
-	IDS_TILE_BANNER_CYAN,
-	IDS_TILE_BANNER_SILVER,
-	IDS_TILE_BANNER_GRAY,
-	IDS_TILE_BANNER_PINK,
-	IDS_TILE_BANNER_LIME,
-	IDS_TILE_BANNER_YELLOW,
-	IDS_TILE_BANNER_LIGHT_BLUE,
-	IDS_TILE_BANNER_MAGENTA,
-	IDS_TILE_BANNER_ORANGE,
 	IDS_TILE_BANNER_WHITE,
+	IDS_TILE_BANNER_ORANGE,
+	IDS_TILE_BANNER_MAGENTA,
+	IDS_TILE_BANNER_LIGHT_BLUE,
+	IDS_TILE_BANNER_YELLOW,
+	IDS_TILE_BANNER_LIME,
+	IDS_TILE_BANNER_PINK,
+	IDS_TILE_BANNER_GRAY,
+	IDS_TILE_BANNER_SILVER,
+	IDS_TILE_BANNER_CYAN,
+	IDS_TILE_BANNER_PURPLE,
+	IDS_TILE_BANNER_BLUE,
+	IDS_TILE_BANNER_BROWN,
+	IDS_TILE_BANNER_GREEN,
+	IDS_TILE_BANNER_RED,
+	IDS_TILE_BANNER_BLACK,
 };
 
 BannerItem::BannerItem(int id) : Item(id)
@@ -70,7 +70,7 @@ bool BannerItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> pla
 		shared_ptr<BannerTileEntity> bte = dynamic_pointer_cast<BannerTileEntity>(level->getTileEntity(x, y, z));
 		if (bte != nullptr)
 		{
-			int color = instance->getAuxValue() & 15;
+			int color = 15 - (instance->getAuxValue() & 15);
 			bte->setBaseColor(color);
 			bte->setChanged();
 		}

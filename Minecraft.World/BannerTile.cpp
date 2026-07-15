@@ -133,7 +133,7 @@ void BannerTile::registerIcons(IconRegister *iconRegister)
 void BannerTile::playerWillDestroy(Level *level, int x, int y, int z, int data, shared_ptr<Player> player)
 {
 	shared_ptr<BannerTileEntity> bte = dynamic_pointer_cast<BannerTileEntity>(level->getTileEntity(x, y, z));
-	m_dropColor = (bte != nullptr) ? (bte->getBaseColor() & 15) : 15;
+	m_dropColor = (bte != nullptr) ? (15 - (bte->getBaseColor() & 15)) : 0;
 
 	BaseEntityTile::playerWillDestroy(level, x, y, z, data, player);
 }

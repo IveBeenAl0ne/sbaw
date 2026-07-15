@@ -4,6 +4,7 @@
 #include "LootTableManager.h"
 #include "WeighedRandom.h"
 #include "WeighedTreasure.h"
+#include "EnchantmentHelper.h"
 
 #include <vector>
 
@@ -20,6 +21,16 @@ namespace
             }
 
             shared_ptr<ItemInstance> item = std::make_shared<ItemInstance>(drop.itemId, 1, drop.data);
+
+            if (drop.damageFraction > 0.0)
+            {
+                item->setAuxValue((int)((double)item->getMaxDamage() * drop.damageFraction));
+            }
+
+            if (drop.enchantLevels > 0)
+            {
+                EnchantmentHelper::enchantItem(random, item, drop.enchantLevels);
+            }
 
             if (item->getMaxStackSize() >= drop.count)
             {
