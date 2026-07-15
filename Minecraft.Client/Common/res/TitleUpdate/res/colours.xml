@@ -309,7 +309,7 @@ if __name__=="__main__": notecolors()
   <colour name="End_Fog_Colour" value="a080a0"/>
   
   <colour name="Sign_Text" value="000000"/>
-  <colour name="Map_Text" value="ff000000"/>
+  <colour name="Map_Text" value="000000"/>
 
   <colour name="Leash_Light_Colour" value="80664d"/>
   <colour name="Leash_Dark_Colour" value="5a4736"/>
