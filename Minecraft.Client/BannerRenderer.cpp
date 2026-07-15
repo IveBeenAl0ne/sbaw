@@ -163,13 +163,13 @@ void BannerRenderer::render(shared_ptr<TileEntity> _banner, double x, double y, 
 	if (!banner) return;
 
 	Tile *tile = banner->getTile();
-	if (tile != Tile::standing_banner && tile != Tile::wall_banner) return;
+	if (tile != Tile::standing_banner) return;
 	const float f = 0.6666667f;
 
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
 
-	if (tile == Tile::standing_banner)
+	if (!banner->isWall())
 	{
 		glTranslatef((float)x + 0.5f, (float)y + 0.75f * f, (float)z + 0.5f);
 		float rot = banner->getData() * 360.0f / 16.0f;

@@ -417,7 +417,7 @@ public:
 	static const int packed_ice_Id = 174;
 	static const int double_plant_Id = 175;
 	static const int standing_banner_Id = 176;
-	static const int wall_banner_Id = 177;
+	static const int wall_banner_Id = 176;
 	static const int daylight_detector_inverted_Id = 178;
 	static const int red_sandstone_Id = 179;
 	static const int red_sandstone_stairs_Id = 180;

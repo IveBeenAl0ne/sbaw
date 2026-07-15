@@ -622,7 +622,8 @@ void Tile::staticCtor()
 	Tile::double_plant = static_cast<TallGrass2*>((new TallGrass2(175))->setDestroyTime(0.0f)->setSoundType(Tile::SOUND_GRASS)->setIconName(L"tallgrass2_tall_grass_upper")->setDescriptionId(IDS_DESC_DOUBLE_TALL_GRASS)->setUseDescriptionId(IDS_DESC_TALL_GRASS)->disableMipmap()->sendTileData(0xFF));
 
 	Tile::standing_banner = static_cast<BannerTile*>((new BannerTile(176, true))->setDestroyTime(1.0f)->setSoundType(Tile::SOUND_WOOD)->setIconName(L"planks_oak")->setNotCollectStatistics()->sendTileData()->setUseDescriptionId(IDS_DESC_SIGN));
-	Tile::wall_banner    = static_cast<BannerTile*>((new BannerTile(177, false))->setDestroyTime(1.0f)->setSoundType(Tile::SOUND_WOOD)->setIconName(L"planks_oak")->setNotCollectStatistics()->sendTileData()->setUseDescriptionId(IDS_DESC_SIGN));
+	Tile::wall_banner = Tile::standing_banner;
+	Tile::tiles[177] = Tile::standing_banner;
 
 	Item::items[standing_banner_Id] = (new BannerItem(standing_banner_Id - 256))->setIconName(L"sign")->setDescriptionId(IDS_TILE_BANNER)->setUseDescriptionId(IDS_DESC_SIGN);
 

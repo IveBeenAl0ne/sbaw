@@ -48,6 +48,8 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+	recipies->push_back(new BannerPatternRecipe());
+
 	addShapedRecipy(new ItemInstance(Tile::wood, 4, 0), //
 		L"sczg",
 		L"#", //
@@ -1634,6 +1636,7 @@ void Recipes::loadFromPacket(byteArray packetData)
 	DataInputStream input(&bais);
 
 	this->_wipeRecipes();
+	recipies->push_back(new BannerPatternRecipe());
 	{
 		int iCount = input.readInt();
 		for (int i = 0; i < iCount; i++) {
