@@ -75,46 +75,25 @@ if(PLATFORM_NAME STREQUAL "Windows64")
   target_link_options(Minecraft.Client PRIVATE $<$<CONFIG:Release>:/DEBUG /OPT:REF /OPT:ICF>)
 endif()
 
-set(MINECRAFT_CLIENT_USE_4J_DEBUG_LIBS TRUE)
-if(CMAKE_CROSSCOMPILING AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  set(MINECRAFT_CLIENT_USE_4J_DEBUG_LIBS FALSE)
-endif()
-
 set_target_properties(Minecraft.Client PROPERTIES
   OUTPUT_NAME "Minecraft.Client"
   VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:Minecraft.Client>"
 )
 
-if(MINECRAFT_CLIENT_USE_4J_DEBUG_LIBS)
-  target_link_libraries(Minecraft.Client PRIVATE
-    Minecraft.World
-    d3d11
-    dxgi
-    d3dcompiler
-    XInput9_1_0
-    wsock32
-    dbghelp
-    legacy_stdio_definitions
-    4JLibs.${PLATFORM_NAME}.Input
-    4JLibs.${PLATFORM_NAME}.Profile
-    4JLibs.${PLATFORM_NAME}.Storage
-    4JLibs.${PLATFORM_NAME}.Render
-  )
-else()
-  target_link_libraries(Minecraft.Client PRIVATE
-    Minecraft.World
-    d3d11
-    dxgi
-    d3dcompiler
-    XInput9_1_0
-    wsock32
-    dbghelp
-    legacy_stdio_definitions
-    "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}/4JLibs/libs/4J_Input.lib"
-    "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}/4JLibs/libs/4J_Storage.lib"
-    "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}/4JLibs/libs/4J_Render_PC.lib"
-  )
-endif()
+target_link_libraries(Minecraft.Client PRIVATE
+  Minecraft.World
+  d3d11
+  dxgi
+  d3dcompiler
+  XInput9_1_0
+  wsock32
+  dbghelp
+  legacy_stdio_definitions
+  4JLibs.${PLATFORM_NAME}.Input
+  4JLibs.${PLATFORM_NAME}.Profile
+  4JLibs.${PLATFORM_NAME}.Storage
+  4JLibs.${PLATFORM_NAME}.Render
+)
 
 # Iggy libs
 foreach(lib IN LISTS IGGY_LIBS)
@@ -172,4 +151,3 @@ add_copyredist_target(Minecraft.Client)
 if(PLATFORM_NAME STREQUAL "Windows64")
   add_gamehdd_target(Minecraft.Client)
 endif()
-
