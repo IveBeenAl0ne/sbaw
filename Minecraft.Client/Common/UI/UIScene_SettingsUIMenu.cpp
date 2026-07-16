@@ -93,7 +93,7 @@ void UIScene_SettingsUIMenu::tick()
 		}
 
 		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_CLASSICCRAFTING), eControl_ShowClassicCrafting, (app.GetGameSettings(m_iPad, eGameSetting_ClassicCrafting) != 0));
-		m_multiList.AddNewCheckbox(L"Hide world disk space bar", eControl_HideSaveSizeBar, (app.GetGameSettings(m_iPad, eGameSetting_HideSaveSizeBar) != 0));
+		m_multiList.AddNewCheckbox(app.GetString(IDS_HIDE_SAVE_SIZE_BAR), eControl_HideSaveSizeBar, (app.GetGameSettings(m_iPad, eGameSetting_HideSaveSizeBar) != 0));
 
 		int uiSizeVal = app.GetGameSettings(m_iPad, eGameSetting_UISize) + 1;
 		swprintf(TempString, 256, L"%ls: %d", app.GetString(IDS_SLIDER_UISIZE), uiSizeVal);

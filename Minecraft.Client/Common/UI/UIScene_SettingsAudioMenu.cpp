@@ -63,7 +63,7 @@ void UIScene_SettingsAudioMenu::tick()
 		m_multiList.AddNewSlider(TempString, eControl_Sound, 0, 100, 1, soundVol);
 		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_CAVE_SOUNDS), eControl_CaveSounds, caveSounds);
 		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_MINECART_SOUNDS), eControl_MinecartSounds, minecartSounds);
-		m_multiList.AddNewCheckbox(L"Game Chat", eControl_GameChat, gameChat);
+		m_multiList.AddNewCheckbox(app.GetString(IDS_GAME_CHAT), eControl_GameChat, gameChat);
 		m_multiList.EnableItem(eControl_GameChat, false);
 
 		IggyName funcDoVert = registerFastName(L"DoVerticalResizeCheck");

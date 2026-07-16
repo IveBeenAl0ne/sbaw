@@ -9766,4 +9766,25 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 	<data name="IDS_TILE_BANNER_WHITE">
 		<value>White Banner</value>
 	</data>
+	<data name="IDS_FULLSCREEN">
+		<value>Fullscreen</value>
+	</data>
+	<data name="IDS_RENDER_DISTANCE">
+		<value>Render Distance: %d</value>
+	</data>
+	<data name="IDS_GAME_CHAT">
+		<value>Game Chat</value>
+	</data>
+	<data name="IDS_MINI_GAMES">
+		<value>Mini Games</value>
+	</data>
+	<data name="IDS_JOIN">
+		<value>Join</value>
+	</data>
+	<data name="IDS_CREATE">
+		<value>Create</value>
+	</data>
+	<data name="IDS_VSYNC">
+		<value>VSync</value>
+	</data>
 </root>

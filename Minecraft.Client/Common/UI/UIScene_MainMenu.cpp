@@ -39,7 +39,7 @@ UIScene_MainMenu::UIScene_MainMenu(int iPad, void *initData, UILayer *parentLaye
 
 
 	m_buttons[static_cast<int>(eControl_PlayGame)].init(IDS_PLAY_GAME,eControl_PlayGame);
-	m_buttons[(int)eControl_MiniGames].init(L"Mini Games",eControl_MiniGames);
+	m_buttons[(int)eControl_MiniGames].init(IDS_MINI_GAMES,eControl_MiniGames);
 
 #ifdef _XBOX_ONE
 	if(!ProfileManager.IsFullVersion()) m_buttons[(int)eControl_PlayGame].setLabel(IDS_PLAY_TRIAL_GAME);

@@ -1,0 +1,724 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<data name="IDS_ACHIEVEMENT_VIEW"><value>Görüntülemek için {*CONTROLLER_VK_Y*} tuşuna basılı tutun</value></data>
+	<data name="IDS_ACHIEVE_DESC_ACQUIRE_HARDWARE"><value>Bir Demir Külçesi eritin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_ADVENTURING_TIME"><value>Tüm biyomları keşfedin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_ARROW_KILL_CREEPER"><value>Bir Creeper'ı okla öldürün.</value></data>
+	<data name="IDS_ACHIEVE_DESC_BAKE_BREAD"><value>Buğdayı Ekmek yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_BENCHMARKING"><value>Dört Ahşap Tahta bloğu ile bir Çalışma Masası üretin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_BLAZEROD"><value>Bir Blaze'i çubuğundan edin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_BODYGUARD"><value>Bir Demir Golem oluşturun.</value></data>
+	<data name="IDS_ACHIEVE_DESC_BOOKCASE"><value>Büyü Masanızı geliştirmek için Kitaplıklar yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_CHESTFUL_OF_COBBLESTONE"><value>1.728 Kırık Taş kazın ve bir Sandığa yerleştirin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_COW_TIPPER"><value>Biraz deri toplayın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_DELICIOUS_FISH"><value>Balık yakalayın ve pişirin!</value></data>
+	<data name="IDS_ACHIEVE_DESC_DIAMONDS"><value>Demir aletlerinizle elmas elde edin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_DIAMONDS_TO_YOU"><value>Başka bir oyuncuya elmas atın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_DISPENSE_WITH_THIS"><value>Bir Fırlatıcı yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_EAT_PORKCHOP"><value>Bir Domuz Pirzolası pişirip yiyin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_ENCHANTMENTS"><value>Bir Büyü Masası yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_GETTING_AN_UPGRADE"><value>Daha iyi bir kazma yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_GETTING_WOOD"><value>Bir odun bloğu düşene kadar bir ağaca yumruk atın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_GHAST"><value>Bir Ghast'ı kendi Ateş Topuyla yok edin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_HAVE_A_SHEARFUL_DAY"><value>Bir Koyundan yün almak için Makas kullanın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_HOT_TOPIC"><value>Sekiz Kırık Taş bloğundan bir Fırın yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_INTO_THE_NETHER"><value>Bir Nether Geçidi yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_IRON_BELLY"><value>Çürük et yiyerek açlığınızı durdurun.</value></data>
+	<data name="IDS_ACHIEVE_DESC_IRON_MAN"><value>Tam bir Demir Zırh takımı giyin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_ITS_A_SIGN"><value>Bir tabela üretip yerleştirin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_LEADER_OF_THE_PACK"><value>Beş Kurt ile arkadaş olun.</value></data>
+	<data name="IDS_ACHIEVE_DESC_LION_TAMER"><value>Bir Oselo evcilleştirin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_MOAR_TOOLS"><value>Her alet türünden birer tane yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_MONSTER_HUNTER"><value>Bir canavara saldırıp yok edin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_MUSIC_TO_MY_EARS"><value>Bir Müzik Kutusunda Müzik Diski çalın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_ON_A_RAIL"><value>Başladığınız noktadan tek bir yöne doğru Maden Arabasıyla en az 500m seyahat edin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_OVERKILL"><value>Tek bir vuruşta dokuz kalp hasar verin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_PLAY_100_DAYS"><value>100 gün boyunca oynayın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_POTION"><value>Bir iksir demleyin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_POT_PLANTER"><value>Bir Saksı üretip yerleştirin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_RAINBOW_COLLECTION"><value>Yünün 16 rengini de toplayın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_RENEWABLE_ENERGY"><value>Daha fazla Odun Kömürü yapmak için Odun Kömürü kullanarak Odun eritin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_REPOPULATION"><value>Iki Koyunu Buğday ile çiftleştirin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_SNIPESKELETON"><value>50 metreden daha uzak bir mesafeden bir Iskeleti Okla öldürün.</value></data>
+	<data name="IDS_ACHIEVE_DESC_STAYING_FROSTY"><value>Ateş Direnci etkisine sahipken Lavda yüzün.</value></data>
+	<data name="IDS_ACHIEVE_DESC_TAKING_INVENTORY"><value>Envanterinizi açın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_THE_END"><value>Bir End Geçidine girin.</value></data>
+	<data name="IDS_ACHIEVE_DESC_THE_HAGGLER"><value>30 Zümrüt kazın veya satın alın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_THE_LIE"><value>Buğday, Şeker, Süt ve Yumurta kullanarak bir Pasta yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_TIME_TO_FARM"><value>Bir Çapa yapın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_TIME_TO_MINE"><value>Bir Kazma yapmak için Ahşap Tahta ve Çubuk kullanın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_TIME_TO_STRIKE"><value>Bir Kılıç yapmak için Ahşap Tahta ve Çubuk kullanın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_WHEN_PIGS_FLY"><value>Bir Domuza binmek için Eyer kullanın ve binilirken Domuzun düşme hasarı almasını sağlayın.</value></data>
+	<data name="IDS_ACHIEVE_DESC_WINGAME"><value>Ender Ejderhasını öldürün.</value></data>
+	<data name="IDS_ACHIEVE_DESC_ZOMBIE_DOCTOR"><value>Bir Zombi Köylüyü iyileştirin.</value></data>
+	<data name="IDS_ACHIEVE_NAME_ACQUIRE_HARDWARE"><value>Donanım Edinme</value></data>
+	<data name="IDS_ACHIEVE_NAME_ADVENTURING_TIME"><value>Macera Zamanı</value></data>
+	<data name="IDS_ACHIEVE_NAME_ARROW_KILL_CREEPER"><value>Okçu</value></data>
+	<data name="IDS_ACHIEVE_NAME_BAKE_BREAD"><value>Ekmek Yapımı</value></data>
+	<data name="IDS_ACHIEVE_NAME_BENCHMARKING"><value>Tezgah Kurulumu</value></data>
+	<data name="IDS_ACHIEVE_NAME_BLAZEROD"><value>Ateşin Içine</value></data>
+	<data name="IDS_ACHIEVE_NAME_BODYGUARD"><value>Yakın Koruma</value></data>
+	<data name="IDS_ACHIEVE_NAME_BOOKCASE"><value>Kütüphaneci</value></data>
+	<data name="IDS_ACHIEVE_NAME_CHESTFUL_OF_COBBLESTONE"><value>Sandık Dolusu Kırık Taş</value></data>
+	<data name="IDS_ACHIEVE_NAME_COW_TIPPER"><value>Inek Devirici</value></data>
+	<data name="IDS_ACHIEVE_NAME_DELICIOUS_FISH"><value>Lezzetli Balık</value></data>
+	<data name="IDS_ACHIEVE_NAME_DIAMONDS"><value>ELMASLAR!</value></data>
+	<data name="IDS_ACHIEVE_NAME_DIAMONDS_TO_YOU"><value>Elmaslar sana!</value></data>
+	<data name="IDS_ACHIEVE_NAME_DISPENSE_WITH_THIS"><value>Fırlatıcı Yapımı</value></data>
+	<data name="IDS_ACHIEVE_NAME_EAT_PORKCHOP"><value>Domuz Pirzolası</value></data>
+	<data name="IDS_ACHIEVE_NAME_ENCHANTMENTS"><value>Büyücü</value></data>
+	<data name="IDS_ACHIEVE_NAME_GETTING_AN_UPGRADE"><value>Terfi Zamanı</value></data>
+	<data name="IDS_ACHIEVE_NAME_GETTING_WOOD"><value>Odun Toplama</value></data>
+	<data name="IDS_ACHIEVE_NAME_GHAST"><value>Gönderene Iade</value></data>
+	<data name="IDS_ACHIEVE_NAME_HAVE_A_SHEARFUL_DAY"><value>Kırkım Günü</value></data>
+	<data name="IDS_ACHIEVE_NAME_HOT_TOPIC"><value>Sıcak Konu</value></data>
+	<data name="IDS_ACHIEVE_NAME_INTO_THE_NETHER"><value>Nether'ın Derinliklerine</value></data>
+	<data name="IDS_ACHIEVE_NAME_IRON_BELLY"><value>Demir Mide</value></data>
+	<data name="IDS_ACHIEVE_NAME_IRON_MAN"><value>Demir Adam</value></data>
+	<data name="IDS_ACHIEVE_NAME_ITS_A_SIGN"><value>Bu Bir Işaret!</value></data>
+	<data name="IDS_ACHIEVE_NAME_LEADER_OF_THE_PACK"><value>Sürünün Lideri</value></data>
+	<data name="IDS_ACHIEVE_NAME_LION_TAMER"><value>Aslan Terbiyecisi</value></data>
+	<data name="IDS_ACHIEVE_NAME_MOAR_TOOLS"><value>DAHA FAZLA Alet</value></data>
+	<data name="IDS_ACHIEVE_NAME_MONSTER_HUNTER"><value>Canavar Avcısı</value></data>
+	<data name="IDS_ACHIEVE_NAME_MUSIC_TO_MY_EARS"><value>Kulaklarımın Pası Silindi</value></data>
+	<data name="IDS_ACHIEVE_NAME_ON_A_RAIL"><value>Rayların Üzerinde</value></data>
+	<data name="IDS_ACHIEVE_NAME_OVERKILL"><value>Aşırı Güç</value></data>
+	<data name="IDS_ACHIEVE_NAME_PLAY_100_DAYS"><value>Zaman Geçerken</value></data>
+	<data name="IDS_ACHIEVE_NAME_POTION"><value>Yerel Birahane</value></data>
+	<data name="IDS_ACHIEVE_NAME_POT_PLANTER"><value>Saksı Çiçeği</value></data>
+	<data name="IDS_ACHIEVE_NAME_RAINBOW_COLLECTION"><value>Gökkuşağı Koleksiyonu</value></data>
+	<data name="IDS_ACHIEVE_NAME_RENEWABLE_ENERGY"><value>Yenilenebilir Enerji</value></data>
+	<data name="IDS_ACHIEVE_NAME_REPOPULATION"><value>Nüfus Artışı</value></data>
+	<data name="IDS_ACHIEVE_NAME_SNIPESKELETON"><value>Keskin Nişancı Düellosu</value></data>
+	<data name="IDS_ACHIEVE_NAME_STAYING_FROSTY"><value>Serin Kal</value></data>
+	<data name="IDS_ACHIEVE_NAME_TAKING_INVENTORY"><value>Envanter Sayımı</value></data>
+	<data name="IDS_ACHIEVE_NAME_THE_END"><value>Son mu?</value></data>
+	<data name="IDS_ACHIEVE_NAME_THE_HAGGLER"><value>Pazarlıkçı</value></data>
+	<data name="IDS_ACHIEVE_NAME_THE_LIE"><value>Yalan</value></data>
+	<data name="IDS_ACHIEVE_NAME_TIME_TO_FARM"><value>Tarım Zamanı!</value></data>
+	<data name="IDS_ACHIEVE_NAME_TIME_TO_MINE"><value>Madencilik Zamanı!</value></data>
+	<data name="IDS_ACHIEVE_NAME_TIME_TO_STRIKE"><value>Saldırı Zamanı!</value></data>
+	<data name="IDS_ACHIEVE_NAME_WHEN_PIGS_FLY"><value>Domuzlar Uçtuğunda</value></data>
+	<data name="IDS_ACHIEVE_NAME_WINGAME"><value>Son.</value></data>
+	<data name="IDS_ACHIEVE_NAME_ZOMBIE_DOCTOR"><value>Zombi Doktoru</value></data>
+	<data name="IDS_ADVENTURE"><value>Macera Modu</value></data>
+	<data name="IDS_ATTRIBUTE_NAME_GENERIC_ATTACKDAMAGE"><value>Saldırı Hasarı</value></data>
+	<data name="IDS_ATTRIBUTE_NAME_GENERIC_FOLLOWRANGE"><value>Yaratık Takip Mesafesi</value></data>
+	<data name="IDS_ATTRIBUTE_NAME_GENERIC_KNOCKBACKRESISTANCE"><value>Geri Itme Direnci</value></data>
+	<data name="IDS_ATTRIBUTE_NAME_GENERIC_MAXHEALTH"><value>Maksimum Can</value></data>
+	<data name="IDS_ATTRIBUTE_NAME_GENERIC_MOVEMENTSPEED"><value>Hareket Hızı</value></data>
+	<data name="IDS_ATTRIBUTE_NAME_HORSE_JUMPSTRENGTH"><value>At Zıplama Gücü</value></data>
+	<data name="IDS_ATTRIBUTE_NAME_ZOMBIE_SPAWNREINFORCEMENTS"><value>Zombi Takviyesi</value></data>
+	<data name="IDS_AWARD_AVATAR1"><value>Tebrikler - bir avatar eşyası kazandınız - Minecraft: Xbox One Edition tişörtü! Tişörtü giymek için panoya gidin.</value></data>
+	<data name="IDS_AWARD_AVATAR2"><value>Tebrikler - bir avatar eşyası kazandınız - Minecraft: Xbox One Edition saati! Saati takmak için panoya gidin.</value></data>
+	<data name="IDS_AWARD_AVATAR3"><value>Tebrikler - bir avatar eşyası kazandınız - Creeper şapkası! Şapkayı takmak için panoya gidin.</value></data>
+	<data name="IDS_AWARD_THEME"><value>Tebrikler - Minecraft: Xbox One Edition temasını kazandınız! Bu temayı seçmek için panoya gidin.</value></data>
+	<data name="IDS_BAT"><value>Yarasa</value></data>
+	<data name="IDS_BEETROOT"><value>Pancar</value></data>
+	<data name="IDS_BEETROOT_SEEDS"><value>Pancar Tohumu</value></data>
+	<data name="IDS_CHECKBOX_CAVE_SOUNDS"><value>Mağara Sesleri</value></data>
+	<data name="IDS_CHECKBOX_CLASSICCRAFTING"><value>Klasik Üretim</value></data>
+	<data name="IDS_CHECKBOX_MINECART_SOUNDS"><value>Maden Arabası Sesleri</value></data>
+	<data name="IDS_CONTAINER_ANIMAL"><value>At</value></data>
+	<data name="IDS_CONTAINER_BEACON"><value>Fener</value></data>
+	<data name="IDS_CONTAINER_BEACON_PRIMARY_POWER"><value>Birincil Güç</value></data>
+	<data name="IDS_CONTAINER_BEACON_SECONDARY_POWER"><value>Ikincil Güç</value></data>
+	<data name="IDS_CONTAINER_DROPPER"><value>Bırakıcı</value></data>
+	<data name="IDS_CONTAINER_HOPPER"><value>Huni</value></data>
+	<data name="IDS_CONTAINER_MINECART"><value>Maden Arabası</value></data>
+	<data name="IDS_CONTROLTYPE_KBM"><value>Klavye ve Fare</value></data>
+	<data name="IDS_CONTROLTYPE_PLAYSTATION3"><value>PlayStation 3</value></data>
+	<data name="IDS_CONTROLTYPE_PLAYSTATION4"><value>PlayStation 4</value></data>
+	<data name="IDS_CONTROLTYPE_SWITCH"><value>Nintendo Switch</value></data>
+	<data name="IDS_CONTROLTYPE_VITA"><value>PlayStation Vita</value></data>
+	<data name="IDS_CONTROLTYPE_WIIU"><value>Wii U</value></data>
+	<data name="IDS_CONTROLTYPE_XBOX360"><value>Xbox 360</value></data>
+	<data name="IDS_CONTROLTYPE_XBOXONE"><value>Xbox One</value></data>
+	<data name="IDS_CORRUPT_OPTIONS_DELETE"><value>Seçenekler dosyasını sil.</value></data>
+	<data name="IDS_CORRUPT_OPTIONS_RETRY"><value>Seçenekler dosyasını yüklemeyi tekrar dene.</value></data>
+	<data name="IDS_DAYLIGHT_CYCLE"><value>Gün Işığı Döngüsü</value></data>
+	<data name="IDS_DEATH_ARROW_ITEM"><value>{*PLAYER*}, {*SOURCE*} tarafından {*ITEM*} kullanılarak vuruldu</value></data>
+	<data name="IDS_DEATH_CACTUS_PLAYER"><value>{*PLAYER*}, {*SOURCE*} tehdidinden kaçarken kaktüse çarptı</value></data>
+	<data name="IDS_DEATH_DROWN_PLAYER"><value>{*PLAYER*}, {*SOURCE*} tehdidinden kaçarken boğuldu</value></data>
+	<data name="IDS_DEATH_EXPLOSION_PLAYER"><value>{*PLAYER*} tarafından patlatıldı: {*SOURCE*}</value></data>
+	<data name="IDS_DEATH_FELL_ACCIDENT_GENERIC"><value>{*PLAYER*} yüksek bir yerden düştü</value></data>
+	<data name="IDS_DEATH_FELL_ACCIDENT_LADDER"><value>{*PLAYER*} merdivenden düştü</value></data>
+	<data name="IDS_DEATH_FELL_ACCIDENT_VINES"><value>{*PLAYER*} sarmaşıklardan düştü</value></data>
+	<data name="IDS_DEATH_FELL_ACCIDENT_WATER"><value>{*PLAYER*} sudan düştü</value></data>
+	<data name="IDS_DEATH_FELL_ASSIST"><value>{*PLAYER*} was doomed to fall by {*SOURCE*}</value></data>
+	<data name="IDS_DEATH_FELL_ASSIST_ITEM"><value>{*PLAYER*} was doomed to fall by {*SOURCE*} using {*ITEM*}</value></data>
+	<data name="IDS_DEATH_FELL_FINISH"><value>{*PLAYER*} fell too far and was finished by {*SOURCE*}</value></data>
+	<data name="IDS_DEATH_FELL_FINISH_ITEM"><value>{*PLAYER*} fell too far and was finished by {*SOURCE*} using {*ITEM*}</value></data>
+	<data name="IDS_DEATH_FELL_KILLER"><value>{*PLAYER*} was doomed to fall by {*SOURCE*}</value></data>
+	<data name="IDS_DEATH_FIREBALL_ITEM"><value>{*PLAYER*} was fireballed by {*SOURCE*} using {*ITEM*}</value></data>
+	<data name="IDS_DEATH_INDIRECT_MAGIC_ITEM"><value>{*PLAYER*}, {*SOURCE*} tarafından öldürüldü</value></data>
+	<data name="IDS_DEATH_INFIRE_PLAYER"><value>{*PLAYER*} walked into fire whilst fighting {*SOURCE*}</value></data>
+	<data name="IDS_DEATH_LAVA_PLAYER"><value>{*PLAYER*} tried to swim in lava to escape {*SOURCE*}</value></data>
+	<data name="IDS_DEATH_ONFIRE_PLAYER"><value>{*PLAYER*} was burnt to a crisp whilst fighting {*SOURCE*}</value></data>
+	<data name="IDS_DEATH_PLAYER_ITEM"><value>{*PLAYER*}, {*SOURCE*} tarafından katledildi</value></data>
+	<data name="IDS_DEATH_THROWN_ITEM"><value>{*PLAYER*} was pummeled by {*SOURCE*} using {*ITEM*}</value></data>
+	<data name="IDS_DEATH_WITHER"><value>{*PLAYER*} wither etkisiyle yok oldu</value></data>
+	<data name="IDS_DESC_ACTIVATOR_RAIL"><value>A type of rail that can enable or disable Kazcarts with Hoppers and trigger Kazcarts with TNT.</value></data>
+	<data name="IDS_DESC_ALLIUM"><value>Eflatun boya üretmek için kullanılabilen nadir bir eflatun çiçek.</value></data>
+	<data name="IDS_DESC_ANDESITE"><value>Andezit toplamak için kazma ile kazılabilir.</value></data>
+	<data name="IDS_DESC_ARMOR_STAND"><value>Zırh ve diğer dekoratif öğeleri sergilemek için kullanılabilir.</value></data>
+	<data name="IDS_DESC_BARRIER"><value>Görünmez ancak katı bir blok.</value></data>
+	<data name="IDS_DESC_BAT"><value>Bu uçan yaratıklar mağaralarda veya karanlık yerlerde bulunur.</value></data>
+	<data name="IDS_DESC_BEACON"><value>Gökyüzüne bir ışık hüzmesi yansıtır ve yakındaki oyunculara güç verebilir.</value></data>
+	<data name="IDS_DESC_BEETROOT"><value>{*ICON_SHANK_HALF_01*} yeniler.</value></data>
+	<data name="IDS_DESC_BEETROOT_SEEDS"><value>Tarım Arazisine ekin.</value></data>
+	<data name="IDS_DESC_BEETROOT_SOUP"><value>3{*ICON_SHANK_01*} yeniler.</value></data>
+	<data name="IDS_DESC_BLUE_ORCHID"><value>Açık mavi boya üretmek için kullanılabilen nadir bir mavi çiçek.</value></data>
+	<data name="IDS_DESC_CHEST_TRAP"><value>Içinde blok ve eşya depolar. Açıldığında kızıltaş sinyali yayması için iki sandığı yan yana koyun.</value></data>
+	<data name="IDS_DESC_CLOWNFISH"><value>0.5{*ICON_SHANK_01*} yeniler.</value></data>
+	<data name="IDS_DESC_COAL_BLOCK"><value>Kömür depolamanın kompakt bir yolu. Fırınlarda yakıt olarak kullanılabilir.</value></data>
+	<data name="IDS_DESC_COARSE_DIRT"><value>Üzerinde çim büyümeyen özel bir toprak türü.</value></data>
+	<data name="IDS_DESC_COMMAND_BLOCK"><value>Kullanın:d to execute commands.</value></data>
+	<data name="IDS_DESC_COMPARATOR"><value>Kullanın:d in Redstone circuits to maintain, compare, or subtract signal strength, or to measure certain block states.</value></data>
+	<data name="IDS_DESC_DAYLIGHT_DETECTOR"><value>Gün ışığının seviyesine bağlı olarak Kızıltaş sinyali yayan bir bloktur.</value></data>
+	<data name="IDS_DESC_DIAMOND_HORSE_ARMOR"><value>Atlara giydirilebilen özel bir zırh türü.</value></data>
+	<data name="IDS_DESC_DIORITE"><value>Diorit toplamak için kazma ile kazılabilir.</value></data>
+	<data name="IDS_DESC_DONKEY"><value>Bu hayvanlar evcilleştirilebilir ve üzerine binilebilir. Eşya taşımak için sandık eklenebilir.</value></data>
+	<data name="IDS_DESC_DOUBLE_TALL_GRASS"><value>Double tall grass that can sometimes drop seeds.</value></data>
+	<data name="IDS_DESC_DROPPER"><value>Tetiklendiğinde içindeki eşyalardan birini öne doğru fırlatır veya önündeki kaba aktarır.</value></data>
+	<data name="IDS_DESC_EXITBOOK"><value>Are you sure you want to exit this book and the changes you've made?</value></data>
+	<data name="IDS_DESC_FIREWORKS"><value>When activated, create colorful explosions. The color, effect, shape and fade are determined by the Firework Star used when the Firework is created.</value></data>
+	<data name="IDS_DESC_FIREWORKS_CHARGE"><value>Kullanın:d to determine the color, effect and shape of a Firework.</value></data>
+	<data name="IDS_DESC_GOLD_HORSE_ARMOR"><value>A special type of Armor that can be equipped to a horse. Provides 7 Armor.</value></data>
+	<data name="IDS_DESC_GRANITE"><value>Granit toplamak için kazma ile kazılabilir.</value></data>
+	<data name="IDS_DESC_HARDENED_CLAY"><value>Created by smelting Clay in a furnace.</value></data>
+	<data name="IDS_DESC_HAY"><value>Can be fed to Horses, Donkeys or Mules to heal up to 10 Hearts. Speeds up the growth of foals.</value></data>
+	<data name="IDS_DESC_HOPPER"><value>Üstündeki kaplardan eşya toplayıp altındaki veya önündeki kaba aktarır.</value></data>
+	<data name="IDS_DESC_HORSE"><value>Evcilleştirildikten sonra eyer takılarak binilebilir.</value></data>
+	<data name="IDS_DESC_HOUSTONIA"><value>A small white flower that can be used to craft light gray dye.</value></data>
+	<data name="IDS_DESC_IRON_HORSE_ARMOR"><value>A special type of Armor that can be equipped to a horse. Provides 5 Armor.</value></data>
+	<data name="IDS_DESC_LARGE_FERN"><value>A tall fern that can sometimes drop seeds.</value></data>
+	<data name="IDS_DESC_LEAD"><value>Kullanın:d to leash mobs to the player or Fence posts.</value></data>
+	<data name="IDS_DESC_LILAC"><value>A tall purple flower that can be used to craft magenta dye.</value></data>
+	<data name="IDS_DESC_MAP_EMPTY"><value>When used becomes a map of the part of the world that you are in, and gets filled in as you explore.</value></data>
+	<data name="IDS_DESC_MINECART_HOPPER"><value>Is a special type of Kazcart that functions similarly to a Hopper. It will collect items lying on tracks and from containers above it.</value></data>
+	<data name="IDS_DESC_MINECART_TNT"><value>Is a type of Kazcart that acts as a moving TNT block.</value></data>
+	<data name="IDS_DESC_MULE"><value>Evcilleştirilip binilebilir ve üzerine eşya taşımak için sandık eklenebilir.</value></data>
+	<data name="IDS_DESC_MUTTON_COOKED"><value>Yeniler: 3{*ICON_SHANK_01*}. Created by cooking raw mutton in a furnace.</value></data>
+	<data name="IDS_DESC_MUTTON_RAW"><value>Yeniler: 1{*ICON_SHANK_01*}, or can be cooked in a furnace.</value></data>
+	<data name="IDS_DESC_NAME_TAG"><value>Kullanın:d to name mobs in the world.</value></data>
+	<data name="IDS_DESC_NETHER_STAR"><value>Dropped by the Wither, used in crafting Beacons.</value></data>
+	<data name="IDS_DESC_OXEYE_DAISY"><value>A common white and yellow flower that can be used to craft light gray dye.</value></data>
+	<data name="IDS_DESC_PACKED_ICE"><value>Erimeyen yoğun bir buz türü.</value></data>
+	<data name="IDS_DESC_PEONY"><value>A tall green and pink flower that can be used to craft pink dye.</value></data>
+	<data name="IDS_DESC_PODZOL"><value>Similar to Dirt Bloks, but very good for growing mushrooms on.</value></data>
+	<data name="IDS_DESC_POLISHED_ANDESITE"><value>Can be crafted from andesite for a polished look.</value></data>
+	<data name="IDS_DESC_POLISHED_DIORITE"><value>Can be crafted from diorite for a polished look.</value></data>
+	<data name="IDS_DESC_POLISHED_GRANITE"><value>Can be crafted from granite for a polished look.</value></data>
+	<data name="IDS_DESC_PRISMARINE"><value>Okyanus Anıtlarında bulunan nadir dekoratif taş.</value></data>
+	<data name="IDS_DESC_PUFFERFISH"><value>Iksir yapımında kullanılabilir veya yendiğinde zehirler.</value></data>
+	<data name="IDS_DESC_RABBIT"><value>Zıplayarak dolaşan sevimli hayvanlar. Tavşan eti veya derisi düşürebilirler.</value></data>
+	<data name="IDS_DESC_RABBIT_COOKED"><value>Restores 2.5{*ICON_SHANK_01*}. Kullanın:d to cook up some rabbit stew.</value></data>
+	<data name="IDS_DESC_RABBIT_FOOT"><value>Zıplama iksiri yapımında kullanılan nadir eşya.</value></data>
+	<data name="IDS_DESC_RABBIT_HIDE"><value>Deri yapmak için birleştirilebilir.</value></data>
+	<data name="IDS_DESC_RABBIT_RAW"><value>Yeniler: 0.5{*ICON_SHANK_01*}, or can be cooked in a furnace.</value></data>
+	<data name="IDS_DESC_RABBIT_STEW"><value>10{*ICON_SHANK_01*} yenileyen lezzetli yahni.</value></data>
+	<data name="IDS_DESC_REDSTONE_BLOCK"><value>Kullanın:d as a redstone power source. Can be crafted back into Redstone.</value></data>
+	<data name="IDS_DESC_RED_SANDSTONE"><value>Kırmızı kumdan yapılan kum taşı bloğu.</value></data>
+	<data name="IDS_DESC_ROSE"><value>A common red flower that can be used to craft red dye.</value></data>
+	<data name="IDS_DESC_ROSE_BUSH"><value>A tall red flower that can be used to craft red dye.</value></data>
+	<data name="IDS_DESC_SALMON_COOKED"><value>Yeniler: 3{*ICON_SHANK_01*}. Created by cooking a raw salmon in a furnace.</value></data>
+	<data name="IDS_DESC_SALMON_RAW"><value>Yeniler: 1{*ICON_SHANK_01*}, or can be cooked in a furnace. Can be fed to an ocelot to tame it.</value></data>
+	<data name="IDS_DESC_SEA_LANTERN"><value>Okyanus Anıtlarında bulunan parlak su altı ışık kaynağı.</value></data>
+	<data name="IDS_DESC_SLIME_BLOCK"><value>Üzerine düşen varlıkları zıplatan yapışkan blok.</value></data>
+	<data name="IDS_DESC_STAINED_CLAY"><value>Colorful blocks crafted by dyeing Hardened clay.</value></data>
+	<data name="IDS_DESC_STAINED_GLASS"><value>Çeşitli renklerde boyanabilen dekoratif cam bloğu.</value></data>
+	<data name="IDS_DESC_STAINED_GLASS_PANE"><value>Çeşitli renklerde boyanabilen ince cam bloğu.</value></data>
+	<data name="IDS_DESC_SUNFLOWER"><value>A tall yellow flower that can be used to craft yellow dye.</value></data>
+	<data name="IDS_DESC_TULIP_ORANGE"><value>A small orange flower that can be used to craft orange dye.</value></data>
+	<data name="IDS_DESC_TULIP_PINK"><value>A small pink flower that can be used to craft pink dye.</value></data>
+	<data name="IDS_DESC_TULIP_RED"><value>A small red flower that can be used to craft red dye.</value></data>
+	<data name="IDS_DESC_TULIP_WHITE"><value>A small white flower that can be used to craft light gray dye.</value></data>
+	<data name="IDS_DESC_WEIGHTED_PLATE_HEAVY"><value>Provides a Redstone charge. The charge will be stronger if more items are on the plate. Requires more weight than the light plate.</value></data>
+	<data name="IDS_DESC_WEIGHTED_PLATE_LIGHT"><value>Provides a Redstone charge. The charge will be stronger if more items are on the plate.</value></data>
+	<data name="IDS_DESC_WET_SPONGE"><value>Can be dried in a furnace, allowing the sponge to be reused.</value></data>
+	<data name="IDS_DESC_WITCH"><value>These enemies can be found in swamps and attack you by throwing Potions. They drop Potions when killed.</value></data>
+	<data name="IDS_DESC_WITHER"><value>These are crafted from Wither Skulls and Soul Sand. They fire exploding skulls at you.</value></data>
+	<data name="IDS_DESC_WRITINGBOOK"><value>A Book that can be written in.</value></data>
+	<data name="IDS_DESC_WRITTENBOOK"><value>A book signed by the author (cannot be written in).</value></data>
+	<data name="IDS_DEVICEGONE_TEXT"><value>Your storage device has been removed. Please select a new one.</value></data>
+	<data name="IDS_DONKEY"><value>Eşek</value></data>
+	<data name="IDS_ELDER_GUARDIAN"><value>Yaşlı Gardiyan</value></data>
+	<data name="IDS_ENCHANTMENT_FROST_WALKER"><value>Buz Yürüyücüsü</value></data>
+	<data name="IDS_ENCHANTMENT_LUCK_OF_THE_SEA"><value>Deniz Şansı</value></data>
+	<data name="IDS_ENCHANTMENT_LURE"><value>Ayartma</value></data>
+	<data name="IDS_ENCHANTMENT_MENDING"><value>Tamir</value></data>
+	<data name="IDS_ENCHANTMENT_WATER_WALKER"><value>Derinlik Yürüyücüsü</value></data>
+	<data name="IDS_ENDERMITE"><value>Endermite</value></data>
+	<data name="IDS_FAILED_TO_LOADSAVE_TEXT"><value>Your storage device is unavailable or has an error. Please select a new storage device.</value></data>
+	<data name="IDS_FAILED_TO_SAVE_TEXT"><value>Your storage device is unavailable or has an error</value></data>
+	<data name="IDS_FIREWORKS"><value>Firework Rocket</value></data>
+	<data name="IDS_FIREWORKS_CHARGE"><value>Yıldız Şeklinde</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_BLACK"><value>Black</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_BLUE"><value>Blue</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_BROWN"><value>Brown</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_CUSTOM"><value>Custom</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_CYAN"><value>Cyan</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_FADE_TO"><value>Fade to</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_FLICKER"><value>Parıltı</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_GRAY"><value>Gray</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_GREEN"><value>Green</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_LIGHT_BLUE"><value>Light Blue</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_LIME"><value>Lime</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_MAGENTA"><value>Magenta</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_ORANGE"><value>Orange</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_PINK"><value>Pink</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_PURPLE"><value>Purple</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_RED"><value>Red</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_SILVER"><value>Light Gray</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_TRAIL"><value>Iz</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_TYPE"><value>Unknown Shape</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_TYPE_0"><value>Küresel</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_TYPE_1"><value>Küresel</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_TYPE_2"><value>Yıldız Şeklinde</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_TYPE_3"><value>Creeper Şeklinde</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_TYPE_4"><value>Patlama</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_WHITE"><value>White</value></data>
+	<data name="IDS_FIREWORKS_CHARGE_YELLOW"><value>Yellow</value></data>
+	<data name="IDS_GAMEMODE_ADVENTURE"><value>Game Mode: Adventure</value></data>
+	<data name="IDS_GAMEMODE_HARDCORE"><value>Game Mode: Zorlayıcı Mod</value></data>
+	<data name="IDS_GAMEOPTION_DAYLIGHT_CYCLE"><value>Devre dışı bırakıldığında, günün saati değişmez.</value></data>
+	<data name="IDS_GAMEOPTION_INCREASE_WORLD_SIZE"><value>Dünya Boyutunu Artır</value></data>
+	<data name="IDS_GAMEOPTION_INCREASE_WORLD_SIZE_OVERWRITE_EDGES"><value>Kenarların Üzerine Yaz</value></data>
+	<data name="IDS_GAMEOPTION_KEEP_INVENTORY"><value>Etkinleştirildiğinde, oyuncular öldüklerinde envanterlerini korurlar.</value></data>
+	<data name="IDS_GAMEOPTION_MOB_GRIEFING"><value>Devre dışı bırakıldığında, canavarların ve hayvanların blokları değiştirmesini (örneğin Creeper patlamalarının blokları yok etmesini ve Koyunların çimleri yemesini) veya eşya toplamasını engeller.</value></data>
+	<data name="IDS_GAMEOPTION_MOB_LOOT"><value>Devre dışı bırakıldığında, canavarlar ve hayvanlar ganimet düşürmez (örneğin Creeperlar barut düşürmez).</value></data>
+	<data name="IDS_GAMEOPTION_MOB_SPAWNING"><value>Devre dışı bırakıldığında, yaratıklar doğal olarak doğmaz.</value></data>
+	<data name="IDS_GAMEOPTION_NATURAL_REGEN"><value>Devre dışı bırakıldığında, oyuncuların canı kendiliğinden yenilenmez.</value></data>
+	<data name="IDS_GAMEOPTION_TILE_DROPS"><value>Devre dışı bırakıldığında, bloklar yok edildiğinde eşya düşürmez (örneğin Taş bloklar Kırık Taş düşürmez).</value></data>
+	<data name="IDS_GUARDIAN"><value>Gardiyan</value></data>
+	<data name="IDS_HARDCORE"><value>Zorlayıcı Mod</value></data>
+	<data name="IDS_HARDCORE_DEATH_MESSAGE"><value>dead.</value></data>
+	<data name="IDS_HORSE"><value>At</value></data>
+	<data name="IDS_HOW_TO_PLAY_BEACONS"><value>{*T3*}HOW TO PLAY : BEACONS{*ETW*}{*B*}{*B*} Active Beacons project a bright beam of light into the sky and grant powers to nearby players.{*B*} They are crafted with Glass, Obsidian and Nether Stars, which can be obtained by defeating the Wither.{*B*}{*B*} Beacons must be placed so that they are in sunlight during the day. Beacons must be placed on Pyramids of Iron, Gold, Emerald or Diamond.{*B*} The material the Beacon is placed on has no effect on the power of the Beacon.{*B*}{*B*} In the Beacon menu you can select one primary power for your Beacon. The more tiers your pyramid has the more powers you will have to choose from.{*B*} A Beacon on a pyramid with at least four tiers also gives the option of either the Regeneration secondary power or a stronger primary power.{*B*}{*B*} To set the powers of your Beacon you must sacrifice an Emerald, Diamond, Gold or Iron Ingot in the payment slot.{*B*} Once set, the powers will emanate from the Beacon indefinitely.{*B*}</value></data>
+	<data name="IDS_HOW_TO_PLAY_DROPPERS"><value>{*T3*}HOW TO PLAY : DROPPERS{*ETW*}{*B*}{*B*} When powered by Redstone, Droppers will drop a single random item contained within them onto the ground. Kullanın: {*CONTROLLER_ACTION_USE*} to open the Dropper and then you can load the Dropper with items from your inventory.{*B*} If the Dropper is facing a Chest or another type of Container, the item will be placed into that instead. Long chains of Droppers can be constructed to transport items over a distance, but for this to work they will have to be alternately powered on and off.</value></data>
+	<data name="IDS_HOW_TO_PLAY_FIREWORKS"><value>{*T3*}NASIL OYNANIR : HAVAI FIŞEKLER{*ETW*}{*B*}{*B*} Havai Fişekler elde fırlatılabilen veya Fırlatıcılardan ateşlenebilen dekoratif eşyalardır. Kağıt, Barut ve isteğe bağlı olarak Havai Fişek Yıldızları kullanılarak üretilirler.{*B*} Havai Fişek Yıldızlarının renkleri, şekilleri, boyutları ve efektleri üretim sırasında ek malzemeler eklenerek özelleştirilebilir.</value></data>
+	<data name="IDS_HOW_TO_PLAY_HOPPERS"><value>{*T3*}NASIL OYNANIR : HUNILER{*ETW*}{*B*}{*B*} Huniler kaplardan eşya almak veya kaplara eşya koymak ve üzerlerine atılan eşyaları otomatik olarak toplamak için kullanılır.{*B*} Sandıklara, Fırınlara, Fırlatıcılara, Bırakıcılara ve Maden Arabalarına bağlanabilirler.</value></data>
+	<data name="IDS_HOW_TO_PLAY_HORSES"><value>{*T3*}NASIL OYNANIR : ATLAR{*ETW*}{*B*}{*B*} Atlar ve Eşekler genellikle açık ovalarda bulunur. Katırlar ise Eşek ile Atın çiftleşmesinden doğar.{*B*} Yetişkin Atlar, Eşekler ve Katırlar evcilleştirildikten sonra üzerlerine binilebilir. Sadece Atlara zırh takılabilir, Eşek ve Katırlara ise eşya taşımak için sandık eklenebilir.</value></data>
+	<data name="IDS_HOW_TO_PLAY_MENU_BEACONS"><value>Fenerler</value></data>
+	<data name="IDS_HOW_TO_PLAY_MENU_DROPPERS"><value>Bırakıcılar</value></data>
+	<data name="IDS_HOW_TO_PLAY_MENU_FIREWORKS"><value>Havai Fişekler</value></data>
+	<data name="IDS_HOW_TO_PLAY_MENU_HOPPERS"><value>Huniler</value></data>
+	<data name="IDS_HOW_TO_PLAY_MENU_HORSES"><value>Atlar</value></data>
+	<data name="IDS_INCREASE_WORLD_SIZE"><value>Dünya Boyutunu Artır</value></data>
+	<data name="IDS_INCREASE_WORLD_SIZE_OVERWRITE_EDGES"><value>Overwrite Edges</value></data>
+	<data name="IDS_ITEM_ARMOR_STAND"><value>Zırh Askısı</value></data>
+	<data name="IDS_ITEM_BEETROOT_SOUP"><value>Pancar Çorbası</value></data>
+	<data name="IDS_ITEM_CLOWNFISH"><value>Palyaço Balığı</value></data>
+	<data name="IDS_ITEM_COMPARATOR"><value>Kızıltaş Karşılaştırıcı</value></data>
+	<data name="IDS_ITEM_DIAMOND_HORSE_ARMOR"><value>Elmas At Zırhı</value></data>
+	<data name="IDS_ITEM_DOOR_ACACIA"><value>Akasya Kapı</value></data>
+	<data name="IDS_ITEM_DOOR_BIRCH"><value>Huş Kapı</value></data>
+	<data name="IDS_ITEM_DOOR_DARK"><value>Koyu Meşe Kapı</value></data>
+	<data name="IDS_ITEM_DOOR_JUNGLE"><value>Orman Ağacı Kapı</value></data>
+	<data name="IDS_ITEM_DOOR_SPRUCE"><value>Ladin Kapı</value></data>
+	<data name="IDS_ITEM_ELYTRA"><value>Elytra</value></data>
+	<data name="IDS_ITEM_FIREWORKS_FLIGHT"><value>Uçuş Süresi:</value></data>
+	<data name="IDS_ITEM_GOLD_HORSE_ARMOR"><value>Altın At Zırhı</value></data>
+	<data name="IDS_ITEM_IRON_HORSE_ARMOR"><value>Demir At Zırhı</value></data>
+	<data name="IDS_ITEM_LEAD"><value>Kayış</value></data>
+	<data name="IDS_ITEM_MAP_EMPTY"><value>Boş Harita</value></data>
+	<data name="IDS_ITEM_MINECART_HOPPER"><value>Huniyle Kaplı Maden Arabası</value></data>
+	<data name="IDS_ITEM_MINECART_TNT"><value>TNT'li Maden Arabası</value></data>
+	<data name="IDS_ITEM_MUTTON_COOKED"><value>Pişmiş Koyun Eti</value></data>
+	<data name="IDS_ITEM_MUTTON_RAW"><value>Çiğ Koyun Eti</value></data>
+	<data name="IDS_ITEM_NAME_TAG"><value>Isim Etiketi</value></data>
+	<data name="IDS_ITEM_PRISMARINE_BRICK_DESC"><value>Okyanus Anıtlarında bulunabilen dekoratif Prizmarin tuğlası. Prizmarin parçalarından üretilebilir.</value></data>
+	<data name="IDS_ITEM_PRISMARINE_CRYSTAL"><value>Prizmarin Kristali</value></data>
+	<data name="IDS_ITEM_PRISMARINE_CRYSTAL_DESC"><value>Deniz Fenerlerinden veya Gardiyan ile Yaşlı Gardiyanları yenerek elde edilir. Deniz Feneri yapımında kullanılabilir.</value></data>
+	<data name="IDS_ITEM_PRISMARINE_DARK_DESC"><value>Okyanus Anıtlarında bulunabilen daha nadir bir Prizmarin türü. Prizmarin parçaları ve Mürekkep Kesesi ile üretilebilir.</value></data>
+	<data name="IDS_ITEM_PRISMARINE_DESC"><value>Okyanus Anıtlarında bulunabilen nadir dekoratif taş. Prizmarin parçalarından üretilebilir.</value></data>
+	<data name="IDS_ITEM_PRISMARINE_SHARD"><value>Prizmarin Parçası</value></data>
+	<data name="IDS_ITEM_PRISMARINE_SHARD_DESC"><value>Gardiyanlar ve Yaşlı Gardiyanlardan düşer. Prizmarin ve Deniz Feneri yapımında kullanılabilir.</value></data>
+	<data name="IDS_ITEM_PUFFERFISH"><value>Kirpi Balığı</value></data>
+	<data name="IDS_ITEM_RABBIT_COOKED"><value>Pişmiş Tavşan Eti</value></data>
+	<data name="IDS_ITEM_RABBIT_FOOT"><value>Tavşan Ayağı</value></data>
+	<data name="IDS_ITEM_RABBIT_HIDE"><value>Tavşan Derisi</value></data>
+	<data name="IDS_ITEM_RABBIT_RAW"><value>Çiğ Tavşan Eti</value></data>
+	<data name="IDS_ITEM_RABBIT_STEW"><value>Tavşan Yahnisi</value></data>
+	<data name="IDS_ITEM_SALMON_COOKED"><value>Pişmiş Somon</value></data>
+	<data name="IDS_ITEM_SALMON_RAW"><value>Çiğ Somon</value></data>
+	<data name="IDS_ITEM_WRITINGBOOK"><value>Kitap ve Tüy</value></data>
+	<data name="IDS_ITEM_WRITTENBOOK"><value>Yazılmış Kitap</value></data>
+	<data name="IDS_KEEP_INVENTORY"><value>Keep Inventory</value></data>
+	<data name="IDS_LANGUAGE_SELECTOR">
+		<value>Diller</value>
+	</data>
+	<data name="IDS_LANG_CHINESE_SIMPLIFIED">
+		<value>Basitleştirilmiş Çince</value>
+	</data>
+	<data name="IDS_LANG_CHINESE_TRADITIONAL">
+		<value>Geleneksel Çince</value>
+	</data>
+	<data name="IDS_LANG_DANISH">
+		<value>Danca</value>
+	</data>
+	<data name="IDS_LANG_DUTCH">
+		<value>Felemenkçe</value>
+	</data>
+	<data name="IDS_LANG_ENGLISH">
+		<value>İngilizce (English)</value>
+	</data>
+	<data name="IDS_LANG_FINISH">
+		<value>Fince</value>
+	</data>
+	<data name="IDS_LANG_FRENCH">
+		<value>Fransızca</value>
+	</data>
+	<data name="IDS_LANG_GERMAN">
+		<value>Almanca</value>
+	</data>
+	<data name="IDS_LANG_GREEK">
+		<value>Yunanca</value>
+	</data>
+	<data name="IDS_LANG_ITALIAN">
+		<value>İtalyanca</value>
+	</data>
+	<data name="IDS_LANG_JAPANESE">
+		<value>Japonca</value>
+	</data>
+	<data name="IDS_LANG_KOREAN">
+		<value>Korece</value>
+	</data>
+	<data name="IDS_LANG_NORWEGIAN">
+		<value>Norveççe</value>
+	</data>
+	<data name="IDS_LANG_POLISH">
+		<value>Lehçe</value>
+	</data>
+	<data name="IDS_LANG_PORTUGUESE">
+		<value>Portekizce</value>
+	</data>
+	<data name="IDS_LANG_PORTUGUESE_BRAZIL">
+		<value>Portekizce (Brezilya)</value>
+	</data>
+	<data name="IDS_LANG_PORTUGUESE_PORTUGAL">
+		<value>Portekizce (Portekiz)</value>
+	</data>
+	<data name="IDS_LANG_RUSSIAN">
+		<value>Rusça</value>
+	</data>
+	<data name="IDS_LANG_SPANISH">
+		<value>İspanyolca</value>
+	</data>
+	<data name="IDS_LANG_SPANISH_LATIN_AMERICA">
+		<value>İspanyolca (Latin Amerika)</value>
+	</data>
+	<data name="IDS_LANG_SPANISH_SPAIN">
+		<value>İspanyolca (İspanya)</value>
+	</data>
+	<data name="IDS_LANG_SWEDISH">
+		<value>İsveççe</value>
+	</data>
+	<data name="IDS_LANG_SYSTEM">
+		<value>Sistem Dili</value>
+	</data>
+	<data name="IDS_LANG_TURKISH">
+		<value>Türkçe</value>
+	</data>
+	<data name="IDS_MAX_BATS_SPAWNED"><value>Can't use Spawn Egg at the moment. The maximum number of Bats in a world has been reached.</value></data>
+	<data name="IDS_MAX_HORSES_BRED"><value>This animal can't enter Love Mode. The maximum number of breeding horses has been reached.</value></data>
+	<data name="IDS_MOB_GRIEFING"><value>Mob Griefing</value></data>
+	<data name="IDS_MOB_LOOT"><value>Mob Loot</value></data>
+	<data name="IDS_MOB_SPAWNING"><value>Mob Spawning</value></data>
+	<data name="IDS_MULE"><value>Katır</value></data>
+	<data name="IDS_NATURAL_REGEN"><value>Natural Regeneration</value></data>
+	<data name="IDS_NETHER_STAR"><value>Nether Star</value></data>
+	<data name="IDS_NODEVICE_ACCEPT"><value>Select a storage device</value></data>
+	<data name="IDS_NODEVICE_TEXT"><value>If you do not select a storage device, game saves will be disabled</value></data>
+	<data name="IDS_NODEVICE_TITLE"><value>Hayır storage device selected</value></data>
+	<data name="IDS_NO_USER_CREATED_CONTENT_PRIVILEGE_REMOTE"><value>You are not allowed to join this game session because a player in the session has a Member Content privilege setting of Friends Açıkly, and you are not on their Friends List.</value></data>
+	<data name="IDS_NULL"><value>Hayırt Used</value></data>
+	<data name="IDS_OVERWRITESAVE_TEXT"><value>Your selected storage device already contains this save. Is it OK to overwrite it?</value></data>
+	<data name="IDS_PLATFORM_NAME"><value>Computer</value></data>
+	<data name="IDS_POLAR_BEAR"><value>Polar Bear</value></data>
+	<data name="IDS_POTION_ABSORPTION"><value>Absorption</value></data>
+	<data name="IDS_POTION_ABSORPTION_POSTFIX"><value>of Absorption</value></data>
+	<data name="IDS_POTION_DESC_JUMPBOOST"><value>Increases the jump height of the affected player.</value></data>
+	<data name="IDS_POTION_DESC_WATERBREATHING"><value>Allows affected players to breathe normally underwater.</value></data>
+	<data name="IDS_POTION_EFFECTS_WHENDRANK"><value>When Applied:</value></data>
+	<data name="IDS_POTION_HEALTHBOOST"><value>Health Boost</value></data>
+	<data name="IDS_POTION_HEALTHBOOST_POSTFIX"><value>of Health Boost</value></data>
+	<data name="IDS_POTION_SATURATION"><value>Saturation</value></data>
+	<data name="IDS_POTION_SATURATION_POSTFIX"><value>of Saturation</value></data>
+	<data name="IDS_POTION_WITHER"><value>Wither</value></data>
+	<data name="IDS_POTION_WITHER_POSTFIX"><value>of Decay</value></data>
+	<data name="IDS_PRO_PROFILEPROBLEM_TEXT"><value>You are being returned to the main menu because of a problem reading your profile.</value></data>
+	<data name="IDS_RABBIT"><value>Rabbit</value></data>
+	<data name="IDS_SAFE_SPRINT"><value>Safe Sprint</value></data>
+	<data name="IDS_SAVE_TRANSFER_WRONG_VERSION"><value>The save file in the save transfer area has a version number that this version doesn't support yet.</value></data>
+	<data name="IDS_SELECTANEWDEVICE"><value>Select a new storage device</value></data>
+	<data name="IDS_SKELETON_HORSE"><value>Iskelet At</value></data>
+	<data name="IDS_SKIN_PACK"><value>Skin Pack</value></data>
+	<data name="IDS_SLIDER_CONTROLTYPE"><value>Control Type</value></data>
+	<data name="IDS_STORAGEDEVICEPROBLEM_TITLE"><value>Storage Device Problem</value></data>
+	<data name="IDS_SWAP"><value>Swap</value></data>
+	<data name="IDS_TEXTURE_PACK"><value>Texture Pack</value></data>
+	<data name="IDS_TILE_ACACIA_FENCE"><value>Akasya Çit</value></data>
+	<data name="IDS_TILE_ACACIA_GATE"><value>Akasya Çit Kapısı</value></data>
+	<data name="IDS_TILE_ACACIA_PLANKS"><value>Akasya Ahşap Tahta</value></data>
+	<data name="IDS_TILE_ACTIVATOR_RAIL"><value>Activator Rail</value></data>
+	<data name="IDS_TILE_ALLIUM"><value>Allium</value></data>
+	<data name="IDS_TILE_ANDESITE"><value>Andezit</value></data>
+	<data name="IDS_TILE_BANNER"><value>Flama</value></data>
+	<data name="IDS_TILE_BANNER_BLACK"><value>Siyah Flama</value></data>
+	<data name="IDS_TILE_BANNER_BLUE"><value>Mavi Flama</value></data>
+	<data name="IDS_TILE_BANNER_BROWN"><value>Kahverengi Flama</value></data>
+	<data name="IDS_TILE_BANNER_CYAN"><value>Camgöbeği Flama</value></data>
+	<data name="IDS_TILE_BANNER_GRAY"><value>Gri Flama</value></data>
+	<data name="IDS_TILE_BANNER_GREEN"><value>Yeşil Flama</value></data>
+	<data name="IDS_TILE_BANNER_LIGHT_BLUE"><value>Light Mavi Flama</value></data>
+	<data name="IDS_TILE_BANNER_LIME"><value>Açık Yeşil Flama</value></data>
+	<data name="IDS_TILE_BANNER_MAGENTA"><value>Eflatun Flama</value></data>
+	<data name="IDS_TILE_BANNER_ORANGE"><value>Turuncu Flama</value></data>
+	<data name="IDS_TILE_BANNER_PINK"><value>Pembe Flama</value></data>
+	<data name="IDS_TILE_BANNER_PURPLE"><value>Mor Flama</value></data>
+	<data name="IDS_TILE_BANNER_RED"><value>Kırmızı Flama</value></data>
+	<data name="IDS_TILE_BANNER_SILVER"><value>Light Gri Flama</value></data>
+	<data name="IDS_TILE_BANNER_WHITE"><value>Beyaz Flama</value></data>
+	<data name="IDS_TILE_BANNER_YELLOW"><value>Sarı Flama</value></data>
+	<data name="IDS_TILE_BARRIER"><value>Bariyer</value></data>
+	<data name="IDS_TILE_BEACON"><value>Fener</value></data>
+	<data name="IDS_TILE_BEETROOTS"><value>Beetroot</value></data>
+	<data name="IDS_TILE_BIRCH_FENCE"><value>Huş Çit</value></data>
+	<data name="IDS_TILE_BIRCH_GATE"><value>Huş Çit Kapısı</value></data>
+	<data name="IDS_TILE_BLUE_ORCHID"><value>Mavi Orchid</value></data>
+	<data name="IDS_TILE_BONE_BLOCK"><value>Bone Block</value></data>
+	<data name="IDS_TILE_CHEST_TRAP"><value>Trapped Chest</value></data>
+	<data name="IDS_TILE_COAL"><value>Block of Coal</value></data>
+	<data name="IDS_TILE_COARSE_DIRT"><value>Çorak Toprak</value></data>
+	<data name="IDS_TILE_COMMAND_BLOCK"><value>Komut Bloğu</value></data>
+	<data name="IDS_TILE_COMPARATOR"><value>Kırmızıstone Comparator</value></data>
+	<data name="IDS_TILE_DARK_FENCE"><value>Koyu Meşe Çit</value></data>
+	<data name="IDS_TILE_DARK_GATE"><value>Koyu Meşe Çit Kapısı</value></data>
+	<data name="IDS_TILE_DARK_OAK_PLANKS"><value>Koyu Meşe Ahşap Tahta</value></data>
+	<data name="IDS_TILE_DAYLIGHT_DETECTOR"><value>Daylight Sensor</value></data>
+	<data name="IDS_TILE_DIORITE"><value>Diorit</value></data>
+	<data name="IDS_TILE_DOOR_ACACIA"><value>Akasya Door</value></data>
+	<data name="IDS_TILE_DOOR_BIRCH"><value>Huş Door</value></data>
+	<data name="IDS_TILE_DOOR_DARK"><value>Koyu Meşe Door</value></data>
+	<data name="IDS_TILE_DOOR_JUNGLE"><value>Orman Ağacı Door</value></data>
+	<data name="IDS_TILE_DOOR_SPRUCE"><value>Ladin Door</value></data>
+	<data name="IDS_TILE_DOUBLE_TALL_GRASS"><value>Tall Çim</value></data>
+	<data name="IDS_TILE_DROPPER"><value>Bırakıcı</value></data>
+	<data name="IDS_TILE_DROPS"><value>Tile Drops</value></data>
+	<data name="IDS_TILE_END_BRICKS"><value>End Stone Bricks</value></data>
+	<data name="IDS_TILE_FROSTED_ICE"><value>Frosted Ice</value></data>
+	<data name="IDS_TILE_GRANITE"><value>Granit</value></data>
+	<data name="IDS_TILE_GRASS_PATH"><value>Dirt Path</value></data>
+	<data name="IDS_TILE_HARDENED_CLAY"><value>Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_HAY"><value>Hay Bale</value></data>
+	<data name="IDS_TILE_HOPPER"><value>Huni</value></data>
+	<data name="IDS_TILE_HOUSTONIA"><value>Azure Mavit</value></data>
+	<data name="IDS_TILE_IRON_TRAPDOOR"><value>Iron Trapdoor</value></data>
+	<data name="IDS_TILE_JUNGLE_FENCE"><value>Orman Ağacı Çit</value></data>
+	<data name="IDS_TILE_JUNGLE_GATE"><value>Orman Ağacı Çit Kapısı</value></data>
+	<data name="IDS_TILE_LARGE_FERN"><value>Large Eğrelti Otu</value></data>
+	<data name="IDS_TILE_LEAVES_ACACIA"><value>Akasya Leaves</value></data>
+	<data name="IDS_TILE_LEAVES_DARK_OAK"><value>Koyu Meşe Leaves</value></data>
+	<data name="IDS_TILE_LILAC"><value>Leylak</value></data>
+	<data name="IDS_TILE_LOG_ACACIA"><value>Akasya Wood</value></data>
+	<data name="IDS_TILE_LOG_DARK_OAK"><value>Koyu Meşe Wood</value></data>
+	<data name="IDS_TILE_MAGMA"><value>Magma Block</value></data>
+	<data name="IDS_TILE_NETHER_WART_BLOCK"><value>Nether Wart Block</value></data>
+	<data name="IDS_TILE_OXEYE_DAISY"><value>Oxeye Daisy</value></data>
+	<data name="IDS_TILE_PACKED_ICE"><value>Sıkıştırılmış Buz</value></data>
+	<data name="IDS_TILE_PEONY"><value>Şakayık</value></data>
+	<data name="IDS_TILE_PLANKS"><value>Ahşap Tahta (any type)</value></data>
+	<data name="IDS_TILE_PODZOL"><value>Podzol</value></data>
+	<data name="IDS_TILE_POLISHED_ANDESITE"><value>Cilalı Andezit</value></data>
+	<data name="IDS_TILE_POLISHED_DIORITE"><value>Cilalı Diorit</value></data>
+	<data name="IDS_TILE_POLISHED_GRANITE"><value>Cilalı Granit</value></data>
+	<data name="IDS_TILE_PRISMARINE"><value>Prismarine</value></data>
+	<data name="IDS_TILE_PRISMARINE_BRICKS"><value>Prismarine Bricks</value></data>
+	<data name="IDS_TILE_PRISMARINE_DARK"><value>Dark Prismarine</value></data>
+	<data name="IDS_TILE_REDSTONE_BLOCK"><value>Block of Kırmızıstone</value></data>
+	<data name="IDS_TILE_RED_NETHER_BRICK"><value>Kırmızı Nether Bricks</value></data>
+	<data name="IDS_TILE_RED_SAND"><value>Kırmızı Sand</value></data>
+	<data name="IDS_TILE_RED_SANDSTONE"><value>Kırmızı Sandstone</value></data>
+	<data name="IDS_TILE_RED_SANDSTONE_CHISELED"><value>Chiseled Kırmızı Sandstone</value></data>
+	<data name="IDS_TILE_RED_SANDSTONE_SMOOTH"><value>Düzgün Kırmızı Kum Taşı</value></data>
+	<data name="IDS_TILE_ROSE_BUSH"><value>Gül Çalısı</value></data>
+	<data name="IDS_TILE_SAPLING_ACACIA"><value>Akasya Sapling</value></data>
+	<data name="IDS_TILE_SAPLING_DARK_OAK"><value>Koyu Meşe Sapling</value></data>
+	<data name="IDS_TILE_SEA_LANTERN"><value>Deniz Feneri</value></data>
+	<data name="IDS_TILE_SLIME_BLOCK"><value>Balçık Bloğu</value></data>
+	<data name="IDS_TILE_SPRUCE_FENCE"><value>Ladin Çit</value></data>
+	<data name="IDS_TILE_SPRUCE_GATE"><value>Ladin Çit Kapısı</value></data>
+	<data name="IDS_TILE_STAINED_CLAY"><value>Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_BLACK"><value>Siyah Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_BLUE"><value>Mavi Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_BROWN"><value>Kahverengi Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_CYAN"><value>Camgöbeği Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_GRAY"><value>Gri Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_GREEN"><value>Yeşil Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_LIGHT_BLUE"><value>Light Mavi Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_LIME"><value>Açık Yeşil Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_MAGENTA"><value>Eflatun Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_ORANGE"><value>Turuncu Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_PINK"><value>Pembe Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_PURPLE"><value>Mor Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_RED"><value>Kırmızı Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_SILVER"><value>Light Gri Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_WHITE"><value>Beyaz Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_CLAY_YELLOW"><value>Sarı Sertleştirilmiş Kil</value></data>
+	<data name="IDS_TILE_STAINED_GLASS"><value>Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_BLACK"><value>Siyah Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_BLUE"><value>Mavi Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_BROWN"><value>Kahverengi Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_CYAN"><value>Camgöbeği Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_GRAY"><value>Gri Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_GREEN"><value>Yeşil Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_LIGHT_BLUE"><value>Light Mavi Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_LIME"><value>Açık Yeşil Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_MAGENTA"><value>Eflatun Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_ORANGE"><value>Turuncu Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE"><value>Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_BLACK"><value>Siyah Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_BLUE"><value>Mavi Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_BROWN"><value>Kahverengi Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_CYAN"><value>Camgöbeği Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_GRAY"><value>Gri Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_GREEN"><value>Yeşil Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_LIGHT_BLUE"><value>Light Mavi Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_LIME"><value>Açık Yeşil Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_MAGENTA"><value>Eflatun Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_ORANGE"><value>Turuncu Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_PINK"><value>Pembe Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_PURPLE"><value>Mor Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_RED"><value>Kırmızı Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_SILVER"><value>Light Gri Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_WHITE"><value>Beyaz Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PANE_YELLOW"><value>Sarı Boyalı Ince Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PINK"><value>Pembe Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_PURPLE"><value>Mor Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_RED"><value>Kırmızı Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_SILVER"><value>Light Gri Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_WHITE"><value>Beyaz Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAINED_GLASS_YELLOW"><value>Sarı Boyalı Cam</value></data>
+	<data name="IDS_TILE_STAIRS_ACACIAWOOD"><value>Akasya Wood Merdiven</value></data>
+	<data name="IDS_TILE_STAIRS_DARKWOOD"><value>Koyu Meşe Wood Merdiven</value></data>
+	<data name="IDS_TILE_STAIRS_RED_SANDSTONE"><value>Kırmızı Sandstone Merdiven</value></data>
+	<data name="IDS_TILE_STONESLAB_ACACIA"><value>Akasya Wood Basamak</value></data>
+	<data name="IDS_TILE_STONESLAB_DARK_OAK"><value>Koyu Meşe Wood Basamak</value></data>
+	<data name="IDS_TILE_STONESLAB_REDSAND"><value>Kırmızı Sandstone Basamak</value></data>
+	<data name="IDS_TILE_SUNFLOWER"><value>Ayçiçeği</value></data>
+	<data name="IDS_TILE_TULIP_ORANGE"><value>Turuncu Tulip</value></data>
+	<data name="IDS_TILE_TULIP_PINK"><value>Pembe Tulip</value></data>
+	<data name="IDS_TILE_TULIP_RED"><value>Kırmızı Tulip</value></data>
+	<data name="IDS_TILE_TULIP_WHITE"><value>Beyaz Tulip</value></data>
+	<data name="IDS_TILE_WEIGHTED_PLATE_HEAVY"><value>Weighted Pressure Plate (Heavy)</value></data>
+	<data name="IDS_TILE_WEIGHTED_PLATE_LIGHT"><value>Weighted Pressure Plate (Light)</value></data>
+	<data name="IDS_TILE_WET_SPONGE"><value>Wet Sponge</value></data>
+	<data name="IDS_TITLE_EXITBOOK"><value>Exit Book</value></data>
+	<data name="IDS_TOOLTIPS_ADDPAGE"><value>Add Page</value></data>
+	<data name="IDS_TOOLTIPS_ADD_FAVORITE"><value>Add Favorite</value></data>
+	<data name="IDS_TOOLTIPS_ATTACH"><value>Attach</value></data>
+	<data name="IDS_TOOLTIPS_BACKPAGE"><value>Previous Page</value></data>
+	<data name="IDS_TOOLTIPS_DISMOUNT"><value>Dismount</value></data>
+	<data name="IDS_TOOLTIPS_FIREWORK_LAUNCH"><value>Launch</value></data>
+	<data name="IDS_TOOLTIPS_LEASH"><value>Leash</value></data>
+	<data name="IDS_TOOLTIPS_MOUNT"><value>Mount</value></data>
+	<data name="IDS_TOOLTIPS_NAME"><value>Name</value></data>
+	<data name="IDS_TOOLTIPS_NEXTPAGE"><value>Next Page</value></data>
+	<data name="IDS_TOOLTIPS_REMOVE_FAVORITE"><value>Remove Favorite</value></data>
+	<data name="IDS_TOOLTIPS_SADDLEBAGS"><value>Attach Sandık</value></data>
+	<data name="IDS_TOOLTIPS_UNLEASH"><value>Release</value></data>
+	<data name="IDS_TUTORIAL_PROMPT_BEACON_MENU_OVERVIEW"><value>{*B*} Basın:{*CONTROLLER_VK_A*} to continue.{*B*} Basın:{*CONTROLLER_VK_B*} if you already know how to use the Beacon interface.</value></data>
+	<data name="IDS_TUTORIAL_PROMPT_BEACON_OVERVIEW"><value>{*B*} Basın:{*CONTROLLER_VK_A*} to learn more about Beacons.{*B*} Basın:{*CONTROLLER_VK_B*} if you already know about Beacons.</value></data>
+	<data name="IDS_TUTORIAL_PROMPT_FIREWORK_MENU_OVERVIEW"><value>{*B*} Basın:{*CONTROLLER_VK_A*} to continue.{*B*} Basın:{*CONTROLLER_VK_B*} if you already know how to use the Firework interface.</value></data>
+	<data name="IDS_TUTORIAL_PROMPT_FIREWORK_OVERVIEW"><value>{*B*} Basın:{*CONTROLLER_VK_A*} to learn more about Fireworks. {*B*} Basın:{*CONTROLLER_VK_B*} if you already know about Fireworks.</value></data>
+	<data name="IDS_TUTORIAL_PROMPT_HOPPER_OVERVIEW"><value>{*B*} Basın:{*CONTROLLER_VK_A*} to learn more about Hoppers.{*B*} Basın:{*CONTROLLER_VK_B*} if you already know about Hoppers.</value></data>
+	<data name="IDS_TUTORIAL_PROMPT_HORSE_MENU_OVERVIEW"><value>{*B*}Basın:{*CONTROLLER_VK_A*} to continue. {*B*}Basın:{*CONTROLLER_VK_B*} if you already know how to use the horse inventory.</value></data>
+	<data name="IDS_TUTORIAL_PROMPT_HORSE_OVERVIEW"><value>{*B*}Basın:{*CONTROLLER_VK_A*} to learn more about Horses, Donkeys and Mules. {*B*}Basın:{*CONTROLLER_VK_B*} if you already know about Horses, Donkeys and Mules.</value></data>
+	<data name="IDS_TUTORIAL_TASK_BEACON_CHOOSING_POWERS"><value>Try using the Beacon to set the powers it grants, you can use the Iron Ingots provided as the necessary payment.</value></data>
+	<data name="IDS_TUTORIAL_TASK_BEACON_DESIGN"><value>Beacons must be placed so that they are in sunlight during the day. Beacons must be placed on Pyramids of Iron, Gold, Emerald or Diamond. However the choice of material has no effect on the power of the beacon.</value></data>
+	<data name="IDS_TUTORIAL_TASK_BEACON_MENU_ACTIVATION"><value>To set the powers of your Beacon you must sacrifice an Emerald, Diamond, Gold or Iron Ingot in the payment slot. Once set, the powers will emanate from the Beacon indefinitely.</value></data>
+	<data name="IDS_TUTORIAL_TASK_BEACON_MENU_OVERVIEW"><value>This is the Beacon interface, which you can use to choose powers for your Beacon to grant.</value></data>
+	<data name="IDS_TUTORIAL_TASK_BEACON_MENU_PRIMARY_POWERS"><value>In the Beacon menu you can select 1 primary power for your Beacon. The more tiers your pyramid has the more powers you will have to choose from.</value></data>
+	<data name="IDS_TUTORIAL_TASK_BEACON_MENU_SECONDARY_POWER"><value>A Beacon on a pyramid with at least 4 tiers grants an additional option of either the Regeneration secondary power or a stronger primary power.</value></data>
+	<data name="IDS_TUTORIAL_TASK_BEACON_OVERVIEW"><value>At the top of this pyramid there is an inactivate Beacon.</value></data>
+	<data name="IDS_TUTORIAL_TASK_BEACON_PURPOSE"><value>Active Beacons project a bright beam of light into the sky and grant powers to nearby players. They are crafted with Glass, Obsidian and Nether Stars, which can be obtained by defeating the Wither.</value></data>
+	<data name="IDS_TUTORIAL_TASK_DONKEY_OVERVIEW"><value>You have found a Donkey.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_CRAFTING"><value>Try crafting a Firework at the Üreting Table using an assortment of ingredients from the chests.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_CUSTOMISE"><value>The colors, fade, shape, size, and effects (such as trails and twinkles) of Firework Stars can be customized by including additional ingredients when crafting.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_COLOUR"><value>The Dye will set the color of the explosion of the Firework Star.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_EFFECT"><value>A trail or a twinkle can be added using Diamonds or Glowstone Dust.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_FADE"><value>After a Firework Star has been crafted, you can set the fade color of the Firework Star by crafting it with Dye.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_SHAPE"><value>The shape of the Firework Star is set by adding either a Fire Charge, Gold Nugget, Feather or Mob Head.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_ADV_START"><value>Firework Stars can be crafted by placing Gunpowder and Dye into the crafting grid.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_BASIC_CRAFT"><value>You can then take the crafted Firework out of the output slot when you wish üretmek için it.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_BASIC_HEIGHT"><value>Filling more slots in the crafting grid with Gunpowder will increase the height at which all the Firework Stars will explode.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_BASIC_STARS"><value>You can optionally place multiple Firework Stars in the crafting grid to add them to the Firework.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_BASIC_START"><value>To craft a Firework, place Gunpowder and Paper in the 3x3 crafting grid that is shown above your inventory.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_MENU_OVERVIEW"><value>This is the Firework interface, which you can use üretmek için Fireworks and Firework Stars.</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_OVERVIEW"><value>Contained within the chests here there are various items used in the creation of FIREWORKS!</value></data>
+	<data name="IDS_TUTORIAL_TASK_FIREWORK_PURPOSE"><value>Fireworks are decorative items that can be launched by hand or from Dispensers. They are crafted using Paper, Gunpowder and optionally a number of Firework Stars.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HOPPER_AREA"><value>There are various useful Hopper layouts for you to see and experiment with in this room.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HOPPER_CONTAINERS"><value>They can affect Brewing Stands, Chests, Dispensers, Droppers, Kazcarts with Chests, Kazcarts with Hoppers, as well as other Hoppers.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HOPPER_MECHANICS"><value>Hoppers will continuously attempt to suck items out of suitable container placed above them. It will also attempt to insert stored items into an output container.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HOPPER_OUTPUT"><value>A Hopper points in the direction it tries to output items. To make a Hopper point to a particular block, place the Hopper against that block whilst sneaking.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HOPPER_OVERVIEW"><value>This room contains Hoppers</value></data>
+	<data name="IDS_TUTORIAL_TASK_HOPPER_PURPOSE"><value>Hoppers are used to insert or remove items from containers, and to automatically pick-up items thrown into them.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HOPPER_REDSTONE"><value>However if a Hopper is powered by Redstone it will become inactive and stop both sucking and inserting items.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_AREA"><value>You can try to tame the Horses and Donkeys here, and there are Saddles, Horse Armor and other useful items for Horses in chests around here too.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_BREEDING"><value>Horses and Donkeys (but not Mules) can be bred like other animals using Golden Apples or Golden Carrots. Foals will grow into adult horses over time, although feeding them wheat or hay will speed this up.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_INTRO"><value>Horses and Donkeys are found mainly in open plains. Mules can be bred from a Donkey and a Horse, but are infertile themselves.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_MENU_EQUIPMENT"><value>Saddle your Horse by placing a Saddle in the saddle slot. Horses can be given armor by placing Horse Armor in the armor slot.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_MENU_LAYOUT"><value>The horse inventory allows you to transfer, or equip items to your Horse, Donkey or Mule.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_MENU_OVERVIEW"><value>This is the horse inventory interface.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_MENU_SADDLEBAGS"><value>You can also transfer items between your own inventory and the saddlebags strapped to Donkeys and Mules in this menu.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_OVERVIEW"><value>You have found a Horse.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_PURPOSE"><value>All adult Horses, Donkeys and Mules can be ridden. However only Horses can be armored, and only Mules and Donkeys may be equipped with saddlebags for transporting items.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_RIDE"><value>Try to ride this horse now. Kullanın: {*CONTROLLER_ACTION_USE*} with no items or tools in your hand to mount it.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_SADDLEBAGS"><value>Tame Donkeys and Mules can be given saddlebags by attaching a chest. These bags can be accessed whilst riding or when sneaking.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_SADDLES"><value>To steer a horse they must then be equipped with a saddle, which can be bought from villagers or found inside chests hidden in the world.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_TAMING"><value>Horses, Donkeys and Mules must be tamed before they can be used. A horse is tamed by attempting to ride it, and managing to stay on the horse while it attempts to throw the rider off.</value></data>
+	<data name="IDS_TUTORIAL_TASK_HORSE_TAMING2"><value>When tamed Love Hearts will appear around them and they will no longer buck the player off.</value></data>
+	<data name="IDS_TUTORIAL_TASK_MULE_OVERVIEW"><value>You have found a Mule.</value></data>
+	<data name="IDS_UNLOCK_AVATAR_TEXT"><value>This is the Minecraft: Xbox Açıke Edition trial game. If you had the full game, you would just have earned an avatar award! Unlock the full game to experience the joy of Minecraft: Xbox Açıke Edition and to play with your friends across the globe through Xbox LIVE. Would you like to unlock the full game?</value></data>
+	<data name="IDS_UNLOCK_GAMERPIC_TEXT"><value>This is the Minecraft: Xbox Açıke Edition trial game. If you had the full game, you would just have earned a gamerpic! Unlock the full game to experience the joy of Minecraft: Xbox Açıke Edition and to play with your friends across the globe through Xbox LIVE. Would you like to unlock the full game?</value></data>
+	<data name="IDS_WARNING_ARCADE_TITLE"><value>Return to Xbox Dashboard</value></data>
+	<data name="IDS_WINDOWS_EXIT"><value>Exit Minecraft</value></data>
+	<data name="IDS_WITCH"><value>Witch</value></data>
+	<data name="IDS_WITHER"><value>Wither</value></data>
+	<data name="IDS_ZOMBIE_HORSE"><value>Zombi At</value></data>
+	<data name="IDS_FULLSCREEN">
+		<value>Tam Ekran</value>
+	</data>
+	<data name="IDS_RENDER_DISTANCE">
+		<value>Görüş Mesafesi: %d</value>
+	</data>
+	<data name="IDS_GAME_CHAT">
+		<value>Oyun Sohbeti</value>
+	</data>
+	<data name="IDS_MINI_GAMES">
+		<value>Mini Oyunlar</value>
+	</data>
+	<data name="IDS_LOAD">
+		<value>Yükle</value>
+	</data>
+	<data name="IDS_JOIN">
+		<value>Katıl</value>
+	</data>
+	<data name="IDS_CREATE">
+		<value>Oluştur</value>
+	</data>
+	<data name="IDS_VSYNC">
+		<value>Dikey Senkronizasyon (VSync)</value>
+	</data>
+	<data name="IDS_LANG_SLOVAK">
+		<value>Slovakça</value>
+	</data>
+	<data name="IDS_LANG_CZECH">
+		<value>Çekçe</value>
+	</data>
+	<data name="IDS_HIDE_SAVE_SIZE_BAR">
+		<value>Dünya disk alanı çubuğunu gizle</value>
+	</data>
+</root>

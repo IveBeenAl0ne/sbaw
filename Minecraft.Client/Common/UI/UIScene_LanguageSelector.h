@@ -35,7 +35,7 @@
 #define HAS_LANGUAGE_NB_NO(exp)	exp,
 #define HAS_LANGUAGE_EL_GR(exp) exp,
 
-#if defined(__ORBIS__) || defined(__PS3__) || defined(__PSVITA__)
+#if defined(__ORBIS__) || defined(__PS3__) || defined(__PSVITA__) || defined(_WINDOWS64)
 #define HAS_LANGUAGE_TR_TR(exp) exp,
 #else
 #define HAS_LANGUAGE_TR_TR(exp)		

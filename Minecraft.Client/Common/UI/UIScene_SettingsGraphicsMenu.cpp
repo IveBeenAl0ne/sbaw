@@ -111,8 +111,8 @@ void UIScene_SettingsGraphicsMenu::tick()
 		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_RENDER_BEDROCKFOG), eControl_BedrockFog, (app.GetGameSettings(m_iPad, eGameSetting_BedrockFog) != 0));
 
 #ifdef _WINDOWS64
-		m_multiList.AddNewCheckbox(L"VSync", eControl_VSync, (app.GetGameSettings(m_iPad, eGameSetting_VSync) != 0));
-		m_multiList.AddNewCheckbox(L"Fullscreen", eControl_ExclusiveFullscreen, (app.GetGameSettings(m_iPad, eGameSetting_ExclusiveFullscreen) != 0));
+		m_multiList.AddNewCheckbox(app.GetString(IDS_VSYNC), eControl_VSync, (app.GetGameSettings(m_iPad, eGameSetting_VSync) != 0));
+		m_multiList.AddNewCheckbox(app.GetString(IDS_FULLSCREEN), eControl_ExclusiveFullscreen, (app.GetGameSettings(m_iPad, eGameSetting_ExclusiveFullscreen) != 0));
 #endif
 
 		int gammaVal = app.GetGameSettings(m_iPad, eGameSetting_Gamma);
@@ -120,7 +120,7 @@ void UIScene_SettingsGraphicsMenu::tick()
 		m_multiList.AddNewSlider(TempString, eControl_Gamma, 0, 100, 1, gammaVal);
 
 		int renderDistLevel = DistanceToLevel(app.GetGameSettings(m_iPad, eGameSetting_RenderDistance));
-		swprintf(TempString, 256, L"Render Distance: %d", LevelToDistance(renderDistLevel));
+		swprintf(TempString, 256, app.GetString(IDS_RENDER_DISTANCE), LevelToDistance(renderDistLevel));
 		m_multiList.AddNewSlider(TempString, eControl_RenderDistance, 0, 3, 1, renderDistLevel);
 
 		int fovSlider = app.GetGameSettings(m_iPad, eGameSetting_FOV);
@@ -151,7 +151,7 @@ void UIScene_SettingsGraphicsMenu::tick()
 			app.SetGameSettings(m_iPad, eGameSetting_RenderDistance, dist);
 			Minecraft *pMinecraft = Minecraft::GetInstance();
 			pMinecraft->options->viewDistance = 3 - m_iPendingSliderValue;
-			swprintf(TempString, 256, L"Render Distance: %d", dist);
+			swprintf(TempString, 256, app.GetString(IDS_RENDER_DISTANCE), dist);
 			m_multiList.SetSliderLabel(eControl_RenderDistance, TempString);
 			break;
 		}
