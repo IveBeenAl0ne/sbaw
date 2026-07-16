@@ -421,12 +421,16 @@ UIController::EFont UIController::getFontForLanguage(int language)
 	{
 	switch(language)
 	{
+	// fireblade: temporarily removed as kanji fonts cause
+	// unexpected crashes when switching language(s)
+	/*
 	case XC_LANGUAGE_JAPANESE:	return eFont_Japanese;
 #ifdef _DURANGO
 	case XC_LANGUAGE_SCHINESE:	return eFont_SimpChinese;
 #endif
 	case XC_LANGUAGE_TCHINESE:	return eFont_TradChinese;
 	case XC_LANGUAGE_KOREAN:	return eFont_Korean;
+	*/
 	default:					return eFont_Bitmap;
 	}
 }
