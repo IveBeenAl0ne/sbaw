@@ -65,7 +65,7 @@ typedef struct
 			// In-Menu sensitivity
 			unsigned char ucMenuSensitivity;
 			unsigned char ucInterfaceOpacity;
-			unsigned char ucPad02;  // 1 byte padding
+			unsigned char ucControlType;
 			unsigned char ucFov;
 
 			// Adding another bitmask flag for more settings for 1.8.2
@@ -85,7 +85,7 @@ typedef struct
 			// 0x00000200 - eGameSetting_CustomSkinAnim - on
 
 			// TU9								// 0x00000400 - eGameSetting_DeathMessages - on
-			// 0x00070000 - eGameSetting_ControlType - 0..6
+			// ucControlType stores eGameSetting_ControlType (0..6)
 
 			// Adding another bitmask to store "special" completion tasks for the tutorial
 			unsigned int uiSpecialTutorialBitmask;

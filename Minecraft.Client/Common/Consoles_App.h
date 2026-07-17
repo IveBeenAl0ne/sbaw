@@ -318,17 +318,15 @@ public:
 #if defined __PS3__ || defined __PSVITA__ || defined __ORBIS__
 	static int NowDisplayFullVersionPurchase(void *pParam, bool bContinue, int iPad);
 	static int MustSignInFullVersionPurchaseReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
-#endif
-#if defined __PS3__ || defined __PSVITA__ || defined __ORBIS__
 	static int MustSignInFullVersionPurchaseReturnedExitTrial(void *pParam,int iPad,C4JStorage::EMessageResult result);
 #endif
 
-#ifdef _DEBUG_MENUS_ENABLED
+#if defined _DEBUG && defined _DEBUG_MENUS_ENABLED // fireblade: gate against this just in case cause debug settings should NOT be on no matter what in release mode
 	bool			DebugSettingsOn()														{ return m_bDebugOptions;}
 	bool			DebugArtToolsOn();
 #else
 	bool			DebugSettingsOn()														{ return false;}
-	bool			DebugArtToolsOn()														{ return false;}
+	bool			DebugArtToolsOn();
 #endif
 	void			SetDebugSequence(const char *pchSeq);
 	static int		DebugInputCallback(LPVOID pParam);

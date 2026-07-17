@@ -1291,8 +1291,11 @@ void Gui::render(float a, bool mouseFree, int xMouse, int yMouse)
                     lines.push_back(L"CH S: " + std::to_wstring(chunkAt->getHeightmap(xChunkOffset, zChunkOffset)));
 
                     Biome *biome = chunkAt->getBiome(xChunkOffset, zChunkOffset, minecraft->level->getBiomeSource());
-                    lines.push_back(L"Biome: " + biome->m_name + L" (" + std::to_wstring(biome->id) + L")");
-
+					if (biome != nullptr && biome->id >= 0) 
+						lines.push_back(L"Biome: " + biome->m_name + L" (" + std::to_wstring(biome->id) + L")");
+					else
+						lines.push_back(L"Biome: Unknown");
+                    
                     lines.push_back(L"Difficulty: " + std::to_wstring(minecraft->level->difficulty) + L" (Day " + std::to_wstring(minecraft->level->getGameTime() / Level::TICKS_PER_DAY) + L")");
                 }
             }
