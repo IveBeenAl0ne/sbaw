@@ -7279,9 +7279,9 @@ Would you like to install the mash-up pack or texture pack now?</value>
 		<value>Settings</value>
 	</data>	
 
-  <data name="IDS_LANGUAGE_SELECTOR">
-    <value>Languages</value>
-  </data>
+	<data name="IDS_LANGUAGE_SELECTOR">
+		<value>Languages</value>
+	</data>
 
 	<data name="IDS_CREDITS">
 		<value>Credits</value>
