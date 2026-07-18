@@ -1311,6 +1311,26 @@ Can also be used for low-level lighting.</value>
 		<value>Causes players and mobs to bounce when they jump on it.</value>
 	</data>
 
+	<data name="IDS_DESC_MAGMA">
+		<value>Causes fire damage when you stand on it.</value>
+	</data>
+
+	<data name="IDS_DESC_NETHER_WART_BLOCK">
+		<value>A decorative block crafted from Nether Wart.</value>
+	</data>
+
+	<data name="IDS_DESC_RED_NETHER_BRICK">
+		<value>Crafted from Nether Wart and Nether Brick. Can be used as decoration.</value>
+	</data>
+
+	<data name="IDS_DESC_BONE_BLOCK">
+		<value>Crafted from Bone Meal, or found underground in fossils. Can be used as decoration.</value>
+	</data>
+
+	<data name="IDS_DESC_GRASS_PATH">
+		<value>A decorative block that can be created by using a shovel on a Grass Block.</value>
+	</data>
+
 	<data name="IDS_DESC_DIRT">
 		<value>Collected using a shovel. Can be used for construction.</value>
 	</data>	
