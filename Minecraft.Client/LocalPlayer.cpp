@@ -532,6 +532,8 @@ void LocalPlayer::aiStep()
 		onGround = true;
 	}
 
+	/*
+
 	if (isAlive())
 	{
 		int frostWalkerLevel = EnchantmentHelper::getFrostWalker(dynamic_pointer_cast<LivingEntity>(shared_from_this()));
@@ -542,6 +544,8 @@ void LocalPlayer::aiStep()
 		}
 	}
 
+	*/
+	
 	// Check if the player is idle and the rich presence needs updated
 	if( !m_bIsIdle && InputManager.GetIdleSeconds( m_iPad ) > PLAYER_IDLE_TIME )
 	{

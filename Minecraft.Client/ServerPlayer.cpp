@@ -390,6 +390,14 @@ float ServerPlayer::getHeadHeight()
 	return 1.62f;
 }
 
+void ServerPlayer::onChangedBlock(BlockPos pos)
+{
+	if (true /*!isSpectator()*/) // we dont have true spectator mode yet
+	{
+		LivingEntity::onChangedBlock(pos);
+	}
+}
+
 void ServerPlayer::tick()
 {
 	gameMode->tick();

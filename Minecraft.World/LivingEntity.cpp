@@ -33,6 +33,8 @@
 #include "Dimension.h"
 #include "GenericStats.h"
 #include "ItemEntity.h"
+#include "TilePos.h"
+
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 #include "../Minecraft.Server/FourKitBridge.h"
 #endif
@@ -296,17 +298,7 @@ void LivingEntity::baseTick()
 	tickEffects();
 
 	animStepO = animStep;
-
-	if (!level->isClientSide && isAlive())
-	{
-		int frostWalkerLevel = EnchantmentHelper::getFrostWalker(dynamic_pointer_cast<LivingEntity>(shared_from_this()));
-		if (frostWalkerLevel > 0)
-		{
-			FrostWalkerEnchantment::freezeNearby(dynamic_pointer_cast<LivingEntity>(shared_from_this()), level,
-				Mth::floor(x), Mth::floor(y), Mth::floor(z), frostWalkerLevel);
-		}
-	}
-
+	
 	yBodyRotO = yBodyRot;
 	yHeadRotO = yHeadRot;
 	yRotO = yRot;
@@ -1073,6 +1065,21 @@ int LivingEntity::getCriticalSound()
 int LivingEntity::getDeathSound()
 {
 	return eSoundType_DAMAGE_HURT;
+}
+
+// frost walker-specific
+
+void LivingEntity::onChangedBlock(BlockPos pos)
+{
+	shared_ptr<LivingEntity> self = dynamic_pointer_cast<LivingEntity>(shared_from_this());
+
+	int frostWalkerLevel = EnchantmentHelper::getEnchantmentLevel(Enchantment::frostWalker->id, getEquipmentSlots());
+	if (frostWalkerLevel < 1)
+	{
+		return;
+	}
+
+	FrostWalkerEnchantment::onEntityMoved(self, level, pos, frostWalkerLevel);
 }
 
 /**

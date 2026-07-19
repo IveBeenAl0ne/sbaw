@@ -85,9 +85,9 @@ public:
 	virtual int getDamageProtection(int level, DamageSource *source);
 	virtual float getDamageBonus(int level, shared_ptr<LivingEntity> target);
 	virtual bool isCompatibleWith(Enchantment *other) const;
-	virtual bool isTreasureEnchantment() const { return false; }
 	virtual Enchantment *setDescriptionId(int id);
 	virtual int getDescriptionId();
+	virtual bool isTreasureOnly() { return false; }
 	virtual HtmlString getFullname(int level);
 	virtual bool canEnchant(shared_ptr<ItemInstance> item);
 	// 4J Added
