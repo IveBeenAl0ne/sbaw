@@ -169,8 +169,33 @@ void UIControl_MultiList::AddNewSlider(const wstring &label, int id, int minVal,
 	IggyPlayerCallMethodRS(m_parentScene->getMovie(), &result,
 		getIggyValuePath(), m_funcAddNewItem_Slider, 5, value);
 
+	m_sliderValues.emplace(id, initialVal);
 	m_itemIds.push_back(id);
 	++m_itemCount;
+}
+
+void UIControl_MultiList::handleSliderMove(int id, int newValue) {
+	auto it = m_sliderValues.find(id);
+
+	if (it == m_sliderValues.end()) return;
+
+	if (newValue != it->second) {
+		int valueCount = 1;
+
+		if (g_KBMInput.IsKBMActive() && g_KBMInput.HasAnyInput()) {
+			if (newValue % 10 == 0) {
+				ui.PlayUISFX(eSFX_Scroll);
+				it->second = newValue;
+			} else if (valueCount <= 20) {
+				ui.PlayUISFX(eSFX_Scroll);
+				it->second = newValue;
+			}
+		} else {
+			ui.PlayUISFX(eSFX_Scroll);
+			it->second = newValue;
+		}
+
+	}
 }
 
 void UIControl_MultiList::AddNewTextInput(const wstring &label, int id)
@@ -324,6 +349,7 @@ void UIControl_MultiList::clearList()
 		getIggyValuePath(), m_removeAllItemsFunc, 0, nullptr);
 
 	m_itemIds.clear();
+	m_sliderValues.clear();
 	m_itemCount = 0;
 	m_iCurrentSelection = 0;
 }

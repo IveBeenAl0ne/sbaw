@@ -32,6 +32,8 @@ protected:
 	int m_itemCount;
 	int m_iCurrentSelection;
 
+	std::unordered_map<int, int> m_sliderValues;
+
 public:
 	UIControl_MultiList();
 
@@ -59,6 +61,8 @@ public:
 	int getItemCount() const { return m_itemCount; }
 	void SetTouchFocus(S32 iX, S32 iY, bool bRepeat);
 	
+	void handleSliderMove(int id, int newValue);
+
 private:
 	int getListIndex(int id) const;
 };
