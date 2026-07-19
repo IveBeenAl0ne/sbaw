@@ -5,6 +5,7 @@ class Inventory;
 class DamageSource;
 class Enchantment;
 class EnchantmentInstance;
+class LivingEntity;
 
 class EnchantmentHelper
 {
@@ -50,6 +51,7 @@ private:
 	*/
 public:
 	static int getDamageProtection(ItemInstanceArray armor, DamageSource *source);
+	static bool hasFrostWalker(shared_ptr<LivingEntity> living);
 
 private:
 	class GetDamageBonusIteration : public EnchantmentIterationMethod

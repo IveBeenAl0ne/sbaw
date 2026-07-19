@@ -8,6 +8,7 @@ using namespace std;
 #include "PlayerEnderChestContainer.h"
 #include "CommandSender.h"
 #include "ScoreHolder.h"
+#include "BlockPos.h"
 
 class AbstractContainerMenu;
 class Stats;
@@ -133,6 +134,7 @@ public:
 private:
 	int sleepCounter; // animation timer
 	int deathFadeCounter; // animation timer
+	BlockPos lastChangedBlockPos;
 
 public:
 	float bedOffsetX, bedOffsetY, bedOffsetZ;
@@ -207,6 +209,7 @@ protected:
 
 public:
 	virtual void handleEntityEvent(byte id);
+	void onChangedBlock(BlockPos pos);
 
 protected:
 	bool isImmobile();

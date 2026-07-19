@@ -451,7 +451,7 @@ public:
 	static const int grass_path_Id = 208;
 	//end_gateway		209
 	static const int frosted_ice_Id = 212;
-	static const int magma_Id = 213;
+	static const int magma_block_Id = 213;
 	static const int nether_wart_block_Id = 214;
 	static const int red_nether_brick_Id = 215;
 	static const int bone_block_Id = 216;

@@ -72,6 +72,8 @@ public:
 		e_ChatDeathFireballItem,
 		e_ChatDeathThrownItem,
 		e_ChatDeathIndirectMagicItem,
+		e_ChatDeathHotFloor,
+		e_ChatDeathHotFloorPlayer,
 
 		e_ChatPlayerEnteredEnd,
 		e_ChatPlayerLeftEnd,

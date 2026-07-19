@@ -145,6 +145,7 @@ Player::Player(Level *level, const wstring &name) : LivingEntity( level )
 	Pos *spawnPos = level->getSharedSpawnPos();
 	moveTo(spawnPos->x + 0.5, spawnPos->y + 1, spawnPos->z + 0.5, 0, 0);
 	delete spawnPos;
+	lastChangedBlockPos = BlockPos(x, y, z);
 
 	rotOffs = 180;
 	flameTime = 20;
@@ -329,6 +330,13 @@ void Player::tick()
 	}
 
 	LivingEntity::tick();
+
+	BlockPos currentBlockPos(Mth::floor(x), Mth::floor(y), Mth::floor(z));
+	if (currentBlockPos != lastChangedBlockPos)
+	{
+		lastChangedBlockPos = currentBlockPos;
+		onChangedBlock(currentBlockPos);
+	}
 
 	if (!level->isClientSide)
 	{
@@ -622,6 +630,14 @@ void Player::handleEntityEvent(byte id)
 bool Player::isImmobile()
 {
 	return getHealth() <= 0 || isSleeping();
+}
+
+void Player::onChangedBlock(BlockPos pos)
+{
+	if (true /*!isSpectator()*/) // spectator is not a thing yet
+	{
+		LivingEntity::onChangedBlock(pos);
+	}
 }
 
 void Player::closeContainer()
