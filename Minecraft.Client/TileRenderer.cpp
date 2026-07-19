@@ -458,6 +458,13 @@ bool TileRenderer::tesselateInWorld( Tile* tt, int x, int y, int z, int forceDat
 	case Tile::SHAPE_HOPPER:
 		retVal = tesselateHopperInWorld(tt, x, y, z);
 		break;
+	case Tile::SHAPE_ENTITYTILE_ANIMATED:
+		if (hasFixedTexture())
+		{
+			setShape(tt);
+			retVal = tesselateBlockInWorld(tt, x, y, z, 0x3f);
+		}
+		break;
 	};
 
 
