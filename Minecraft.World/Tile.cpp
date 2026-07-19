@@ -592,7 +592,7 @@ void Tile::staticCtor()
 	Tile::frosted_ice = static_cast<FrostedIceTile*>((new FrostedIceTile(frosted_ice_Id))->setDestroyTime(0.5f)->setLightBlock(3)->setSoundType(Tile::SOUND_GLASS)->setIconName(L"ice")->setDescriptionId(IDS_TILE_FROSTED_ICE)->setUseDescriptionId(IDS_DESC_ICE)->setNotCollectStatistics());
 
 	Tile::end_bricks = (new Tile(end_bricks_Id, Material::stone))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(3.0f)->setExplodeable(9)->setSoundType(SOUND_STONE)->setIconName(L"end_bricks")->setDescriptionId(IDS_TILE_END_BRICKS)->setUseDescriptionId(IDS_DESC_STONE);
-	Tile::magma = static_cast<MagmaTile*>((new MagmaTile(magma_Id))->setBaseItemTypeAndMaterial(Item::eBaseItemType_block, Item::eMaterial_stone)->setDestroyTime(0.5f)->setExplodeable(6)->setSoundType(SOUND_STONE)->setIconName(L"magma")->setDescriptionId(IDS_TILE_MAGMA)->setUseDescriptionId(IDS_DESC_MAGMA));
+	Tile::magma = static_cast<MagmaTile*>((new MagmaTile(magma_block_Id))->setBaseItemTypeAndMaterial(Item::eBaseItemType_block, Item::eMaterial_stone)->setDestroyTime(0.5f)->setExplodeable(6)->setSoundType(SOUND_STONE)->setIconName(L"magma")->setDescriptionId(IDS_TILE_MAGMA)->setUseDescriptionId(IDS_DESC_MAGMA));
 	Tile::nether_wart_block = (new Tile(nether_wart_block_Id, Material::grass))->setBaseItemTypeAndMaterial(Item::eBaseItemType_block, Item::eMaterial_wheat)->setDestroyTime(0.5f)->setSoundType(SOUND_WOOD)->setIconName(L"nether_wart_block")->setDescriptionId(IDS_TILE_NETHER_WART_BLOCK)->setUseDescriptionId(IDS_DESC_NETHER_WART_BLOCK);
 	Tile::red_nether_brick = (new Tile(red_nether_brick_Id, Material::stone))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(2.0f)->setExplodeable(6)->setSoundType(SOUND_STONE)->setIconName(L"red_nether_brick")->setDescriptionId(IDS_TILE_RED_NETHER_BRICK)->setUseDescriptionId(IDS_DESC_RED_NETHER_BRICK);
 	Tile::bone_block = static_cast<BoneBlockTile*>((new BoneBlockTile(bone_block_Id))->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock, Item::eMaterial_stone)->setDestroyTime(1.5f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"bone_block_side")->setDescriptionId(IDS_TILE_BONE_BLOCK)->setUseDescriptionId(IDS_DESC_BONE_BLOCK)->sendTileData());
@@ -1934,7 +1934,7 @@ const int Tile::slime_Id;
 const int Tile::beetroots_Id;
 const int Tile::grass_path_Id;
 const int Tile::end_bricks_Id;
-const int Tile::magma_Id;
+const int Tile::magma_block_Id;
 const int Tile::nether_wart_block_Id;
 const int Tile::red_nether_brick_Id;
 const int Tile::bone_block_Id;

@@ -211,9 +211,9 @@ void LivingEntity::baseTick()
 	if (!level->isClientSide && isAlive() && onGround && !isSneaking() && tickCount % 10 == 0)
 	{
 		int tileBelow = level->getTile(Mth::floor(x), Mth::floor(bb->y0) - 1, Mth::floor(z));
-		if (tileBelow == Tile::magma_Id)
+		if (tileBelow == Tile::magma_block_Id)
 		{
-			hurt(DamageSource::inFire, 1);
+			hurt(DamageSource::hotFloor, 1);
 		}
 	}
 

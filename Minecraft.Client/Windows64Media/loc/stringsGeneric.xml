@@ -6792,6 +6792,11 @@ Would you like to install the mash-up pack or texture pack now?</value>
 		<value>{*PLAYER*} burned to death</value>
 	</data>	
 
+	<data name="IDS_DEATH_HOT_FLOOR">
+		<value>{*PLAYER*} discovered the floor was lava</value>
+	</data>	
+
+
 	<data name="IDS_DEATH_LAVA">
 		<value>{*PLAYER*} tried to swim in lava</value>
 	</data>	
@@ -6902,6 +6907,10 @@ Would you like to install the mash-up pack or texture pack now?</value>
 
 	<data name="IDS_DEATH_ONFIRE_PLAYER">
 		<value>{*PLAYER*} was burnt to a crisp whilst fighting {*SOURCE*}</value>
+	</data>	
+
+	<data name="IDS_DEATH_HOT_FLOOR_PLAYER">
+		<value>{*PLAYER*} walked into the danger zone due to {*SOURCE*}</value>
 	</data>	
 
 	<data name="IDS_DEATH_LAVA_PLAYER">
