@@ -6,26 +6,27 @@
 #include "ItemInstance.h"
 #include "BannerItem.h"
 #include "BannerTileEntity.h"
+#include "com.mojang.nbt.h"
 #include "Mth.h"
 
 const unsigned int BannerItem::COLOR_DESCS[16] =
 {
-	IDS_TILE_BANNER_BLACK,
-	IDS_TILE_BANNER_RED,
-	IDS_TILE_BANNER_GREEN,
-	IDS_TILE_BANNER_BROWN,
-	IDS_TILE_BANNER_BLUE,
-	IDS_TILE_BANNER_PURPLE,
-	IDS_TILE_BANNER_CYAN,
-	IDS_TILE_BANNER_SILVER,
-	IDS_TILE_BANNER_GRAY,
-	IDS_TILE_BANNER_PINK,
-	IDS_TILE_BANNER_LIME,
-	IDS_TILE_BANNER_YELLOW,
-	IDS_TILE_BANNER_LIGHT_BLUE,
-	IDS_TILE_BANNER_MAGENTA,
-	IDS_TILE_BANNER_ORANGE,
 	IDS_TILE_BANNER_WHITE,
+	IDS_TILE_BANNER_ORANGE,
+	IDS_TILE_BANNER_MAGENTA,
+	IDS_TILE_BANNER_LIGHT_BLUE,
+	IDS_TILE_BANNER_YELLOW,
+	IDS_TILE_BANNER_LIME,
+	IDS_TILE_BANNER_PINK,
+	IDS_TILE_BANNER_GRAY,
+	IDS_TILE_BANNER_SILVER,
+	IDS_TILE_BANNER_CYAN,
+	IDS_TILE_BANNER_PURPLE,
+	IDS_TILE_BANNER_BLUE,
+	IDS_TILE_BANNER_BROWN,
+	IDS_TILE_BANNER_GREEN,
+	IDS_TILE_BANNER_RED,
+	IDS_TILE_BANNER_BLACK,
 };
 
 BannerItem::BannerItem(int id) : Item(id)
@@ -64,14 +65,38 @@ bool BannerItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> pla
 		}
 		else
 		{
-			level->setTileAndData(x, y, z, Tile::wall_banner_Id, face, Tile::UPDATE_CLIENTS);
+			level->setTileAndData(x, y, z, Tile::standing_banner_Id, face, Tile::UPDATE_CLIENTS);
 		}
 
 		shared_ptr<BannerTileEntity> bte = dynamic_pointer_cast<BannerTileEntity>(level->getTileEntity(x, y, z));
 		if (bte != nullptr)
 		{
+			if (face != 1) bte->setIsWall(true);
 			int color = 15 - (instance->getAuxValue() & 15);
 			bte->setBaseColor(color);
+
+			if (instance->hasTag())
+			{
+				CompoundTag* tag = instance->getTag();
+				if (tag->contains(L"BlockEntityTag", Tag::TAG_Compound))
+				{
+					CompoundTag* bet = tag->getCompound(L"BlockEntityTag");
+					if (bet->contains(L"Patterns"))
+					{
+						ListTag<CompoundTag>* list = static_cast<ListTag<CompoundTag>*>(
+							static_cast<void*>(bet->getList(L"Patterns")));
+						if (list)
+						{
+							for (int j = 0; j < list->size() && j < 6; j++)
+							{
+								CompoundTag* entry = list->get(j);
+								bte->addPattern(entry->getString(L"Pattern"), entry->getInt(L"Color"));
+							}
+						}
+					}
+				}
+			}
+
 			bte->setChanged();
 		}
 

@@ -7,12 +7,14 @@
 BannerTileEntity::BannerTileEntity() : TileEntity()
 {
 	baseColor = 15;
+	m_isWall = false;
 }
 
 void BannerTileEntity::save(CompoundTag *tag)
 {
 	TileEntity::save(tag);
 	tag->putInt(L"Base", baseColor);
+	tag->putByte(L"IsWall", m_isWall ? 1 : 0);
 
 	if (!patterns.empty())
 	{
@@ -32,6 +34,7 @@ void BannerTileEntity::load(CompoundTag *tag)
 {
 	TileEntity::load(tag);
 	baseColor = tag->getInt(L"Base");
+	m_isWall = tag->contains(L"IsWall") && tag->getByte(L"IsWall") != 0;
 	patterns.clear();
 
 	if (tag->contains(L"Patterns"))
@@ -65,6 +68,7 @@ shared_ptr<TileEntity> BannerTileEntity::clone()
 	shared_ptr<BannerTileEntity> result = std::make_shared<BannerTileEntity>();
 	TileEntity::clone(result);
 	result->baseColor = baseColor;
+	result->m_isWall = m_isWall;
 	result->patterns = patterns;
 	return result;
 }

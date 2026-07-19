@@ -12,6 +12,7 @@ public:
 	virtual void updateDefaultShape() override;
 	virtual bool isSolidRender(bool isServerLevel = false) override;
 	virtual bool isCubeShaped() override;
+    virtual AABB *getAABB(Level *level, int x, int y, int z);
 	virtual void neighborChanged(Level *level, int x, int y, int z, int neighborId) override;
 	virtual void registerIcons(IconRegister *iconRegister) override;
 	virtual Icon *getTexture(int face, int data) override;

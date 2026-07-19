@@ -98,8 +98,35 @@ vector<EnchantmentInstance*> EnchantmentMenu::getEnchantment() {
 void EnchantmentMenu::slotsChanged(int a) // 4J used to take a shared_ptr<Container> container but wasn't using it, so removed to simplify things
 {
 	shared_ptr<ItemInstance> item = enchantSlots->getItem(0);
-
 	shared_ptr<ItemInstance> lapis = lapisSlot->getItem(1);
+
+	bool itemChanged = false;
+	if (item == nullptr || lastEnchantmentItem == nullptr)
+	{
+		itemChanged = (item == nullptr) != (lastEnchantmentItem == nullptr);
+	}
+	else if (item->id != lastEnchantmentItem->id || item->getDamageValue() != lastEnchantmentItem->getDamageValue())
+	{
+		itemChanged = true;
+	}
+
+	if (itemChanged)
+	{
+		alreadyRan = false;
+		for (int i = 0; i < 3; ++i)
+		{
+			if (cachedEnchantments[i] != nullptr)
+			{
+				for (EnchantmentInstance *cached : *cachedEnchantments[i])
+				{
+					delete cached;
+				}
+				cachedEnchantments[i]->clear();
+				delete cachedEnchantments[i];
+				cachedEnchantments[i] = nullptr;
+			}
+		}
+	}
 
 	if (item == nullptr || !item->isEnchantable())
 	{
@@ -220,6 +247,7 @@ void EnchantmentMenu::slotsChanged(int a) // 4J used to take a shared_ptr<Contai
 	}
 
 	wasLapis = lapis != nullptr;
+	lastEnchantmentItem = item;
 }
 
 bool EnchantmentMenu::clickMenuButton(shared_ptr<Player> player, int i)
@@ -257,6 +285,7 @@ bool EnchantmentMenu::clickMenuButton(shared_ptr<Player> player, int i)
 					delete e;
 				}
 				delete newEnchantment;
+				cachedEnchantments[i] = nullptr;
 				slotsChanged(1);// Removed enchantSlots parameter as the function can reference it directly
 			}
 		}

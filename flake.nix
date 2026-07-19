@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     fourjlibs = {
-      url = "github:Patoke/4JLibs";
+      url = "git+https://git.neolegacy.dev/neoStudiosLCE/4JLibs";
       flake = false;
     };
   };

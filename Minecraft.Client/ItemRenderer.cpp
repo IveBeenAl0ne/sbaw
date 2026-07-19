@@ -98,11 +98,11 @@ void ItemRenderer::render(shared_ptr<Entity> _itemEntity, double x, double y, do
 	}
 	else if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
 	{
-		int baseColor = item->getAuxValue() & 15;
+		int baseColor = 15 - (item->getAuxValue() & 15);
 		glRotatef(spin, 0.0f, 1.0f, 0.0f);
 		const float s = 0.18f;
 		glScalef(s, -s, -s);
-		BannerRenderer::instance->renderBannerForHand(1.0f, baseColor);
+		BannerRenderer::instance->renderBannerForHand(1.0f, baseColor, item);
 	}
 	else if ((item->getIconType() == Icon::TYPE_TERRAIN && tile != nullptr && TileRenderer::canRender(tile->getRenderShape())) && item->id != Tile::barrier_Id)
 	{
@@ -415,8 +415,8 @@ void ItemRenderer::renderGuiItem(Font *font, Textures *textures, shared_ptr<Item
 
 	if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
 	{
-		int baseColor = item->getAuxValue() & 15;
-		BannerRenderer::instance->renderBannerForGui(x, y, fScaleX, fScaleY, fAlpha, baseColor);
+		int baseColor = 15 - (item->getAuxValue() & 15);
+		BannerRenderer::instance->renderBannerForGui(x, y, fScaleX, fScaleY, fAlpha, baseColor, item);
 		return;
 	}
 	

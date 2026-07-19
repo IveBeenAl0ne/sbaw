@@ -21,17 +21,17 @@
     "fourjlibs": {
       "flake": false,
       "locked": {
-        "lastModified": 1777358628,
-        "narHash": "sha256-yV/ugauN5L4FFC88N4CJI01iTOKYBeim8UQ3Usy2vI0=",
-        "owner": "Patoke",
-        "repo": "4JLibs",
-        "rev": "8fb036f6d6ca5aa5aa2e20633638d6232a58d508",
-        "type": "github"
+        "lastModified": 1784260943,
+        "narHash": "sha256-fi9IqjL1W7kR7IdOrH5ldTRMML9Kig8NPIjg5u2FXoE=",
+        "ref": "refs/heads/master",
+        "rev": "14abb6020734f58557a2dad3fa28f0821b2d5533",
+        "revCount": 89,
+        "type": "git",
+        "url": "https://git.neolegacy.dev/neoStudiosLCE/4JLibs"
       },
       "original": {
-        "owner": "Patoke",
-        "repo": "4JLibs",
-        "type": "github"
+        "type": "git",
+        "url": "https://git.neolegacy.dev/neoStudiosLCE/4JLibs"
       }
     },
     "nixpkgs": {

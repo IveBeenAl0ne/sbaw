@@ -18,6 +18,7 @@ public:
 
 private:
 	int baseColor;
+	bool m_isWall;
 	vector<BannerPattern> patterns;
 
 public:
@@ -26,6 +27,9 @@ public:
 
 	int getBaseColor() const { return baseColor; }
 	void setBaseColor(int color) { baseColor = color; }
+
+	bool isWall() const { return m_isWall; }
+	void setIsWall(bool wall) { m_isWall = wall; }
 
 	const vector<BannerPattern> &getPatterns() const { return patterns; }
 	void addPattern(const wstring &pattern, int color) { patterns.push_back({ pattern, color }); }

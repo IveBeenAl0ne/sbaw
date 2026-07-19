@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "net.minecraft.world.level.h"
+#include "net.minecraft.world.phys.h"
 #include "Material.h"
 #include "IconRegister.h"
 #include "Facing.h"
@@ -22,6 +23,11 @@ bool GrassPathTile::isSolidRender(bool isServerLevel)
 bool GrassPathTile::isCubeShaped()
 {
 	return false;
+}
+
+AABB *GrassPathTile::getAABB(Level *level, int x, int y, int z)
+{
+	return AABB::newTemp(x + 0, y + 0, z + 0, x + 1, y + 1, z + 1);
 }
 
 void GrassPathTile::registerIcons(IconRegister *iconRegister)

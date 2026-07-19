@@ -81,8 +81,12 @@ const char *wstringtofilename(const wstring& name)
 #else
 		if(c=='/') c='\\';
 #endif
-		assert(c<128);	// Will we have to do any conversion of non-ASCII characters in filenames?
-		buf[i] = static_cast<char>(c);
+		// assert(c<128);	// Will we have to do any conversion of non-ASCII characters in filenames?
+		if (c >= 128) {
+			printf("Non-ASCII character in filename: %lc\n", c);
+			c = '?';
+		}
+		// buf[i] = static_cast<char>(c); does nothing
 		buf.push_back(static_cast<char>(c));
 	}
 	return buf.c_str();

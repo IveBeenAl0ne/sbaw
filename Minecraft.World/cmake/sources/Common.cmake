@@ -1199,6 +1199,8 @@ source_group("net/minecraft/world/item/alchemy" FILES ${_MINECRAFT_WORLD_COMMON_
 set(_MINECRAFT_WORLD_COMMON_NET_MINECRAFT_WORLD_ITEM_CRAFTING
   "${CMAKE_CURRENT_SOURCE_DIR}/ArmorDyeRecipe.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ArmorDyeRecipe.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BannerPatternRecipe.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BannerPatternRecipe.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ArmorRecipes.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ArmorRecipes.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ClothDyeRecipes.cpp"

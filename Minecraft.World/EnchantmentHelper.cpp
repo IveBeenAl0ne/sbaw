@@ -481,6 +481,11 @@ unordered_map<int, EnchantmentInstance *> *EnchantmentHelper::getAvailableEnchan
 			continue;
 		}
 
+		if (e->isTreasureOnly())
+		{
+			continue;
+		}
+
 		// Only picks "normal" enchantments, no specialcases
 		if (!e->category->canEnchant(item) && !isBook)
 		{

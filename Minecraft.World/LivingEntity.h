@@ -203,6 +203,7 @@ public:
 	virtual bool onLadder();
 	virtual bool isShootable();
 	virtual bool isAlive();
+	virtual void onChangedBlock(BlockPos pos);
 	virtual void causeFallDamage(float distance);
 	virtual void animateHurt();
 	virtual int getArmorValue();
