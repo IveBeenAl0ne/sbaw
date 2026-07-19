@@ -135,6 +135,7 @@ public:
 	void startElytraSound(float x, float y, float z, float volume, float pitch);
 	void stopElytraSound();
     void playStreaming(const wstring& name, float x, float y , float z, float volume, float pitch, bool bMusicDelay=true) override;
+	void stopStreamingNow();
     void playUI(int iSound, float volume, float pitch) override;
     void playMusicTick() override;
     void updateMusicVolume(float fVal) override;

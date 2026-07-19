@@ -80,5 +80,12 @@ void PlainsBiome::decorate(Level* level, Random* rand, int xo, int zo)
                 DOUBLE_PLANT_GENERATOR->place(level, rand, j1, l1, k1);
             }
         }
-    Biome::decorate(level, rand, xo, zo); 
+    if (rand->nextInt(10) == 0)
+        decorator->treeCount = 1;
+    else
+        decorator->treeCount = 0;
+
+    Biome::decorate(level, rand, xo, zo);
+
+    decorator->treeCount = -999;
 }

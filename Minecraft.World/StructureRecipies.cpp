@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "net.minecraft.world.item.h"
 #include "net.minecraft.world.level.tile.h"
+#include "DyePowderItem.h"
 #include "Recipy.h"
 #include "Recipes.h"
 #include "StructureRecipies.h"
@@ -15,6 +16,20 @@ void StructureRecipies::addRecipes(Recipes *r)
 		L'#', Tile::sand,
 		L'S');
 
+
+	r->addShapedRecipy(new ItemInstance((Tile*)Tile::bone_block, 1), //
+		L"sssczg",
+		L"###", //
+		L"###", //
+		L"###", //
+
+		L'#', new ItemInstance(Item::dye, 1, DyePowderItem::WHITE),
+		L'S');
+
+	r->addShapelessRecipy(new ItemInstance(Item::dye, 9, DyePowderItem::WHITE), //
+		L"tg",
+		(Tile*)Tile::bone_block,
+		L'D');
 
 	r->addShapedRecipy(new ItemInstance(Tile::sandStone, 4, SandStoneTile::TYPE_SMOOTHSIDE), //
 		L"ssczg",

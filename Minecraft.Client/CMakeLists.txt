@@ -70,9 +70,9 @@ set_source_files_properties(compat_shims.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS 
 
 configure_compiler_target(Minecraft.Client)
 
-set(MINECRAFT_CLIENT_USE_4J_DEBUG_LIBS TRUE)
-if(CMAKE_CROSSCOMPILING AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  set(MINECRAFT_CLIENT_USE_4J_DEBUG_LIBS FALSE)
+if(PLATFORM_NAME STREQUAL "Windows64")
+  target_compile_options(Minecraft.Client PRIVATE $<$<CONFIG:Release>:/Zi>)
+  target_link_options(Minecraft.Client PRIVATE $<$<CONFIG:Release>:/DEBUG /OPT:REF /OPT:ICF>)
 endif()
 
 set_target_properties(Minecraft.Client PROPERTIES
@@ -80,34 +80,20 @@ set_target_properties(Minecraft.Client PROPERTIES
   VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:Minecraft.Client>"
 )
 
-if(MINECRAFT_CLIENT_USE_4J_DEBUG_LIBS)
-  target_link_libraries(Minecraft.Client PRIVATE
-    Minecraft.World
-    d3d11
-    dxgi
-    d3dcompiler
-    XInput9_1_0
-    wsock32
-    legacy_stdio_definitions
-    4JLibs.${PLATFORM_NAME}.Input
-    4JLibs.${PLATFORM_NAME}.Profile
-    4JLibs.${PLATFORM_NAME}.Storage
-    4JLibs.${PLATFORM_NAME}.Render
-  )
-else()
-  target_link_libraries(Minecraft.Client PRIVATE
-    Minecraft.World
-    d3d11
-    dxgi
-    d3dcompiler
-    XInput9_1_0
-    wsock32
-    legacy_stdio_definitions
-    "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}/4JLibs/libs/4J_Input.lib"
-    "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}/4JLibs/libs/4J_Storage.lib"
-    "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}/4JLibs/libs/4J_Render_PC.lib"
-  )
-endif()
+target_link_libraries(Minecraft.Client PRIVATE
+  Minecraft.World
+  d3d11
+  dxgi
+  d3dcompiler
+  XInput9_1_0
+  wsock32
+  dbghelp
+  legacy_stdio_definitions
+  4JLibs.${PLATFORM_NAME}.Input
+  4JLibs.${PLATFORM_NAME}.Profile
+  4JLibs.${PLATFORM_NAME}.Storage
+  4JLibs.${PLATFORM_NAME}.Render
+)
 
 # Iggy libs
 foreach(lib IN LISTS IGGY_LIBS)
@@ -125,6 +111,19 @@ set(ASSET_FOLDER_PAIRS
   "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}Media"  "${PLATFORM_NAME}Media"
 )
 setup_asset_folder_copy(Minecraft.Client "${ASSET_FOLDER_PAIRS}")
+
+set(LOOT_TABLES_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/Common/Media/MediaWindows64/Structures/loot_tables")
+set(LOOT_TABLES_DEST "$<TARGET_FILE_DIR:Minecraft.Client>/Common/Media/MediaWindows64/Structures/loot_tables")
+add_custom_target(AssetLootTablesCopy_Minecraft.Client ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${LOOT_TABLES_DEST}"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+    "${LOOT_TABLES_SOURCE}"
+    "${LOOT_TABLES_DEST}"
+  COMMENT "Copying loot table XML assets into build folder..."
+  VERBATIM
+)
+add_dependencies(Minecraft.Client AssetLootTablesCopy_Minecraft.Client)
+set_property(TARGET AssetLootTablesCopy_Minecraft.Client PROPERTY FOLDER "Build")
 
 # copy prebuilt loc folder and use it lmao
 if(PLATFORM_NAME STREQUAL "Windows64")
@@ -152,4 +151,3 @@ add_copyredist_target(Minecraft.Client)
 if(PLATFORM_NAME STREQUAL "Windows64")
   add_gamehdd_target(Minecraft.Client)
 endif()
-

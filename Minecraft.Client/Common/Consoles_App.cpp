@@ -2175,10 +2175,9 @@ void CMinecraftApp::SetGameSettings(int iPad,eGameSetting eVal,unsigned char ucV
 		}
 		break;
 	case eGameSetting_ControlType:
-		if((GameSettingsA[iPad]->uiBitmaskValues & 0x00070000) != ((ucVal & 0x07) << 16))
+		if(GameSettingsA[iPad]->ucControlType != (ucVal & 0x07))
 		{
-			GameSettingsA[iPad]->uiBitmaskValues &= ~0x00070000;
-			GameSettingsA[iPad]->uiBitmaskValues |= (ucVal & 0x07) << 16;
+			GameSettingsA[iPad]->ucControlType = static_cast<unsigned char>(ucVal & 0x07);
 			GameSettingsA[iPad]->bSettingsChanged = true;
 		}
 		break;
@@ -2799,7 +2798,7 @@ unsigned char CMinecraftApp::GetGameSettings(int iPad,eGameSetting eVal)
 	case eGameSetting_ExclusiveFullscreen:
 		return (GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_EXCLUSIVEFULLSCREEN)>>25;
 	case eGameSetting_ControlType:
-		return (GameSettingsA[iPad]->uiBitmaskValues & 0x00070000) >> 16;
+		return GameSettingsA[iPad]->ucControlType;
 
 	case eGameSetting_SafeCam:
 		return (GameSettingsA[iPad]->uiBitmaskValues & GAMESETTING_SAFECAM) >> 30;
@@ -10446,7 +10445,7 @@ void CMinecraftApp::getLocale(vector<wstring> &vecWstrLocales)
 		locales.push_back(eMCLang_zhCN);
 		break;
 
-#if defined __PS3__ || defined __ORBIS__ || defined __PSVITA__ || defined _DURANGO
+#if defined __PS3__ || defined __ORBIS__ || defined __PSVITA__ || defined _DURANGO || defined _WINDOWS64
 	case XC_LANGUAGE_DANISH:
 		locales.push_back(eMCLang_daDA);
 		locales.push_back(eMCLang_daDK);

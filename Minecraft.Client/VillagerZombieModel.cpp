@@ -41,6 +41,10 @@ void VillagerZombieModel::_init(float g, float yOffset, bool isArmor)
 		pants1->addBox(0, 0, 0, 0, 0, 0, g);
 		pants1->setPos(0, 0 + yOffset, 0);
 
+		jacket = new ModelPart(this, 40, 16);
+		jacket->addBox(0, 0, 0, 0, 0, 0, g);
+		jacket->setPos(0, 0 + yOffset, 0);
+
 		delete arm1;
 		arm1 = new ModelPart(this, 40, 16);
 		arm1->bMirror = true;

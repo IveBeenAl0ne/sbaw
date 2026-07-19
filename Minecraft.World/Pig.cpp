@@ -133,6 +133,7 @@ int Pig::getDeathLoot()
 	return Item::porkchop_Id;
 }
 
+/*
 void Pig::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	int count = random->nextInt(3) + 1 + random->nextInt(1 + playerBonusLevel);
@@ -150,6 +151,7 @@ void Pig::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 	}
 	if (hasSaddle()) spawnAtLocation(Item::saddle_Id, 1);
 }
+*/
 
 bool Pig::hasSaddle() 
 {

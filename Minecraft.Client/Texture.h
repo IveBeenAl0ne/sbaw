@@ -82,6 +82,7 @@ public:
 	void writeAsPNG(const wstring &filename);
 	void blit(int x, int y, Texture *source);
 	void blit(int x, int y, Texture *source, bool rotated);
+	void blitInterpolated(int x, int y, Texture *srcA, Texture *srcB, float t);
 	void transferFromBuffer(intArray buffer);
 	void transferFromImage(BufferedImage *image);
 	int getManagerId();

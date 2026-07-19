@@ -49,10 +49,7 @@ void Animal::aiStep()
 		setInLoveValue(getInLoveValue()-1);
 		if (getInLoveValue() % 10 == 0)
 		{
-			double xa = random->nextGaussian() * 0.02;
-			double ya = random->nextGaussian() * 0.02;
-			double za = random->nextGaussian() * 0.02;
-			level->addParticle(eParticleType_heart, x + random->nextFloat() * bbWidth * 2 - bbWidth, y + .5f + random->nextFloat() * bbHeight, z + random->nextFloat() * bbWidth * 2 - bbWidth, xa, ya, za);
+			level->broadcastEntityEvent(shared_from_this(), EntityEvent::IN_LOVE_HEARTS);
 		}
 	}
 	else
@@ -106,7 +103,7 @@ void Animal::checkHurtTarget(shared_ptr<Entity> target, float d)
 				loveTime++;
 				if (loveTime % 4 == 0)
 				{
-					level->addParticle(eParticleType_heart, x + random->nextFloat() * bbWidth * 2 - bbWidth, y + .5f + random->nextFloat() * bbHeight, z + random->nextFloat() * bbWidth * 2 - bbWidth, 0, 0, 0);
+					level->broadcastEntityEvent(shared_from_this(), EntityEvent::IN_LOVE_HEARTS);
 				}
 
 				if (loveTime == 20 * 3) breedWith(a);
@@ -145,13 +142,7 @@ void Animal::breedWith(shared_ptr<Animal> target)
 		offspring->setAge(-20 * 60 * 20);
 		offspring->moveTo(x, y, z, yRot, xRot);
 		offspring->setDespawnProtected();
-		for (int i = 0; i < 7; i++)
-		{
-			double xa = random->nextGaussian() * 0.02;
-			double ya = random->nextGaussian() * 0.02;
-			double za = random->nextGaussian() * 0.02;
-			level->addParticle(eParticleType_heart, x + random->nextFloat() * bbWidth * 2 - bbWidth, y + .5f + random->nextFloat() * bbHeight, z + random->nextFloat() * bbWidth * 2 - bbWidth, xa, ya, za);
-		}
+		level->broadcastEntityEvent(shared_from_this(), EntityEvent::IN_LOVE_HEARTS);
 		level->addEntity(offspring);
 
 		level->addEntity(std::make_shared<ExperienceOrb>(level, x, y, z, random->nextInt(4) + 1));

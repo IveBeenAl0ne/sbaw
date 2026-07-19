@@ -12,6 +12,8 @@ public:
     static const int DROP_ALL_ITEMS;
     static const int DROP_ITEM;
 	static const int RELEASE_USE_ITEM;
+	static const int ELYTRA_IMPACT;
+	static const int ELYTRA_FALL_DAMAGE;
 
 	int x, y, z, face, action;
 

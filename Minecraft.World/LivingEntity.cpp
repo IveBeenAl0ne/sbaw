@@ -33,6 +33,8 @@
 #include "Dimension.h"
 #include "GenericStats.h"
 #include "ItemEntity.h"
+#include "TilePos.h"
+
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 #include "../Minecraft.Server/FourKitBridge.h"
 #endif
@@ -211,9 +213,9 @@ void LivingEntity::baseTick()
 	if (!level->isClientSide && isAlive() && onGround && !isSneaking() && tickCount % 10 == 0)
 	{
 		int tileBelow = level->getTile(Mth::floor(x), Mth::floor(bb->y0) - 1, Mth::floor(z));
-		if (tileBelow == Tile::magma_Id)
+		if (tileBelow == Tile::magma_block_Id)
 		{
-			hurt(DamageSource::inFire, 1);
+			hurt(DamageSource::hotFloor, 1);
 		}
 	}
 
@@ -296,17 +298,7 @@ void LivingEntity::baseTick()
 	tickEffects();
 
 	animStepO = animStep;
-
-	if (!level->isClientSide && isAlive())
-	{
-		int frostWalkerLevel = EnchantmentHelper::getFrostWalker(dynamic_pointer_cast<LivingEntity>(shared_from_this()));
-		if (frostWalkerLevel > 0)
-		{
-			FrostWalkerEnchantment::freezeNearby(dynamic_pointer_cast<LivingEntity>(shared_from_this()), level,
-				Mth::floor(x), Mth::floor(y), Mth::floor(z), frostWalkerLevel);
-		}
-	}
-
+	
 	yBodyRotO = yBodyRot;
 	yHeadRotO = yHeadRot;
 	yRotO = yRot;
@@ -753,23 +745,28 @@ void LivingEntity::removeEffect(int effectId)
 void LivingEntity::onEffectAdded(MobEffectInstance *effect)
 {
 	effectsDirty = true;
-	if (!level->isClientSide) MobEffect::effects[effect->getId()]->addAttributeModifiers(dynamic_pointer_cast<LivingEntity>(shared_from_this()), getAttributes(), effect->getAmplifier());
+	int _id0 = effect->getId();
+	if (!level->isClientSide && _id0 >= 0 && _id0 < MobEffect::NUM_EFFECTS && MobEffect::effects[_id0])
+		MobEffect::effects[_id0]->addAttributeModifiers(dynamic_pointer_cast<LivingEntity>(shared_from_this()), getAttributes(), effect->getAmplifier());
 }
 
 void LivingEntity::onEffectUpdated(MobEffectInstance *effect, bool doRefreshAttributes)
 {
 	effectsDirty = true;
-	if (doRefreshAttributes && !level->isClientSide)
+	int _id1 = effect->getId();
+	if (doRefreshAttributes && !level->isClientSide && _id1 >= 0 && _id1 < MobEffect::NUM_EFFECTS && MobEffect::effects[_id1])
 	{
-		MobEffect::effects[effect->getId()]->removeAttributeModifiers(dynamic_pointer_cast<LivingEntity>(shared_from_this()), getAttributes(), effect->getAmplifier());
-		MobEffect::effects[effect->getId()]->addAttributeModifiers(dynamic_pointer_cast<LivingEntity>(shared_from_this()), getAttributes(), effect->getAmplifier());
+		MobEffect::effects[_id1]->removeAttributeModifiers(dynamic_pointer_cast<LivingEntity>(shared_from_this()), getAttributes(), effect->getAmplifier());
+		MobEffect::effects[_id1]->addAttributeModifiers(dynamic_pointer_cast<LivingEntity>(shared_from_this()), getAttributes(), effect->getAmplifier());
 	}
 }
 
 void LivingEntity::onEffectRemoved(MobEffectInstance *effect)
 {
 	effectsDirty = true;
-	if (!level->isClientSide) MobEffect::effects[effect->getId()]->removeAttributeModifiers(dynamic_pointer_cast<LivingEntity>(shared_from_this()), getAttributes(), effect->getAmplifier());
+	int _id2 = effect->getId();
+	if (!level->isClientSide && _id2 >= 0 && _id2 < MobEffect::NUM_EFFECTS && MobEffect::effects[_id2])
+		MobEffect::effects[_id2]->removeAttributeModifiers(dynamic_pointer_cast<LivingEntity>(shared_from_this()), getAttributes(), effect->getAmplifier());
 }
 
 void LivingEntity::heal(float heal)
@@ -1068,6 +1065,21 @@ int LivingEntity::getCriticalSound()
 int LivingEntity::getDeathSound()
 {
 	return eSoundType_DAMAGE_HURT;
+}
+
+// frost walker-specific
+
+void LivingEntity::onChangedBlock(BlockPos pos)
+{
+	shared_ptr<LivingEntity> self = dynamic_pointer_cast<LivingEntity>(shared_from_this());
+
+	int frostWalkerLevel = EnchantmentHelper::getEnchantmentLevel(Enchantment::frostWalker->id, getEquipmentSlots());
+	if (frostWalkerLevel < 1)
+	{
+		return;
+	}
+
+	FrostWalkerEnchantment::onEntityMoved(self, level, pos, frostWalkerLevel);
 }
 
 /**

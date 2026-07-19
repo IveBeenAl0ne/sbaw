@@ -48,6 +48,8 @@ void Recipes::_init()
 
 void Recipes::_compileRecipes()
 {
+	recipies->push_back(new BannerPatternRecipe());
+
 	addShapedRecipy(new ItemInstance(Tile::wood, 4, 0), //
 		L"sczg",
 		L"#", //
@@ -516,6 +518,58 @@ void Recipes::_compileRecipes()
 
 		L'#', Tile::snow,
 		L'S');
+
+addShapedRecipy(new ItemInstance(Tile::red_nether_brick, 1), //
+		L"sscicig",
+		L"WB", //
+		L"BW", //
+
+		L'W', Item::netherwart_seeds, L'B', new ItemInstance(Item::nether_brick_Id, 1, 0),
+		L'S');
+
+	addShapedRecipy(new ItemInstance(Tile::end_bricks, 4), //
+		L"ssctg",
+		L"##", //
+		L"##", //
+
+		L'#', Tile::endStone,
+		L'S');
+
+	addShapedRecipy(new ItemInstance(Tile::nether_wart_block, 1), //
+		L"ssscig",
+		L"###", //
+		L"###", //
+		L"###", //
+
+		L'#', Item::netherwart_seeds,
+		L'D');
+
+	addShapedRecipy(new ItemInstance((Tile*)Tile::magma, 1), //
+		L"sscig",
+		L"##", //
+		L"##", //
+
+		L'#', Item::magma_cream,
+		L'D');
+
+	addShapedRecipy(new ItemInstance(Tile::slimeBlock, 1), //
+		L"ssscig",
+		L"###", //
+		L"###", //
+		L"###", //
+
+		L'#', Item::slime_ball,
+		L'D');
+
+	addShapedRecipy(new ItemInstance(Item::slime_ball, 9), //
+		L"sctg",
+		L"#", //
+
+		L'#', Tile::slimeBlock,
+		L'D');
+
+
+
 
 	addShapedRecipy(new ItemInstance(Tile::clay, 1), //
 		L"sscig",
@@ -1582,6 +1636,7 @@ void Recipes::loadFromPacket(byteArray packetData)
 	DataInputStream input(&bais);
 
 	this->_wipeRecipes();
+	recipies->push_back(new BannerPatternRecipe());
 	{
 		int iCount = input.readInt();
 		for (int i = 0; i < iCount; i++) {

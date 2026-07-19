@@ -17,6 +17,7 @@ public:
 public:
 	shared_ptr<Container> enchantSlots;
 	shared_ptr<Container> lapisSlot;
+	shared_ptr<ItemInstance> lastEnchantmentItem;
 	bool alreadyRan = false;
 	bool en = false;
 	// Header

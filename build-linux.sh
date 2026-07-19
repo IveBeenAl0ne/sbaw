@@ -31,14 +31,20 @@ check_deps() {
 
 fetch_winsdk() {
     local splat_dir="$XWIN_CACHE/splat"
+
     if [[ -d "$splat_dir" ]]; then
-        info "Using cached Windows SDK at $splat_dir"
-        return
+        if [[ -f "$splat_dir/sdk/lib/ucrt/x86_64/libucrtd.lib" ]]; then
+            info "Using cached Windows SDK at $splat_dir"
+            return
+        else
+            warn "Cached Windows SDK at $splat_dir is missing debug CRT libs, re-fetching..."
+            rm -rf "$splat_dir"
+        fi
     fi
 
     info "Downloading Windows SDK and CRT via xwin..."
     mkdir -p "$XWIN_CACHE"
-    xwin --accept-license splat --output "$splat_dir"
+    xwin --accept-license splat --include-debug-libs --output "$splat_dir"
     success "Windows SDK downloaded"
 }
 
@@ -78,7 +84,14 @@ do_cmake_configure() {
     local winsdk="$XWIN_CACHE/splat"
     local toolchain
     toolchain="$(write_toolchain)"
-    local c_flags="/MT -w -Wno-non-pod-varargs -fms-compatibility -fms-extensions --target=x86_64-pc-windows-msvc \
+    local crt_flag="/MT"
+    local msvc_runtime="MultiThreaded"
+    if [[ "$BUILD_TYPE" == "Debug" ]]; then
+        crt_flag="/MTd"
+        msvc_runtime="MultiThreadedDebug"
+    fi
+
+    local c_flags="$crt_flag -Wno-non-pod-varargs -fms-compatibility -fms-extensions --target=x86_64-pc-windows-msvc \
 -imsvc $winsdk/crt/include \
 -imsvc $winsdk/sdk/include/ucrt \
 -imsvc $winsdk/sdk/include/um \
@@ -107,7 +120,7 @@ do_cmake_configure() {
         -DPLATFORM_NAME="Windows64" \
         -DIGGY_LIBS="iggy_w64.lib;iggyperfmon_w64.lib;iggyexpruntime_w64.lib" \
         -DCMAKE_SYSTEM_NAME=Windows \
-        -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded \
+        -DCMAKE_MSVC_RUNTIME_LIBRARY="$msvc_runtime" \
         -DCMAKE_C_FLAGS="$c_flags" \
         -DCMAKE_CXX_FLAGS="$c_flags" \
         -DCMAKE_ASM_MASM_FLAGS="-m64" \
@@ -264,7 +277,7 @@ LAUNCHER
 }
 
 main() {
-    BUILD_DIR="$SOURCE_DIR/build/windows64-clang"
+    BUILD_DIR="$SOURCE_DIR/build/windows64-clang-${BUILD_TYPE,,}"
     mkdir -p "$BUILD_DIR"
     info "LegacyEvolved LCE v$VERSION build script"
     info "Source: $SOURCE_DIR | Type: $BUILD_TYPE"

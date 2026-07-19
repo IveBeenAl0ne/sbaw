@@ -417,7 +417,7 @@ public:
 	static const int packed_ice_Id = 174;
 	static const int double_plant_Id = 175;
 	static const int standing_banner_Id = 176;
-	static const int wall_banner_Id = 177;
+	static const int wall_banner_Id = 176;
 	static const int daylight_detector_inverted_Id = 178;
 	static const int red_sandstone_Id = 179;
 	static const int red_sandstone_stairs_Id = 180;
@@ -451,7 +451,7 @@ public:
 	static const int grass_path_Id = 208;
 	//end_gateway		209
 	static const int frosted_ice_Id = 212;
-	static const int magma_Id = 213;
+	static const int magma_block_Id = 213;
 	static const int nether_wart_block_Id = 214;
 	static const int red_nether_brick_Id = 215;
 	static const int bone_block_Id = 216;

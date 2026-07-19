@@ -70,8 +70,9 @@ wstring convStringToWstring(const string& converting)
 // to save having to clear it up everywhere this is used.
 const char *wstringtofilename(const wstring& name)
 {
-	static char buf[256];
-	assert(name.length()<256);
+	static std::string buf;
+	buf.clear();
+	buf.reserve(name.length());
 	for(unsigned int i = 0; i < name.length(); i++ )
 	{
 		wchar_t c = name[i];
@@ -80,25 +81,29 @@ const char *wstringtofilename(const wstring& name)
 #else
 		if(c=='/') c='\\';
 #endif
-		assert(c<128);	// Will we have to do any conversion of non-ASCII characters in filenames?
-		buf[i] = static_cast<char>(c);
+		// assert(c<128);	// Will we have to do any conversion of non-ASCII characters in filenames?
+		if (c >= 128) {
+			printf("Non-ASCII character in filename: %lc\n", c);
+			c = '?';
+		}
+		// buf[i] = static_cast<char>(c); does nothing
+		buf.push_back(static_cast<char>(c));
 	}
-	buf[name.length()] = 0;
-	return buf;
+	return buf.c_str();
 }
 
 const char *wstringtochararray(const wstring& name)
 {
-	static char buf[256];
-	assert(name.length()<256);
+	static std::string buf;
+	buf.clear();
+	buf.reserve(name.length());
 	for(unsigned int i = 0; i < name.length(); i++ )
 	{
 		wchar_t c = name[i];
 		assert(c<128);	// Will we have to do any conversion of non-ASCII characters in filenames?
-		buf[i] = static_cast<char>(c);
+		buf.push_back(static_cast<char>(c));
 	}
-	buf[name.length()] = 0;
-	return buf;
+	return buf.c_str();
 }
 
 wstring filenametowstring(const char *name)

@@ -10,6 +10,7 @@ public:
 	bool mayfly;
 	bool instabuild;
 	bool mayBuild;
+	bool spectatorMode;
 
 private:
 	float flyingSpeed;

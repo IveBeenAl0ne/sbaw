@@ -25,7 +25,7 @@ protected:
 	virtual float getSoundVolume();
 	virtual int getDeathLoot();
 	virtual void playStepSound(int xt, int yt, int zt, int t);
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	virtual bool mobInteract(shared_ptr<Player> player);

@@ -14,3 +14,4 @@
 #include "StructureRecipies.h"
 #include "ToolRecipies.h"
 #include "WeaponRecipies.h"
+#include "BannerPatternRecipe.h"

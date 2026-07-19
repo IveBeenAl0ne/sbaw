@@ -143,6 +143,10 @@ static std::wstring FormatDeathMessage(const shared_ptr<ChatPacket>& packet)
 		message = app.GetString(IDS_DEATH_FELL_ASSIST_ITEM); replacePlayer = true; replaceEntitySource = true; replaceItem = true; break;
 	case ChatPacket::e_ChatDeathFellFinishItem:
 		message = app.GetString(IDS_DEATH_FELL_FINISH_ITEM); replacePlayer = true; replaceEntitySource = true; replaceItem = true; break;
+	case ChatPacket::e_ChatDeathHotFloor:
+		message = app.GetString(IDS_DEATH_HOT_FLOOR); replacePlayer = true; break;
+	case ChatPacket::e_ChatDeathHotFloorPlayer:
+		message = app.GetString(IDS_DEATH_HOT_FLOOR_PLAYER); replacePlayer = true; replaceEntitySource = true; break;
 	default:
 		message = app.GetString(IDS_DEATH_GENERIC); replacePlayer = true; break;
 	}
@@ -191,6 +195,7 @@ ServerPlayer::ServerPlayer(MinecraftServer *server, Level *level, const wstring&
 	connection = nullptr;
 	lastMoveX = lastMoveZ = 0;
 	spewTimer = 0;
+	m_spectatorMode = false;
 	lastRecordedHealthAndAbsorption = FLT_MIN;
 	lastSentHealth = -99999999;
 	lastSentFood = -99999999;
@@ -383,6 +388,14 @@ void ServerPlayer::setDefaultHeadHeight()
 float ServerPlayer::getHeadHeight()
 {
 	return 1.62f;
+}
+
+void ServerPlayer::onChangedBlock(BlockPos pos)
+{
+	if (true /*!isSpectator()*/) // we dont have true spectator mode yet
+	{
+		LivingEntity::onChangedBlock(pos);
+	}
 }
 
 void ServerPlayer::tick()

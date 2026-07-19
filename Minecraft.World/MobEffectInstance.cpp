@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "net.minecraft.world.effect.h"
 
+static MobEffect *safeEffect(int id)
+{
+    if (id < 0 || id >= MobEffect::NUM_EFFECTS) return nullptr;
+    return MobEffect::effects[id];
+}
+
 void MobEffectInstance::_init(int id, int duration, int amplifier)
 {
 	this->id = id;
@@ -104,7 +110,8 @@ bool MobEffectInstance::tick(shared_ptr<LivingEntity> target)
 {
 	if (duration > 0)
 	{
-		if (MobEffect::effects[id]->isDurationEffectTick(duration, amplifier))
+		MobEffect *effect = safeEffect(id);
+		if (effect && effect->isDurationEffectTick(duration, amplifier))
 		{
 			applyEffect(target);
 		}
@@ -122,19 +129,22 @@ void MobEffectInstance::applyEffect(shared_ptr<LivingEntity> mob)
 {
 	if (duration > 0)
 	{
-		MobEffect::effects[id]->applyEffectTick(mob, amplifier);
+		MobEffect *effect = safeEffect(id);
+		if (effect) effect->applyEffectTick(mob, amplifier);
 	}
 }
 
 int MobEffectInstance::getDescriptionId()
 {
-	return MobEffect::effects[id]->getDescriptionId();
+	MobEffect *effect = safeEffect(id);
+	return effect ? effect->getDescriptionId() : 0;
 }
 
 // 4J Added
 int MobEffectInstance::getPostfixDescriptionId()
 {
-	return MobEffect::effects[id]->getPostfixDescriptionId();
+	MobEffect *effect = safeEffect(id);
+	return effect ? effect->getPostfixDescriptionId() : 0;
 }
 
 int MobEffectInstance::hashCode()
@@ -182,6 +192,7 @@ CompoundTag *MobEffectInstance::save(CompoundTag *tag)
 MobEffectInstance *MobEffectInstance::load(CompoundTag *tag)
 {
 	int id = tag->getByte(L"Id");
+	if (id < 0 || id >= MobEffect::NUM_EFFECTS) return nullptr;
 	int amplifier = tag->getByte(L"Amplifier");
 	int duration = tag->getInt(L"Duration");
 	boolean ambient = tag->getBoolean(L"Ambient");

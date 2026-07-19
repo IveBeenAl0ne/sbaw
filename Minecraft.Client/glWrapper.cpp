@@ -370,13 +370,24 @@ void glColorMask(bool red, bool green, bool blue, bool alpha)
 	RenderManager.StateSetWriteEnable(red, green, blue, alpha);
 }
 
+static float s_lightmapU = 240.0f;
+static float s_lightmapV = 240.0f;
+
 void glMultiTexCoord2f(int, float u , float v)
 {
 	// Clamp these values just to be safe - the lighting code can get broken if we pass things to StateSetVertexTextureUV that are >= 1
 	if( u > 255.0f ) u = 255.0f;
 	if( v > 255.0f ) v = 255.0f;
 
+	s_lightmapU = u;
+	s_lightmapV = v;
 	RenderManager.StateSetVertexTextureUV( u / 256.0f, v / 256.0f);
+}
+
+void glGetLightmapUV(float &u, float &v)
+{
+	u = s_lightmapU;
+	v = s_lightmapV;
 }
 
 void glTexGen(int coord, int mode, FloatBuffer *vec)

@@ -395,6 +395,7 @@ int EnderMan::getDeathLoot()
 	return Item::ender_pearl_Id;
 }
 
+/*
 void EnderMan::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	int loot = getDeathLoot();
@@ -405,6 +406,7 @@ void EnderMan::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 			spawnAtLocation(loot, 1);
 	}
 }
+*/
 
 // 4J Brought forward from 1.2.3 to help fix Enderman behaviour
 void EnderMan::setCarryingTile(int carryingTile)

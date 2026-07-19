@@ -32,11 +32,8 @@ public:
 		static StructurePiece *Create() { return new DesertPyramidPiece(); }
 		virtual EStructurePiece GetType() { return eStructurePiece_DesertPyramidPiece; }
 
-	public:
-		static const int TREASURE_ITEMS_COUNT = 10;
 	private:
 		bool hasPlacedChest[4];
-		static WeighedTreasure *treasureItems[TREASURE_ITEMS_COUNT];
 
 	public:
 		DesertPyramidPiece();
@@ -56,17 +53,11 @@ public:
 		static StructurePiece *Create() { return new JunglePyramidPiece(); }
 		virtual EStructurePiece GetType() { return eStructurePiece_JunglePyramidPiece; }
 
-	public:
-		static const int TREASURE_ITEMS_COUNT = 10;
-		static const int DISPENSER_ITEMS_COUNT = 1;
 	private:
 		bool placedMainChest;
 		bool placedHiddenChest;
 		bool placedTrap1;
 		bool placedTrap2;
-
-		static WeighedTreasure *treasureItems[TREASURE_ITEMS_COUNT];
-		static WeighedTreasure *dispenserItems[DISPENSER_ITEMS_COUNT];
 
 	public:
 		JunglePyramidPiece();

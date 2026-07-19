@@ -214,9 +214,8 @@ void GameRenderer::tick(bool first)		// 4J - add bFirst
 	{
 		shared_ptr<Player> yBobPlayer = dynamic_pointer_cast<Player>(mc->cameraTargetPlayer);
 		float target = 0.0f;
-	if (yBobPlayer != nullptr && yBobPlayer->isElytraFlying())
+		if (yBobPlayer != nullptr && yBobPlayer->isElytraFlying())
 		{
-
 			target = (float)(atan(-yBobPlayer->yd * 0.2) * 15.0);
 		}
 		m_yBob += (target - m_yBob) * 0.8f;
@@ -482,7 +481,8 @@ void GameRenderer::bobView(float a)
 	glRotatef((float) tilt, 1, 0, 0);
 
 	float yBobAngle = m_yBobO + (m_yBob - m_yBobO) * a;
-	if (fabsf(yBobAngle) > 0.001f)
+	shared_ptr<LocalPlayer> yBobLocalPlayer = dynamic_pointer_cast<LocalPlayer>(mc->cameraTargetPlayer);
+	if (fabsf(yBobAngle) > 0.001f && yBobLocalPlayer != nullptr && yBobLocalPlayer->isElytraFlying() && !yBobLocalPlayer->ThirdPersonView())
 		glRotatef(yBobAngle, 1, 0, 0);
 
 }
@@ -742,7 +742,11 @@ void GameRenderer::setupCamera(float a, int eye)
 		glTranslatef(static_cast<float>(zoom_x), static_cast<float>(-zoom_y), 0);
 		glScaled(zoom, zoom, 1);
 	}
-	gluPerspective(fov, aspect, 0.05f, renderDistance * 2);
+	{
+		auto _sp = dynamic_pointer_cast<Player>(mc->cameraTargetPlayer);
+		float nearClip = (_sp && _sp->abilities.spectatorMode) ? 0.99f : 0.05f;
+		gluPerspective(fov, aspect, nearClip, renderDistance * 2);
+	}
 
 	if (mc->gameMode->isCutScene())
 	{
@@ -825,7 +829,11 @@ void GameRenderer::renderItemInHand(float a, int eye)
 		glTranslatef(static_cast<float>(zoom_x), static_cast<float>(-zoom_y), 0);
 		glScaled(zoom, zoom, 1);
 	}
-	gluPerspective(fov, aspect, 0.05f, renderDistance * 2);
+	{
+		auto _sp = dynamic_pointer_cast<Player>(mc->cameraTargetPlayer);
+		float nearClip = (_sp && _sp->abilities.spectatorMode) ? 0.99f : 0.05f;
+		gluPerspective(fov, aspect, nearClip, renderDistance * 2);
+	}
 
 	if (mc->gameMode->isCutScene())
 	{

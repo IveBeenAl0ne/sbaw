@@ -9,6 +9,7 @@
 #include "net.minecraft.world.level.dimension.h"
 #include "net.minecraft.world.entity.npc.h"
 #include "WeighedTreasure.h"
+#include "LootTableManager.h"
 #include "VillagePieces.h"
 #include "VillageFeature.h"
 #include "Direction.h"
@@ -210,6 +211,7 @@ StructurePiece *VillagePieces::generateAndAddPiece(StartPiece *startPiece, list<
 	StructurePiece *newPiece = generatePieceFromSmallDoor(startPiece, pieces, random, footX, footY, footZ, direction, depth + 1);
 	if (newPiece != nullptr)
 	{
+		/*
 		int x = (newPiece->boundingBox->x0 + newPiece->boundingBox->x1) / 2;
 		int z = (newPiece->boundingBox->z0 + newPiece->boundingBox->z1) / 2;
 		int xs = newPiece->boundingBox->x1 - newPiece->boundingBox->x0;
@@ -217,11 +219,12 @@ StructurePiece *VillagePieces::generateAndAddPiece(StartPiece *startPiece, list<
 		int r = xs > zs ? xs : zs;
 		if (startPiece->getBiomeSource()->containsOnly(x, z, r / 2 + 4, VillageFeature::allowedBiomes))
 		{
+		*/
 			pieces->push_back(newPiece);
 			startPiece->pendingHouses.push_back(newPiece);
 			return newPiece;
-		}
-		delete newPiece;
+//		}
+		// delete newPiece;
 	}
 	return nullptr;
 }
@@ -241,6 +244,7 @@ StructurePiece *VillagePieces::generateAndAddRoadPiece(StartPiece *startPiece, l
 	if (box != nullptr && box->y0 > LOWEST_Y_POSITION)
 	{
 		StructurePiece *newPiece = new StraightRoad(startPiece, depth, random, box, direction);
+		/*
 		int x = (newPiece->boundingBox->x0 + newPiece->boundingBox->x1) / 2;
 		int z = (newPiece->boundingBox->z0 + newPiece->boundingBox->z1) / 2;
 		int xs = newPiece->boundingBox->x1 - newPiece->boundingBox->x0;
@@ -248,12 +252,13 @@ StructurePiece *VillagePieces::generateAndAddRoadPiece(StartPiece *startPiece, l
 		int r = xs > zs ? xs : zs;
 		if (startPiece->getBiomeSource()->containsOnly(x, z, r / 2 + 4, VillageFeature::allowedBiomes))
 		{
+		*/
 			pieces->push_back(newPiece);
 			startPiece->pendingRoads.push_back(newPiece);
 			return newPiece;
-		}
+//		}
 		// 4J Stu - The dtor for newPiece will destroy box
-		delete newPiece;
+		// delete newPiece;
 	}
 	else if(box != nullptr)
 	{
@@ -268,6 +273,7 @@ VillagePieces::VillagePiece::VillagePiece()
 	heightPosition = -1;
 	spawnedVillagerCount = 0;
 	isDesertVillage = false;
+	isAcaciaVillage = false;
 	startPiece = nullptr;
 	// for reflection
 }
@@ -276,11 +282,13 @@ VillagePieces::VillagePiece::VillagePiece(StartPiece *startPiece, int genDepth) 
 {
 	heightPosition = -1;
 	isDesertVillage = false;
+	isAcaciaVillage = false;
 	spawnedVillagerCount = 0;
 	this->startPiece = startPiece;
 	if (startPiece != nullptr)
 	{
 		this->isDesertVillage = startPiece->isDesertVillage;
+		this->isAcaciaVillage = startPiece->isAcaciaVillage;
 	}
 }
 
@@ -289,6 +297,7 @@ void VillagePieces::VillagePiece::addAdditonalSaveData(CompoundTag *tag)
 	tag->putInt(L"HPos", heightPosition);
 	tag->putInt(L"VCount", spawnedVillagerCount);
 	tag->putBoolean(L"Desert", isDesertVillage);
+	tag->putBoolean(L"Acacia", isAcaciaVillage);
 }
 
 void VillagePieces::VillagePiece::readAdditonalSaveData(CompoundTag *tag)
@@ -296,6 +305,7 @@ void VillagePieces::VillagePiece::readAdditonalSaveData(CompoundTag *tag)
 	heightPosition = tag->getInt(L"HPos");
 	spawnedVillagerCount = tag->getInt(L"VCount");
 	isDesertVillage = tag->getBoolean(L"Desert");
+	isAcaciaVillage = tag->getBoolean(L"Acacia");
 }
 
 StructurePiece *VillagePieces::VillagePiece::generateHouseNorthernLeft(StartPiece *startPiece, list<StructurePiece *> *pieces, Random *random, int yOff, int zOff)
@@ -413,29 +423,30 @@ int VillagePieces::VillagePiece::biomeBlock(int tile, int data)
 	if (isDesertVillage)
 	{
 		if (tile == Tile::log_Id)
-		{
 			return Tile::sandstone_Id;
-		}
 		else if (tile == Tile::cobblestone_Id)
-		{
 			return Tile::sandstone_Id;
-		}
 		else if (tile == Tile::planks_Id)
-		{
 			return Tile::sandstone_Id;
-		}
 		else if (tile == Tile::oak_stairs_Id)
-		{
 			return Tile::sandstone_stairs_Id;
-		}
 		else if (tile == Tile::stone_stairs_Id)
-		{
 			return Tile::sandstone_stairs_Id;
-		}
 		else if (tile == Tile::gravel_Id)
-		{
 			return Tile::sandstone_Id;
-		}
+	}
+	else if (isAcaciaVillage)
+	{
+		if (tile == Tile::log_Id)
+			return Tile::log2_Id;
+		else if (tile == Tile::planks_Id)
+			return Tile::planks_Id;
+		else if (tile == Tile::oak_stairs_Id)
+			return Tile::acacia_stairs_Id;
+		else if (tile == Tile::fence_Id)
+			return Tile::acacia_fence_Id;
+		else if (tile == Tile::fence_gate_Id)
+			return Tile::acacia_fence_gate_Id;
 	}
 	return tile;
 }
@@ -445,17 +456,18 @@ int VillagePieces::VillagePiece::biomeData(int tile, int data)
 	if (isDesertVillage)
 	{
 		if (tile == Tile::log_Id)
-		{
 			return 0;
-		}
 		else if (tile == Tile::cobblestone_Id)
-		{
 			return SandStoneTile::TYPE_DEFAULT;
-		}
 		else if (tile == Tile::planks_Id)
-		{
 			return SandStoneTile::TYPE_SMOOTHSIDE;
-		}
+	}
+	else if (isAcaciaVillage)
+	{
+		if (tile == Tile::log_Id)
+			return (data & 0xC) | 0;
+		else if (tile == Tile::planks_Id)
+			return 4;
 	}
 	return data;
 }
@@ -478,6 +490,24 @@ void VillagePieces::VillagePiece::generateBox(Level *level, BoundingBox *chunkBB
 
 void VillagePieces::VillagePiece::fillColumnDown(Level *level, int block, int data, int x, int startY, int z, BoundingBox *chunkBB)
 {
+	// clear any and all plants
+	int worldX = getWorldX(x, z);
+	int worldZ = getWorldZ(x, z);
+	int worldY = getWorldY(startY);
+
+	for (int y = worldY; y > 0; y--)
+	{
+		int tile = level->getTile(worldX, y, worldZ);
+		if (tile == Tile::tallgrass_Id || tile == Tile::double_plant_Id || tile == Tile::deadbush_Id)
+		{
+			level->setTileAndData(worldX, y, worldZ, 0, 0, Tile::UPDATE_CLIENTS);
+		}
+		else if (tile != 0)
+		{
+			break;
+		}
+	}
+
 	int bblock = biomeBlock(block, data);
 	int bdata = biomeData(block, data);
 	StructurePiece::fillColumnDown(level, bblock, bdata, x, startY, z, chunkBB);
@@ -580,6 +610,8 @@ VillagePieces::StartPiece::StartPiece(BiomeSource *biomeSource, int genDepth, Ra
 
 	Biome *biome = biomeSource->getBiome(west, north);
 	isDesertVillage = biome == Biome::desert || biome == Biome::desertHills;
+	isAcaciaVillage = biome == Biome::savanna || biome == Biome::savannaPlateau ||
+	                  biome == Biome::savannaM || biome == Biome::savannaPlateauM;
 }
 
 VillagePieces::StartPiece::~StartPiece()
@@ -717,9 +749,37 @@ bool VillagePieces::StraightRoad::postProcess(Level *level, Random *random, Boun
 		{
 			if (chunkBB->isInside(x, 64, z))
 			{
-				int y = level->getTopSolidBlock(x, z) - 1;
-				level->setTileAndData(x, y, z, roadTile, 0, Tile::UPDATE_CLIENTS);
-				// level->setTileAndData(x, y - 1, z, baseTile, 0, Tile::UPDATE_CLIENTS);
+				int y = level->getTopSolidOrLiquidBlock(x, z) - 1; // was getTopSolidBlock
+				int tileAtY = level->getTile(x, y, z);
+				if (tileAtY == Tile::water_Id || tileAtY == Tile::flowing_water_Id)
+				{
+					level->setTileAndData(x, y, z, Tile::planks_Id, 0, Tile::UPDATE_CLIENTS);
+					int fill = y - 1;
+					while (fill >= 0 && (level->getTile(x, fill, z) == Tile::water_Id || level->getTile(x, fill, z) == Tile::flowing_water_Id))
+					{
+						level->setTileAndData(x, y, z, Tile::planks_Id, 0, Tile::UPDATE_CLIENTS);
+						fill--;
+					}
+				}
+				else
+				{
+					// tall grass fixes
+					int tileBelow = level->getTile(x, y - 1, z);
+					if (tileBelow == Tile::double_plant_Id)
+					{
+						level->setTileAndData(x, y, z, 0, 0, Tile::UPDATE_CLIENTS);
+						level->setTileAndData(x, y - 1, z, 0, 0, Tile::UPDATE_CLIENTS);
+						level->setTileAndData(x, y - 2, z, roadTile, 0, Tile::UPDATE_CLIENTS);
+					}
+					else if (level->getTile(x, y, z) == Tile::tallgrass_Id)
+					{
+						level->setTileAndData(x, y, z, 0, 0, Tile::UPDATE_CLIENTS);
+						level->setTileAndData(x, y - 1, z, roadTile, 0, Tile::UPDATE_CLIENTS);
+					}
+					else {
+						level->setTileAndData(x, y, z, roadTile, 0, Tile::UPDATE_CLIENTS);
+					}
+				}
 			}
 		}
 	}
@@ -1712,7 +1772,9 @@ bool VillagePieces::Smithy::postProcess(Level *level, Random *random, BoundingBo
 		if (chunkBB->isInside(x, y, z))
 		{
 			hasPlacedChest = true;
-			createChest(level, chunkBB, random, 5, 1, 5, treasureItems, 3 + random->nextInt(6));
+			createChest(level, chunkBB, random, 5, 1, 5,
+				LootTableManager::Get().ResolveDrops("chests/village_blacksmith", false, 0,
+					[random](int bound) { return random->nextInt(bound); }));
 		}
 	}
 

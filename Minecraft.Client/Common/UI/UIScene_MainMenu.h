@@ -118,6 +118,7 @@ public:
 	virtual EUIScene getSceneType() { return eUIScene_MainMenu;}
 
 	virtual void customDraw(IggyCustomDrawCallbackRegion *region);
+	virtual void render(S32 width, S32 height, C4JRender::eViewportType viewport);
 protected:
 	void customDrawSplash(IggyCustomDrawCallbackRegion *region);
 

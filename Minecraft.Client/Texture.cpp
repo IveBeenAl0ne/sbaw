@@ -367,6 +367,38 @@ void Texture::writeAsPNG(const wstring &filename)
 #endif
 }
 
+void Texture::blitInterpolated(int x, int y, Texture *srcA, Texture *srcB, float t)
+{
+	ByteBuffer *bufA = srcA->getData(0);
+	ByteBuffer *bufB = srcB->getData(0);
+	if (!bufA || !bufB) return;
+
+	bufA->position(0);
+	bufB->position(0);
+
+	int sw = srcA->getWidth();
+	int sh = srcA->getHeight();
+
+	for (int srcY = 0; srcY < sh; srcY++)
+	{
+		int dstY = y + srcY;
+		for (int srcX = 0; srcX < sw; srcX++)
+		{
+			int srcPos = (srcY * sw + srcX) * 4;
+			int dstPos = (dstY * width + (x + srcX)) * 4;
+			for (int c = 0; c < 4; c++)
+			{
+				int a = bufA->get(srcPos + c) & 0xFF;
+				int b = bufB->get(srcPos + c) & 0xFF;
+				data[0]->put(dstPos + c, (BYTE)(a + (int)((b - a) * t)));
+			}
+		}
+	}
+
+	if (immediateUpdate) updateOnGPU();
+	else updated = false;
+}
+
 void Texture::blit(int x, int y, Texture *source)
 {
 	blit(x, y, source, false);

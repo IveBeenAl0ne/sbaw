@@ -126,6 +126,7 @@ int Spider::getDeathLoot()
 	return Item::string->id;
 }
 
+/*
 void Spider::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	Monster::dropDeathLoot(wasKilledByPlayer, playerBonusLevel);
@@ -135,6 +136,7 @@ void Spider::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 		spawnAtLocation(Item::spider_eye_Id, 1);
 	}
 }
+*/
 
 /**
 * The the spiders act as if they're always on a ladder, which enables them

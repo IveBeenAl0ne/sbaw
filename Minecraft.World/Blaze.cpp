@@ -182,6 +182,7 @@ bool Blaze::isOnFire()
 	return isCharged();
 }
 
+/*
 void Blaze::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	if (wasKilledByPlayer)
@@ -199,6 +200,7 @@ void Blaze::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 		}
 	}
 }
+*/
 
 bool Blaze::isCharged()
 {

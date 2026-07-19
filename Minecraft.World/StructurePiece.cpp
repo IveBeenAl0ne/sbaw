@@ -803,43 +803,50 @@ void StructurePiece::fillColumnDown( Level* level, int tile, int tileData, int x
 	}
 }
 
-bool StructurePiece::createChest( Level* level, BoundingBox* chunkBB, Random* random, int x, int y, int z,
-								 WeighedTreasureArray treasure, int numRolls )
+bool StructurePiece::createChest(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z,
+                                  const std::vector<LootTableDropResult> &drops)
 {
-	int worldX = getWorldX( x, z );
-	int worldY = getWorldY( y );
-	int worldZ = getWorldZ( x, z );
+    int worldX = getWorldX(x, z);
+    int worldY = getWorldY(y);
+    int worldZ = getWorldZ(x, z);
 
-	if ( chunkBB->isInside( worldX, worldY, worldZ ) )
-	{
-		if ( level->getTile( worldX, worldY, worldZ ) != Tile::chest->id )
-		{
-			level->setTileAndData( worldX, worldY, worldZ, Tile::chest->id, 0, Tile::UPDATE_CLIENTS );
-			shared_ptr<ChestTileEntity> chest = dynamic_pointer_cast<ChestTileEntity>(level->getTileEntity( worldX, worldY, worldZ ));
-			if ( chest != nullptr ) WeighedTreasure::addChestItems( random, treasure, chest, numRolls );
-			return true;
-		}
-	}
-	return false;
+    if (chunkBB->isInside(worldX, worldY, worldZ))
+    {
+        if (level->getTile(worldX, worldY, worldZ) != Tile::chest->id)
+        {
+            level->setTileAndData(worldX, worldY, worldZ, Tile::chest->id, 0, Tile::UPDATE_CLIENTS);
+            shared_ptr<ChestTileEntity> chest = dynamic_pointer_cast<ChestTileEntity>(level->getTileEntity(worldX, worldY, worldZ));
+            if (chest != nullptr)
+            {
+                WeighedTreasure::addChestItems(random, drops, chest);
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
-bool StructurePiece::createDispenser(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, int facing, WeighedTreasureArray items, int numRolls)
+bool StructurePiece::createDispenser(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, int facing,
+                                      const std::vector<LootTableDropResult> &drops)
 {
-	int worldX = getWorldX(x, z);
-	int worldY = getWorldY(y);
-	int worldZ = getWorldZ(x, z);
+    int worldX = getWorldX(x, z);
+    int worldY = getWorldY(y);
+    int worldZ = getWorldZ(x, z);
 
-	if (chunkBB->isInside(worldX, worldY, worldZ))
-	{
-		if (level->getTile(worldX, worldY, worldZ) != Tile::dispenser_Id)
-		{
-			level->setTileAndData(worldX, worldY, worldZ, Tile::dispenser_Id, getOrientationData(Tile::dispenser_Id, facing), Tile::UPDATE_CLIENTS);
-			shared_ptr<DispenserTileEntity> dispenser = dynamic_pointer_cast<DispenserTileEntity>(level->getTileEntity(worldX, worldY, worldZ));
-			if (dispenser != nullptr) WeighedTreasure::addDispenserItems(random, items, dispenser, numRolls);
-			return true;
-		}
-	}
-	return false;
+    if (chunkBB->isInside(worldX, worldY, worldZ))
+    {
+        if (level->getTile(worldX, worldY, worldZ) != Tile::dispenser_Id)
+        {
+            level->setTileAndData(worldX, worldY, worldZ, Tile::dispenser_Id, getOrientationData(Tile::dispenser_Id, facing), Tile::UPDATE_CLIENTS);
+            shared_ptr<DispenserTileEntity> dispenser = dynamic_pointer_cast<DispenserTileEntity>(level->getTileEntity(worldX, worldY, worldZ));
+            if (dispenser != nullptr)
+            {
+                WeighedTreasure::addDispenserItems(random, drops, dispenser);
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 void StructurePiece::createDoor( Level* level, BoundingBox* chunkBB, Random* random, int x, int y, int z,

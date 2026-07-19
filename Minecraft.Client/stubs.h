@@ -114,6 +114,7 @@ void glFogf(int,float);
 void glFog(int,FloatBuffer *);
 void glColorMaterial(int,int);
 void glMultiTexCoord2f(int, float, float);
+void glGetLightmapUV(float &u, float &v);
 void glTexParameterf(int target, int param, float value);
 //1.8.2
 void glClientActiveTexture(int);

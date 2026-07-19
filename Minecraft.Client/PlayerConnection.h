@@ -28,6 +28,8 @@ private:
     shared_ptr<ServerPlayer> player;
     int tickCount;
     int aboveGroundTickCount;
+    int elytraDurabilityTicks;
+    int elytraBoostCooldown;
 
     bool didTick;
     bool hasDoneFirstTickFourKit;

@@ -351,6 +351,16 @@ typedef XUID GameSessionUID;
 
 
 
+#include "Logger.h"
+#ifndef _FINAL_BUILD
+#undef OutputDebugString
+#undef OutputDebugStringA
+#undef OutputDebugStringW
+#define OutputDebugStringA(s) Logger::interceptA(s)
+#define OutputDebugStringW(s) Logger::interceptW(s)
+#define OutputDebugString(s)  Logger::interceptW(s)
+#endif
+
 #ifdef _FINAL_BUILD
 #define printf BREAKTHECOMPILE
 #define wprintf BREAKTHECOMPILE

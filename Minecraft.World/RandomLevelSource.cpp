@@ -782,6 +782,35 @@ void RandomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 	}
 	PIXEndNamedEvent();
 
+	if (pprandom->nextInt(64) == 0)
+	{
+		int fx = xo + pprandom->nextInt(16) + 8;
+		int fy = 40 + pprandom->nextInt(10);
+		int fz = zo + pprandom->nextInt(16) + 8;
+		FossilFeature fossil;
+		fossil.place(level, pprandom, fx, fy, fz);
+	}
+
+	{
+		int rx = xt;
+		int rz = zt;
+		if (rx < 0) rx -= 31;
+		if (rz < 0) rz -= 31;
+		int regionX = rx / 32;
+		int regionZ = rz / 32;
+		Random featureRand(regionX * 341873128712LL + regionZ * 132897987541LL + level->getSeed() + 14357617LL);
+		int candX = regionX * 32 + featureRand.nextInt(32 - 8);
+		int candZ = regionZ * 32 + featureRand.nextInt(32 - 8);
+		if (xt == candX && zt == candZ)
+		{
+			int ix = xo + pprandom->nextInt(16) + 8;
+			int iy = level->maxBuildHeight;
+			int iz = zo + pprandom->nextInt(16) + 8;
+			IglooFeature igloo;
+			igloo.place(level, pprandom, ix, iy, iz);
+		}
+	}
+
 	PIXBeginNamedEvent(0,"Biome decorate");
 	biome->decorate(level, pprandom, xo, zo);
 	PIXEndNamedEvent();

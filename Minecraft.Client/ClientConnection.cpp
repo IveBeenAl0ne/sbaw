@@ -1795,6 +1795,15 @@ void ClientConnection::handleChat(shared_ptr<ChatPacket> packet)
 		replacePlayer = true;
 		replaceEntitySource = true;
 		break;
+	case ChatPacket::e_ChatDeathHotFloor:
+		message=app.GetString(IDS_DEATH_HOT_FLOOR);
+		replacePlayer = true;
+		break;
+	case ChatPacket::e_ChatDeathHotFloorPlayer:
+		message=app.GetString(IDS_DEATH_HOT_FLOOR_PLAYER);
+		replacePlayer = true;
+		replaceEntitySource = true;
+		break;
 
 
 	case ChatPacket::e_ChatDeathFellAccidentLadder:
@@ -3486,6 +3495,10 @@ void ClientConnection::handleTileEntityData(shared_ptr<TileEntityDataPacket> pac
 			{
 				dynamic_pointer_cast<BannerTileEntity>(te)->load(packet->tag);
 			}
+			else if (packet->type == TileEntityDataPacket::TYPE_FLOWER_POT && dynamic_pointer_cast<FlowerPotTileEntity>(te) != nullptr)
+			{
+				dynamic_pointer_cast<FlowerPotTileEntity>(te)->load(packet->tag);
+			}
 		}
 	}
 }
@@ -3834,8 +3847,10 @@ void ClientConnection::handlePlayerAbilities(shared_ptr<PlayerAbilitiesPacket> p
 	player->abilities.instabuild = playerAbilitiesPacket->canInstabuild();
 	player->abilities.invulnerable = playerAbilitiesPacket->isInvulnerable();
 	player->abilities.mayfly = playerAbilitiesPacket->canFly();
+	player->abilities.spectatorMode = playerAbilitiesPacket->isNoPhysics();
 	player->abilities.setFlyingSpeed(playerAbilitiesPacket->getFlyingSpeed());
 	player->abilities.setWalkingSpeed(playerAbilitiesPacket->getWalkingSpeed());
+	player->noPhysics = playerAbilitiesPacket->isNoPhysics();
 }
 
 void ClientConnection::handleSoundEvent(shared_ptr<LevelSoundPacket> packet)

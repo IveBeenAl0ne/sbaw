@@ -47,7 +47,10 @@ AABB *BannerTile::getTileAABB(Level *level, int x, int y, int z)
 
 void BannerTile::updateShape(LevelSource *level, int x, int y, int z, int forceData, shared_ptr<TileEntity> forceEntity)
 {
-	if (onGround) return;
+	shared_ptr<BannerTileEntity> bte = forceEntity
+		? dynamic_pointer_cast<BannerTileEntity>(forceEntity)
+		: dynamic_pointer_cast<BannerTileEntity>(level->getTileEntity(x, y, z));
+	if (!bte || !bte->isWall()) return;
 
 	int face = level->getData(x, y, z);
 
@@ -96,9 +99,11 @@ int BannerTile::getResource(int data, Random *random, int playerBonusLevel)
 
 void BannerTile::neighborChanged(Level *level, int x, int y, int z, int type)
 {
+	shared_ptr<BannerTileEntity> bte = dynamic_pointer_cast<BannerTileEntity>(level->getTileEntity(x, y, z));
+	bool isWall = bte && bte->isWall();
 	bool remove = false;
 
-	if (onGround)
+	if (!isWall)
 	{
 		if (!level->getMaterial(x, y - 1, z)->isSolid()) remove = true;
 	}
@@ -133,7 +138,7 @@ void BannerTile::registerIcons(IconRegister *iconRegister)
 void BannerTile::playerWillDestroy(Level *level, int x, int y, int z, int data, shared_ptr<Player> player)
 {
 	shared_ptr<BannerTileEntity> bte = dynamic_pointer_cast<BannerTileEntity>(level->getTileEntity(x, y, z));
-	m_dropColor = (bte != nullptr) ? (bte->getBaseColor() & 15) : 15;
+	m_dropColor = (bte != nullptr) ? (15 - (bte->getBaseColor() & 15)) : 0;
 
 	BaseEntityTile::playerWillDestroy(level, x, y, z, data, player);
 }
@@ -144,7 +149,7 @@ void BannerTile::spawnResources(Level *level, int x, int y, int z, int data, flo
 
 	int color = m_dropColor;
 	shared_ptr<BannerTileEntity> bte = dynamic_pointer_cast<BannerTileEntity>(level->getTileEntity(x, y, z));
-	if (bte != nullptr) color = bte->getBaseColor() & 15;
+	if (bte != nullptr) color = 15 - (bte->getBaseColor() & 15);
 
 	int count = getResourceCountForLootBonus(playerBonusLevel, level->random);
 	for (int i = 0; i < count; i++)

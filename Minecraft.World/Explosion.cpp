@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "net.minecraft.world.entity.h"
+#include "net.minecraft.world.entity.player.h"
 #include "net.minecraft.world.entity.item.h"
 #include "net.minecraft.world.item.enchantment.h"
 #include "net.minecraft.world.level.h"
@@ -146,9 +147,18 @@ void Explosion::explode()
 			if(canDamage) e->hurt(DamageSource::explosion(this), static_cast<int>((pow * pow + pow) / 2 * 8 * r + 1));
 
 			double kbPower = ProtectionEnchantment::getExplosionKnockbackAfterDampener(e, pow);
-			e->xd += xa *kbPower;
-			e->yd += ya *kbPower;
-			e->zd += za *kbPower;					
+			bool isCreativeFlying = false;
+			if (e->instanceof(eTYPE_PLAYER))
+			{
+				shared_ptr<Player> p = dynamic_pointer_cast<Player>(e);
+				if (p && p->abilities.flying) isCreativeFlying = true;
+			}
+			if (!isCreativeFlying)
+			{
+				e->xd += xa * kbPower;
+				e->yd += ya * kbPower;
+				e->zd += za * kbPower;
+			}
 
 			
 			if (e->instanceof(eTYPE_PLAYER))

@@ -4,12 +4,18 @@
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.level.tile.h"
 #include "FlowerPotTile.h"
+#include "FlowerPotTileEntity.h"
 
-FlowerPotTile::FlowerPotTile(int id) : Tile(id, Material::decoration, isSolidRender() )
+FlowerPotTile::FlowerPotTile(int id) : BaseEntityTile(id, Material::decoration, isSolidRender())
 {
 	setLightBlock(0);
 	updateDefaultShape();
 	sendTileData();
+}
+
+shared_ptr<TileEntity> FlowerPotTile::newTileEntity(Level *level)
+{
+	return std::make_shared<FlowerPotTileEntity>();
 }
 
 void FlowerPotTile::createBlockStateDefinition()
@@ -71,6 +77,15 @@ bool FlowerPotTile::use(Level *level, int x, int y, int z, shared_ptr<Player> pl
 	{
 		level->setData(x, y, z, type, Tile::UPDATE_CLIENTS);
 
+		shared_ptr<TileEntity> teBase = level->getTileEntity(x, y, z);
+		shared_ptr<FlowerPotTileEntity> te = teBase ? std::dynamic_pointer_cast<FlowerPotTileEntity>(teBase) : nullptr;
+		if (te == nullptr)
+		{
+			te = std::make_shared<FlowerPotTileEntity>();
+			level->setTileEntity(x, y, z, te);
+		}
+		te->setFlowerItem(item->getItem()->id, item->getAuxValue());
+
 		if (!player->abilities.instabuild)
 		{
 			if (--item->count <= 0)
@@ -87,30 +102,24 @@ bool FlowerPotTile::use(Level *level, int x, int y, int z, shared_ptr<Player> pl
 
 int FlowerPotTile::cloneTileId(Level *level, int x, int y, int z)
 {
-	shared_ptr<ItemInstance> item = getItemFromType(level->getData(x, y, z));
+	shared_ptr<TileEntity> te = level->getTileEntity(x, y, z);
+	shared_ptr<FlowerPotTileEntity> fpte = te ? std::dynamic_pointer_cast<FlowerPotTileEntity>(te) : nullptr;
+	if (fpte && fpte->hasFlower())
+		return fpte->getFlowerItemId();
 
-	if (item == nullptr)
-	{
-		return Item::flower_pot_Id;
-	}
-	else
-	{
-		return item->id;
-	}
+	shared_ptr<ItemInstance> item = getItemFromType(level->getData(x, y, z));
+	return item ? item->id : Item::flower_pot_Id;
 }
 
 int FlowerPotTile::cloneTileData(Level *level, int x, int y, int z)
 {
-	shared_ptr<ItemInstance> item = getItemFromType(level->getData(x, y, z));
+	shared_ptr<TileEntity> te = level->getTileEntity(x, y, z);
+	shared_ptr<FlowerPotTileEntity> fpte = te ? std::dynamic_pointer_cast<FlowerPotTileEntity>(te) : nullptr;
+	if (fpte && fpte->hasFlower())
+		return fpte->getFlowerAuxValue();
 
-	if (item == nullptr)
-	{
-		return Item::flower_pot_Id;
-	}
-	else
-	{
-		return item->getAuxValue();
-	}
+	shared_ptr<ItemInstance> item = getItemFromType(level->getData(x, y, z));
+	return item ? item->getAuxValue() : 0;
 }
 
 bool FlowerPotTile::useOwnCloneData()
@@ -133,15 +142,26 @@ void FlowerPotTile::neighborChanged(Level *level, int x, int y, int z, int type)
 	}
 }
 
+void FlowerPotTile::onRemove(Level *level, int x, int y, int z, int id, int data)
+{
+	if (data > 0)
+	{
+		shared_ptr<TileEntity> te = level->getTileEntity(x, y, z);
+		shared_ptr<FlowerPotTileEntity> fpte = te ? std::dynamic_pointer_cast<FlowerPotTileEntity>(te) : nullptr;
+		shared_ptr<ItemInstance> item;
+		if (fpte && fpte->hasFlower())
+			item = std::make_shared<ItemInstance>(fpte->getFlowerItemId(), 1, fpte->getFlowerAuxValue());
+		else
+			item = getItemFromType(data);
+		if (item != nullptr)
+			popResource(level, x, y, z, item);
+	}
+	BaseEntityTile::onRemove(level, x, y, z, id, data);
+}
+
 void FlowerPotTile::spawnResources(Level *level, int x, int y, int z, int data, float odds, int playerBonusLevel)
 {
 	Tile::spawnResources(level, x, y, z, data, odds, playerBonusLevel);
-
-	if (data > 0)
-	{
-		shared_ptr<ItemInstance> item = getItemFromType(data);
-		if (item != nullptr) popResource(level, x, y, z, item);
-	}
 }
 
 int FlowerPotTile::getResource(int data, Random *random, int playerBonusLevel)
@@ -154,7 +174,15 @@ shared_ptr<ItemInstance> FlowerPotTile::getItemFromType(int type)
 	switch (type)
 	{
 	case TYPE_FLOWER_RED:
-		return std::make_shared<ItemInstance>(Tile::rose);
+		return std::make_shared<ItemInstance>(Tile::rose, 1, 0);
+	case TYPE_FLOWER_BLUE_ORCHID:
+		return std::make_shared<ItemInstance>(Tile::rose, 1, Rose::BLUE_ORCHID);
+	case TYPE_FLOWER_ALLIUM:
+		return std::make_shared<ItemInstance>(Tile::rose, 1, Rose::ALLIUM);
+	case TYPE_FLOWER_AZURE_BLUET:
+		return std::make_shared<ItemInstance>(Tile::rose, 1, Rose::AZURE_BLUET);
+	case TYPE_FLOWER_OXEYE_DAISY:
+		return std::make_shared<ItemInstance>(Tile::rose, 1, Rose::OXEYE_DAISY);
 	case TYPE_FLOWER_YELLOW:
 		return std::make_shared<ItemInstance>(Tile::flower);
 	case TYPE_CACTUS:

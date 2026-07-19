@@ -188,29 +188,15 @@ void Skeleton::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	if (getSkeletonType() == TYPE_WITHER)
 	{
-		// drop some coal
+		// wither skeletons use hardcoded coal drops
 		int count = random->nextInt(3 + playerBonusLevel) - 1;
 		for (int i = 0; i < count; i++)
 		{
 			spawnAtLocation(Item::coal_Id, 1);
 		}
 	}
-	else
-	{
-		// drop some arrows
-		int count = random->nextInt(3 + playerBonusLevel);
-		for (int i = 0; i < count; i++)
-		{
-			spawnAtLocation(Item::arrow_Id, 1);
-		}
-	}
 
-	// and some bones
-	int count = random->nextInt(3 + playerBonusLevel);
-	for (int i = 0; i < count; i++)
-	{
-		spawnAtLocation(Item::bone->id, 1);
-	}
+	Monster::dropDeathLoot(wasKilledByPlayer, playerBonusLevel);
 }
 
 void Skeleton::dropRareDeathLoot(int rareLootLevel)

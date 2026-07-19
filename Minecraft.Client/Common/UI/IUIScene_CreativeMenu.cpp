@@ -82,6 +82,7 @@ void IUIScene_CreativeMenu::staticCtor()
 	DEF(eCreativeInventory_BuildingBlocks)
 		ITEM(Tile::stone_Id)
 		ITEM(Tile::grass_Id)
+		ITEM(Tile::grass_path_Id)
 		ITEM_AUX(Tile::dirt_Id, 0)
 		ITEM(Tile::cobblestone_Id)
 		ITEM(Tile::sand_Id)
@@ -165,12 +166,11 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM(Tile::mycelium_Id)
 		ITEM_AUX(Tile::dirt_Id, DirtTile::COARSE_DIRT)
 		ITEM_AUX(Tile::dirt_Id, DirtTile::PODZOL)
-		ITEM(Tile::grass_path_Id)
 		ITEM(Tile::nether_brick_Id)
 		ITEM(Tile::red_nether_brick_Id)
 		ITEM(Tile::end_stone_Id)
 		ITEM(Tile::end_bricks_Id)
-		ITEM(Tile::magma_Id)
+		ITEM(Tile::magma_block_Id)
 		ITEM(Tile::nether_wart_block_Id)
 		ITEM(Tile::bone_block_Id)
 		ITEM_AUX(Tile::quartz_block_Id,QuartzBlockTile::TYPE_CHISELED)
@@ -311,20 +311,20 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM(Tile::bookshelf_Id)
 		ITEM(Item::flower_pot_Id)
 		ITEM(Tile::hay_block_Id)
-		ITEM_AUX(Tile::standing_banner_Id, 1)	// Red
-		ITEM_AUX(Tile::standing_banner_Id, 14)	// Orange
-		ITEM_AUX(Tile::standing_banner_Id, 11)	// Yellow
-		ITEM_AUX(Tile::standing_banner_Id, 10)	// Green
-		ITEM_AUX(Tile::standing_banner_Id, 12)	// Light Blue
-		ITEM_AUX(Tile::standing_banner_Id, 6)	// Cyan
-		ITEM_AUX(Tile::standing_banner_Id, 4)	// Blue
-		ITEM_AUX(Tile::standing_banner_Id, 5)	// Purple
-		ITEM_AUX(Tile::standing_banner_Id, 13)	// Magenta
-		ITEM_AUX(Tile::standing_banner_Id, 9)	// Pink
-		ITEM_AUX(Tile::standing_banner_Id, 15)	// White
-		ITEM_AUX(Tile::standing_banner_Id, 8)	// Dark Grey
-		ITEM_AUX(Tile::standing_banner_Id, 7)	// Light Grey
-		ITEM_AUX(Tile::standing_banner_Id, 0)	// Black
+		ITEM_AUX(Tile::standing_banner_Id, 14)	// Red
+		ITEM_AUX(Tile::standing_banner_Id, 1)	// Orange
+		ITEM_AUX(Tile::standing_banner_Id, 4)	// Yellow
+		ITEM_AUX(Tile::standing_banner_Id, 5)	// Green
+		ITEM_AUX(Tile::standing_banner_Id, 3)	// Light Blue
+		ITEM_AUX(Tile::standing_banner_Id, 9)	// Cyan
+		ITEM_AUX(Tile::standing_banner_Id, 11)	// Blue
+		ITEM_AUX(Tile::standing_banner_Id, 10)	// Purple
+		ITEM_AUX(Tile::standing_banner_Id, 2)	// Magenta
+		ITEM_AUX(Tile::standing_banner_Id, 6)	// Pink
+		ITEM_AUX(Tile::standing_banner_Id, 0)	// White
+		ITEM_AUX(Tile::standing_banner_Id, 7)	// Dark Grey
+		ITEM_AUX(Tile::standing_banner_Id, 8)	// Light Grey
+		ITEM_AUX(Tile::standing_banner_Id, 15)	// Black
 		ITEM_AUX(Tile::wool_Id,14)	// Red
 		ITEM_AUX(Tile::wool_Id,1)	// Orange
 		ITEM_AUX(Tile::wool_Id,4)	// Yellow
@@ -677,6 +677,14 @@ void IUIScene_CreativeMenu::staticCtor()
 			debugSword->enchant( Enchantment::damageBonus, 50 );
 			debugSword->setHoverName(L"Sword of Debug");
 			list->push_back(debugSword);
+
+			/*
+			shared_ptr<ItemInstance> debugRod = std::make_shared<ItemInstance>(Item::fishing_rod_Id, 1, 0);
+			debugRod->enchant( Enchantment::lure, 50 );
+			debugRod->enchant( Enchantment::luckOfTheSea, 50 );
+			debugRod->setHoverName(L"Rod of Debug");
+			list->push_back(debugRod);
+			*/
 		}
 #endif
 

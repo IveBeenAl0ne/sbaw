@@ -205,6 +205,7 @@ void VillagerGolem::playStepSound(int xt, int yt, int zt, int t)
 	playSound(eSoundType_MOB_IRONGOLEM_WALK, 1, 1);
 }
 
+/*
 void VillagerGolem::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	int roses = random->nextInt(3);
@@ -217,7 +218,7 @@ void VillagerGolem::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 	{
 		spawnAtLocation(Item::iron_ingot_Id, 1);
 	}
-}
+}*/
 
 int VillagerGolem::getOfferFlowerTick()
 {

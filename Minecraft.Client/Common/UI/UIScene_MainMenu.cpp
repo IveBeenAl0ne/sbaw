@@ -1,4 +1,9 @@
 #include "stdafx.h"
+#include "../../Lighting.h"
+#ifdef _WINDOWS64
+#include "../../Windows64/Iggy/gdraw/gdraw_d3d11.h"
+#include "../../Windows64/4JLibs/inc/4J_Render.h"
+#endif
 #include "../../../Minecraft.World/Mth.h"
 #include "../../../Minecraft.World/StringHelpers.h"
 #include "../../../Minecraft.World/Random.h"
@@ -553,7 +558,61 @@ void UIScene_MainMenu::customDrawSplash(IggyCustomDrawCallbackRegion *region)
 
 
 	// Finish GDraw and anything else that needs to be finalised
-	ui.endCustomDraw(region);	
+	ui.endCustomDraw(region);
+}
+
+void UIScene_MainMenu::render(S32 width, S32 height, C4JRender::eViewportType viewport)
+{
+	UIScene::render(width, height, viewport);
+
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	if (!pMinecraft || !pMinecraft->font) return;
+
+	Font *font = pMinecraft->font;
+	const wstring part1 = L"neo";
+	const wstring part2 = L"Legacy";
+	const float scale = 0.6f;
+	const int pad = 4;
+
+	ScreenSizeCalculator ssc(pMinecraft->options, pMinecraft->width_phys, pMinecraft->height_phys);
+	S32 sw = ssc.getWidth();
+	S32 sh = ssc.getHeight();
+
+#ifdef _WINDOWS64
+	RenderManager.StartFrame();
+	gdraw_D3D11_setViewport_4J();
+#endif
+	RenderManager.Set_matrixDirty();
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, sw, sh, 0, 1000, 3000);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glTranslatef(0.0f, 0.0f, -2000.0f);
+
+	Lighting::turnOff();
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(false);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_TEXTURE_2D);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+	int totalW = static_cast<int>((font->width(part1) + font->width(part2)) * scale);
+	int tx = sw - totalW - pad;
+	int ty = sh - static_cast<int>(8 * scale) - pad;
+
+	glPushMatrix();
+	glTranslatef(static_cast<float>(tx), static_cast<float>(ty), 0.0f);
+	glScalef(scale, scale, scale);
+	font->drawShadow(part1, 0, 0, 0x66A254FA);
+	font->drawShadow(part2, font->width(part1), 0, 0x66ffffff);
+	glPopMatrix();
+
+	glDepthMask(true);
+	glEnable(GL_DEPTH_TEST);
 }
 
 int UIScene_MainMenu::MustSignInReturned(void *pParam, int iPad, C4JStorage::EMessageResult result)

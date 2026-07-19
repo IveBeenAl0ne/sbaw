@@ -22,3 +22,4 @@
 #include "EnderChestTileEntity.h"
 #include "ItemFrame.h"
 #include "BannerTileEntity.h"
+#include "FlowerPotTileEntity.h"

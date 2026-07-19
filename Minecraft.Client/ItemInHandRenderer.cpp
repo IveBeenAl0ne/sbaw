@@ -259,8 +259,8 @@ void ItemInHandRenderer::renderItem(shared_ptr<LivingEntity> mob, shared_ptr<Ite
 
 	if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
 	{
-		int baseColor = item->getAuxValue() & 15;
-		BannerRenderer::instance->renderBannerForHand(1.0f, baseColor);
+		int baseColor = 15 - (item->getAuxValue() & 15);
+		BannerRenderer::instance->renderBannerForHand(1.0f, baseColor, item);
 		glPopMatrix();
 		return;
 	}
@@ -721,12 +721,12 @@ void ItemInHandRenderer::render(float a)
 		}
 		else if (dynamic_cast<BannerItem*>(item->getItem()) != nullptr && BannerRenderer::instance != nullptr)
 		{
-			int baseColor = item->getAuxValue() & 15;
+			int baseColor = 15 - (item->getAuxValue() & 15);
 			glRotatef(50.0f, 0.0f, 1.0f, 0.0f);
 			glTranslatef(0.0f, 0.05f, 0.0f);
 			const float bs = 0.6f;
 			glScalef(bs, -bs, -bs);
-			BannerRenderer::instance->renderBannerForHand(1.0f, baseColor);
+			BannerRenderer::instance->renderBannerForHand(1.0f, baseColor, item);
 			glPopMatrix();
 			return;
 		}

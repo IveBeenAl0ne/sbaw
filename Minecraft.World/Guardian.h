@@ -39,7 +39,7 @@ protected:
     void playFlopSound();
     void playAttackSound();
     void playCurseSound();
-    virtual void  dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+    // virtual void  dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
     virtual void  serverAiStep();
 
 public:

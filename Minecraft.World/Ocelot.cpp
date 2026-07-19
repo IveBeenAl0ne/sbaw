@@ -198,9 +198,11 @@ bool Ocelot::hurt(DamageSource *source, float dmg)
 	return TamableAnimal::hurt(source, dmg);
 }
 
+/*
 void Ocelot::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 }
+*/
 
 bool Ocelot::mobInteract(shared_ptr<Player> player)
 {

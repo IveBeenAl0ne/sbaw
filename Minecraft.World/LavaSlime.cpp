@@ -66,18 +66,10 @@ int LavaSlime::getDeathLoot()
 
 void LavaSlime::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
-	int loot = getDeathLoot();
-	if (loot > 0 && getSize() > 1)
+	// drop at smallest size
+	if (getSize() == 1)
 	{
-		int count = random->nextInt(4) - 2;
-		if (playerBonusLevel > 0)
-		{
-			count += random->nextInt(playerBonusLevel + 1);
-		}
-		for (int i = 0; i < count; i++)
-		{
-			spawnAtLocation(loot, 1);
-		}
+		Mob::dropDeathLoot(wasKilledByPlayer, playerBonusLevel);
 	}
 }
 
@@ -85,7 +77,6 @@ bool LavaSlime::isOnFire()
 {
 	return false;
 }
-
 
 int LavaSlime::getJumpDelay()
 {

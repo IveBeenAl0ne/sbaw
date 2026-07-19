@@ -220,6 +220,7 @@ int Ghast::getDeathLoot()
 	return Item::gunpowder_Id;
 }
 
+/*
 void Ghast::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
 	int count = random->nextInt(2) + random->nextInt(1 + playerBonusLevel);
@@ -233,6 +234,7 @@ void Ghast::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 		spawnAtLocation(Item::gunpowder_Id, 1);
 	}
 }
+*/
 
 float Ghast::getSoundVolume()
 {

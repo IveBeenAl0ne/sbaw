@@ -48,6 +48,7 @@ public:
 		e_ChatDeathDragonBreath,
 		e_ChatDeathAnvil,
 		e_ChatDeathFallingBlock,
+		e_ChatDeathFlyIntoWall,
 		e_ChatDeathThorns,
 
 		e_ChatDeathFellAccidentLadder,
@@ -71,6 +72,8 @@ public:
 		e_ChatDeathFireballItem,
 		e_ChatDeathThrownItem,
 		e_ChatDeathIndirectMagicItem,
+		e_ChatDeathHotFloor,
+		e_ChatDeathHotFloorPlayer,
 
 		e_ChatPlayerEnteredEnd,
 		e_ChatPlayerLeftEnd,

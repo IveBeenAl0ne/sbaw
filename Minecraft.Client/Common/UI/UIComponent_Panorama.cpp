@@ -13,7 +13,148 @@
 #include <direct.h>
 #include <cmath>
 
+#include "../../../Xbox/XML/ATGXmlParser.h"
+
 static const wchar_t *PANORAMA_TEXTURE_RELPATH = L"Graphics/ControlType/Panorama/";
+
+// default settings
+static const float kDefaultPanoramaScrollSpeed = 0.0001f / 16.6667f;
+static const float kDefaultPanoramaBlurSigma = 0.5f;
+
+struct PanoramaConfig
+{
+	float scrollSpeed = kDefaultPanoramaScrollSpeed;
+	float blurSigma = kDefaultPanoramaBlurSigma;
+
+	// grid mode (classic panorama)
+	bool gridEnabled = false;
+	float gridSizeX = 1.0f;
+	float gridSizeY = 1.0f;
+
+	// nearest vs bilinear
+	bool gridScalingNearest = false;
+};
+
+// atg xml parser my beloved
+class PanoramaXmlCallback : public ATG::ISAXCallback
+{
+public:
+	PanoramaConfig config;
+
+	HRESULT StartDocument() override { return S_OK; }
+	HRESULT EndDocument() override { return S_OK; }
+
+	HRESULT ElementBegin(CONST WCHAR *strName, UINT NameLen, CONST ATG::XMLAttribute * /*pAttributes*/, UINT /*NumAttributes*/) override
+	{
+		wstring elementName(strName, NameLen);
+		if(elementName == L"grid")
+		{
+			// grid switch
+			config.gridEnabled = true;
+		}
+		m_elementStack.push_back(elementName);
+		m_currentText.clear();
+		return S_OK;
+	}
+
+	HRESULT ElementContent(CONST WCHAR *strData, UINT DataLen, BOOL More) override
+	{
+		m_currentText.append(strData, DataLen);
+		if(!More)
+		{
+			ApplyCurrentElement();
+			m_currentText.clear();
+		}
+		return S_OK;
+	}
+
+	HRESULT ElementEnd(CONST WCHAR * /*strName*/, UINT /*NameLen*/) override
+	{
+		ApplyCurrentElement();
+		m_currentText.clear();
+		if(!m_elementStack.empty())
+		{
+			m_elementStack.pop_back();
+		}
+		return S_OK;
+	}
+
+	HRESULT CDATABegin() override { return S_OK; }
+	HRESULT CDATAData(CONST WCHAR * /*strCDATA*/, UINT /*CDATALen*/, BOOL /*bMore*/) override { return S_OK; }
+	HRESULT CDATAEnd() override { return S_OK; }
+
+	VOID Error(HRESULT /*hError*/, CONST CHAR * /*strMessage*/) override { }
+
+private:
+	void ApplyCurrentElement()
+	{
+		if(m_currentText.empty() || m_elementStack.empty()) return;
+
+		const wstring &name = m_elementStack.back();
+		const bool insideGrid = (m_elementStack.size() >= 2 &&
+			m_elementStack[m_elementStack.size() - 2] == L"grid");
+
+		if(name == L"panoramaSpeed")
+		{
+			config.scrollSpeed = static_cast<float>(wcstod(m_currentText.c_str(), nullptr));
+		}
+		else if(name == L"panoramaBlur")
+		{
+			config.blurSigma = static_cast<float>(wcstod(m_currentText.c_str(), nullptr));
+		}
+		else if(insideGrid && name == L"sizeX")
+		{
+			config.gridSizeX = static_cast<float>(wcstod(m_currentText.c_str(), nullptr));
+		}
+		else if(insideGrid && name == L"sizeY")
+		{
+			config.gridSizeY = static_cast<float>(wcstod(m_currentText.c_str(), nullptr));
+		}
+		else if(insideGrid && name == L"scaling")
+		{
+			config.gridScalingNearest = (_wcsicmp(m_currentText.c_str(), L"nearest") == 0);
+		}
+	}
+
+	vector<wstring> m_elementStack;
+	wstring m_currentText;
+};
+
+// load custom panorama data (if any) and return its settings
+static PanoramaConfig LoadPanoramaConfig(const wstring &root)
+{
+	PanoramaConfig config;
+
+	wstring xmlPath = root + L"panorama.xml";
+	if(GetFileAttributesW(xmlPath.c_str()) == INVALID_FILE_ATTRIBUTES)
+	{
+		return config;
+	}
+
+	const char *nativePath = wstringtofilename(xmlPath);
+
+	PanoramaXmlCallback callback;
+	ATG::XMLParser parser;
+	parser.RegisterSAXCallbackInterface(&callback);
+
+	HRESULT hr = parser.ParseXMLFile(nativePath);
+	if(FAILED(hr))
+	{
+		printf("Failed to parse panorama.xml at %ls (hr=0x%08X)\n", xmlPath.c_str(), hr);
+		return PanoramaConfig();
+	}
+
+	if(callback.config.gridSizeX <= 0.0f) callback.config.gridSizeX = 1.0f;
+	if(callback.config.gridSizeY <= 0.0f) callback.config.gridSizeY = 1.0f;
+
+	printf("Loaded panorama.xml overrides from %ls (speed=%f, blur=%f, grid=%s %fx%f, scaling=%s)\n",
+		xmlPath.c_str(), callback.config.scrollSpeed, callback.config.blurSigma,
+		callback.config.gridEnabled ? "on" : "off",
+		callback.config.gridSizeX, callback.config.gridSizeY,
+		callback.config.gridScalingNearest ? "nearest" : "linear");
+
+	return callback.config;
+}
 
 static wstring GetPanoramaTexturePath()
 {
@@ -89,7 +230,7 @@ static wstring GetPanoramaTexturePath()
 }
 
 // opengl time :v
-static int LoadPanoramaQuadTexture(const wstring &fileName, int &outWidth, int &outHeight)
+static int LoadPanoramaQuadTexture(const wstring &fileName, float blurSigma, int &outWidth, int &outHeight)
 {
 	wstring filePath = GetPanoramaTexturePath() + fileName;
 	const char *nativePath = wstringtofilename(filePath);
@@ -127,9 +268,19 @@ static int LoadPanoramaQuadTexture(const wstring &fileName, int &outWidth, int &
 	}
 
 	// gaussian blur
-	const float sigma = 0.5f;
+	const float sigma = blurSigma;
 	const int width = image.getWidth();
 	const int height = image.getHeight();
+
+	if(sigma <= 0.0f)
+	{
+		outWidth = width;
+		outHeight = height;
+
+		int idNoBlur = Minecraft::GetInstance()->textures->getTexture(&image, C4JRender::TEXTURE_FORMAT_RxGyBzAw, false);
+		printf("Loaded panorama background quad '%ls' (no blur) -> texture id %d\n", filePath.c_str(), idNoBlur);
+		return idNoBlur;
+	}
 
 	const int radius = static_cast<int>(ceilf(3.0f * sigma));
 	const int ksize = radius * 2 + 1;
@@ -217,8 +368,61 @@ static int LoadPanoramaQuadTexture(const wstring &fileName, int &outWidth, int &
 	outHeight = image.getHeight();
 
 	int id = Minecraft::GetInstance()->textures->getTexture(&blurredImage, C4JRender::TEXTURE_FORMAT_RxGyBzAw, false);
-	printf("Loaded panorama background quad '%ls' -> texture id %d\n", filePath.c_str(), id);
+	printf("Loaded panorama background quad '%ls' (blur sigma=%f) -> texture id %d\n", filePath.c_str(), sigma, id);
 	return id;
+}
+
+// original behavior
+static void DrawScrollingPanoramaQuads(S32 width, S32 height, float panoramaAspect, float panoramaScroll, Tesselator *t)
+{
+	float sourceWidth = static_cast<float>(height) * panoramaAspect;
+	float scroll = panoramaScroll - floorf(panoramaScroll);
+	float scrollPx = scroll * sourceWidth;
+	float startX = -scrollPx;
+	const float overscanY = (static_cast<float>(height) * 0.03f > 8.0f) ? (static_cast<float>(height) * 0.03f) : 8.0f;
+	const float drawTop = -overscanY;
+	const float drawBottom = static_cast<float>(height) + overscanY;
+
+	t->begin();
+	for(float x = startX - sourceWidth; x < static_cast<float>(width) + sourceWidth; x += sourceWidth)
+	{
+		float left = x;
+		float right = x + sourceWidth;
+		t->vertexUV(left,  drawBottom, 0.0f, 0.0f, 1.0f);
+		t->vertexUV(right, drawBottom, 0.0f, 1.0f, 1.0f);
+		t->vertexUV(right, drawTop,    0.0f, 1.0f, 0.0f);
+		t->vertexUV(left,  drawTop,    0.0f, 0.0f, 0.0f);
+	}
+	t->end();
+}
+
+// grid mode (classic panorama)
+static void DrawGridPanoramaQuads(S32 width, S32 height, float tileWidth, float tileHeight, float panoramaScroll, Tesselator *t)
+{
+	if(tileWidth <= 0.0f) tileWidth = static_cast<float>(width);
+	if(tileHeight <= 0.0f) tileHeight = static_cast<float>(height);
+
+	const float scroll = panoramaScroll - floorf(panoramaScroll);
+	const float scrollPx = scroll * tileWidth;
+	const float startX = -scrollPx;
+
+	t->begin();
+	for(float y = -tileHeight; y < static_cast<float>(height) + tileHeight; y += tileHeight)
+	{
+		const float top = y;
+		const float bottom = y + tileHeight;
+		for(float x = startX - tileWidth; x < static_cast<float>(width) + tileWidth; x += tileWidth)
+		{
+			const float left = x;
+			const float right = x + tileWidth;
+
+			t->vertexUV(left,  bottom, 0.0f, 0.0f, 1.0f);
+			t->vertexUV(right, bottom, 0.0f, 1.0f, 1.0f);
+			t->vertexUV(right, top,    0.0f, 1.0f, 0.0f);
+			t->vertexUV(left,  top,    0.0f, 0.0f, 0.0f);
+		}
+	}
+	t->end();
 }
 
 UIComponent_Panorama::UIComponent_Panorama(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
@@ -259,11 +463,10 @@ void UIComponent_Panorama::tick()
 	if(m_lastScrollTickMs != 0)
 	{
 		const DWORD kMaxElapsedMs = 250;
-		const float kScrollPerMs = 0.0001f / 16.6667f;
 		DWORD elapsedMs = nowMs - m_lastScrollTickMs;
 
 		if(elapsedMs > kMaxElapsedMs) elapsedMs = kMaxElapsedMs;
-		m_panoramaScroll += kScrollPerMs * static_cast<float>(elapsedMs);
+		m_panoramaScroll += m_panoramaScrollSpeed * static_cast<float>(elapsedMs);
 	}
 	m_lastScrollTickMs = nowMs;
 
@@ -290,19 +493,33 @@ void UIComponent_Panorama::EnsurePanoramaTexturesLoaded()
 
 	m_panoramaTextureRoot = currentRoot;
 	m_bPanoramaTexturesLoaded = false;
+
+	// search for panorama.xml
+	PanoramaConfig config = LoadPanoramaConfig(currentRoot);
+	m_panoramaScrollSpeed = config.scrollSpeed;
+	m_panoramaBlurSigma = config.blurSigma;
+	m_panoramaGridEnabled = config.gridEnabled;
+	m_panoramaGridSizeX = config.gridSizeX;
+	m_panoramaGridSizeY = config.gridSizeY;
+	m_panoramaGridScalingNearest = config.gridScalingNearest;
+
 	int dayWidth = 0;
 	int dayHeight = 0;
-	m_texPanoramaDay   = LoadPanoramaQuadTexture(L"Panorama_S.png", dayWidth, dayHeight);
+	m_texPanoramaDay   = LoadPanoramaQuadTexture(L"Panorama_S.png", m_panoramaBlurSigma, dayWidth, dayHeight);
 	int nightWidth = 0;
 	int nightHeight = 0;
-	m_texPanoramaNight = LoadPanoramaQuadTexture(L"Panorama_N.png", nightWidth, nightHeight);
+	m_texPanoramaNight = LoadPanoramaQuadTexture(L"Panorama_N.png", m_panoramaBlurSigma, nightWidth, nightHeight);
 	if(dayWidth > 0 && dayHeight > 0)
 	{
 		m_panoramaAspect = static_cast<float>(dayWidth) / static_cast<float>(dayHeight);
+		m_panoramaNativeWidth = dayWidth;
+		m_panoramaNativeHeight = dayHeight;
 	}
 	else if(nightWidth > 0 && nightHeight > 0)
 	{
 		m_panoramaAspect = static_cast<float>(nightWidth) / static_cast<float>(nightHeight);
+		m_panoramaNativeWidth = nightWidth;
+		m_panoramaNativeHeight = nightHeight;
 	}
 	m_bPanoramaTexturesLoaded = (m_texPanoramaDay >= 0 || m_texPanoramaNight >= 0);
 }
@@ -328,31 +545,27 @@ void UIComponent_Panorama::DrawPanoramaBackgroundQuad(S32 width, S32 height)
 
 	Minecraft::GetInstance()->textures->bind(texId);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	float sourceWidth = static_cast<float>(height) * m_panoramaAspect;
-	float scroll = m_panoramaScroll - floorf(m_panoramaScroll);
-	float scrollPx = scroll * sourceWidth;
-	float startX = -scrollPx;
-	float startY = 0.0f;
-	const float overscanY = (static_cast<float>(height) * 0.03f > 8.0f) ? (static_cast<float>(height) * 0.03f) : 8.0f;
-	const float drawTop = -overscanY;
-	const float drawBottom = static_cast<float>(height) + overscanY;
+	// nearest should only be used in grid mode, i dont necessarily see a purpose for it otherwise
+	const int panoramaFilter = (m_panoramaGridEnabled && m_panoramaGridScalingNearest) ? GL_NEAREST : GL_LINEAR;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, panoramaFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, panoramaFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	Tesselator *t = Tesselator::getInstance();
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	t->begin();
-	for(float x = startX - sourceWidth; x < static_cast<float>(width) + sourceWidth; x += sourceWidth)
+
+	if(m_panoramaGridEnabled)
 	{
-		float left = x;
-		float right = x + sourceWidth;
-		t->vertexUV(left,  drawBottom, 0.0f, 0.0f, 1.0f);
-		t->vertexUV(right, drawBottom, 0.0f, 1.0f, 1.0f);
-		t->vertexUV(right, drawTop,    0.0f, 1.0f, 0.0f);
-		t->vertexUV(left,  drawTop,    0.0f, 0.0f, 0.0f);
+		const float tileWidth = static_cast<float>(m_panoramaNativeWidth) * m_panoramaGridSizeX;
+		const float tileHeight = static_cast<float>(m_panoramaNativeHeight) * m_panoramaGridSizeY;
+		DrawGridPanoramaQuads(width, height, tileWidth, tileHeight, m_panoramaScroll, t);
 	}
-	t->end();
+	else
+	{
+		DrawScrollingPanoramaQuads(width, height, m_panoramaAspect, m_panoramaScroll, t);
+	}
+
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glDisable(GL_BLEND);
 

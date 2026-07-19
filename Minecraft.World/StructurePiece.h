@@ -2,6 +2,9 @@
 #include "WeighedRandom.h"
 #include "BoundingBox.h"
 #include "StructureFeatureIO.h"
+#include "LootTableManager.h"
+
+#include <vector>
 
 class Level;
 class Random;
@@ -130,8 +133,9 @@ public:
 	virtual void generateUpperHalfSphere(Level *level, BoundingBox *chunkBB, int x0, int y0, int z0, int x1, int y1, int z1, int fillTile, bool skipAir);
 	virtual void generateAirColumnUp(Level *level, int x, int startY, int z, BoundingBox *chunkBB);
 	virtual void fillColumnDown(Level *level, int tile, int tileData, int x, int startY, int z, BoundingBox *chunkBB);
-	virtual bool createChest(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, WeighedTreasureArray treasure, int numRolls);
-	virtual bool createDispenser(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, int facing, WeighedTreasureArray items, int numRolls);
+
+	virtual bool createChest(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, const std::vector<LootTableDropResult> &drops);
+	virtual bool createDispenser(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, int facing, const std::vector<LootTableDropResult> &drops);
 
 protected:
 	void createDoor(Level *level, BoundingBox *chunkBB, Random *random, int x, int y, int z, int orientation);

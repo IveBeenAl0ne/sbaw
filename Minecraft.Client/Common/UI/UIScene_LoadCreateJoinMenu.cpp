@@ -755,7 +755,7 @@ UIScene_LoadCreateJoinMenu::UIScene_LoadCreateJoinMenu(int iPad, void *initData,
 
 
 
-    m_labelSavesListTitle.init( L"Load" );
+    m_labelSavesListTitle.init( IDS_LOAD );
 
     m_labelCreateListTitle.init( IDS_TOOLTIPS_CREATE );
 

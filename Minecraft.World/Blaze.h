@@ -39,8 +39,8 @@ protected:
 public:
 	virtual bool isOnFire();
 
-protected:
-	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
+// protected:
+	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
 	bool isCharged();

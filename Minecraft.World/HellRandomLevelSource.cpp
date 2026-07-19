@@ -487,6 +487,15 @@ void HellRandomLevelSource::postProcess(ChunkSource *parent, int xt, int zt)
 		FlowerFeature(Tile::mushroom_red_Id).place(level, pprandom, x, y, z);
 	}
 
+	OreFeature magmaFeature(Tile::magma_block_Id, 0, 160, Tile::netherrack_Id);
+	for (int i = 0; i < 4; i++)
+	{
+		int x = xo + pprandom->nextInt(16);
+		int y = pprandom->nextInt(10) + 27;
+		int z = zo + pprandom->nextInt(16);
+		magmaFeature.place(level, pprandom, x, y, z);
+	}
+
 	OreFeature quartzFeature(Tile::quartz_ore_Id, 0, 13, Tile::netherrack_Id);
 	for (int i = 0; i < 16; i++)
 	{

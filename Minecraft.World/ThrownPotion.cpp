@@ -111,6 +111,7 @@ void ThrownPotion::onHit(HitResult *res)
 						for(auto& effect : *mobEffects)
 						{
 							int id = effect->getId();
+							if (id < 0 || id >= MobEffect::NUM_EFFECTS || !MobEffect::effects[id]) continue;
 							if (MobEffect::effects[id]->isInstantenous())
 							{
 								MobEffect::effects[id]->applyInstantenousEffect(getOwner(), e, effect->getAmplifier(), scale);

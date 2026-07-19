@@ -39,11 +39,6 @@ function(configure_lce_server_target target)
 #    "${CMAKE_SOURCE_DIR}/Minecraft.Client/Common/Media/MediaWindows64.arc" "Common/Media/"
 #  )
 
-  set(_use_debug_4j_libs TRUE)
-  if(CMAKE_CROSSCOMPILING AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(_use_debug_4j_libs FALSE)
-  endif()
-
   target_include_directories(${target} PRIVATE
     "${CMAKE_BINARY_DIR}/generated/" # Generated BuildVer.h
     "${CMAKE_SOURCE_DIR}/Minecraft.Client/"
@@ -75,34 +70,20 @@ function(configure_lce_server_target target)
     VS_DEBUGGER_COMMAND_ARGUMENTS "-port 25565 -bind 0.0.0.0 -name DedicatedServer"
   )
 
-  if(_use_debug_4j_libs)
-    target_link_libraries(${target} PRIVATE
-      Minecraft.World
-      d3d11
-      dxgi
-      d3dcompiler
-      XInput9_1_0
-      wsock32
-      legacy_stdio_definitions
-      4JLibs.${PLATFORM_NAME}.Input
-      4JLibs.${PLATFORM_NAME}.Profile
-      4JLibs.${PLATFORM_NAME}.Storage
-      4JLibs.${PLATFORM_NAME}.Render
-    )
-  else()
-    target_link_libraries(${target} PRIVATE
-      Minecraft.World
-      d3d11
-      dxgi
-      d3dcompiler
-      XInput9_1_0
-      wsock32
-      legacy_stdio_definitions
-      "${CMAKE_SOURCE_DIR}/Minecraft.Client/${PLATFORM_NAME}/4JLibs/libs/4J_Input.lib"
-      "${CMAKE_SOURCE_DIR}/Minecraft.Client/${PLATFORM_NAME}/4JLibs/libs/4J_Storage.lib"
-      "${CMAKE_SOURCE_DIR}/Minecraft.Client/${PLATFORM_NAME}/4JLibs/libs/4J_Render_PC.lib"
-    )
-  endif()
+  target_link_libraries(${target} PRIVATE
+    Minecraft.World
+    d3d11
+    dxgi
+    d3dcompiler
+    XInput9_1_0
+    wsock32
+    dbghelp
+    legacy_stdio_definitions
+    4JLibs.${PLATFORM_NAME}.Input
+    4JLibs.${PLATFORM_NAME}.Profile
+    4JLibs.${PLATFORM_NAME}.Storage
+    4JLibs.${PLATFORM_NAME}.Render
+  )
 
   foreach(lib IN LISTS IGGY_LIBS)
     target_link_libraries(${target} PRIVATE "${CMAKE_SOURCE_DIR}/Minecraft.Client/${PLATFORM_NAME}/Iggy/lib/${lib}")
@@ -113,6 +94,19 @@ function(configure_lce_server_target target)
   # server flavour has its own set in the VS Solution Explorer.
   setup_asset_folder_copy(${target} "${_asset_folder_pairs}")
   #setup_asset_file_copy(${target} "${_asset_files_pairs}")
+
+  set(_loot_tables_source "${CMAKE_SOURCE_DIR}/Minecraft.Client/Common/Media/MediaWindows64/Structures/loot_tables")
+  set(_loot_tables_dest "$<TARGET_FILE_DIR:${target}>/Common/Media/MediaWindows64/Structures/loot_tables")
+  add_custom_target(AssetLootTablesCopy_${target} ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${_loot_tables_dest}"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+      "${_loot_tables_source}"
+      "${_loot_tables_dest}"
+    COMMENT "Copying loot table XML assets into server build folder..."
+    VERBATIM
+  )
+  add_dependencies(${target} AssetLootTablesCopy_${target})
+  set_property(TARGET AssetLootTablesCopy_${target} PROPERTY FOLDER "Build")
 
   if(PLATFORM_NAME STREQUAL "Windows64")
     add_custom_target(AssetLocalizationCopy_${target} ALL

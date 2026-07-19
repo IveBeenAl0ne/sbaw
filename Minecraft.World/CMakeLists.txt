@@ -14,6 +14,8 @@ set(MINECRAFT_WORLD_SOURCES
 list(APPEND MINECRAFT_WORLD_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/BlockStateDecoder.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/BlockStateDecoderRegistry.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/LootTableManager.cpp"
+  "${CMAKE_SOURCE_DIR}/Minecraft.Client/Xbox/XML/ATGXmlParser.cpp"
 )
 
 add_library(Minecraft.World STATIC ${MINECRAFT_WORLD_SOURCES})
@@ -23,6 +25,7 @@ target_include_directories(Minecraft.World
   "${CMAKE_BINARY_DIR}/generated/"
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_SOURCE_DIR}/include/"
+  "${CMAKE_SOURCE_DIR}/Minecraft.Client"
   PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/x64headers"
 )

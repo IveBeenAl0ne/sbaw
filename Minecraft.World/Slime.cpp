@@ -18,6 +18,15 @@
 
 
 
+void Slime::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
+{
+	// only drop loot if size > 1 (large slimes)
+	if (getSize() == 1)
+	{
+		Mob::dropDeathLoot(wasKilledByPlayer, playerBonusLevel);
+	}
+}
+
 void Slime::_init()
 {
 	jumpDelay = 0;
