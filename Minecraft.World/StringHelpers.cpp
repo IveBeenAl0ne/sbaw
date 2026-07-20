@@ -70,40 +70,76 @@ wstring convStringToWstring(const string& converting)
 // to save having to clear it up everywhere this is used.
 const char *wstringtofilename(const wstring& name)
 {
-	static std::string buf;
-	buf.clear();
-	buf.reserve(name.length());
-	for(unsigned int i = 0; i < name.length(); i++ )
-	{
-		wchar_t c = name[i];
-#if defined __PS3__ || defined __ORBIS__
-		if(c=='\\') c='/';
-#else
-		if(c=='/') c='\\';
+    static thread_local char buf[4][8192];
+    static thread_local int bufIndex = 0;
+
+    char *out = buf[bufIndex];
+    bufIndex = (bufIndex + 1) % 4;
+
+    size_t len = name.length();
+    if (len >= sizeof(buf[0]))
+    {
+#ifndef _CONTENT_PACKAGE
+        app.DebugPrintf("wstringtofilename: path too long, truncating from %zu to %zu\n", len, sizeof(buf[0]) - 1);
 #endif
-		// assert(c<128);	// Will we have to do any conversion of non-ASCII characters in filenames?
-		if (c >= 128) {
-			printf("Non-ASCII character in filename: %lc\n", c);
-			c = '?';
-		}
-		// buf[i] = static_cast<char>(c); does nothing
-		buf.push_back(static_cast<char>(c));
-	}
-	return buf.c_str();
+        len = sizeof(buf[0]) - 1;
+    }
+
+    for (size_t i = 0; i < len; ++i)
+    {
+        wchar_t c = name[i];
+#if defined __PS3__ || defined __ORBIS__
+        if (c == L'\\') c = L'/';
+#else
+        if (c == L'/') c = L'\\';
+#endif
+        if (c >= 128)
+        {
+#ifndef _CONTENT_PACKAGE
+            app.DebugPrintf("Non-ASCII character in filename: %lc\n", c);
+#endif
+            c = L'?';
+        }
+        out[i] = static_cast<char>(c);
+    }
+    out[len] = '\0';
+
+    return out;
 }
 
 const char *wstringtochararray(const wstring& name)
 {
-	static std::string buf;
-	buf.clear();
-	buf.reserve(name.length());
-	for(unsigned int i = 0; i < name.length(); i++ )
-	{
-		wchar_t c = name[i];
-		assert(c<128);	// Will we have to do any conversion of non-ASCII characters in filenames?
-		buf.push_back(static_cast<char>(c));
-	}
-	return buf.c_str();
+    static thread_local char buf[4][8192];
+    static thread_local int bufIndex = 0;
+
+    char *out = buf[bufIndex];
+    bufIndex = (bufIndex + 1) % 4;
+
+    size_t len = name.length();
+    if (len >= sizeof(buf[0]))
+    {
+#ifndef _CONTENT_PACKAGE
+        app.DebugPrintf("wstringtochararray: string too long, truncating from %zu to %zu\n", len, sizeof(buf[0]) - 1);
+#endif
+        len = sizeof(buf[0]) - 1;
+    }
+
+    for (size_t i = 0; i < len; ++i)
+    {
+        wchar_t c = name[i];
+        if (c >= 128)
+        {
+#ifndef _CONTENT_PACKAGE
+            app.DebugPrintf("Non-ASCII character in string conversion: %lc\n", c);
+#endif
+            c = L'?';
+        }
+        out[i] = static_cast<char>(c);
+    }
+    out[len] = '\0';
+
+    return out;
+
 }
 
 wstring filenametowstring(const char *name)

@@ -3608,7 +3608,18 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 		}
 
 		// 4J-JEV: Don't set tooltips when we're reloading the skin, it'll crash.
-		if (!ui.IsReloadingSkin()) ui.SetTooltips( iPad, iA, iB, iX, iY, iLT, iRT, iLB, iRB, iLS, iRS);
+		if (!ui.IsReloadingSkin())
+		{
+			int uiControlType = app.GetGameSettings(iPad, eGameSetting_ControlType);
+			if (uiControlType == 0)
+			{
+				ui.SetTooltips(iPad, iA, iB, iX, iY, iRT, iLT, iLB, iRB, iLS, iRS); // flip left and right triggers on kbm 
+			}
+			else
+			{
+				ui.SetTooltips(iPad, iA, iB, iX, iY, iLT, iRT, iLB, iRB, iLS, iRS);
+			}
+		}
 
 		int wheel = 0;
 		if (InputManager.GetValue(iPad, MINECRAFT_ACTION_LEFT_SCROLL, true) > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_LEFT_SCROLL) )
