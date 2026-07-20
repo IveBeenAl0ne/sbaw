@@ -9700,6 +9700,10 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 		<value>Swap</value>
 	</data>
 
+	<data name="IDS_SWAP_KBM">
+		<value>Swap A &amp; B</value>
+	</data>
+
 	<data name="IDS_COPYSAVE">
 		<value>Copy Save</value>
 	</data>

@@ -58,9 +58,14 @@ UIScene_ControlsMenu::UIScene_ControlsMenu(int iPad, void *initData, UILayer *pa
 	m_checkboxInvert.init(app.GetString(IDS_INVERT_LOOK), eControl_InvertLook, app.GetGameSettings(m_iPad,eGameSetting_ControlInvertLook));
 	m_checkboxSouthpaw.init(app.GetString(IDS_SOUTHPAW), eControl_Southpaw, app.GetGameSettings(m_iPad,eGameSetting_ControlSouthPaw));
 	m_checkboxSafeCam.init(app.GetString(IDS_SAFE_SPRINT), eControl_SafeCam, app.GetGameSettings(m_iPad,eGameSetting_SafeCam));
-	m_checkboxAbswap.init(app.GetString(IDS_SWAP), eControl_ABSwap, app.GetGameSettings(m_iPad,eGameSetting_Swap));
 
+	if (app.GetGameSettings(m_iPad, eGameSetting_ControlType) == 0) 
 	{
+		m_checkboxAbswap.init(app.GetString(IDS_SWAP_KBM), eControl_ABSwap, app.GetGameSettings(m_iPad,eGameSetting_Swap));
+	}
+	else
+	{
+		m_checkboxAbswap.init(app.GetString(IDS_SWAP), eControl_ABSwap, app.GetGameSettings(m_iPad,eGameSetting_Swap));
 		IggyDataValue result;
 		IggyDataValue value[1];
 		value[0].type = IGGY_DATATYPE_boolean;
