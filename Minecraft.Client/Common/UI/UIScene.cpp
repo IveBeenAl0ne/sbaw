@@ -18,16 +18,10 @@ bool UIScene::SceneShouldUse1080p(const std::wstring &moviePath)
 	if(primaryPad < 0 || primaryPad >= XUSER_MAX_COUNT)
 		primaryPad = 0;
 	const int controlType = app.GetGameSettings(primaryPad, eGameSetting_ControlType);
+	const bool force1080ForControlType = (controlType == 0);
 	const bool force720ForControlType = (controlType == 3 || controlType == 5);
 	const bool isTutorialPopupMovie = (moviePath.find(L"TutorialPopup") == 0);
  	
-	// dont refresh gui elements when the player
-	// is in the settings menu [resolution mismatch creates artifacts]
- 	if(moviePath.find(L"SettingsUIMenu") == 0)
- 	{
- 		return (ui.getScreenHeight() > 720.0f) && (!force720ForControlType || isTutorialPopupMovie);
-	}
-
 	Minecraft *pMinecraft = Minecraft::GetInstance();
 	TexturePack *selectedPack = nullptr;
 	if(pMinecraft && pMinecraft->skins)
@@ -35,7 +29,15 @@ bool UIScene::SceneShouldUse1080p(const std::wstring &moviePath)
 		selectedPack = pMinecraft->skins->getSelected();
 	}
 	const bool isMarioWorld = (selectedPack && selectedPack->getId() == 1034);
-	return !isMarioWorld && (ui.getScreenHeight() > 720.0f) && (!force720ForControlType || isTutorialPopupMovie);
+
+	// dont refresh gui elements when the player
+	// is in the settings menu [resolution mismatch creates artifacts]
+ 	if(moviePath.find(L"SettingsUIMenu") == 0)
+ 	{
+ 		return !isMarioWorld && (force1080ForControlType || ui.getScreenHeight() > 720.0f) && (!force720ForControlType || isTutorialPopupMovie);
+ 	}
+
+	return !isMarioWorld && (force1080ForControlType || ui.getScreenHeight() > 720.0f) && (!force720ForControlType || isTutorialPopupMovie);
 #else
 	(void)moviePath;
 	return true;

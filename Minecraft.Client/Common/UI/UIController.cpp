@@ -226,6 +226,7 @@ static wstring GetControlTypeSkinPath(int controlType, bool hd)
 	{
 		return wstring(L"Graphics\\ControlType\\HD\\") + skinName + L"HD.swf";
 	}
+	
 	return wstring(L"Graphics\\ControlType\\") + skinName + L".swf";
 }
 #endif
