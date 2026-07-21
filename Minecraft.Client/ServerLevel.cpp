@@ -278,7 +278,10 @@ void ServerLevel::tick()
 #endif
 	{
 		PIXBeginNamedEvent(0,"Incremental save");
-		save(false, nullptr);
+		// @3makJoud
+		// commenting this line of code, as it were commited by the Smartcmd or shall i say Dumpcmd, 
+		// as it saves entities every single tick which kills performance on low end devices
+		//save(false, nullptr);
 		PIXEndNamedEvent();
 	}
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
