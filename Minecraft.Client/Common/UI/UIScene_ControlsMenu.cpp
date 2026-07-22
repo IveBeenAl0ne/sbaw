@@ -251,6 +251,10 @@ void UIScene_ControlsMenu::handleFocusChange(F64 controlId, F64 childId)
 
 void UIScene_ControlsMenu::PositionAllText(int iPad)
 {
+	// disable for keyboard
+	int controlType = app.GetGameSettings(m_iPad,eGameSetting_ControlType);
+	if (controlType == 0) return;
+
 	IggyDataValue result;
 	IggyPlayerCallMethodRS(getMovie(), &result, IggyPlayerRootPath(getMovie()), m_funcClearAllKeyLines, 0, 0);
 
