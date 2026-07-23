@@ -8,6 +8,7 @@
 #include "com.mojang.nbt.h"
 #include "Painting.h"
 #include "Material.h"
+#include "SoundTypes.h"
 
 
 
@@ -101,6 +102,7 @@ void Painting::PaintingPostConstructor(int dir, int motive)
 			this->motive = survivableMotives->at(random->nextInt(static_cast<int>(survivableMotives->size())));
 		}
 		setDir(dir);
+		playSound(eSoundType_ENTITY_PAINTING_PLACE, 1.0f, 1.0f);
 	}
 }
 
@@ -165,4 +167,11 @@ void Painting::dropItem(shared_ptr<Entity> causedBy)
 	}
 
 	spawnAtLocation(std::make_shared<ItemInstance>(Item::painting), 0.0f);
+}
+
+bool Painting::hurt(DamageSource *source, float damage)
+{
+	if (level->isClientSide) return false;
+	playSound(eSoundType_ENTITY_PAINTING_BREAK, 1.0f, 1.0f);
+	return HangingEntity::hurt(source, damage);
 }

@@ -303,9 +303,9 @@ public:
 
 protected:
 	virtual bool repositionEntityAfterLoad();
-	const wstring getEncodeId();
 
 public:
+	const wstring getEncodeId();
 	virtual void readAdditionalSaveData(CompoundTag *tag) = 0;
 	virtual void addAdditonalSaveData(CompoundTag *tag) = 0;
 	/**

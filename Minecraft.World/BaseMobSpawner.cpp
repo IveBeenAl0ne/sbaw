@@ -131,6 +131,8 @@ void BaseMobSpawner::tick()
 
 shared_ptr<Entity> BaseMobSpawner::loadDataAndAddEntity(shared_ptr<Entity> entity)
 {
+	if (entity == nullptr) return nullptr;
+
 	if (getNextSpawnData() != nullptr)
 	{
 		CompoundTag *data = new CompoundTag();
@@ -155,6 +157,7 @@ shared_ptr<Entity> BaseMobSpawner::loadDataAndAddEntity(shared_ptr<Entity> entit
 		{
 			CompoundTag *ridingTag = data->getCompound(Entity::RIDING_TAG);
 			shared_ptr<Entity> mount = EntityIO::newEntity(ridingTag->getString(L"id"), entity->level);
+
 			if (mount != nullptr)
 			{
 				CompoundTag *mountData = new CompoundTag();
@@ -230,7 +233,8 @@ void BaseMobSpawner::load(CompoundTag *tag)
 
 	if (tag->contains(L"SpawnData"))
 	{
-		setNextSpawnData(new SpawnData(tag->getCompound(L"SpawnData"), entityId));
+		CompoundTag *spawnDataTag = tag->getCompound(L"SpawnData");
+		setNextSpawnData(new SpawnData(spawnDataTag, entityId));
 	}
 	else
 	{
@@ -250,7 +254,10 @@ void BaseMobSpawner::load(CompoundTag *tag)
 		requiredPlayerRange = tag->getShort(L"RequiredPlayerRange");
 	}
 
-	if (tag->contains(L"SpawnRange")) spawnRange = tag->getShort(L"SpawnRange");
+	if (tag->contains(L"SpawnRange"))
+	{
+		spawnRange = tag->getShort(L"SpawnRange");
+	}
 
 	if (getLevel() != nullptr && getLevel()->isClientSide)
 	{
@@ -328,8 +335,21 @@ void BaseMobSpawner::setNextSpawnData(SpawnData *nextSpawnData)
 
 BaseMobSpawner::SpawnData::SpawnData(CompoundTag *base) : WeighedRandomItem(base->getInt(L"Weight"))
 {
-	CompoundTag *tag = base->getCompound(L"Properties");
-	wstring _type = base->getString(L"Type");
+	CompoundTag *tag = nullptr;
+	wstring _type;
+
+	if (!base->contains(L"Entity"))
+	{
+		CompoundTag *propertiesTag = base->getCompound(L"Properties");
+		tag = propertiesTag != nullptr ? static_cast<CompoundTag *>(propertiesTag->copy()) : nullptr;
+		_type = base->getString(L"Type");
+	}
+	else
+	{
+		CompoundTag *entityTag = base->getCompound(L"Entity");
+		tag = entityTag != nullptr ? static_cast<CompoundTag *>(entityTag->copy()) : nullptr;
+		_type = entityTag != nullptr ? entityTag->getString(L"id") : L"";
+	}
 
 	if (_type.compare(L"Minecart") == 0)
 	{
@@ -360,6 +380,11 @@ BaseMobSpawner::SpawnData::SpawnData(CompoundTag *base) : WeighedRandomItem(base
 
 BaseMobSpawner::SpawnData::SpawnData(CompoundTag *tag, wstring _type) : WeighedRandomItem(1)
 {
+	if (_type.empty() && tag != nullptr && tag->contains(L"id"))
+	{
+		_type = tag->getString(L"id");
+	}
+
 	if (_type.compare(L"Minecart") == 0)
 	{
 		if (tag != nullptr)
@@ -383,7 +408,7 @@ BaseMobSpawner::SpawnData::SpawnData(CompoundTag *tag, wstring _type) : WeighedR
 		}
 	}
 
-	this->tag = tag;
+	this->tag = tag != nullptr ? static_cast<CompoundTag *>(tag->copy()) : nullptr;
 	this->type = _type;
 }
 
@@ -396,7 +421,7 @@ CompoundTag *BaseMobSpawner::SpawnData::save()
 {
 	CompoundTag *result = new CompoundTag();
 
-	result->putCompound(L"Properties", tag);
+	result->putCompound(L"Properties", tag != nullptr ? static_cast<CompoundTag *>(tag->copy()) : nullptr);
 	result->putString(L"Type", type);
 	result->putInt(L"Weight", randomWeight);
 

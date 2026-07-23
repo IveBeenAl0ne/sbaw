@@ -13,6 +13,7 @@
 #include "Cow.h"
 #include "../Minecraft.Client/Textures.h"
 #include "MobCategory.h"
+#include "SoundTypes.h"
 
 
 
@@ -111,6 +112,7 @@ bool Cow::mobInteract(shared_ptr<Player> player)
 	if (item != nullptr && item->id == Item::bucket->id && !player->abilities.instabuild) 
 	{
 		player->awardStat(GenericStats::cowsMilked(),GenericStats::param_cowsMilked());
+		playSound(eSoundType_ENTITY_COW_MILK, 1.0f, 1.0f);
 
 		if (item->count-- == 0) 
 		{

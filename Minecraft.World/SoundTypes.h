@@ -283,6 +283,47 @@ enum eSOUND_TYPE
 	eSoundType_MOB_POLARBEAR_STEP,
 	eSoundType_MOB_POLARBEAR_WARNING,
 
+	// tu43
+	// witch sounds
+	eSoundType_ENTITY_WITCH_AMBIENT,
+	eSoundType_ENTITY_WITCH_HURT,
+	eSoundType_ENTITY_WITCH_DEATH,
+	eSoundType_ENTITY_WITCH_THROW,
+
+	// squid sounds
+	eSoundType_ENTITY_SQUID_AMBIENT,
+	eSoundType_ENTITY_SQUID_HURT,
+	eSoundType_ENTITY_SQUID_DEATH,
+
+	// snowman sounds
+	eSoundType_ENTITY_SNOWMAN_HURT,
+	eSoundType_ENTITY_SNOWMAN_DEATH,
+
+	// armor stand sounds
+	eSoundType_ENTITY_ARMORSTAND_BREAK,
+	eSoundType_ENTITY_ARMORSTAND_HIT,
+
+	// cow sounds
+	eSoundType_ENTITY_COW_MILK,
+
+	// horse sounds
+	eSoundType_ENTITY_HORSE_EAT,
+
+	// item frame sounds
+	eSoundType_ENTITY_ITEMFRAME_ADD_ITEM,
+	eSoundType_ENTITY_ITEMFRAME_BREAK,
+	eSoundType_ENTITY_ITEMFRAME_PLACE,
+	eSoundType_ENTITY_ITEMFRAME_REMOVE_ITEM,
+	eSoundType_ENTITY_ITEMFRAME_ROTATE_ITEM,
+
+	// leash sounds
+	eSoundType_ENTITY_LEASHKNOT_BREAK,
+	eSoundType_ENTITY_LEASHKNOT_PLACE,
+
+	// painting sounds
+	eSoundType_ENTITY_PAINTING_PLACE,
+	eSoundType_ENTITY_PAINTING_BREAK,
+
 	eSoundType_MAX
 };
 

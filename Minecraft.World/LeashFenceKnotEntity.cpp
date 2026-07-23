@@ -4,6 +4,7 @@
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.phys.h"
 #include "LeashFenceKnotEntity.h"
+#include "SoundTypes.h"
 
 void LeashFenceKnotEntity::_init()
 {
@@ -92,8 +93,13 @@ bool LeashFenceKnotEntity::interact(shared_ptr<Player> player)
 			}
 		}
 	}
+	if (!level->isClientSide && attachedMob)
+	{
+		playSound(eSoundType_ENTITY_LEASHKNOT_PLACE, 1.0f, 1.0f);
+	}
 	if (!level->isClientSide && !attachedMob)
 	{
+		playSound(eSoundType_ENTITY_LEASHKNOT_BREAK, 1.0f, 1.0f);
 		remove();
 
 		if (player->abilities.instabuild)
@@ -127,6 +133,13 @@ bool LeashFenceKnotEntity::survives()
 		return true;
 	}
 	return false;
+}
+
+bool LeashFenceKnotEntity::hurt(DamageSource *source, float damage)
+{
+	if (level->isClientSide) return false;
+	playSound(eSoundType_ENTITY_LEASHKNOT_BREAK, 1.0f, 1.0f);
+	return HangingEntity::hurt(source, damage);
 }
 
 shared_ptr<LeashFenceKnotEntity> LeashFenceKnotEntity::createAndAddKnot(Level *level, int x, int y, int z)

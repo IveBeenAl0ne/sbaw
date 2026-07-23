@@ -20,6 +20,8 @@ public:
 	virtual void aiStep();
 
 protected:
+	virtual int getHurtSound();
+	virtual int getDeathSound();
 	virtual int getDeathLoot();
 	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 

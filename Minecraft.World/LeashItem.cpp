@@ -34,6 +34,7 @@ bool LeashItem::bindPlayerMobs(shared_ptr<Player> player, Level *level, int x, i
 
 	// look for entities that can be attached to the fence
 	bool foundMobs = false;
+	bool knotCreated = false;
 	double range = 7;
 	vector<shared_ptr<Entity> > *mobs = level->getEntitiesOfClass(typeid(Mob), AABB::newTemp(x - range, y - range, z - range, x + range, y + range, z + range));
 	if (mobs != nullptr)
@@ -46,12 +47,19 @@ bool LeashItem::bindPlayerMobs(shared_ptr<Player> player, Level *level, int x, i
 				if (activeKnot == nullptr)
 				{
 					activeKnot = LeashFenceKnotEntity::createAndAddKnot(level, x, y, z);
+					knotCreated = true;
 				}
 				mob->setLeashedTo(activeKnot, true);
 				foundMobs = true;
 			}
 		}
 	}
+
+	if (foundMobs && knotCreated)
+	{
+		activeKnot->playSound(eSoundType_ENTITY_LEASHKNOT_PLACE, 1.0f, 1.0f);
+	}
+
 	return foundMobs;
 }
 

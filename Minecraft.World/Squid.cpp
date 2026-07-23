@@ -9,6 +9,7 @@
 #include "net.minecraft.world.entity.monster.h"
 #include "SharedConstants.h"
 #include "Squid.h"
+#include "SoundTypes.h"
 #include "../Minecraft.Client/Textures.h"
 
 void Squid::_init()
@@ -48,17 +49,17 @@ void Squid::registerAttributes()
 
 int Squid::getAmbientSound() 
 {
-	return -1;
+	return eSoundType_ENTITY_SQUID_AMBIENT;
 }
 
 int Squid::getHurtSound() 
 {
-	return -1;
+	return eSoundType_ENTITY_SQUID_HURT;
 }
 
 int Squid::getDeathSound() 
 {
-	return -1;
+	return eSoundType_ENTITY_SQUID_DEATH;
 }
 
 float Squid::getSoundVolume() 
