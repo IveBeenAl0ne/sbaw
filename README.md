@@ -14,7 +14,7 @@ This project aims to backport the newer title updates back to Legacy Console Edi
 See our [Contributor's Guide](./CONTRIBUTING.md) for more information on the goals of this project.
 
 # Download
-Users can download our [Release Builds](https://git.neolegacy.dev/neoStudiosLCE/neoLegacy/releases)! Simply download the `.zip` file and extract it!
+Users can download our [Releases](https://git.neolegacy.dev/neoStudiosLCE/neoLegacy/releases)! Simply download the `.zip` file and extract it!
 
 # Acknowledgments
 
