@@ -27,6 +27,19 @@ int IUIScene_PauseMenu::ExitGameDialogReturned(void *pParam,int iPad,C4JStorage:
 	// Results switched for this dialog
 	if(result==C4JStorage::EMessage_ResultDecline) 
 	{
+		const int controlType = app.GetGameSettings(iPad, eGameSetting_ControlType);
+		const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+		const bool autosaveEnabled = consoleAutosave && !StorageManager.GetSaveDisabled() && (app.GetGameHostOption(eGameHostOption_DisableSaving) == 0);
+
+		if(autosaveEnabled)
+		{
+			MinecraftServer::getInstance()->setSaveOnExit(true);
+		}
+		else
+		{
+			MinecraftServer::getInstance()->setSaveOnExit(false);
+		}
+
 		if(pScene) pScene->SetIgnoreInput(true);
 		app.SetAction(iPad,eAppAction_ExitWorld);
 	}
@@ -159,7 +172,7 @@ int IUIScene_PauseMenu::ExitGameAndSaveReturned(void *pParam,int iPad,C4JStorage
 			}
 			else
 			{
-				ui.RequestAlertMessage(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 3, ProfileManager.GetPrimaryPad(), &IUIScene_PauseMenu::ExitGameSaveDialogReturned, pParam);
+				ui.RequestAlertMessage(IDS_EXIT_GAME, app.GetCorrectExitKey(ProfileManager.GetPrimaryPad()), uiIDA, 3, ProfileManager.GetPrimaryPad(), &IUIScene_PauseMenu::ExitGameSaveDialogReturned, pParam);
 			}
 		}
 	}
@@ -205,7 +218,7 @@ int IUIScene_PauseMenu::ExitGameDeclineSaveReturned(void *pParam,int iPad,C4JSto
 			}
 			else
 			{
-				ui.RequestAlertMessage(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 3, ProfileManager.GetPrimaryPad(),&IUIScene_PauseMenu::ExitGameSaveDialogReturned, pParam);
+				ui.RequestAlertMessage(IDS_EXIT_GAME, app.GetCorrectExitKey(ProfileManager.GetPrimaryPad()), uiIDA, 3, ProfileManager.GetPrimaryPad(),&IUIScene_PauseMenu::ExitGameSaveDialogReturned, pParam);
 			}
 		}
 
@@ -373,14 +386,17 @@ int IUIScene_PauseMenu::SaveWorldThreadProc( LPVOID lpParameter )
 
 	if(ProfileManager.IsFullVersion())
 	{	
-		app.SetGameStarted(false);
+		if(!bAutosave)
+		{
+			app.SetGameStarted(false);
+		}
 
 		while( app.GetXuiServerAction(ProfileManager.GetPrimaryPad() ) != eXuiServerAction_Idle && !MinecraftServer::serverHalted() )
 		{
 			Sleep(10);
 		}
 
-		if(!MinecraftServer::serverHalted() && !app.GetChangingSessionType() ) app.SetGameStarted(true);
+		if(!bAutosave && !MinecraftServer::serverHalted() && !app.GetChangingSessionType() ) app.SetGameStarted(true);
 
 #if defined(_XBOX_ONE) || defined(__ORBIS__)
 		if(app.GetGameHostOption(eGameHostOption_DisableSaving)) StorageManager.SetSaveDisabled(true);
@@ -734,15 +750,19 @@ int IUIScene_PauseMenu::SaveGameDialogReturned(void *pParam,int iPad,C4JStorage:
 	// results switched for this dialog
 	if(result==C4JStorage::EMessage_ResultDecline) 
 	{
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-		UINT uiIDA[2];
-		uiIDA[0]=IDS_CONFIRM_CANCEL;
-		uiIDA[1]=IDS_CONFIRM_OK;
-		ui.RequestAlertMessage(IDS_TITLE_ENABLE_AUTOSAVE, IDS_CONFIRM_ENABLE_AUTOSAVE, uiIDA, 2, iPad,&IUIScene_PauseMenu::EnableAutosaveDialogReturned,pParam);
-#else
-		// flag a app action of save game
-		app.SetAction(iPad,eAppAction_SaveGame);
-#endif
+		const int controlType = app.GetGameSettings(iPad, eGameSetting_ControlType);
+        if (controlType == 0 || controlType == 1 || controlType == 4) // windows, xbox one, and ps4
+        {
+		    UINT uiIDA[2];
+		    uiIDA[0]=IDS_CONFIRM_CANCEL;
+		    uiIDA[1]=IDS_CONFIRM_OK;
+		    ui.RequestAlertMessage(IDS_TITLE_ENABLE_AUTOSAVE, IDS_CONFIRM_ENABLE_AUTOSAVE, uiIDA, 2, iPad,&IUIScene_PauseMenu::EnableAutosaveDialogReturned,pParam);
+        }
+        else
+        {
+		    // flag a app action of save game
+		    app.SetAction(iPad,eAppAction_SaveGame);
+        }
 	}
 	return 0;
 }

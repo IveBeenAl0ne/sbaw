@@ -5813,6 +5813,10 @@ Press{*CONTROLLER_VK_B*} if you already know about Fireworks.</value>
 		<value>Are you sure you want to exit to the main menu? Any unsaved progress will be lost.</value>
 	</data>	
 
+    <data name="IDS_CONFIRM_EXIT_GAME_AUTOSAVE">
+      <value>Are you sure you want to exit to the main menu?</value>
+    </data>
+
 	<data name="IDS_CONFIRM_EXIT_GAME_PROGRESS_LOST">
 		<value>Are you sure you want to exit to the main menu? Your progress will be lost!</value>
 	</data>	

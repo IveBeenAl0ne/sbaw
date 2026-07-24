@@ -2,6 +2,25 @@
 #include "UI.h"
 #include "UIScene_SettingsOptionsMenu.h"
 
+namespace
+{
+	void FormatAutosaveSliderLabel(WCHAR *buffer, size_t bufferSize, int value, int controlType)
+	{
+		const bool fasterAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+
+		if(value == 0)
+		{
+			swprintf(buffer, bufferSize, L"%ls", app.GetString(IDS_SLIDER_AUTOSAVE_OFF));
+		}
+		else
+		{
+			const int displayValue = fasterAutosave ? value : value * 15;
+			const wstring unitText = (displayValue == 1) ? L"Min" : app.GetString(IDS_MINUTES);
+			swprintf(buffer, bufferSize, L"%ls: %d %ls", app.GetString(IDS_SLIDER_AUTOSAVE), displayValue, unitText.c_str());
+		}
+	}
+}
+
 int UIScene_SettingsOptionsMenu::m_iDifficultyTitleSettingA[4]=
 {
 	IDS_DIFFICULTY_TITLE_PEACEFUL,
@@ -74,10 +93,7 @@ void UIScene_SettingsOptionsMenu::tick()
 		WCHAR TempString[256];
 
 		int autosaveVal = app.GetGameSettings(m_iPad,eGameSetting_Autosave);
-		if(autosaveVal == 0)
-			swprintf(TempString, 256, L"%ls", app.GetString(IDS_SLIDER_AUTOSAVE_OFF));
-		else
-			swprintf(TempString, 256, L"%ls: %d %ls", app.GetString(IDS_SLIDER_AUTOSAVE), autosaveVal*15, app.GetString(IDS_MINUTES));
+		FormatAutosaveSliderLabel(TempString, 256, autosaveVal, app.GetGameSettings(m_iPad, eGameSetting_ControlType));
 		m_multiList.AddNewSlider(TempString, eControl_Autosave, 0, 8, 1, autosaveVal);
 
 		swprintf(TempString, 256, L"%ls: %d%%", app.GetString(IDS_SLIDER_SENSITIVITY_INGAME), app.GetGameSettings(m_iPad,eGameSetting_Sensitivity_InGame));
@@ -115,10 +131,7 @@ void UIScene_SettingsOptionsMenu::tick()
 		case eControl_Autosave:
 			app.SetGameSettings(m_iPad, eGameSetting_Autosave, m_iPendingSliderValue);
 			app.SetAutosaveTimerTime();
-			if(m_iPendingSliderValue == 0)
-				swprintf(TempString, 256, L"%ls", app.GetString(IDS_SLIDER_AUTOSAVE_OFF));
-			else
-				swprintf(TempString, 256, L"%ls: %d %ls", app.GetString(IDS_SLIDER_AUTOSAVE), m_iPendingSliderValue*15, app.GetString(IDS_MINUTES));
+			FormatAutosaveSliderLabel(TempString, 256, m_iPendingSliderValue, app.GetGameSettings(m_iPad, eGameSetting_ControlType));
 			m_multiList.SetSliderLabel(eControl_Autosave, TempString);
 			break;
 		case eControl_Sensitivity_InGame:

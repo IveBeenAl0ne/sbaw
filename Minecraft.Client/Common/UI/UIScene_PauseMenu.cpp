@@ -28,6 +28,9 @@ UIScene_PauseMenu::UIScene_PauseMenu(int iPad, void *initData, UILayer *parentLa
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
 	m_bIgnoreInput=false;
+	m_savesDisabled=false;
+	m_bTrialTexturePack=false;
+	m_bErrorDialogRunning=false;
 	m_eAction=eAction_None;
 
 	m_buttons[BUTTON_PAUSE_RESUMEGAME].init(app.GetString(IDS_RESUME_GAME),BUTTON_PAUSE_RESUMEGAME);
@@ -52,27 +55,36 @@ UIScene_PauseMenu::UIScene_PauseMenu(int iPad, void *initData, UILayer *parentLa
 			m_bTrialTexturePack = true;
 		}
 	}
-
-	// 4J-TomK - check for all possible labels being fed into BUTTON_PAUSE_SAVEGAME (Bug 163775)
-	// this has to be done before button initialisation!
-	wchar_t saveButtonLabels[2][256];
-	swprintf( saveButtonLabels[0], 256, L"%ls", app.GetString( IDS_SAVE_GAME ));
-	swprintf( saveButtonLabels[1], 256, L"%ls", app.GetString( IDS_DISABLE_AUTOSAVE ));
-	m_buttons[BUTTON_PAUSE_SAVEGAME].setAllPossibleLabels(2,saveButtonLabels);
-
-	if(app.GetGameHostOption(eGameHostOption_DisableSaving) || m_bTrialTexturePack)
-	{
-		m_savesDisabled = true;
-		m_buttons[BUTTON_PAUSE_SAVEGAME].init(app.GetString(IDS_SAVE_GAME),BUTTON_PAUSE_SAVEGAME);
-	}
-	else
-	{
-		m_savesDisabled = false;
-		m_buttons[BUTTON_PAUSE_SAVEGAME].init(app.GetString(IDS_DISABLE_AUTOSAVE),BUTTON_PAUSE_SAVEGAME);
-	}
-#else
-	m_buttons[BUTTON_PAUSE_SAVEGAME].init(app.GetString(IDS_SAVE_GAME),BUTTON_PAUSE_SAVEGAME);
 #endif
+
+	const int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+	const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+
+	if (consoleAutosave)
+	{
+    	// 4J-TomK - check for all possible labels being fed into BUTTON_PAUSE_SAVEGAME (Bug 163775)
+		// this has to be done before button initialisation!
+		wchar_t saveButtonLabels[2][256];
+		swprintf( saveButtonLabels[0], 256, L"%ls", app.GetString( IDS_SAVE_GAME ));
+		swprintf( saveButtonLabels[1], 256, L"%ls", app.GetString( IDS_DISABLE_AUTOSAVE ));
+		m_buttons[BUTTON_PAUSE_SAVEGAME].setAllPossibleLabels(2,saveButtonLabels);
+
+		if(app.GetGameHostOption(eGameHostOption_DisableSaving) || m_bTrialTexturePack)
+		{
+			m_savesDisabled = true;
+			m_buttons[BUTTON_PAUSE_SAVEGAME].init(app.GetString(IDS_SAVE_GAME),BUTTON_PAUSE_SAVEGAME);
+		}
+		else
+		{
+			m_savesDisabled = false;
+			m_buttons[BUTTON_PAUSE_SAVEGAME].init(app.GetString(IDS_DISABLE_AUTOSAVE),BUTTON_PAUSE_SAVEGAME);
+		}
+	}
+	else 
+	{
+    	m_buttons[BUTTON_PAUSE_SAVEGAME].init(app.GetString(IDS_SAVE_GAME),BUTTON_PAUSE_SAVEGAME);
+	}
+
 	m_buttons[BUTTON_PAUSE_EXITGAME].init(app.GetString(IDS_EXIT_GAME),BUTTON_PAUSE_EXITGAME);
 
 	if(!ProfileManager.IsFullVersion())
@@ -143,41 +155,46 @@ void UIScene_PauseMenu::tick()
 {
 	UIScene::tick();
 
-#ifdef __PSVITA__
-	// 4J-MGH - Need to check for installed DLC here, as we delay the installation of the key file on Vita
-	if(!app.DLCInstallProcessCompleted()) app.StartInstallDLCProcess(0);
-#endif
+	#ifdef __PSVITA__
+		// 4J-MGH - Need to check for installed DLC here, as we delay the installation of the key file on Vita
+		if(!app.DLCInstallProcessCompleted()) app.StartInstallDLCProcess(0);
+	#endif
 
+	const int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+	const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
 
-#if defined _XBOX_ONE || defined __ORBIS__
-	if(!m_bTrialTexturePack && m_savesDisabled != (app.GetGameHostOption(eGameHostOption_DisableSaving) != 0) && ProfileManager.GetPrimaryPad() == m_iPad )
+	if (consoleAutosave)
 	{
-		// We show the save button if saves are disabled as this lets us show a prompt to enable them (via purchasing a texture pack)
-		if( app.GetGameHostOption(eGameHostOption_DisableSaving) )
+		if(!m_bTrialTexturePack && m_savesDisabled != (app.GetGameHostOption(eGameHostOption_DisableSaving) != 0) && ProfileManager.GetPrimaryPad() == m_iPad )
 		{
-			m_savesDisabled = true;
-			m_buttons[BUTTON_PAUSE_SAVEGAME].setLabel( app.GetString(IDS_SAVE_GAME) );
-		}
-		else
-		{
-			m_savesDisabled = false;
-			m_buttons[BUTTON_PAUSE_SAVEGAME].setLabel( app.GetString(IDS_DISABLE_AUTOSAVE) );
+			// We show the save button if saves are disabled as this lets us show a prompt to enable them (via purchasing a texture pack)
+			if( app.GetGameHostOption(eGameHostOption_DisableSaving) )
+			{
+				m_savesDisabled = true;
+				printf("PauseMenu::tick: setLabel IDS_SAVE_GAME (%ls)\n", app.GetString(IDS_SAVE_GAME));
+				m_buttons[BUTTON_PAUSE_SAVEGAME].setLabel( app.GetString(IDS_SAVE_GAME) );
+			}
+			else
+			{
+				m_savesDisabled = false;
+				printf("PauseMenu::tick: setLabel IDS_DISABLE_AUTOSAVE (%ls)\n", app.GetString(IDS_DISABLE_AUTOSAVE));
+				m_buttons[BUTTON_PAUSE_SAVEGAME].setLabel( app.GetString(IDS_DISABLE_AUTOSAVE) );
+			}
 		}
 	}
-#endif
 
-#ifdef __ORBIS__
-	// Process the error dialog (for a patch being available)
-	if(m_bErrorDialogRunning)
-	{	
-		SceErrorDialogStatus stat = sceErrorDialogUpdateStatus();
-		if( stat == SCE_ERROR_DIALOG_STATUS_FINISHED ) 
-		{
-			sceErrorDialogTerminate();
-			m_bErrorDialogRunning=false;
+	#ifdef __ORBIS__
+		// Process the error dialog (for a patch being available)
+		if(m_bErrorDialogRunning)
+		{	
+			SceErrorDialogStatus stat = sceErrorDialogUpdateStatus();
+			if( stat == SCE_ERROR_DIALOG_STATUS_FINISHED ) 
+			{
+				sceErrorDialogTerminate();
+				m_bErrorDialogRunning=false;
+			}
 		}
-	}
-#endif
+	#endif
 }
 
 void UIScene_PauseMenu::updateTooltips()
@@ -239,8 +256,9 @@ void UIScene_PauseMenu::updateComponents()
 
 void UIScene_PauseMenu::handlePreReload()
 {
-#if defined _XBOX_ONE || defined __ORBIS__
-	if(ProfileManager.GetPrimaryPad() == m_iPad)
+	const int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+	const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+	if(consoleAutosave && (ProfileManager.GetPrimaryPad() == m_iPad))
 	{
 		// 4J-TomK - check for all possible labels being fed into BUTTON_PAUSE_SAVEGAME (Bug 163775)
 		// this has to be done before button initialisation!
@@ -249,7 +267,6 @@ void UIScene_PauseMenu::handlePreReload()
 		swprintf( saveButtonLabels[1], 256, L"%ls", app.GetString( IDS_DISABLE_AUTOSAVE ));
 		m_buttons[BUTTON_PAUSE_SAVEGAME].setAllPossibleLabels(2,saveButtonLabels);
 	}
-#endif
 }
 
 void UIScene_PauseMenu::handleReload()
@@ -257,8 +274,10 @@ void UIScene_PauseMenu::handleReload()
 	updateTooltips();
 	updateControlsVisibility();	
 
-#if defined _XBOX_ONE || defined __ORBIS__
-	if(ProfileManager.GetPrimaryPad() == m_iPad)
+	const int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+	const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+
+	if(consoleAutosave && ProfileManager.GetPrimaryPad() == m_iPad)
 	{
 		// We show the save button if saves are disabled as this lets us show a prompt to enable them (via purchasing a texture pack)
 		if( app.GetGameHostOption(eGameHostOption_DisableSaving) || m_bTrialTexturePack )
@@ -272,7 +291,6 @@ void UIScene_PauseMenu::handleReload()
 			m_buttons[BUTTON_PAUSE_SAVEGAME].setLabel( app.GetString(IDS_DISABLE_AUTOSAVE) );
 		}
 	}
-#endif
 
 	doHorizontalResizeCheck();
 }
@@ -660,8 +678,12 @@ void UIScene_PauseMenu::handlePress(F64 controlId, F64 childId)
 						playTime = static_cast<int>(pMinecraft->localplayers[m_iPad]->getSessionTimer());
 					}
 
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-					uiIDA[0]=IDS_CONFIRM_CANCEL;
+					const int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+					const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+
+                    if (consoleAutosave)
+					{
+                    uiIDA[0]=IDS_CONFIRM_CANCEL;
 					uiIDA[1]=IDS_CONFIRM_OK;
 
 					if(g_NetworkManager.IsHost() && StorageManager.GetSaveDisabled())
@@ -676,7 +698,7 @@ void UIScene_PauseMenu::handlePress(F64 controlId, F64 childId)
 						}
 						else
 						{
-							ui.RequestAlertMessage(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 3, m_iPad,&UIScene_PauseMenu::ExitGameSaveDialogReturned, (LPVOID)GetCallbackUniqueId());
+							ui.RequestAlertMessage(IDS_EXIT_GAME, app.GetCorrectExitKey(m_iPad), uiIDA, 3, m_iPad,&UIScene_PauseMenu::ExitGameSaveDialogReturned, (LPVOID)GetCallbackUniqueId());
 						}
 					}
 					else if(g_NetworkManager.IsHost() && g_NetworkManager.GetPlayerCount()>1)
@@ -685,9 +707,11 @@ void UIScene_PauseMenu::handlePress(F64 controlId, F64 childId)
 					}
 					else
 					{
-						ui.RequestAlertMessage(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 2, m_iPad,&IUIScene_PauseMenu::ExitGameDialogReturned, (LPVOID)GetCallbackUniqueId());
+						ui.RequestAlertMessage(IDS_EXIT_GAME, app.GetCorrectExitKey(m_iPad), uiIDA, 2, m_iPad,&IUIScene_PauseMenu::ExitGameDialogReturned, (LPVOID)GetCallbackUniqueId());
 					}
-#else
+					}
+                    else
+					{
 					if(StorageManager.GetSaveDisabled())
 					{
 						uiIDA[0]=IDS_CONFIRM_CANCEL;
@@ -708,7 +732,7 @@ void UIScene_PauseMenu::handlePress(F64 controlId, F64 childId)
 							}
 							else
 							{
-								ui.RequestAlertMessage(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 3, m_iPad,&UIScene_PauseMenu::ExitGameSaveDialogReturned, (LPVOID)GetCallbackUniqueId());
+								ui.RequestAlertMessage(IDS_EXIT_GAME, app.GetCorrectExitKey(m_iPad), uiIDA, 3, m_iPad,&UIScene_PauseMenu::ExitGameSaveDialogReturned, (LPVOID)GetCallbackUniqueId());
 							}
 						}
 						else
@@ -716,10 +740,10 @@ void UIScene_PauseMenu::handlePress(F64 controlId, F64 childId)
 							uiIDA[0]=IDS_CONFIRM_CANCEL;
 							uiIDA[1]=IDS_CONFIRM_OK;
 
-							ui.RequestAlertMessage(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 2, m_iPad,&IUIScene_PauseMenu::ExitGameDialogReturned, (LPVOID)GetCallbackUniqueId());
+							ui.RequestAlertMessage(IDS_EXIT_GAME, app.GetCorrectExitKey(m_iPad), uiIDA, 2, m_iPad,&IUIScene_PauseMenu::ExitGameDialogReturned, (LPVOID)GetCallbackUniqueId());
 						}
 					}
-#endif
+					}
 				}
 				else
 				{
@@ -894,8 +918,10 @@ void UIScene_PauseMenu::PerformActionSaveGame()
 	else
 #endif
 	{
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-		if(!m_savesDisabled)
+		const int controlType = app.GetGameSettings(m_iPad, eGameSetting_ControlType);
+		const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+
+		if(consoleAutosave && !m_savesDisabled)
 		{
 			UINT uiIDA[2];
 			uiIDA[0]=IDS_CANCEL;
@@ -903,7 +929,6 @@ void UIScene_PauseMenu::PerformActionSaveGame()
 			ui.RequestAlertMessage(IDS_TITLE_DISABLE_AUTOSAVE, IDS_CONFIRM_DISABLE_AUTOSAVE, uiIDA, 2, m_iPad,&IUIScene_PauseMenu::DisableAutosaveDialogReturned,(LPVOID)GetCallbackUniqueId());
 		}
 		else
-#endif
 			// we need to ask if they are sure they want to overwrite the existing game
 			if(bSaveExists)
 			{
@@ -914,15 +939,18 @@ void UIScene_PauseMenu::PerformActionSaveGame()
 			}
 			else
 			{
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-				UINT uiIDA[2];
-				uiIDA[0]=IDS_CONFIRM_CANCEL;
-				uiIDA[1]=IDS_CONFIRM_OK;
-				ui.RequestAlertMessage(IDS_TITLE_ENABLE_AUTOSAVE, IDS_CONFIRM_ENABLE_AUTOSAVE, uiIDA, 2, m_iPad,&IUIScene_PauseMenu::EnableAutosaveDialogReturned,(LPVOID)GetCallbackUniqueId());
-#else
-				// flag a app action of save game
-				app.SetAction(m_iPad,eAppAction_SaveGame);
-#endif
+				if(consoleAutosave)
+				{
+					UINT uiIDA[2];
+					uiIDA[0]=IDS_CONFIRM_CANCEL;
+					uiIDA[1]=IDS_CONFIRM_OK;
+					ui.RequestAlertMessage(IDS_TITLE_ENABLE_AUTOSAVE, IDS_CONFIRM_ENABLE_AUTOSAVE, uiIDA, 2, m_iPad,&IUIScene_PauseMenu::EnableAutosaveDialogReturned,(LPVOID)GetCallbackUniqueId());
+				}
+				else
+				{
+					// flag a app action of save game
+					app.SetAction(m_iPad,eAppAction_SaveGame);
+				}
 			}
 	}
 }

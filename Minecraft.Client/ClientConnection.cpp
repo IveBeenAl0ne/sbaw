@@ -4180,14 +4180,16 @@ int ClientConnection::HostDisconnectReturned(void *pParam,int iPad,C4JStorage::E
 		}
 	}
 
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
+	const int controlType = app.GetGameSettings(iPad, eGameSetting_ControlType);
+	const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+
 	// Give the player the option to save their game
 	// does the save exist?
 	bool bSaveExists;
 	StorageManager.DoesSaveExist(&bSaveExists);
 	// 4J-PB - we check if the save exists inside the libs
 	// we need to ask if they are sure they want to overwrite the existing game
-	if(bSaveExists && StorageManager.GetSaveDisabled())
+	if(bSaveExists && (!consoleAutosave || StorageManager.GetSaveDisabled()))
 	{
 		UINT uiIDA[2];
 		uiIDA[0]=IDS_CONFIRM_CANCEL;
@@ -4195,26 +4197,11 @@ int ClientConnection::HostDisconnectReturned(void *pParam,int iPad,C4JStorage::E
 		ui.RequestErrorMessage(IDS_TITLE_SAVE_GAME, IDS_CONFIRM_SAVE_GAME, uiIDA, 2, ProfileManager.GetPrimaryPad(),&ClientConnection::ExitGameAndSaveReturned,nullptr);
 	}
 	else
-#else
-	// Give the player the option to save their game
-	// does the save exist?
-	bool bSaveExists;
-	StorageManager.DoesSaveExist(&bSaveExists);
-	// 4J-PB - we check if the save exists inside the libs
-	// we need to ask if they are sure they want to overwrite the existing game
-	if(bSaveExists)
 	{
-		UINT uiIDA[2];
-		uiIDA[0]=IDS_CONFIRM_CANCEL;
-		uiIDA[1]=IDS_CONFIRM_OK;
-		ui.RequestErrorMessage(IDS_TITLE_SAVE_GAME, IDS_CONFIRM_SAVE_GAME, uiIDA, 2, ProfileManager.GetPrimaryPad(),&ClientConnection::ExitGameAndSaveReturned,nullptr);
-	}
-	else
-#endif
-	{
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-				StorageManager.SetSaveDisabled(false);
-#endif
+		if(consoleAutosave)
+		{
+			StorageManager.SetSaveDisabled(false);
+		}
 		MinecraftServer::getInstance()->setSaveOnExit( true );
 		// flag a app action of exit game
 		app.SetAction(iPad,eAppAction_ExitWorld);

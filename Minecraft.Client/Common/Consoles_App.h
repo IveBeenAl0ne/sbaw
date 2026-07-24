@@ -675,6 +675,8 @@ public:
 	// 4J Stu - Now storing the whole XUSER_SIGNIN_INFO so we can detect xuid changes
 	XUSER_SIGNIN_INFO m_currentSigninInfo[XUSER_MAX_COUNT];
 
+	UINT GetCorrectExitKey(int iPad);
+
 	//void OverrideFontRenderer(bool set, bool immediate = true);
 	//	void ToggleFontRenderer() { OverrideFontRenderer(!m_bFontRendererOverridden,false); }
 	BANNEDLIST BannedListA[XUSER_MAX_COUNT];

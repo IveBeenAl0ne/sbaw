@@ -3150,11 +3150,15 @@ void UIController::ShowAutosaveCountdownTimer(bool show)
 
 void UIController::UpdateAutosaveCountdownTimer(unsigned int uiSeconds)
 {
-#if !(defined(_XBOX_ONE) || defined(__ORBIS__))
-	WCHAR wcAutosaveCountdown[100];
-	swprintf( wcAutosaveCountdown, 100, app.GetString(IDS_AUTOSAVE_COUNTDOWN),uiSeconds);
-	if(m_groups[static_cast<int>(eUIGroup_Fullscreen)]->getPressStartToPlay()) m_groups[static_cast<int>(eUIGroup_Fullscreen)]->getPressStartToPlay()->setTrialTimer(wcAutosaveCountdown);
-#endif
+	const int primaryPad = ProfileManager.GetPrimaryPad();
+	const int controlType = app.GetGameSettings(primaryPad, eGameSetting_ControlType);
+	const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4);
+	if (!consoleAutosave) 
+	{
+        WCHAR wcAutosaveCountdown[100];
+	    swprintf( wcAutosaveCountdown, 100, app.GetString(IDS_AUTOSAVE_COUNTDOWN),uiSeconds);
+	    if(m_groups[static_cast<int>(eUIGroup_Fullscreen)]->getPressStartToPlay()) m_groups[static_cast<int>(eUIGroup_Fullscreen)]->getPressStartToPlay()->setTrialTimer(wcAutosaveCountdown);
+	}
 }
 
 void UIController::ShowSavingMessage(unsigned int iPad, C4JStorage::ESavingMessage eVal)
