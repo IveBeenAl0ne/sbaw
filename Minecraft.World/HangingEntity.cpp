@@ -9,6 +9,12 @@
 #include "../Minecraft.Client/Minecraft.h"
 #include "Level.h"
 
+const int HangingEntity::kApplicableDLCIds[] =
+{
+    1030,
+    1034,
+};
+
 void HangingEntity::_init(Level *level)
 {
 	checkInterval = 0;
@@ -309,22 +315,32 @@ void HangingEntity::readAdditionalSaveData(CompoundTag *tag)
 	}
 	else
 	{
+		bool isValidDLC = false;
 		bool isTutorial = false;
 		Minecraft *minecraft = Minecraft::GetInstance();
+
 		if (minecraft != nullptr && minecraft->isTutorial())
 		{
 			isTutorial = true;
 		}
-		else
+
+		LevelGenerationOptions *levelGen = app.getLevelGenerationOptions();
+
+		if (levelGen != nullptr)
 		{
-			LevelGenerationOptions *levelGen = app.getLevelGenerationOptions();
-			if (levelGen != nullptr && levelGen->isTutorial())
-			{
+			if (levelGen->isTutorial())
 				isTutorial = true;
+
+			if (levelGen->isFromDLC())
+			{
+				if (IsApplicableDLC(levelGen->getRequiredTexturePackId()))
+				{
+					isValidDLC = true;
+				}
 			}
 		}
-
-		if (isTutorial && !placedByPlayer)
+		
+		if ((isTutorial || isValidDLC) && !placedByPlayer)
 		{
 			placedByTutorial = true;
 		}
