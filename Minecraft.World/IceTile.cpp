@@ -14,7 +14,7 @@ IceTile::IceTile(int id) : HalfTransparentTile(id, L"ice", Material::ice, false)
 
 int IceTile::getRenderLayer()
 {
-	return 2;
+	return 1;
 }
 
 bool IceTile::shouldRenderFace(LevelSource *level, int x, int y, int z, int face)

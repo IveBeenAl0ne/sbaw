@@ -21,6 +21,7 @@ public:
 	int dir;
 	int xTile, yTile, zTile;
 	bool placedByPlayer = false;
+	bool placedByTutorial = false;
 
 	HangingEntity(Level *level);
 	HangingEntity(Level *level, int xTile, int yTile, int zTile, int dir);

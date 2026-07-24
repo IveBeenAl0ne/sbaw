@@ -16,6 +16,7 @@ AddPaintingPacket::AddPaintingPacket()
 	dir = 0;
 	motive = L"";
 	placedByPlayer = false;
+	placedByTutorial = false;
 }
 
 AddPaintingPacket::AddPaintingPacket(shared_ptr<Painting> e)
@@ -27,6 +28,7 @@ AddPaintingPacket::AddPaintingPacket(shared_ptr<Painting> e)
 	dir = e->dir;
 	motive = e->motive->name;
 	placedByPlayer = e->placedByPlayer;
+	placedByTutorial = e->placedByTutorial;
 }
 
 void AddPaintingPacket::read(DataInputStream *dis)  //throws IOException
@@ -38,6 +40,7 @@ void AddPaintingPacket::read(DataInputStream *dis)  //throws IOException
 	z = dis->readInt();
 	dir = dis->readInt();
 	placedByPlayer = dis->readByte() != 0;
+	placedByTutorial = dis->readByte() != 0;
 }
 
 void AddPaintingPacket::write(DataOutputStream *dos) //throws IOException
@@ -49,6 +52,7 @@ void AddPaintingPacket::write(DataOutputStream *dos) //throws IOException
 	dos->writeInt(z);
 	dos->writeInt(dir);
 	dos->writeByte(placedByPlayer ? 1 : 0);
+	dos->writeByte(placedByTutorial ? 1 : 0);
 }
 
 void AddPaintingPacket::handle(PacketListener *listener)

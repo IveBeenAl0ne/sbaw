@@ -577,12 +577,14 @@ void ClientConnection::handleAddEntity(shared_ptr<AddEntityPacket> packet)
 		{
 			int dir = packet->data & 0xFF;
 			bool placedByPlayer = (packet->data & 0x100) != 0;
+			bool placedByTutorial = (packet->data & 0x200) != 0;
 			e = std::make_shared<ItemFrame>(level, (int)x, (int)y, (int)z, dir);
 			shared_ptr<ItemFrame> frame = dynamic_pointer_cast<ItemFrame>(e);
 			if (frame != nullptr)
 			{
 				frame->placedByPlayer = placedByPlayer;
-				if (placedByPlayer)
+				frame->placedByTutorial = placedByTutorial;
+				if (placedByPlayer || placedByTutorial)
 				{
 					frame->setDir(dir);
 				}
@@ -842,7 +844,8 @@ void ClientConnection::handleAddPainting(shared_ptr<AddPaintingPacket> packet)
 {
 	shared_ptr<Painting> painting = std::make_shared<Painting>(level, packet->x, packet->y, packet->z, packet->dir, packet->motive);
 	painting->placedByPlayer = packet->placedByPlayer;
-	if (packet->placedByPlayer)
+	painting->placedByTutorial = packet->placedByTutorial;
+	if (packet->placedByPlayer || packet->placedByTutorial)
 	{
 		painting->setDir(packet->dir);
 	}

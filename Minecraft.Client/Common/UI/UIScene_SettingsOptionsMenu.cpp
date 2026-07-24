@@ -84,7 +84,7 @@ void UIScene_SettingsOptionsMenu::tick()
 		m_multiList.AddNewCheckbox(app.GetString(IDS_VIEW_BOBBING), eControl_ViewBob, (app.GetGameSettings(m_iPad,eGameSetting_ViewBob)!=0));
 		m_multiList.AddNewCheckbox(app.GetString(IDS_HINTS), eControl_Hints, (app.GetGameSettings(m_iPad,eGameSetting_Hints)!=0));
 		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_DEATH_MESSAGES), eControl_DeathMessages, (app.GetGameSettings(m_iPad,eGameSetting_DeathMessages)!=0));
-		m_multiList.AddNewCheckbox(L"Passive chunk loading", eControl_PassiveChunkLoading, (app.GetGameSettings(m_iPad,eGameSetting_PassiveChunkLoading)!=0));
+		m_multiList.AddNewCheckbox(L"Passive Chunk Loading", eControl_PassiveChunkLoading, (app.GetGameSettings(m_iPad,eGameSetting_PassiveChunkLoading)!=0));
 
 		if(m_bNotInGame)
 		{

@@ -74,6 +74,7 @@ shared_ptr<HangingEntity> HangingEntityItem::createEntity(Level *level, int x, i
 	{
 		shared_ptr<Painting> painting = std::make_shared<Painting>(level, x, y, z, dir);
 		painting->placedByPlayer = true;
+		painting->placedByTutorial = false;
 
 #ifndef _CONTENT_PACKAGE
 		if (app.DebugArtToolsOn() && auxValue > 0) 
@@ -92,6 +93,7 @@ shared_ptr<HangingEntity> HangingEntityItem::createEntity(Level *level, int x, i
 	{
 		shared_ptr<ItemFrame> itemFrame = std::make_shared<ItemFrame>(level, x, y, z, dir);
 		itemFrame->placedByPlayer = true;
+		itemFrame->placedByTutorial = false;
 		itemFrame->setDir(dir);
 
 		return dynamic_pointer_cast<HangingEntity> (itemFrame);
