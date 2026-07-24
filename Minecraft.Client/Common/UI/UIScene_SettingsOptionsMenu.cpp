@@ -84,6 +84,7 @@ void UIScene_SettingsOptionsMenu::tick()
 		m_multiList.AddNewCheckbox(app.GetString(IDS_VIEW_BOBBING), eControl_ViewBob, (app.GetGameSettings(m_iPad,eGameSetting_ViewBob)!=0));
 		m_multiList.AddNewCheckbox(app.GetString(IDS_HINTS), eControl_Hints, (app.GetGameSettings(m_iPad,eGameSetting_Hints)!=0));
 		m_multiList.AddNewCheckbox(app.GetString(IDS_CHECKBOX_DEATH_MESSAGES), eControl_DeathMessages, (app.GetGameSettings(m_iPad,eGameSetting_DeathMessages)!=0));
+		m_multiList.AddNewCheckbox(L"Passive chunk loading", eControl_PassiveChunkLoading, (app.GetGameSettings(m_iPad,eGameSetting_PassiveChunkLoading)!=0));
 
 		if(m_bNotInGame)
 		{
@@ -246,6 +247,7 @@ void UIScene_SettingsOptionsMenu::setGameSettings()
 	app.SetGameSettings(m_iPad,eGameSetting_ViewBob,m_multiList.GetCheckboxValue(eControl_ViewBob)?1:0);
 	app.SetGameSettings(m_iPad,eGameSetting_Hints,m_multiList.GetCheckboxValue(eControl_Hints)?1:0);
 	app.SetGameSettings(m_iPad,eGameSetting_DeathMessages,m_multiList.GetCheckboxValue(eControl_DeathMessages)?1:0);
+	app.SetGameSettings(m_iPad,eGameSetting_PassiveChunkLoading,m_multiList.GetCheckboxValue(eControl_PassiveChunkLoading)?1:0);
 	app.SetGameSettings(m_iPad,eGameSetting_Autosave,m_multiList.GetSliderValue(eControl_Autosave));
 	app.SetGameSettings(m_iPad,eGameSetting_Sensitivity_InGame,m_multiList.GetSliderValue(eControl_Sensitivity_InGame));
 	app.SetGameSettings(m_iPad,eGameSetting_Difficulty,m_multiList.GetSliderValue(eControl_Difficulty));

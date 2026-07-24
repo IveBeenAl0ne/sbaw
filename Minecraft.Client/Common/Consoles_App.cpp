@@ -1051,6 +1051,9 @@ int CMinecraftApp::SetDefaultOptions(C_4JProfile::PROFILESETTINGS *pSettings,con
 	//TU34
 	SetGameSettings(iPad, eGameSetting_MinecartSounds, 1);
 
+	// custom
+	SetGameSettings(iPad, eGameSetting_PassiveChunkLoading, 0);
+
 	// 4J-PB - leave these in, or remove from everywhere they are referenced!
 	// Although probably best to leave in unless we split the profile settings into platform specific classes - having different meaning per platform for the same bitmask could get confusing
 	//#ifdef __PS3__
@@ -1516,6 +1519,9 @@ void CMinecraftApp::ApplyGameSettingsChanged(int iPad)
 	ActionGameSettings(iPad, eGameSetting_HideSaveSizeBar);
 	ActionGameSettings(iPad, eGameSetting_SafeCam);
 	ActionGameSettings(iPad, eGameSetting_Swap);
+	
+	// custom
+	ActionGameSettings(iPad, eGameSetting_PassiveChunkLoading);
 }
 
 void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
@@ -1733,6 +1739,9 @@ void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
 		//nothing to do here
 		break;
 	case eGameSetting_DeathMessages:
+		//nothing to do here
+		break;
+	case eGameSetting_PassiveChunkLoading:
 		//nothing to do here
 		break;
 	case eGameSetting_UISize:
@@ -2449,6 +2458,21 @@ void CMinecraftApp::SetGameSettings(int iPad,eGameSetting eVal,unsigned char ucV
 			GameSettingsA[iPad]->bSettingsChanged=true;
 		}
 		break;
+	case eGameSetting_PassiveChunkLoading:
+		if((GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_PASSIVECHUNKLOADING)!=(ucVal&0x01)<<18)
+		{
+			if(ucVal==1)
+			{
+				GameSettingsA[iPad]->uiBitmaskValues|=GAMESETTING_PASSIVECHUNKLOADING;
+			}
+			else
+			{
+				GameSettingsA[iPad]->uiBitmaskValues&=~GAMESETTING_PASSIVECHUNKLOADING;
+			}
+			ActionGameSettings(iPad,eVal);
+			GameSettingsA[iPad]->bSettingsChanged=true;
+		}
+		break;
 	case eGameSetting_UISize:
 		if((GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_UISIZE)!=((ucVal&0x03)<<11))
 		{
@@ -2758,6 +2782,9 @@ unsigned char CMinecraftApp::GetGameSettings(int iPad,eGameSetting eVal)
 		// TU9
 	case eGameSetting_DeathMessages:
 		return (GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_DEATHMESSAGES)>>10;
+		break;
+	case eGameSetting_PassiveChunkLoading:
+		return (GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_PASSIVECHUNKLOADING)>>18;
 		break;
 	case eGameSetting_UISize:
 		{

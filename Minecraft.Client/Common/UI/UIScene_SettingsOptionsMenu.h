@@ -13,10 +13,11 @@ private:
 		eControl_ViewBob = 2,
 		eControl_Hints = 3,
 		eControl_DeathMessages = 4,
-		eControl_Languages = 5,
-		eControl_Autosave = 6,
-		eControl_Sensitivity_InGame = 7,
-		eControl_Difficulty = 8,
+		eControl_PassiveChunkLoading = 5,
+		eControl_Languages = 6,
+		eControl_Autosave = 7,
+		eControl_Sensitivity_InGame = 8,
+		eControl_Difficulty = 9,
 	};
 
 	UIControl_MultiList m_multiList;
