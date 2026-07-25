@@ -11,7 +11,7 @@
 
 const int HangingEntity::kApplicableDLCIds[] =
 {
-    1030,
+    // 1030,
     1034,
 };
 
