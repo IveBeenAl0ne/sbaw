@@ -72,6 +72,7 @@
 #include "Common/UI/IUIScene_CreativeMenu.h"
 #include "Common/UI/UIFontData.h"
 #include "Common/UI/UIComponent_PressStartToPlay.h"
+#include "Common/Input/PCInput.h"
 #include "DLCTexturePack.h"
 #ifdef _WINDOWS64
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -1473,144 +1474,110 @@ void Minecraft::run_middle()
 					if(localplayers[i])
 				{
 					// 4J-PB - add these to check for coming out of idle
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_JUMP))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_JUMP;
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_USE))					localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_USE;
-
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_INVENTORY))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_INVENTORY;
-					if(InputManager.ButtonDown(i, MINECRAFT_ACTION_INVENTORY))				    localplayers[i]->ullButtonsDown|=1LL<<MINECRAFT_ACTION_INVENTORY;
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_ACTION))					localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_ACTION;
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_CRAFTING))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_CRAFTING;
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_PAUSEMENU))
+					static const int kPressActions[] =
 					{
-						localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_PAUSEMENU;
-						app.DebugPrintf("PAUSE PRESSED - ipad = %d, Storing press\n",i);
+						MINECRAFT_ACTION_JUMP,
+						MINECRAFT_ACTION_USE,
+						MINECRAFT_ACTION_ACTION,
+						MINECRAFT_ACTION_DROP,
+						MINECRAFT_ACTION_RENDER_THIRD_PERSON,
+						MINECRAFT_ACTION_GAME_INFO,
+						MINECRAFT_ACTION_RENDER_DEBUG,
+						MINECRAFT_ACTION_SCREENSHOT,
+					};
+					for(int a = 0; a < (int)(sizeof(kPressActions)/sizeof(kPressActions[0])); a++)
+					{
+						if(PCInput::ActionPressed(i, kPressActions[a]))
+							localplayers[i]->ullButtonsPressed|=1LL<<kPressActions[a];
 					}
+
+					if(PCInput::ActionDown(i, MINECRAFT_ACTION_INVENTORY))						localplayers[i]->ullButtonsDown|=1LL<<MINECRAFT_ACTION_INVENTORY;
 #ifdef _DURANGO
 					if(InputManager.ButtonPressed(i, ACTION_MENU_GTC_PAUSE))					localplayers[i]->ullButtonsPressed|=1LL<<ACTION_MENU_GTC_PAUSE;
 #endif
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_DROP))					localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_DROP;
+
+					// E and C/R close an open container instead of opening their own screen.
+					bool isClosableByEitherKey = ui.IsSceneInStack(i, eUIScene_FurnaceMenu) ||
+						ui.IsSceneInStack(i, eUIScene_ContainerMenu) ||
+						ui.IsSceneInStack(i, eUIScene_DispenserMenu) ||
+						ui.IsSceneInStack(i, eUIScene_EnchantingMenu) ||
+						ui.IsSceneInStack(i, eUIScene_BrewingStandMenu) ||
+						ui.IsSceneInStack(i, eUIScene_TradingMenu) ||
+						ui.IsSceneInStack(i, eUIScene_AnvilMenu) ||
+						ui.IsSceneInStack(i, eUIScene_HopperMenu) ||
+						ui.IsSceneInStack(i, eUIScene_BeaconMenu) ||
+						ui.IsSceneInStack(i, eUIScene_InventoryMenu) ||
+						ui.IsSceneInStack(i, eUIScene_HorseMenu);
+					bool isEditing = ui.GetTopScene(i) && ui.GetTopScene(i)->isDirectEditBlocking();
+
+					if(PCInput::ActionPressed(i, MINECRAFT_ACTION_INVENTORY))
+					{
+						if(isClosableByEitherKey && !isEditing)
+						{
+							ui.CloseUIScenes(i);
+						}
+						else
+						{
+							localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_INVENTORY;
+						}
+					}
+
+					if(PCInput::ActionPressed(i, MINECRAFT_ACTION_CRAFTING))
+					{
+						if ((ui.IsSceneInStack(i, eUIScene_Crafting2x2Menu) || ui.IsSceneInStack(i, eUIScene_Crafting3x3Menu) || ui.IsSceneInStack(i, eUIScene_CreativeMenu) || ui.IsSceneInStack(i, eUIScene_ClassicCraftingMenu) || isClosableByEitherKey) && !isEditing)
+						{
+							ui.CloseUIScenes(i);
+						}
+						else
+						{
+							localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_CRAFTING;
+						}
+					}
+
+					if(PCInput::ActionPressed(i, MINECRAFT_ACTION_PAUSEMENU) && !ui.GetMenuDisplayed(i))
+					{
+						if (dynamic_cast<ChatScreen*>(getScreen()) != nullptr)
+						{
+							setScreen(nullptr);
+						}
+						else
+						{
+							localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_PAUSEMENU;
+							app.DebugPrintf("PAUSE PRESSED - ipad = %d, Storing press\n",i);
+						}
+					}
 
 					// 4J-PB - If we're flying, the sneak needs to be held on to go down
 					if(localplayers[i]->abilities.flying)
 					{
-						if(InputManager.ButtonDown(i, MINECRAFT_ACTION_SNEAK_TOGGLE))			localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
+						if(PCInput::ActionDown(i, MINECRAFT_ACTION_SNEAK_TOGGLE))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
 					}
 					else
 					{
-						if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_SNEAK_TOGGLE))		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
+						if(PCInput::ActionPressed(i, MINECRAFT_ACTION_SNEAK_TOGGLE))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
 					}
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_RENDER_THIRD_PERSON))		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_THIRD_PERSON;
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_GAME_INFO))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_GAME_INFO;
 
-#ifdef _WINDOWS64
-					// Keyboard/mouse button presses for player 0
-					if (i == 0)
+					if (!ui.GetMenuDisplayed(i))
 					{
-						if (g_KBMInput.IsKBMActive())
+						int slot = PCInput::GetHotbarSlotPressed(i);
+						if (slot >= 0 && localplayers[i]->inventory)
 						{
-							if(g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT))
-								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_ACTION;
+							localplayers[i]->inventory->selected = slot;
+							int iPad = localplayers[i]->GetXboxPad();
 
-							if(g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_RIGHT))
-								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_USE;
-
-							bool isClosableByEitherKey = ui.IsSceneInStack(i, eUIScene_FurnaceMenu) ||
-								ui.IsSceneInStack(i, eUIScene_ContainerMenu) ||
-								ui.IsSceneInStack(i, eUIScene_DispenserMenu) ||
-								ui.IsSceneInStack(i, eUIScene_EnchantingMenu) ||
-								ui.IsSceneInStack(i, eUIScene_BrewingStandMenu) ||
-								ui.IsSceneInStack(i, eUIScene_TradingMenu) ||
-								ui.IsSceneInStack(i, eUIScene_AnvilMenu) ||
-								ui.IsSceneInStack(i, eUIScene_HopperMenu) ||
-								ui.IsSceneInStack(i, eUIScene_BeaconMenu) ||
-								ui.IsSceneInStack(i, eUIScene_InventoryMenu) ||
-								ui.IsSceneInStack(i, eUIScene_HorseMenu);
-							bool isEditing = ui.GetTopScene(i) && ui.GetTopScene(i)->isDirectEditBlocking();
-
-							if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_INVENTORY))
+							// use the same behaviour of scrolling the hotbar so keyboard numbers triggers the same functions.
+							if( gameMode != nullptr && gameMode->getTutorial() != nullptr )
 							{
-								if(isClosableByEitherKey && !isEditing)
-								{
-									ui.CloseUIScenes(i);
-								}
-								else
-								{
-									localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_INVENTORY;
-								}
+								gameMode->getTutorial()->onSelectedItemChanged(player->inventory->getSelected());
 							}
 
-							if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_DROP))
-								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_DROP;
-
-							if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_CRAFTING) || g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_CRAFTING_ALT))
-							{
-								if ((ui.IsSceneInStack(i, eUIScene_Crafting2x2Menu) || ui.IsSceneInStack(i, eUIScene_Crafting3x3Menu) || ui.IsSceneInStack(i, eUIScene_CreativeMenu) || ui.IsSceneInStack(i, eUIScene_ClassicCraftingMenu) || isClosableByEitherKey) && !isEditing)
-							{
-								ui.CloseUIScenes(i);
-							}
-							else
-							{
-								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_CRAFTING;
-							}
-						}
-
-							//Prevent hotbar switching in menu
-							if (!ui.GetMenuDisplayed(0)) {
-								for (int slot = 0; slot < 9; slot++)
-								{
-									if (g_KBMInput.IsKeyPressed('1' + slot))
-									{
-										if (localplayers[i]->inventory) {
-											localplayers[i]->inventory->selected = slot;
-											int iPad = localplayers[i]->GetXboxPad();
-
-											// use the same behaviour of scrolling the hotbar so keyboard numbers triggers the same functions.
-											if( gameMode != nullptr && gameMode->getTutorial() != nullptr )
-											{
-												gameMode->getTutorial()->onSelectedItemChanged(player->inventory->getSelected());
-											}
-
-											player->updateRichPresence();
-											wstring itemName = L"";
-											shared_ptr<ItemInstance> selectedItem = player->getSelectedItem();
-											if (selectedItem != nullptr) itemName = selectedItem->getHoverName();
-											ui.SetSelectedItem(iPad, itemName);
-										}
-									}
-								}
-							}
-						}
-
-						// Utility keys always work regardless of KBM active state
-						if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_PAUSE) && !ui.GetMenuDisplayed(i))
-						{
-							if (dynamic_cast<ChatScreen*>(getScreen()) != nullptr) {
-								setScreen(nullptr);
-							} else {
-								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_PAUSEMENU;
-								app.DebugPrintf("PAUSE PRESSED (keyboard) - ipad = %d\n",i);
-							}
-						}
-
-						if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_THIRD_PERSON))
-							localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_THIRD_PERSON;
-
-						if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_DEBUG_MENU))
-						{
-							localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_DEBUG;
-						}
-
-						if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_SCREENSHOT))
-							localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SCREENSHOT;
-
-						// In flying mode, Shift held = sneak/descend
-						if(g_KBMInput.IsKBMActive() && g_KBMInput.IsKeyDown(KeyboardMouseInput::KEY_SNEAK))
-						{
-							if (localplayers[i]->abilities.flying && !ui.GetMenuDisplayed(i))
-								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
+							player->updateRichPresence();
+							wstring itemName = L"";
+							shared_ptr<ItemInstance> selectedItem = player->getSelectedItem();
+							if (selectedItem != nullptr) itemName = selectedItem->getHoverName();
+							ui.SetSelectedItem(iPad, itemName);
 						}
 					}
-#endif
 
 #if _DEBUG // ndef _FINAL_BUILD // Disable conflicting debug functionality in release builds
 					if( app.DebugSettingsOn() && app.GetUseDPadForDebug() )
@@ -3634,12 +3601,15 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 			wheel = -1;
 		}
 
-#ifdef _WINDOWS64
-		if (iPad == 0 && wheel == 0 && g_KBMInput.IsKBMActive())
+		if (wheel == 0)
 		{
-			wheel = g_KBMInput.GetMouseWheel();
-		}
+			// GetScrollDelta only peeks.
+			wheel = PCInput::GetScrollDelta(iPad);
+#ifdef _WINDOWS64
+			if (wheel != 0)
+				g_KBMInput.ConsumeMouseWheel();
 #endif
+		}
 		if (wheel != 0)
 		{
 			player->inventory->swapPaint(wheel);
@@ -3663,10 +3633,10 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 		}
 
 #ifdef _WINDOWS64
-		static bool wasMiddleMouseDown = false;
-		const bool middleMouseDown = (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseGrabbed() && g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_MIDDLE));
-		const bool pickBlockPressed = middleMouseDown && !wasMiddleMouseDown;
-		wasMiddleMouseDown = middleMouseDown;
+		// No MINECRAFT_ACTION_PICK_BLOCK exists and adding one would fork every console
+		// target, so this stays raw.
+		const bool pickBlockPressed = (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseGrabbed()
+			&& g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_MIDDLE));
 
 		if (pickBlockPressed && gameMode->hasInfiniteItems() && hitResult != nullptr)
 		{
@@ -3815,13 +3785,8 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 				player->lastClickTick[0] = ticks;
 			}
 
-#ifdef _WINDOWS64
-			bool actionPressed = InputManager.ButtonPressed(iPad, MINECRAFT_ACTION_ACTION) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT));
-			bool actionHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_ACTION) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT));
-#else
-			bool actionPressed = InputManager.ButtonPressed(iPad, MINECRAFT_ACTION_ACTION);
-			bool actionHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_ACTION);
-#endif
+			bool actionPressed = PCInput::ActionPressed(iPad, MINECRAFT_ACTION_ACTION);
+			bool actionHeld = PCInput::ActionDown(iPad, MINECRAFT_ACTION_ACTION);
 
 			if (actionPressed)
 			{
@@ -3849,11 +3814,7 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 		lastClickTick = ticks;
 		}
 		*/
-#ifdef _WINDOWS64
-		bool useHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_RIGHT));
-#else
-		bool useHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE);
-#endif
+		bool useHeld = PCInput::ActionDown(iPad, MINECRAFT_ACTION_USE);
 		bool achHeld;
 		if( player->isUsingItem() )
 		{
@@ -4106,8 +4067,10 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 
 		if((player->ullButtonsPressed&(1LL<<MINECRAFT_ACTION_DROP)) && gameMode->isInputAllowed(MINECRAFT_ACTION_DROP))
 		{
-            bool ctrlHeld = g_KBMInput.IsKBMActive() && g_KBMInput.IsKeyDown(KeyboardMouseInput::KEY_CONTROL);
-			player->drop(ctrlHeld);
+			// Modifier + drop drops the whole stack. Shares the sprint binding, as
+			// KEY_CONTROL and KEY_SPRINT were both VK_CONTROL.
+			bool modifierHeld = PCInput::ActionDown(iPad, PC_ACTION_SPRINT);
+			player->drop(modifierHeld);
 		}
 
 		uint64_t ullButtonsPressed=player->ullButtonsPressed;
