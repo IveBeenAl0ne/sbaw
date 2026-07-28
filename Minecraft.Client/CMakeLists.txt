@@ -60,6 +60,7 @@ target_include_directories(Minecraft.Client PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}/Iggy/include"
   "${CMAKE_SOURCE_DIR}/include"
+  "${CMAKE_SOURCE_DIR}/Minecraft.Server/vendor" # vendored nlohmann/json.hpp
 )
 
 target_compile_definitions(Minecraft.Client PRIVATE

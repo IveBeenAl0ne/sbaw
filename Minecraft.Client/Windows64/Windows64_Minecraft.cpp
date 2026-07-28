@@ -27,6 +27,7 @@
 #include "../Minecraft.h"
 #include "../ChatScreen.h"
 #include "KeyboardMouseInput.h"
+#include "../Common/Input/PCInput.h"
 #include "../User.h"
 #include "../../Minecraft.World/Socket.h"
 #include "../../Minecraft.World/ThreadName.h"
@@ -1488,6 +1489,7 @@ static Minecraft* InitialiseMinecraftRuntime()
 
 	InputManager.Initialise(1, 3, MINECRAFT_ACTION_MAX, ACTION_MAX_MENU);
 	g_KBMInput.Init();
+	PCInput::Init();
 	DefineActions();
 	InputManager.SetJoypadMapVal(0, 0);
 	InputManager.SetKeyRepeatRate(0.3f, 0.2f);

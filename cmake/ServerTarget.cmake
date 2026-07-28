@@ -44,6 +44,7 @@ function(configure_lce_server_target target)
     "${CMAKE_SOURCE_DIR}/Minecraft.Client/"
     "${CMAKE_SOURCE_DIR}/Minecraft.Client/${PLATFORM_NAME}/Iggy/include"
     "${CMAKE_SOURCE_DIR}/Minecraft.Server"
+    "${CMAKE_SOURCE_DIR}/Minecraft.Server/vendor" # vendored nlohmann/json.hpp
     "${CMAKE_SOURCE_DIR}/include/"
   )
   target_compile_definitions(${target} PRIVATE
