@@ -13,6 +13,7 @@
 #include "../../DLCTexturePack.h"
 #include "../../TexturePackRepository.h"
 #include "../../Minecraft.h"
+#include "../Input/PCInput.h"
 #include "../../../Minecraft.World/net.minecraft.world.entity.boss.enderdragon.h"
 #include "../../EnderDragonRenderer.h"
 #include "../../MultiPlayerLocalPlayer.h"
@@ -1641,36 +1642,15 @@ void UIController::handleKeyPress(unsigned int iPad, unsigned int key)
 	}
 #endif
 
-	down = InputManager.ButtonDown(iPad,key);
-	pressed = InputManager.ButtonPressed(iPad,key); // Toggle
-	released = InputManager.ButtonReleased(iPad,key); // Toggle
+	// Keyboard bindings are resolved here, together with the pad. The hardcoded
+	// action -> VK_* reverse lookup this replaced meant menu keys could never be rebound.
+	down     = PCInput::ActionDown(iPad, key);
+	pressed  = PCInput::ActionPressed(iPad, key);
+	released = PCInput::ActionReleased(iPad, key);
 
 #ifdef _WINDOWS64
 	if (iPad == 0)
 	{
-		int vk = 0;
-		switch (key)
-		{
-		case ACTION_MENU_OK:    case ACTION_MENU_A: vk = VK_RETURN; break;
-		case ACTION_MENU_CANCEL: case ACTION_MENU_B: vk = VK_ESCAPE; break;
-		case ACTION_MENU_UP:    vk = VK_UP;     break;
-		case ACTION_MENU_DOWN:  vk = VK_DOWN;   break;
-		case ACTION_MENU_LEFT:  vk = VK_LEFT;   break;
-		case ACTION_MENU_RIGHT: vk = VK_RIGHT;  break;
-		case ACTION_MENU_X:     vk = 'R';       break;
-		case ACTION_MENU_Y:     vk = VK_TAB;    break;
-		case ACTION_MENU_LEFT_SCROLL:  vk = 'Q'; break;
-		case ACTION_MENU_RIGHT_SCROLL: vk = 'E'; break;
-		case ACTION_MENU_PAGEUP:   vk = VK_PRIOR; break;
-		case ACTION_MENU_PAGEDOWN: vk = VK_NEXT;  break;
-		}
-		if (vk != 0)
-		{
-			if (g_KBMInput.IsKeyPressed(vk))  { pressed = true; down = true; }
-			if (g_KBMInput.IsKeyReleased(vk)) { released = true; down = false; }
-			if (!pressed && !released && g_KBMInput.IsKeyDown(vk)) { down = true; }
-		}
-
 		if ((key == ACTION_MENU_OK || key == ACTION_MENU_A) && !g_KBMInput.IsMouseGrabbed())
 		{
 			if (m_mouseDraggingSliderId < 0 && !m_mouseClickConsumedByScene)

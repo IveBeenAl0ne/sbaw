@@ -3,6 +3,7 @@
 #include "IUIScene_AbstractContainerMenu.h"
 
 #include "UI.h"
+#include "../Input/PCInput.h"
 #include "../../../Minecraft.World/net.minecraft.world.inventory.h"
 #include "../../../Minecraft.World/net.minecraft.world.item.h"
 #include "../../../Minecraft.World/net.minecraft.world.item.enchantment.h"
@@ -1399,7 +1400,7 @@ bool IUIScene_AbstractContainerMenu::handleKeyDown(int iPad, int iAction, bool b
 
 			// Standard left click
 			buttonNum = 0;
-			if (g_KBMInput.IsKeyDown(VK_LSHIFT))
+			if (PCInput::ActionDown(iPad, ACTION_MENU_QUICK_MOVE))
 			{
 				{
 					validKeyPress = TRUE;

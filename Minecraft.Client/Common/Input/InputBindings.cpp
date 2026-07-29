@@ -49,10 +49,10 @@ namespace
 		// GAME_INFO, FLY_TOGGLE, CHANGE_SKIN and SPAWN_CREEPER ship unbound.
 
 		// --- Menu -----------------------------------------------------------------
+		// Keyboard only. Clicking a UI element and scrolling a list need hit-test state that
+		// only UIController has, so it keeps them.
 		{ ACTION_MENU_OK,                      eBindSlot_Primary,   eBind_Key,         VK_RETURN  },
-		{ ACTION_MENU_OK,                      eBindSlot_Secondary, eBind_MouseButton, kMouseLeft },
 		{ ACTION_MENU_A,                       eBindSlot_Primary,   eBind_Key,         VK_RETURN  },
-		{ ACTION_MENU_A,                       eBindSlot_Secondary, eBind_MouseButton, kMouseLeft },
 		{ ACTION_MENU_CANCEL,                  eBindSlot_Primary,   eBind_Key,         VK_ESCAPE  },
 		{ ACTION_MENU_B,                       eBindSlot_Primary,   eBind_Key,         VK_ESCAPE  },
 		{ ACTION_MENU_UP,                      eBindSlot_Primary,   eBind_Key,         VK_UP      },
@@ -60,14 +60,11 @@ namespace
 		{ ACTION_MENU_LEFT,                    eBindSlot_Primary,   eBind_Key,         VK_LEFT    },
 		{ ACTION_MENU_RIGHT,                   eBindSlot_Primary,   eBind_Key,         VK_RIGHT   },
 		{ ACTION_MENU_X,                       eBindSlot_Primary,   eBind_Key,         'R'        },
-		{ ACTION_MENU_X,                       eBindSlot_Secondary, eBind_MouseButton, kMouseRight},
 		{ ACTION_MENU_Y,                       eBindSlot_Primary,   eBind_Key,         VK_TAB     },
 		{ ACTION_MENU_LEFT_SCROLL,             eBindSlot_Primary,   eBind_Key,         'Q'        },
 		{ ACTION_MENU_RIGHT_SCROLL,            eBindSlot_Primary,   eBind_Key,         'E'        },
 		{ ACTION_MENU_PAGEUP,                  eBindSlot_Primary,   eBind_Key,         VK_PRIOR   },
 		{ ACTION_MENU_PAGEDOWN,                eBindSlot_Primary,   eBind_Key,         VK_NEXT    },
-		{ ACTION_MENU_OTHER_STICK_UP,          eBindSlot_Primary,   eBind_MouseWheel,   1         },
-		{ ACTION_MENU_OTHER_STICK_DOWN,        eBindSlot_Primary,   eBind_MouseWheel,  -1         },
 		{ ACTION_MENU_QUICK_MOVE,              eBindSlot_Primary,   eBind_Key,         VK_LSHIFT  },
 
 		// --- PC-only --------------------------------------------------------------
