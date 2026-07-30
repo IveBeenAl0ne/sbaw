@@ -197,6 +197,8 @@ set(_MINECRAFT_CLIENT_WINDOWS_COMMON_UI_SCENES_HELP__OPTIONS
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_HowToPlay.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_HowToPlayMenu.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_HowToPlayMenu.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_KeyBindingsMenu.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_KeyBindingsMenu.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_LanguageSelector.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_LanguageSelector.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Common/UI/UIScene_ReinstallMenu.cpp"

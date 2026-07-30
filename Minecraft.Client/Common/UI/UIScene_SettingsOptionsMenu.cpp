@@ -20,6 +20,7 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 	m_bNotInGame = (Minecraft::GetInstance()->level==nullptr);
 	m_bNeedsMultiListPopulate = true;
 	m_bNavigateToLanguageSelector = false;
+	m_bNavigateToKeyBindings = false;
 	m_bInitialPopulateDone = false;
 	m_bPendingSliderUpdate = false;
 	m_iPendingSliderId = 0;
@@ -71,6 +72,10 @@ void UIScene_SettingsOptionsMenu::tick()
 			m_multiList.AddNewButton(app.GetString(IDS_LANGUAGE_SELECTOR), eControl_Languages);
 		}
 
+#ifdef _WINDOWS64
+		m_multiList.AddNewButton(app.GetString(IDS_KEYBINDINGS_TITLE), eControl_KeyBindings);
+#endif
+
 		WCHAR TempString[256];
 
 		int autosaveVal = app.GetGameSettings(m_iPad,eGameSetting_Autosave);
@@ -102,6 +107,13 @@ void UIScene_SettingsOptionsMenu::tick()
 		m_bNavigateToLanguageSelector = false;
 		setGameSettings();
 		ui.NavigateToScene(m_iPad, eUIScene_LanguageSelector);
+	}
+
+	if(m_bNavigateToKeyBindings)
+	{
+		m_bNavigateToKeyBindings = false;
+		setGameSettings();
+		ui.NavigateToScene(m_iPad, eUIScene_KeyBindingsMenu);
 	}
 
 	if(m_bPendingSliderUpdate)
@@ -196,6 +208,9 @@ void UIScene_SettingsOptionsMenu::handlePress(F64 controlId, F64 childId)
 	{
 	case eControl_Languages:
 		m_bNavigateToLanguageSelector = true;
+		break;
+	case eControl_KeyBindings:
+		m_bNavigateToKeyBindings = true;
 		break;
 	}
 }

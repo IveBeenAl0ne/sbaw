@@ -58,6 +58,7 @@ enum EUIScene
 	eUIScene_HowToPlay,
 	eUIScene_HowToPlayMenu,
 	eUIScene_ControlsMenu,
+	eUIScene_KeyBindingsMenu,
 	eUIScene_SettingsOptionsMenu,
 	eUIScene_SettingsAudioMenu,
 	eUIScene_SettingsGraphicsMenu,

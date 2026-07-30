@@ -51,6 +51,7 @@ public:
 	int GetSliderValue(int id);
 	void SetSliderValue(int id, int value, bool bImmediate = true);
 	void SetSliderLabel(int id, const wstring &label, bool bImmediate = true);
+	void SetItemLabel(int id, const wstring &label, bool bImmediate = true);
 	void HighlightItem(int id, bool animate = false);
 	void EnableItem(int id, bool bEnable, bool bImmediate = true);
 	void clearList();

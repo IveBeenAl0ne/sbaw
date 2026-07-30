@@ -90,6 +90,9 @@
 #include "UIScene_LanguageSelector.h"
 #include "UIScene_HowToPlay.h"
 #include "UIScene_ControlsMenu.h"
+#ifdef _WINDOWS64
+#include "UIScene_KeyBindingsMenu.h"
+#endif
 #include "UIScene_Credits.h"
 
 #include "UIScene_PauseMenu.h"

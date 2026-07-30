@@ -17,11 +17,13 @@ private:
 		eControl_Autosave = 6,
 		eControl_Sensitivity_InGame = 7,
 		eControl_Difficulty = 8,
+		eControl_KeyBindings = 9,
 	};
 
 	UIControl_MultiList m_multiList;
 	bool m_bNeedsMultiListPopulate;
 	bool m_bNavigateToLanguageSelector;
+	bool m_bNavigateToKeyBindings;
 	bool m_bInitialPopulateDone;
 	bool m_bPendingSliderUpdate;
 	int m_iPendingSliderId;

@@ -119,5 +119,13 @@
 
 	<data name="IDS_INVITATION_BODY">
 		<value>Please come and play a game of Minecraft: PlayStation®Vita Edition!</value>
-	</data>	
+	</data>
+
+	<data name="IDS_KEYBINDINGS_TITLE">
+		<value>Key Bindings</value>
+	</data>
+
+	<data name="IDS_KEYBINDINGS_RESET">
+		<value>Reset to Defaults</value>
+	</data>
 </root>

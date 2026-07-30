@@ -3874,9 +3874,7 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 				}
 			}
 
-			achHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_INVENTORY) ||
-				(iPad == 0 && g_KBMInput.IsKBMActive() &&
-					g_KBMInput.IsKeyDown(KeyboardMouseInput::KEY_INVENTORY));
+			achHeld = PCInput::ActionDown(iPad, MINECRAFT_ACTION_INVENTORY);
 			if (ui.toastOn) {
 				if (achHeld) {
 					// Record when the hold started

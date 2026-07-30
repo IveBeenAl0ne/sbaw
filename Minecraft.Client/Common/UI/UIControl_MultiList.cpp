@@ -303,6 +303,24 @@ void UIControl_MultiList::SetSliderLabel(int id, const wstring &label, bool bImm
 		getIggyValuePath(), m_funcSetItemLabel, 2, args);
 }
 
+void UIControl_MultiList::SetItemLabel(int id, const wstring &label, bool bImmediate)
+{
+	IggyDataValue result;
+	IggyDataValue args[2];
+
+	args[0].type   = IGGY_DATATYPE_number;
+	args[0].number = (double)getListIndex(id);
+
+	IggyStringUTF16 stringVal;
+	stringVal.string = (IggyUTF16*)label.c_str();
+	stringVal.length = label.length();
+	args[1].type     = IGGY_DATATYPE_string_UTF16;
+	args[1].string16 = stringVal;
+
+	IggyPlayerCallMethodRS(m_parentScene->getMovie(), &result,
+		getIggyValuePath(), m_funcSetItemLabel, 2, args);
+}
+
 void UIControl_MultiList::HighlightItem(int id, bool animate)
 {
 	IggyDataValue result;

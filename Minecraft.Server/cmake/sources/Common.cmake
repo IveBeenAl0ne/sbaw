@@ -228,6 +228,7 @@ set(_MINECRAFT_SERVER_COMMON_ROOT
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_InventoryMenu.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_JoinMenu.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_Keyboard.cpp"
+  "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_KeyBindingsMenu.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_LanguageSelector.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_LaunchMoreOptionsMenu.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_LeaderboardsMenu.cpp"
