@@ -91,8 +91,8 @@ void EntityIO::staticCtor()
 	setId(Silverfish::create, eTYPE_SILVERFISH, L"Silverfish", 60, eMinecraftColour_Mob_Silverfish_Colour1, eMinecraftColour_Mob_Silverfish_Colour2, IDS_SILVERFISH);
 	setId(Blaze::create, eTYPE_BLAZE, L"Blaze", 61, eMinecraftColour_Mob_Blaze_Colour1, eMinecraftColour_Mob_Blaze_Colour2, IDS_BLAZE);
 	setId(LavaSlime::create, eTYPE_LAVASLIME, L"LavaSlime", 62, eMinecraftColour_Mob_LavaSlime_Colour1, eMinecraftColour_Mob_LavaSlime_Colour2, IDS_LAVA_SLIME);
-	setId(EnderDragon::create, eTYPE_ENDERDRAGON, L"EnderDragon", 63, eMinecraftColour_Mob_Enderman_Colour1, eMinecraftColour_Mob_Enderman_Colour1, IDS_ENDERDRAGON);
-	setId(WitherBoss::create, eTYPE_WITHERBOSS, L"WitherBoss", 64);
+	setId(EnderDragon::create, eTYPE_ENDERDRAGON, L"EnderDragon", 63, eMinecraftColour_Mob_EnderDragon_Colour1, eMinecraftColour_Mob_EnderDragon_Colour2, IDS_ENDERDRAGON);
+	setId(WitherBoss::create, eTYPE_WITHERBOSS, L"WitherBoss", 64, eMinecraftColour_Mob_WitherBoss_Colour1, eMinecraftColour_Mob_WitherBoss_Colour2, IDS_WITHER);
 	setId(Bat::create, eTYPE_BAT, L"Bat", 65, eMinecraftColour_Mob_Bat_Colour1, eMinecraftColour_Mob_Bat_Colour2, IDS_BAT);
 	setId(Witch::create, eTYPE_WITCH, L"Witch", 66, eMinecraftColour_Mob_Witch_Colour1, eMinecraftColour_Mob_Witch_Colour2, IDS_WITCH);
 
@@ -110,9 +110,9 @@ void EntityIO::staticCtor()
 	setId(Squid::create, eTYPE_SQUID, L"Squid", 94, eMinecraftColour_Mob_Squid_Colour1, eMinecraftColour_Mob_Squid_Colour2, IDS_SQUID);
 	setId(Wolf::create, eTYPE_WOLF, L"Wolf", 95, eMinecraftColour_Mob_Wolf_Colour1, eMinecraftColour_Mob_Wolf_Colour2, IDS_WOLF);
 	setId(MushroomCow::create, eTYPE_MUSHROOMCOW, L"MushroomCow", 96, eMinecraftColour_Mob_MushroomCow_Colour1, eMinecraftColour_Mob_MushroomCow_Colour2, IDS_MUSHROOM_COW);
-	setId(SnowMan::create, eTYPE_SNOWMAN, L"SnowMan", 97);
+	setId(SnowMan::create, eTYPE_SNOWMAN, L"SnowMan", 97, eMinecraftColour_Mob_SnowMan_Colour1, eMinecraftColour_Mob_SnowMan_Colour2, IDS_SNOWMAN);
 	setId(Ocelot::create, eTYPE_OCELOT, L"Ozelot", 98, eMinecraftColour_Mob_Ocelot_Colour1, eMinecraftColour_Mob_Ocelot_Colour2, IDS_OZELOT);
-	setId(VillagerGolem::create, eTYPE_VILLAGERGOLEM, L"VillagerGolem", 99);
+	setId(VillagerGolem::create, eTYPE_VILLAGERGOLEM, L"VillagerGolem", 99, eMinecraftColour_Mob_VillagerGolem_Colour1, eMinecraftColour_Mob_VillagerGolem_Colour2, IDS_IRONGOLEM);
 	setId(EntityHorse::create, eTYPE_HORSE, L"EntityHorse", 100, eMinecraftColour_Mob_Horse_Colour1, eMinecraftColour_Mob_Horse_Colour2, IDS_HORSE);
 	setId(Rabbit::create, eTYPE_RABBIT, L"Rabbit", 101,
       eMinecraftColour_Mob_Rabbit_Colour1,

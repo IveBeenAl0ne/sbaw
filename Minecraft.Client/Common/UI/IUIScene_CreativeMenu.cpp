@@ -398,6 +398,9 @@ void IUIScene_CreativeMenu::staticCtor()
 	DEF(eCreativeInventory_ArtToolsDecorations)
 		if(app.DebugSettingsOn())
 		{
+			ITEM(Tile::barrier_Id)
+			ITEM(Tile::farmland_Id)
+
 			for(unsigned int i = 0; i < Painting::LAST_VALUE; ++i)
 			{
 				ITEM_AUX(Item::painting_Id, i + 1)
@@ -457,6 +460,13 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM(Item::saddle_Id)
 		ITEM(Item::boat_Id)
 		ITEM(Item::elytra_Id)
+
+	DEF(eCreativeInventory_ArtToolsRedstone)
+	if(app.DebugSettingsOn())
+	{
+		//commented as the command block doesn't have currently working textures -PUFF_MON
+		//ITEM(Tile::command_block_Id)
+	}
 
 	// Miscellaneous
 	DEF(eCreativeInventory_Misc)
@@ -549,7 +559,10 @@ void IUIScene_CreativeMenu::staticCtor()
 			ITEM_AUX(Item::spawn_egg_Id,  98 | ((Ocelot::TYPE_RED + 1) << 12));
 			ITEM_AUX(Item::spawn_egg_Id,  98 | ((Ocelot::TYPE_SIAMESE + 1) << 12));
 			ITEM_AUX(Item::spawn_egg_Id,  52 | (2 << 12)); // Spider-Jockey
+			ITEM_AUX(Item::spawn_egg_Id,  64); // Wither
 			ITEM_AUX(Item::spawn_egg_Id,  63); // Enderdragon
+			ITEM_AUX(Item::spawn_egg_Id,  97); // Snow Golem
+			ITEM_AUX(Item::spawn_egg_Id,  99); // Iron Golem
 		}
 
 	// Food
@@ -678,13 +691,12 @@ void IUIScene_CreativeMenu::staticCtor()
 			debugSword->setHoverName(L"Sword of Debug");
 			list->push_back(debugSword);
 
-			/*
+			
 			shared_ptr<ItemInstance> debugRod = std::make_shared<ItemInstance>(Item::fishing_rod_Id, 1, 0);
 			debugRod->enchant( Enchantment::lure, 50 );
 			debugRod->enchant( Enchantment::luckOfTheSea, 50 );
 			debugRod->setHoverName(L"Rod of Debug");
 			list->push_back(debugRod);
-			*/
 		}
 #endif
 
@@ -902,8 +914,14 @@ void IUIScene_CreativeMenu::staticCtor()
 		specs[eCreativeInventoryTab_Decorations] = new TabSpec(L"Decoration", IDS_GROUPNAME_DECORATIONS, 1, decorationsGroup);
 #endif
 
+#ifndef _CONTENT_PACKAGE
+		ECreative_Inventory_Groups redAndTranGroup[] = { eCreativeInventory_Transport, eCreativeInventory_Redstone };
+		ECreative_Inventory_Groups debugRedAndTranGroup[] = { eCreativeInventory_ArtToolsRedstone };
+		specs[eCreativeInventoryTab_RedstoneAndTransport] = new TabSpec(L"RedstoneAndTransport", IDS_GROUPNAME_REDSTONE_AND_TRANSPORT, 2, redAndTranGroup, 0, nullptr, 1, debugRedAndTranGroup);
+#else
 		ECreative_Inventory_Groups redAndTranGroup[] = { eCreativeInventory_Transport, eCreativeInventory_Redstone };
 		specs[eCreativeInventoryTab_RedstoneAndTransport] = new TabSpec(L"RedstoneAndTransport", IDS_GROUPNAME_REDSTONE_AND_TRANSPORT, 2, redAndTranGroup);
+#endif
 
 		ECreative_Inventory_Groups materialsGroup[] = { eCreativeInventory_Materials };
 		specs[eCreativeInventoryTab_Materials] = new TabSpec(L"Materials", IDS_GROUPNAME_MATERIALS, 1, materialsGroup);

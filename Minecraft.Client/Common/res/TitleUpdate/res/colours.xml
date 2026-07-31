@@ -283,16 +283,24 @@ if __name__=="__main__": notecolors()
   <colour name="Mob_Witch_Colour2" value="51a03e"/>
   <colour name="Mob_Horse_Colour1" value="C09E7D"/>
   <colour name="Mob_Horse_Colour2" value="EEE500"/>
-   <colour name="Mob_Rabbit_Colour1" value="995F40"/>
-   <colour name="Mob_Rabbit_Colour2" value="734831"/>
-   <colour name="Mob_Endermite_Colour1" value="161616"/>
-   <colour name="Mob_Endermite_Colour2" value="6E6E6E"/>
-   <colour name="Mob_Guardian_Colour1" value="5A8272"/>
-   <colour name="Mob_Guardian_Colour2" value="F17D30"/>
-   <colour name="Mob_ElderGuardian_Colour1" value="CECCBA"/>
-   <colour name="Mob_ElderGuardian_Colour2" value="747693"/>
-   <colour name="Mob_PolarBear_Colour1" value="F8F8F8"/>
-   <colour name="Mob_PolarBear_Colour2" value="8F9494"/>
+  <colour name="Mob_Rabbit_Colour1" value="995F40"/>
+  <colour name="Mob_Rabbit_Colour2" value="734831"/>
+  <colour name="Mob_Endermite_Colour1" value="161616"/>
+  <colour name="Mob_Endermite_Colour2" value="6E6E6E"/>
+  <colour name="Mob_Guardian_Colour1" value="5A8272"/>
+  <colour name="Mob_Guardian_Colour2" value="F17D30"/>
+  <colour name="Mob_ElderGuardian_Colour1" value="CECCBA"/>
+  <colour name="Mob_ElderGuardian_Colour2" value="747693"/>
+  <colour name="Mob_PolarBear_Colour1" value="F8F8F8"/>
+  <colour name="Mob_PolarBear_Colour2" value="8F9494"/> 
+  <colour name="Mob_WitherBoss_Colour1" value="141414"/>
+  <colour name="Mob_WitherBoss_Colour2" value="4D72A0"/>
+  <colour name="Mob_EnderDragon_Colour1" value="1C1C1C"/>
+  <colour name="Mob_EnderDragon_Colour2" value="E079FA"/>
+  <colour name="Mob_SnowMan_Colour1" value="D9F2F2"/>
+  <colour name="Mob_SnowMan_Colour2" value="81A4A4"/>
+  <colour name="Mob_VillagerGolem_Colour1" value="DBCDC2"/>
+  <colour name="Mob_VillagerGolem_Colour2" value="74A332"/>
 
   <colour name="Armour_Default_Leather_Colour" value="A06540"/>
 

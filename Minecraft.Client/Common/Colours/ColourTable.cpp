@@ -346,6 +346,14 @@ const wchar_t *ColourTable::ColourTableElements[eMinecraftColour_COUNT] =
 	L"Color_RenamedItemTitle",
 	L"Mob_PolarBear_Colour1",
 	L"Mob_PolarBear_Colour2",
+	L"Mob_WitherBoss_Colour1",
+	L"Mob_WitherBoss_Colour2",
+	L"Mob_EnderDragon_Colour1",
+	L"Mob_EnderDragon_Colour2",
+	L"Mob_SnowMan_Colour1",
+	L"Mob_SnowMan_Colour2",
+	L"Mob_VillagerGolem_Colour1",
+	L"Mob_VillagerGolem_Colour2",
 };
 
 void ColourTable::staticCtor()

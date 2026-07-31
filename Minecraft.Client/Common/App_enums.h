@@ -569,6 +569,14 @@ enum eMinecraftColour
 
 	eMinecraftColour_Mob_PolarBear_Colour1,
 	eMinecraftColour_Mob_PolarBear_Colour2,
+	eMinecraftColour_Mob_WitherBoss_Colour1,
+	eMinecraftColour_Mob_WitherBoss_Colour2,
+	eMinecraftColour_Mob_EnderDragon_Colour1,
+	eMinecraftColour_Mob_EnderDragon_Colour2,
+	eMinecraftColour_Mob_SnowMan_Colour1,
+	eMinecraftColour_Mob_SnowMan_Colour2,
+	eMinecraftColour_Mob_VillagerGolem_Colour1,
+	eMinecraftColour_Mob_VillagerGolem_Colour2,
 
 	eMinecraftColour_COUNT,
 };

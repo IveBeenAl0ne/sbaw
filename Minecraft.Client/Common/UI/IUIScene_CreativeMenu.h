@@ -41,6 +41,7 @@ public:
 		eCreativeInventory_Misc,
 		eCreativeInventory_ArtToolsDecorations,
 		eCreativeInventory_ArtToolsMisc,
+		eCreativeInventory_ArtToolsRedstone,
 		eCreativeInventoryGroupsCount
 	};
 
