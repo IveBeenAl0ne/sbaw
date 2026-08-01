@@ -13,6 +13,14 @@ private:
 	ESceneSection m_focusSection;
 	bool m_bIgnoreInput;
 
+public:
+#ifdef _WINDOWS64
+	// Slots live in IUIScene_AbstractContainerMenu's own pointer tracking, not in the
+	// UIControl list, so UIController's hit test can never see them. Declared here rather
+	// than on the mixin because this is the class that actually derives from UIScene.
+	virtual bool hasOwnPointerHitTest() { return true; }
+#endif
+
 protected:
 	UIControl m_controlMainPanel;
 	UIControl_SlotList m_slotListHotbar, m_slotListInventory;

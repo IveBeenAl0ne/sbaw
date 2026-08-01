@@ -313,6 +313,8 @@ UIController::UIController()
 	m_mouseDraggingSliderId = -1;
 	m_mouseClickConsumedByScene = false;
 	m_bMouseHoverHorizontalList = false;
+	m_bMouseOverClickable = false;
+	m_bMouseHitTestValid = false;
 	m_lastHoverMouseX = -1;
 	m_lastHoverMouseY = -1;
 	m_accumulatedTicks = 0;
@@ -1137,6 +1139,8 @@ void UIController::tickInput()
 					if (mouseMoved)
 					{
 						m_bMouseHoverHorizontalList = false;
+						m_bMouseOverClickable = false;
+						m_bMouseHitTestValid = false;
 						vector<UIControl *> *controls = pScene->GetControls();
 						if (controls)
 						{
@@ -1172,6 +1176,11 @@ void UIController::tickInput()
 									ch = static_cast<UIControl_TexturePackList*>(ctrl)->GetRealHeight();
 								if (cw <= 0 || ch <= 0)
 									continue;
+
+								// Container menus register controls, but they are eSlotList/
+								// eCursor/eLabel and fail the type check above, so none of them
+								// are testable and the click gate has to stay out of the way.
+								m_bMouseHitTestValid = true;
 
 								if (sceneMouseX >= cx && sceneMouseX <= cx + cw &&
 									sceneMouseY >= cy && sceneMouseY <= cy + ch)
@@ -1212,6 +1221,7 @@ void UIController::tickInput()
 										hitArea = INT_MAX;
 										hitCtrl = NULL;
 										hitCtrl = ctrl;
+										m_bMouseOverClickable = true;
 										break; // ButtonList takes priority
 									}
 									if (type == UIControl::eAchievementList)
@@ -1225,6 +1235,7 @@ void UIController::tickInput()
 										hitArea = INT_MAX;
 										hitCtrl = NULL;
 										hitCtrl = ctrl;
+										m_bMouseOverClickable = true;
 										break;
 									}
 									if (type == UIControl::eTexturePackList)
@@ -1238,11 +1249,13 @@ void UIController::tickInput()
 										hitControlId = -1;
 										hitArea = INT_MAX;
 										hitCtrl = NULL;
+										m_bMouseOverClickable = true;
 										break;
 									}
 									S32 area = cw * ch;
 									if (area < hitArea)
 									{
+										m_bMouseOverClickable = true;
 										hitControlId = ctrl->getId();
 										hitArea = area;
 										hitCtrl = ctrl;
@@ -1273,8 +1286,21 @@ void UIController::tickInput()
 									}
 								}
 							}
+							else if (!m_bMouseOverClickable && !pScene->isDirectEditBlocking())
+							{
+								// The list controls leave hitControlId at -1 while still
+								// being a hit, hence the separate flag. Skipped mid-edit so
+								// the active sign or book line keeps its caret.
+								pScene->ClearFocus();
+							}
+
 							currHitCtrl = hitCtrl;
 							UpdateCursorIcon(currHitCtrl);
+						}
+
+						if (pScene->hasOwnPointerHitTest())
+						{
+							m_bMouseHitTestValid = false;
 						}
 					}
 
@@ -1642,8 +1668,6 @@ void UIController::handleKeyPress(unsigned int iPad, unsigned int key)
 	}
 #endif
 
-	// Keyboard bindings are resolved here, together with the pad. The hardcoded
-	// action -> VK_* reverse lookup this replaced meant menu keys could never be rebound.
 	down     = PCInput::ActionDown(iPad, key);
 	pressed  = PCInput::ActionPressed(iPad, key);
 	released = PCInput::ActionReleased(iPad, key);
@@ -1651,9 +1675,12 @@ void UIController::handleKeyPress(unsigned int iPad, unsigned int key)
 #ifdef _WINDOWS64
 	if (iPad == 0)
 	{
+		// Scenes we cannot hit test keep the old focus-based behaviour.
+		const bool bPointerOverTarget = (!m_bMouseHitTestValid || m_bMouseOverClickable);
+
 		if ((key == ACTION_MENU_OK || key == ACTION_MENU_A) && !g_KBMInput.IsMouseGrabbed())
 		{
-			if (m_mouseDraggingSliderId < 0 && !m_mouseClickConsumedByScene)
+			if (m_mouseDraggingSliderId < 0 && !m_mouseClickConsumedByScene && bPointerOverTarget)
 			{
 				if (g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_LEFT))  { pressed = true; down = true; }
 				if (g_KBMInput.IsMouseButtonReleased(KeyboardMouseInput::MOUSE_LEFT)) { released = true; down = false; }
@@ -1662,7 +1689,7 @@ void UIController::handleKeyPress(unsigned int iPad, unsigned int key)
 		}
 
 		// Right click → ACTION_MENU_X (pick up half stack in inventory)
-		if (key == ACTION_MENU_X && !g_KBMInput.IsMouseGrabbed())
+		if (key == ACTION_MENU_X && !g_KBMInput.IsMouseGrabbed() && bPointerOverTarget)
 		{
 			if (g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_RIGHT))  { pressed = true; down = true; }
 			if (g_KBMInput.IsMouseButtonReleased(KeyboardMouseInput::MOUSE_RIGHT)) { released = true; down = false; }

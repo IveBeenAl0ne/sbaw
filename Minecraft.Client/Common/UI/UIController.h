@@ -180,6 +180,13 @@ private:
 	bool m_bMouseHoverHorizontalList;
 	int m_lastHoverMouseX;
 	int m_lastHoverMouseY;
+
+	// Result of the last hover hit test, reran whenever the cursor moves. Menu actions
+	// dispatch to whatever Flash has focused, so without this a click on empty space ran
+	// the last control the cursor passed over. Valid is false for scenes with no
+	// hit-testable controls, which keep the old behaviour.
+	bool m_bMouseOverClickable;
+	bool m_bMouseHitTestValid;
 	//bool m_bSysUIShowing;
 	bool m_bSystemUIShowing;
 	C4JThread *m_reloadSkinThread;

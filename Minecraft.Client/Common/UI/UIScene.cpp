@@ -341,6 +341,26 @@ void UIScene::SetFocusToElement(int iID)
 	// also trigger handle focus change (just in case if anything else in relation needs updating!)
 	_handleFocusChange(iID, 0);
 }
+
+// Drop focus so moving the cursor off a control unhighlights it. sendInputToMovie() below
+// refocuses the first element when a nav key arrives with nothing focused, so keyboard
+// navigation recovers on its own.
+//
+// Sets the members directly instead of calling _handleFocusChange, which would play
+// eSFX_Focus on the way out. Leaving them at -1 keeps the chime on the way back in.
+void UIScene::ClearFocus()
+{
+	if (!swf)
+		return;
+
+	if (m_iFocusControl == -1 && m_iFocusChild == -1)
+		return;
+
+	IggyPlayerSetFocusRS(swf, IGGY_FOCUS_NULL, 0);
+
+	m_iFocusControl = -1;
+	m_iFocusChild = -1;
+}
 #endif
 
 bool UIScene::mapElementsAndNames()

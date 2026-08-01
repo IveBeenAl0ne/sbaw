@@ -153,6 +153,7 @@ public:
 	IggyName registerFastName(const wstring &name);
 #if defined(__PSVITA__) || defined(_WINDOWS64)
 	void SetFocusToElement(int iID);
+	void ClearFocus();
 #endif
 #ifdef __PSVITA__
 	void UpdateSceneControls();
@@ -204,6 +205,11 @@ public:
 	// Mouse click dispatch. Hit-tests C++ controls and picks the smallest-area
 	// match, then calls handlePress. Override for custom behaviour (e.g. crafting).
 	virtual bool handleMouseClick(F32 x, F32 y);
+
+	// True for scenes that resolve the pointer themselves instead of relying on the
+	// UIControl hit test in UIController. Container menus track their own slot under the
+	// pointer, and slots are not UIControl types that hit test looks at.
+	virtual bool hasOwnPointerHitTest() { return false; }
 #endif
 
 	void removeControl( UIControl_Base *control, bool centreScene);
