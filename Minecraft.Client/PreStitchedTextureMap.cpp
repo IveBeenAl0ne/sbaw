@@ -869,7 +869,7 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(11,	5,	L"redstone_dust_line_overlay");
 		ADD_ICON(11,	6,	L"enchantment_side");
 		ADD_ICON(11,	7,	L"enchantment_bottom");
-		ADD_ICON(11,	8,	L"command_block");
+		//ADD_ICON(11,	8,	L"command_block");
 		ADD_ICON(11,	9,	L"itemframe_back");
 		ADD_ICON(11,	10,	L"flower_pot");
 		ADD_ICON(11,	11,	L"comparator_off");
@@ -1089,6 +1089,7 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(25, 1,  L"beetroots_stage_1");
 		ADD_ICON(25, 2,  L"beetroots_stage_2");
 		ADD_ICON(25, 3,  L"beetroots_stage_3");
+		ADD_ICON(25, 8,	 L"command_block");
 		ADD_ICON(24, 11, L"red_nether_brick");
 
 		ADD_ICON(21, 1, L"tallgrass2_tall_grass_lower");

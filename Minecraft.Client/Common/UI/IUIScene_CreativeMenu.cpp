@@ -464,8 +464,7 @@ void IUIScene_CreativeMenu::staticCtor()
 	DEF(eCreativeInventory_ArtToolsRedstone)
 	if(app.DebugSettingsOn())
 	{
-		//commented as the command block doesn't have currently working textures -PUFF_MON
-		//ITEM(Tile::command_block_Id)
+		ITEM(Tile::command_block_Id)
 	}
 
 	// Miscellaneous
