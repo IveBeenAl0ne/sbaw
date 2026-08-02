@@ -52,6 +52,12 @@ UIScene_ControlsMenu::UIScene_ControlsMenu(int iPad, void *initData, UILayer *pa
 		m_buttonLayouts[0].init(L"1", eControl_Button0);
 		m_buttonLayouts[1].init(L"2", eControl_Button1);
 		m_buttonLayouts[2].init(L"3", eControl_Button2);
+
+		if (controlType == 0)
+		{
+			m_buttonLayouts[1].setEnable(false);
+			m_buttonLayouts[2].setEnable(false);
+		}
 	}
 #endif
 
@@ -78,6 +84,11 @@ UIScene_ControlsMenu::UIScene_ControlsMenu(int iPad, void *initData, UILayer *pa
 	m_iSchemeTextA[2]=IDS_CONTROLS_SCHEME2;
 
 	int iSelected=app.GetGameSettings(m_iPad,eGameSetting_ControlScheme);
+	if (controlType == 0)
+	{
+		app.SetGameSettings(m_iPad,eGameSetting_ControlScheme,0);
+		iSelected = 0;
+	}
 
 #ifndef __PSVITA__
 	LPWSTR layoutString = new wchar_t[ 128 ];
@@ -216,6 +227,14 @@ void UIScene_ControlsMenu::handleCheckboxToggled(F64 controlId, bool selected)
 void UIScene_ControlsMenu::handlePress(F64 controlId, F64 childId)
 {
 	int control = static_cast<int>(controlId);
+	if (app.GetGameSettings(m_iPad, eGameSetting_ControlType) == 0 && control != eControl_Button0)
+	{
+		app.SetGameSettings(m_iPad,eGameSetting_ControlScheme,0);
+		m_iCurrentNavigatedControlsLayout = 0;
+		m_bLayoutChanged = true;
+		return;
+	}
+
 	switch(control)
 	{
 	case eControl_Button0:
@@ -238,6 +257,13 @@ void UIScene_ControlsMenu::handlePress(F64 controlId, F64 childId)
 void UIScene_ControlsMenu::handleFocusChange(F64 controlId, F64 childId)
 {
 	int control = static_cast<int>(controlId);
+	if (app.GetGameSettings(m_iPad, eGameSetting_ControlType) == 0 && control != eControl_Button0)
+	{
+		m_iCurrentNavigatedControlsLayout = 0;
+		m_bLayoutChanged = true;
+		return;
+	}
+
 	switch(control)
 	{
 	case eControl_Button0:
