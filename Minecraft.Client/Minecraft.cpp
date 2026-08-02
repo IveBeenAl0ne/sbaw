@@ -4563,8 +4563,17 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 	// Stop menu music and transition to game music for the new level
 	if (soundEngine != nullptr)
 	{
-		soundEngine->stopStreamingNow();
-		soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
+		const bool hasCustomMusic = (Minecraft::GetInstance() != nullptr &&
+			Minecraft::GetInstance()->skins != nullptr &&
+			Minecraft::GetInstance()->skins->getSelected() != nullptr &&
+			Minecraft::GetInstance()->skins->getSelected()->hasAudio());
+		const bool isMenuMusic = soundEngine->isPlayingMenuMusic();
+
+		if (hasCustomMusic || !isMenuMusic)
+		{
+			soundEngine->stopStreamingNow();
+			soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
+		}
 	}
 
 	// 4J - stop update thread from processing this level, which blocks until it is safe to move on - will be re-enabled if we set the level to be non-nullptr
