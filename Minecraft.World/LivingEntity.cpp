@@ -168,6 +168,7 @@ void LivingEntity::checkFallDamage(double ya, bool onGround)
 
 	if (onGround)
 	{
+		// TODO: LANDING PARTICLES HERE
 		int xt = Mth::floor(x);
 		int yt = Mth::floor(y - 0.2f - heightOffset);
 		int zt = Mth::floor(z);
@@ -188,6 +189,10 @@ void LivingEntity::checkFallDamage(double ya, bool onGround)
 			{
 				auto ent = shared_from_this();
 				Tile::tiles[t]->fallOn(level, xt, yt, zt, ent, fallDistance);
+				if (t == Tile::slimeBlock->id && !isSneaking())
+				{
+					m_clearFallDamageThisTick = true;
+				}
 			}
 		}
 	}

@@ -256,6 +256,7 @@ protected:
 public:
 	bool isFireImmune();
 	void clearFallDamageQueue();
+	virtual void causeFallDamage(float distance, float multiplier); // from decomp
 
 protected:
 	virtual void causeFallDamage(float distance);

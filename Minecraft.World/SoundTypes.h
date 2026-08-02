@@ -348,6 +348,7 @@ enum eMATERIALSOUND_TYPE
 	eMaterialSoundType_WOOD,	
 	eMaterialSoundType_GRAVEL,
 	eMaterialSoundType_GRASS,
+	eMaterialSoundType_SLIME,
 	eMaterialSoundType_METAL,
 	eMaterialSoundType_GLASS,
 	eMaterialSoundType_CLOTH,
