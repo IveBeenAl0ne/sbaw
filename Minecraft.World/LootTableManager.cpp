@@ -174,7 +174,8 @@ int ResolveSmeltedItemId(const std::string &itemName, int currentItemId)
     else if (normalized == "beef"
     || normalized == "porkchop"
     || normalized == "chicken"
-    || normalized == "mutton")
+    || normalized == "mutton"
+    || normalized == "rabbit")
     {
         return GetItemIdByName("cooked_" + normalized);
     }
