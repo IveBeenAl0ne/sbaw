@@ -3031,6 +3031,15 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 						}
 						break;
 
+					case eTYPE_CREEPER:
+						{
+							// if currently holding flint and steel
+							if (heldItemId == Item::flint_and_steel_Id) 
+								*piUse=IDS_TOOLTIPS_IGNITE;
+
+							*piAction=IDS_TOOLTIPS_HIT;
+						}
+						break;
 					case eTYPE_COW:
 						{
 							if(player->isAllowedToAttackAnimals()) *piAction=IDS_TOOLTIPS_HIT;
