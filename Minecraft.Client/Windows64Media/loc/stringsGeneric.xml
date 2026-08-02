@@ -9538,6 +9538,9 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 	<data name="IDS_DESC_BEETROOT_SEEDS"><value>Plant on Farmland.</value></data>
 	<data name="IDS_DESC_BEETROOT_SOUP"><value>Restores 3{*ICON_SHANK_01*}.</value></data>
 
+	<data name="IDS_ACHIEVE_NAME_AWARDED_ALL"><value>Awarded all achievements</value></data>
+	<data name="IDS_ACHIEVE_DESC_AWARDED_ALL"><value>All achievements have been awarded.</value></data>
+
 	<data name="IDS_ACHIEVE_NAME_TAKING_INVENTORY"><value>Taking Inventory</value></data>
 	<data name="IDS_ACHIEVE_DESC_TAKING_INVENTORY"><value>Open your inventory.</value></data>
 

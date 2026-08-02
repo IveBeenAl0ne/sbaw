@@ -4571,7 +4571,10 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 
 		if (hasCustomMusic || !isMenuMusic)
 		{
-			soundEngine->stopStreamingNow();
+			if (level != nullptr)
+			{
+				soundEngine->stopStreamingNow();
+			}
 			soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
 		}
 	}

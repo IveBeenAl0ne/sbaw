@@ -175,6 +175,8 @@ private:
 	std::chrono::steady_clock::time_point m_musicFadeLastUpdateTime;
 	bool m_bCurrentStreamIsCustom;
 	bool m_bCurrentStreamIsMenuMusic;
+	bool m_bPendingCustomMusicFade;
+	bool m_bPendingMenuMusicStart;
 
 	ma_engine m_engine;
 	ma_engine_config m_engineConfig;
