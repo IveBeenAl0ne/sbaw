@@ -28,6 +28,7 @@ protected:
 	Particle(Level *level, double x, double y, double z);
 public:
     Particle(Level *level, double x, double y, double z, double xa, double ya, double za);
+	Particle(Level *level, double x, double y, double z, double xa, double ya, double za, bool useRandomizedLogic);
     virtual shared_ptr<Particle> setPower(float power);
     virtual shared_ptr<Particle> scale(float scale);
 	void setColor(float r, float g, float b);

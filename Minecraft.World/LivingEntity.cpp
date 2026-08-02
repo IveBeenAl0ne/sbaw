@@ -160,44 +160,77 @@ void LivingEntity::registerAttributes()
 
 void LivingEntity::checkFallDamage(double ya, bool onGround)
 {
-	if (!isInWater())
-	{
-		// double-check if we've reached water in this move tick
-		updateInWaterState();
-	}
+    if (!isInWater())
+    {
+        // double-check if we've reached water in this move tick
+        updateInWaterState();
+    }
 
-	if (onGround)
-	{
-		// TODO: LANDING PARTICLES HERE
-		int xt = Mth::floor(x);
-		int yt = Mth::floor(y - 0.2f - heightOffset);
-		int zt = Mth::floor(z);
-		int t = level->getTile(xt, yt, zt);
-		if (t == 0)
-		{
-			int renderShape = level->getTileRenderShape(xt, yt - 1, zt);
-			if (renderShape == Tile::SHAPE_FENCE || renderShape == Tile::SHAPE_WALL || renderShape == Tile::SHAPE_FENCE_GATE)
-			{
-				t = level->getTile(xt, yt - 1, zt);
-			}
-		}
+    if (onGround)
+    {
+        int xt = Mth::floor(x);
+        int yt = Mth::floor(y - 0.2f - heightOffset);
+        int zt = Mth::floor(z);
+        int t = level->getTile(xt, yt, zt);
+        if (t == 0)
+        {
+            int renderShape = level->getTileRenderShape(xt, yt - 1, zt);
+            if (renderShape == Tile::SHAPE_FENCE || renderShape == Tile::SHAPE_WALL || renderShape == Tile::SHAPE_FENCE_GATE)
+            {
+                t = level->getTile(xt, yt - 1, zt);
+            }
+        }
 
-		Tile *tile = Tile::tiles[t];
-		if (t > 0 && tile != nullptr) // tu31 tutorial world fix
-		{
-			if (fallDistance > 0 || t == Tile::slimeBlock->id)
-			{
-				auto ent = shared_from_this();
-				Tile::tiles[t]->fallOn(level, xt, yt, zt, ent, fallDistance);
-				if (t == Tile::slimeBlock->id && !isSneaking())
-				{
-					m_clearFallDamageThisTick = true;
-				}
-			}
-		}
-	}
+        Tile *tile = Tile::tiles[t];
+        if (t > 0 && tile != nullptr) // tu31 tutorial world fix
+        {
+            if (fallDistance > 0 || t == Tile::slimeBlock->id)
+            {
+                auto ent = shared_from_this();
+                Tile::tiles[t]->fallOn(level, xt, yt, zt, ent, fallDistance);
+                if (t == Tile::slimeBlock->id && !isSneaking())
+                {
+                    m_clearFallDamageThisTick = true;
+                }
+            }
+        }
 
-	Entity::checkFallDamage(ya, onGround);
+        // landing particles
+        if (!level->isClientSide && fallDistance > 3.0f)
+        {
+            Material* material = level->getMaterial(xt, yt, zt);
+            if (material != Material::air)
+            {
+                float adjusted = ceilf(fallDistance - 3.0f);
+                float scaled = (adjusted / 15.0f) + 0.2f;
+
+                float speed = 10.0f;
+                if (scaled < 10.0f) speed = scaled;
+                if (speed > 2.5f)   speed = 2.5f;
+
+                int particleCount = (int)(speed * 150.0f);
+                int blockIdWithData = t | (level->getData(xt, yt, zt) << Tile::TILE_NUM_SHIFT);
+                arrayWithLength<int> extraData(1, false);
+                extraData[0] = blockIdWithData;
+                ServerLevel *serverLevel = dynamic_cast<ServerLevel *>(level);
+
+                if (serverLevel != nullptr)
+                {
+                    serverLevel->sendParticles(
+                        ParticleType::blockdust,
+                        false,
+                        x, y, z,
+                        particleCount,
+                        0, 0, 0,
+                        0.15,
+                        extraData
+                    );
+                }
+            }
+        }
+    }
+
+    Entity::checkFallDamage(ya, onGround);
 }
 
 bool LivingEntity::isWaterMob()
