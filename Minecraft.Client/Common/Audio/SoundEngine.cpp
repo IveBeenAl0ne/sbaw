@@ -82,6 +82,7 @@ void SoundEngine::stopStreamingNow()
 	m_StreamState = eMusicStreamState_Idle;
 	m_musicID = -1;
 	m_iMusicDelay = 0;
+	m_bCurrentStreamIsMenuMusic = false;
 }
 
 #ifdef _WINDOWS64
@@ -470,6 +471,9 @@ SoundEngine::SoundEngine()
 	m_musicFadeSecondsRemaining = 0.0f;
 	m_musicFadeLastUpdateTime = std::chrono::steady_clock::now();
 	m_bCurrentStreamIsCustom = false;
+	m_bCurrentStreamIsMenuMusic = true;
+	m_bPendingCustomMusicFade = false;
+	m_bPendingMenuMusicStart = false;
 
 	memset(CurrentSoundsPlaying,0,sizeof(int)*(eSoundType_MAX+eSFX_MAX));
 	memset(m_ListenerA,0,sizeof(AUDIO_LISTENER)*XUSER_MAX_COUNT);
@@ -847,10 +851,40 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 	m_StreamingAudioInfo.volume = volume;
 	m_StreamingAudioInfo.pitch  = pitch;
 
-	bool bNextCustom = isCustomMusicRequest(name);
-	bool bCurrentCustom = m_musicStreamActive && m_bCurrentStreamIsCustom;
+	if (name.empty() && m_musicStreamActive && isPlayingMenuMusic() && !isCustomMusicRequest(name))
+	{
+		return;
+	}
 
-	if(m_StreamState == eMusicStreamState_Playing)
+	if (name.empty() && m_bPendingMenuMusicStart &&
+		(m_StreamState == eMusicStreamState_Playing || m_StreamState == eMusicStreamState_Fading))
+	{
+		return;
+	}
+
+	const bool bNextCustom = isCustomMusicRequest(name);
+	const bool bCurrentCustom = m_musicStreamActive && m_bCurrentStreamIsCustom;
+	const bool bTransitioningFromCustomMusic = name.empty() && m_musicStreamActive && bCurrentCustom && !m_bCurrentStreamIsMenuMusic;
+	const bool bTransitioningFromNonMenuMusic = name.empty() && m_musicStreamActive && !m_bCurrentStreamIsMenuMusic;
+
+	if (bTransitioningFromNonMenuMusic && (m_StreamState == eMusicStreamState_Playing || m_StreamState == eMusicStreamState_Fading))
+	{
+		m_bPendingMenuMusicStart = true;
+		m_bCurrentStreamIsMenuMusic = false;
+		if (bTransitioningFromCustomMusic)
+		{
+			m_bPendingCustomMusicFade = true;
+		}
+		if (m_StreamState == eMusicStreamState_Playing)
+		{
+			m_StreamState = eMusicStreamState_Fading;
+			m_musicFadeSecondsRemaining = MUSIC_FADE_DURATION_SECONDS;
+			m_musicFadeLastUpdateTime = std::chrono::steady_clock::now();
+		}
+		return;
+	}
+
+	if (m_StreamState == eMusicStreamState_Playing)
 	{
 		if (bCurrentCustom != bNextCustom)
 		{
@@ -868,6 +902,7 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 	{
 		// music, or stop CD
 		m_StreamingAudioInfo.bIs3D = false;
+		m_bCurrentStreamIsMenuMusic = false;
 
 		// random delay of up to 3 minutes for music
 		m_iMusicDelay = random->nextInt(20 * 60 * 3);
@@ -921,6 +956,7 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 	{
 		// jukebox
 		m_StreamingAudioInfo.bIs3D=true;
+		m_bCurrentStreamIsMenuMusic = false;
 		m_musicID = getMusicID(name);
 		m_iMusicDelay = 0;
 		
@@ -931,6 +967,11 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 			m_musicFadeLastUpdateTime = std::chrono::steady_clock::now();
 		}
 	}
+}
+
+bool SoundEngine::isPlayingMenuMusic() const
+{
+	return m_musicStreamActive && m_bCurrentStreamIsMenuMusic;
 }
 
 bool SoundEngine::isCustomMusicRequest(const wstring& name) const
@@ -1520,7 +1561,15 @@ void SoundEngine::playMusicUpdate()
 
 		SetIsPlayingStreamingCDMusic(false);
 		SetIsPlayingStreamingGameMusic(false);
+		if (m_bPendingMenuMusicStart)
+		{
+			m_musicID = getMusicID(eMusicType_Menu);
+			m_bCurrentStreamIsMenuMusic = true;
+			m_iMusicDelay = 0;
+			m_bPendingMenuMusicStart = false;
+		}
 		m_StreamState = eMusicStreamState_Idle;
+		m_bPendingCustomMusicFade = false;
 	break;
 	case eMusicStreamState_Stopping:
 		break;

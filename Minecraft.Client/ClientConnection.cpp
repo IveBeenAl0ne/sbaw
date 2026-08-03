@@ -577,12 +577,14 @@ void ClientConnection::handleAddEntity(shared_ptr<AddEntityPacket> packet)
 		{
 			int dir = packet->data & 0xFF;
 			bool placedByPlayer = (packet->data & 0x100) != 0;
+			bool placedByTutorial = (packet->data & 0x200) != 0;
 			e = std::make_shared<ItemFrame>(level, (int)x, (int)y, (int)z, dir);
 			shared_ptr<ItemFrame> frame = dynamic_pointer_cast<ItemFrame>(e);
 			if (frame != nullptr)
 			{
 				frame->placedByPlayer = placedByPlayer;
-				if (placedByPlayer)
+				frame->placedByTutorial = placedByTutorial;
+				if (placedByPlayer || placedByTutorial)
 				{
 					frame->setDir(dir);
 				}
@@ -842,7 +844,8 @@ void ClientConnection::handleAddPainting(shared_ptr<AddPaintingPacket> packet)
 {
 	shared_ptr<Painting> painting = std::make_shared<Painting>(level, packet->x, packet->y, packet->z, packet->dir, packet->motive);
 	painting->placedByPlayer = packet->placedByPlayer;
-	if (packet->placedByPlayer)
+	painting->placedByTutorial = packet->placedByTutorial;
+	if (packet->placedByPlayer || packet->placedByTutorial)
 	{
 		painting->setDir(packet->dir);
 	}
@@ -4180,14 +4183,16 @@ int ClientConnection::HostDisconnectReturned(void *pParam,int iPad,C4JStorage::E
 		}
 	}
 
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
+	const int controlType = app.GetGameSettings(iPad, eGameSetting_ControlType);
+	const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+
 	// Give the player the option to save their game
 	// does the save exist?
 	bool bSaveExists;
 	StorageManager.DoesSaveExist(&bSaveExists);
 	// 4J-PB - we check if the save exists inside the libs
 	// we need to ask if they are sure they want to overwrite the existing game
-	if(bSaveExists && StorageManager.GetSaveDisabled())
+	if(bSaveExists && (!consoleAutosave || StorageManager.GetSaveDisabled()))
 	{
 		UINT uiIDA[2];
 		uiIDA[0]=IDS_CONFIRM_CANCEL;
@@ -4195,26 +4200,11 @@ int ClientConnection::HostDisconnectReturned(void *pParam,int iPad,C4JStorage::E
 		ui.RequestErrorMessage(IDS_TITLE_SAVE_GAME, IDS_CONFIRM_SAVE_GAME, uiIDA, 2, ProfileManager.GetPrimaryPad(),&ClientConnection::ExitGameAndSaveReturned,nullptr);
 	}
 	else
-#else
-	// Give the player the option to save their game
-	// does the save exist?
-	bool bSaveExists;
-	StorageManager.DoesSaveExist(&bSaveExists);
-	// 4J-PB - we check if the save exists inside the libs
-	// we need to ask if they are sure they want to overwrite the existing game
-	if(bSaveExists)
 	{
-		UINT uiIDA[2];
-		uiIDA[0]=IDS_CONFIRM_CANCEL;
-		uiIDA[1]=IDS_CONFIRM_OK;
-		ui.RequestErrorMessage(IDS_TITLE_SAVE_GAME, IDS_CONFIRM_SAVE_GAME, uiIDA, 2, ProfileManager.GetPrimaryPad(),&ClientConnection::ExitGameAndSaveReturned,nullptr);
-	}
-	else
-#endif
-	{
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-				StorageManager.SetSaveDisabled(false);
-#endif
+		if(consoleAutosave)
+		{
+			StorageManager.SetSaveDisabled(false);
+		}
 		MinecraftServer::getInstance()->setSaveOnExit( true );
 		// flag a app action of exit game
 		app.SetAction(iPad,eAppAction_ExitWorld);

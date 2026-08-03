@@ -13,6 +13,17 @@ private:
 
 	int checkInterval;
 	//eINSTANCEOF eType;
+	static const int kApplicableDLCIds[1];
+	inline bool IsApplicableDLC(int id)
+	{
+		for (int i = 0; i < sizeof(kApplicableDLCIds) / sizeof(kApplicableDLCIds[0]); ++i)
+		{
+			if (kApplicableDLCIds[i] == id)
+				return true;
+		}
+
+		return false;
+	}
 
 protected: 
 	virtual void defineSynchedData() {};
@@ -21,6 +32,7 @@ public:
 	int dir;
 	int xTile, yTile, zTile;
 	bool placedByPlayer = false;
+	bool placedByTutorial = false;
 
 	HangingEntity(Level *level);
 	HangingEntity(Level *level, int xTile, int yTile, int zTile, int dir);

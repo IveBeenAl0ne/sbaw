@@ -6,6 +6,8 @@
 #include "../../../Minecraft.World/net.minecraft.world.level.dimension.h"
 #include "../../../Minecraft.World/net.minecraft.world.level.storage.h"
 #include "Tesselator.h"
+#include "TexturePackRepository.h"
+#include "TexturePack.h"
 #include "Textures.h"
 #include "BufferedImage.h"
 #include "../GameRules/LevelGenerationOptions.h"
@@ -197,6 +199,8 @@ static wstring GetPanoramaTexturePath()
 
 	const char *mountedPanoramaRoots[] =
 	{
+		"TPACK:/Data/ControlType/Panorama/",
+		"WPACK:/Data/ControlType/Panorama/",
 		"TPACK:Data/ControlType/Panorama/",
 		"WPACK:Data/ControlType/Panorama/",
 	};
@@ -205,6 +209,16 @@ static wstring GetPanoramaTexturePath()
 	{
 		wstring mountedPath = convStringToWstring(StorageManager.GetMountedPath(mountedRoot));
 		if(mountedPath.empty()) continue;
+
+		if(mountedPath.find(L"Data/ControlType/Panorama/") != wstring::npos)
+		{
+			// slash check cause for some reason its not always there
+			size_t pos = mountedPath.find(L"Data/ControlType/Panorama/");
+			if(pos != wstring::npos && pos > 0 && mountedPath[pos-1] != L'/' && mountedPath[pos-1] != L'\\')
+			{
+				mountedPath.insert(pos, 1, L'/');
+			}
+		}
 
 		wstring sampleDay = mountedPath + L"Panorama_S.png";
 		wstring sampleNight = mountedPath + L"Panorama_N.png";
@@ -227,6 +241,25 @@ static wstring GetPanoramaTexturePath()
 
 	// fallback
 	return PANORAMA_TEXTURE_RELPATH;
+}
+
+static wstring GetPanoramaTexturePathKey()
+{
+	wstring key = GetPanoramaTexturePath();
+
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	if(pMinecraft != nullptr && pMinecraft->skins != nullptr)
+	{
+		TexturePack *selected = pMinecraft->skins->getSelected();
+		if(selected != nullptr)
+		{
+			wchar_t buffer[32];
+			swprintf(buffer, 32, L"|TPACKID=%u", static_cast<unsigned int>(selected->getId()));
+			key += buffer;
+		}
+	}
+
+	return key;
 }
 
 // opengl time :v
@@ -478,7 +511,8 @@ void UIComponent_Panorama::tick()
 void UIComponent_Panorama::EnsurePanoramaTexturesLoaded()
 {
 	wstring currentRoot = GetPanoramaTexturePath();
-	if(m_bPanoramaTexturesLoaded && currentRoot == m_panoramaTextureRoot) return;
+	wstring currentRootKey = GetPanoramaTexturePathKey();
+	if(m_bPanoramaTexturesLoaded && currentRoot == m_panoramaTextureRoot && currentRootKey == m_panoramaTextureRootKey) return;
 
 	if(m_texPanoramaDay >= 0)
 	{
@@ -492,6 +526,7 @@ void UIComponent_Panorama::EnsurePanoramaTexturesLoaded()
 	}
 
 	m_panoramaTextureRoot = currentRoot;
+	m_panoramaTextureRootKey = currentRootKey;
 	m_bPanoramaTexturesLoaded = false;
 
 	// search for panorama.xml

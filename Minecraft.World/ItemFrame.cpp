@@ -12,6 +12,7 @@
 #include "ItemFrame.h"
 #include "DamageSource.h"
 #include "Level.h"
+#include "SoundTypes.h"
 
 
 
@@ -174,6 +175,7 @@ bool ItemFrame::interact(shared_ptr<Player> player)
 			if (!level->isClientSide)//isClientSide) 
 			{
 				setItem(item);
+				playSound(eSoundType_ENTITY_ITEMFRAME_ADD_ITEM, 1.0f, 1.0f);
 
 				if (!player->abilities.instabuild) 
 				{
@@ -190,6 +192,7 @@ bool ItemFrame::interact(shared_ptr<Player> player)
 		if (!level->isClientSide)//isClientSide) 
 		{
 			setRotation(getRotation() + 1);
+			playSound(eSoundType_ENTITY_ITEMFRAME_ROTATE_ITEM, 1.0f, 1.0f);
 		}
 	}
 
@@ -226,11 +229,13 @@ bool ItemFrame::hurt(DamageSource *source, float damage)
             removeFramedMap(copy);
             spawnAtLocation(copy, 0);
         }
-        
+
+        playSound(eSoundType_ENTITY_ITEMFRAME_REMOVE_ITEM, 1.0f, 1.0f);
         setItem(nullptr);
         return true;
     }
-    
+
+    playSound(eSoundType_ENTITY_ITEMFRAME_BREAK, 1.0f, 1.0f);
     return HangingEntity::hurt(source, damage);
 }
 

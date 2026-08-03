@@ -898,17 +898,15 @@ void Entity::move(double xa, double ya, double za, bool noEntityCubes)   // 4J -
 	checkFallDamage(ya, onGround);
 
 	if (xaOrg != xa) xd = 0;
-	if (yaOrg != ya) {
-		// Fireblade - updated logic here cause previous check completely broke head hitter logic
-		bool isSlimeBlock = false;
-		if (level != nullptr) {
-			int blockBelowX = Mth::floor(x);
-			int blockBelowY = Mth::floor(y - 0.1f - heightOffset);
-			int blockBelowZ = Mth::floor(z);
-			int blockId = level->getTile(blockBelowX, blockBelowY, blockBelowZ);
-			isSlimeBlock = (blockId == Tile::slimeBlock->id);
-		}
-		if (!isSlimeBlock) {
+	if (yaOrg != ya)
+	{
+		int xt = Mth::floor(x);
+		int yt = Mth::floor(y - 0.2f - heightOffset);
+		int zt = Mth::floor(z);
+		Tile *tile = Tile::tiles[level->getTile(xt, yt, zt)];
+		if (tile != nullptr) {
+			tile->updateEntityAfterFallOn(level, self);
+		} else {
 			yd = 0;
 		}
 	}
@@ -1117,6 +1115,10 @@ void Entity::causeFallDamage(float distance)
 	if (rider.lock() != nullptr) rider.lock()->causeFallDamage(distance);
 }
 
+void Entity::causeFallDamage(float distance, float multiplier)
+{
+	if (rider.lock() != nullptr) rider.lock()->causeFallDamage(distance, multiplier);
+}
 
 bool Entity::isInWaterOrRain()
 {

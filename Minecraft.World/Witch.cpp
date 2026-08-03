@@ -12,6 +12,7 @@
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.world.phys.h"
 #include "Witch.h"
+#include "SoundTypes.h"
 
 AttributeModifier *Witch::SPEED_MODIFIER_DRINKING = (new AttributeModifier(eModifierId_MOB_WITCH_DRINKSPEED, -0.25f, AttributeModifier::OPERATION_ADDITION))->setSerialize(false);
 
@@ -48,17 +49,17 @@ void Witch::defineSynchedData()
 
 int Witch::getAmbientSound()
 {
-	return eSoundType_MOB_WITCH_IDLE; //"mob.witch.idle";
+	return eSoundType_ENTITY_WITCH_AMBIENT;
 }
 
 int Witch::getHurtSound()
 {
-	return eSoundType_MOB_WITCH_HURT; //"mob.witch.hurt";
+	return eSoundType_ENTITY_WITCH_HURT;
 }
 
 int Witch::getDeathSound()
 {
-	return eSoundType_MOB_WITCH_DEATH; //"mob.witch.death";
+	return eSoundType_ENTITY_WITCH_DEATH;
 }
 
 void Witch::setUsingItem(bool isUsing)
@@ -211,6 +212,7 @@ void Witch::performRangedAttack(shared_ptr<LivingEntity> target, float power)
 	}
 
 	potion->shoot(xd, yd + dist * 0.2f, zd, 0.75f, 8);
+	playSound(eSoundType_ENTITY_WITCH_THROW, 1.0f, 1.0f);
 
 	level->addEntity(potion);
 }

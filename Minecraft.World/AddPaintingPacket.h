@@ -13,6 +13,7 @@ public:
     int dir;
     wstring motive;
 	bool placedByPlayer;
+	bool placedByTutorial;
 
 public:
 	AddPaintingPacket();

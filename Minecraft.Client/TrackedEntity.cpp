@@ -846,6 +846,10 @@ shared_ptr<Packet> TrackedEntity::getAddEntityPacket()
 		{
 			data |= 0x100;
 		}
+		if (frame->placedByTutorial)
+		{
+			data |= 0x200;
+		}
 		shared_ptr<AddEntityPacket> packet = std::make_shared<AddEntityPacket>(e, AddEntityPacket::ITEM_FRAME, data, yRotp, xRotp, xp, yp, zp);
 		packet->x = Mth::floor(frame->xTile * 32.0f);
 		packet->y = Mth::floor(frame->yTile * 32.0f);

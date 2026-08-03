@@ -294,9 +294,48 @@ const WCHAR *ConsoleSoundEngine::wchSoundNames[eSoundType_MAX]=
 	L"mob.polarbear.hurt",
 	L"mob.polarbear.death",
 	L"mob.polarbear.step",
-	L"mob.polarbear.warning"
+	L"mob.polarbear.warning",
 
+	// tu43
+	// witch sounds
+	L"entity.witch.ambient",				//eSoundType_ENTITY_WITCH_AMBIENT,
+	L"entity.witch.hurt",					//eSoundType_ENTITY_WITCH_HURT,
+	L"entity.witch.death",					//eSoundType_ENTITY_WITCH_DEATH,
+	L"entity.witch.throw",					//eSoundType_ENTITY_WITCH_THROW,
 
+	// squid sounds
+	L"entity.squid.ambient",					//eSoundType_ENTITY_SQUID_AMBIENT,
+	L"entity.squid.hurt",					//eSoundType_ENTITY_SQUID_HURT,
+	L"entity.squid.death",					//eSoundType_ENTITY_SQUID_DEATH,
+
+	// snowman sounds
+	L"entity.snowman.hurt",					//eSoundType_ENTITY_SNOWMAN_HURT,
+	L"entity.snowman.death",					//eSoundType_ENTITY_SNOWMAN_DEATH,
+
+	// armor stand sounds
+	L"entity.armorstand.break",					//eSoundType_ENTITY_ARMORSTAND_BREAK,
+	L"entity.armorstand.hit",					//eSoundType_ENTITY_ARMORSTAND_HIT,
+
+	// cow sounds
+	L"entity.cow.milk",					//eSoundType_ENTITY_COW_MILK,
+
+	// horse sounds
+	L"entity.horse.eat",					// eSoundType_ENTITY_EAT,
+
+	// item frame sounds
+	L"entity.itemframe.add_item",					//eSoundType_ENTITY_ITEMFRAME_ADD_ITEM,
+	L"entity.itemframe.break",					//eSoundType_ENTITY_ITEMFRAME_BREAK,
+	L"entity.itemframe.place",					//eSoundType_ENTITY_ITEMFRAME_PLACE,
+	L"entity.itemframe.remove_item",					//eSoundType_ENTITY_ITEMFRAME_REMOVE_ITEM,
+	L"entity.itemframe.rotate_item",					//eSoundType_ENTITY_ITEMFRAME_ROTATE_ITEM,
+
+	// leash sounds
+	L"entity.leashknot.break",					//eSoundType_ENTITY_LEASHKNOT_BREAK,
+	L"entity.leashknot.place",					//eSoundType_ENTITY_LEASHKNOT_PLACE,
+
+	// painting sounds
+	L"entity.painting.place",					//eSoundType_ENTITY_PAINTING_PLACE,
+	L"entity.painting.break",					//eSoundType_ENTITY_PAINTING_BREAK,
 };
 
 

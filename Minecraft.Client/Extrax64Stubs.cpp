@@ -673,6 +673,7 @@ static void Win64_ApplyDefaultProfileGameSettings(void* profileBytes)
 	pGameSettings->uiBitmaskValues |= GAMESETTING_DISPLAYHAND;			//eGameSetting_DisplayHand - on
 	pGameSettings->uiBitmaskValues |= GAMESETTING_CUSTOMSKINANIM;			//eGameSetting_CustomSkinAnim - on
 	pGameSettings->uiBitmaskValues |= GAMESETTING_DEATHMESSAGES;			//eGameSetting_DeathMessages - on
+	pGameSettings->uiBitmaskValues &= ~GAMESETTING_PASSIVECHUNKLOADING;		//eGameSetting_PassiveChunkLoading - off
 	pGameSettings->uiBitmaskValues |= (GAMESETTING_UISIZE & 0x00000800);				// uisize 2
 	pGameSettings->uiBitmaskValues |= (GAMESETTING_UISIZE_SPLITSCREEN & 0x00004000);	// splitscreen ui size 3
 	pGameSettings->uiBitmaskValues |= GAMESETTING_ANIMATEDCHARACTER;		//eGameSetting_AnimatedCharacter - on

@@ -193,6 +193,9 @@ enum eGameSetting
 	eGameSetting_SafeCam, //safe cam is safe sprint 
 	eGameSetting_Swap,
     eGameSetting_GameChat,
+
+	// custom
+	eGameSetting_PassiveChunkLoading,
 };
 
 

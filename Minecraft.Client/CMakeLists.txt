@@ -112,6 +112,34 @@ set(ASSET_FOLDER_PAIRS
 )
 setup_asset_folder_copy(Minecraft.Client "${ASSET_FOLDER_PAIRS}")
 
+if(PLATFORM_NAME STREQUAL "Windows64")
+  file(GLOB_RECURSE PANORAMA_XML_ASSETS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}Media/**/panorama.xml"
+  )
+
+  if(PANORAMA_XML_ASSETS)
+    set(PANORAMA_XML_COPY_COMMANDS)
+    foreach(PANORAMA_XML_ASSET IN LISTS PANORAMA_XML_ASSETS)
+      file(RELATIVE_PATH PANORAMA_XML_REL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${PLATFORM_NAME}Media" "${PANORAMA_XML_ASSET}")
+      get_filename_component(PANORAMA_XML_REL_DIR "${PANORAMA_XML_REL_PATH}" DIRECTORY)
+      list(APPEND PANORAMA_XML_COPY_COMMANDS
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Minecraft.Client>/${PLATFORM_NAME}Media/${PANORAMA_XML_REL_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          "${PANORAMA_XML_ASSET}"
+          "$<TARGET_FILE_DIR:Minecraft.Client>/${PLATFORM_NAME}Media/${PANORAMA_XML_REL_PATH}"
+      )
+    endforeach()
+
+    add_custom_target(AssetPanoramaXmlCopy_Minecraft.Client ALL
+      ${PANORAMA_XML_COPY_COMMANDS}
+      COMMENT "Copying panorama XML assets into build folder..."
+      VERBATIM
+    )
+    add_dependencies(Minecraft.Client AssetPanoramaXmlCopy_Minecraft.Client)
+    set_property(TARGET AssetPanoramaXmlCopy_Minecraft.Client PROPERTY FOLDER "Build")
+  endif()
+endif()
+
 set(LOOT_TABLES_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/Common/Media/MediaWindows64/Structures/loot_tables")
 set(LOOT_TABLES_DEST "$<TARGET_FILE_DIR:Minecraft.Client>/Common/Media/MediaWindows64/Structures/loot_tables")
 add_custom_target(AssetLootTablesCopy_Minecraft.Client ALL

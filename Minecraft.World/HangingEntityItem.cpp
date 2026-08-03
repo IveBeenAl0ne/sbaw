@@ -10,6 +10,7 @@
 #include "Painting.h"
 #include "GenericStats.h"
 #include "ItemFrame.h"
+#include "SoundTypes.h"
 
 
 HangingEntityItem::HangingEntityItem(int id, eINSTANCEOF eClassType) : Item(id)
@@ -41,6 +42,11 @@ bool HangingEntityItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Play
 		{
 			if(level->addEntity(entity)==TRUE)
 			{
+				if (eType==eTYPE_ITEM_FRAME)
+				{
+					entity->playSound(eSoundType_ENTITY_ITEMFRAME_PLACE, 1.0f, 1.0f);
+				}
+
 				// 4J-JEV: Hook for durango 'BlockPlaced' event.
 				if (eType==eTYPE_PAINTING)			player->awardStat(GenericStats::blocksPlaced(Item::painting_Id), GenericStats::param_blocksPlaced(Item::painting_Id,instance->getAuxValue(),1));
 				else if (eType==eTYPE_ITEM_FRAME)	player->awardStat(GenericStats::blocksPlaced(Item::item_frame_Id), GenericStats::param_blocksPlaced(Item::item_frame_Id,instance->getAuxValue(),1));
@@ -68,6 +74,7 @@ shared_ptr<HangingEntity> HangingEntityItem::createEntity(Level *level, int x, i
 	{
 		shared_ptr<Painting> painting = std::make_shared<Painting>(level, x, y, z, dir);
 		painting->placedByPlayer = true;
+		painting->placedByTutorial = false;
 
 #ifndef _CONTENT_PACKAGE
 		if (app.DebugArtToolsOn() && auxValue > 0) 
@@ -86,6 +93,7 @@ shared_ptr<HangingEntity> HangingEntityItem::createEntity(Level *level, int x, i
 	{
 		shared_ptr<ItemFrame> itemFrame = std::make_shared<ItemFrame>(level, x, y, z, dir);
 		itemFrame->placedByPlayer = true;
+		itemFrame->placedByTutorial = false;
 		itemFrame->setDir(dir);
 
 		return dynamic_pointer_cast<HangingEntity> (itemFrame);

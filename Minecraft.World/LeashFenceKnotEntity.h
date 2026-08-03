@@ -30,6 +30,7 @@ public:
 	void addAdditonalSaveData(CompoundTag *tag);
 	void readAdditionalSaveData(CompoundTag *tag);
 	bool interact(shared_ptr<Player> player);
+	virtual bool hurt(DamageSource *source, float damage);
 	virtual bool survives();
 	static shared_ptr<LeashFenceKnotEntity> createAndAddKnot(Level *level, int x, int y, int z);
 	static shared_ptr<LeashFenceKnotEntity> findKnotAt(Level *level, int x, int y, int z);

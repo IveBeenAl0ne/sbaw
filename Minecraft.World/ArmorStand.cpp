@@ -16,6 +16,7 @@
 #include "ParticleTypes.h"
 #include "Random.h"
 #include "AABB.h"
+#include "SoundTypes.h"
 #include "../Minecraft.World/LevelChunk.h"
 
 const Rotations ArmorStand::DEFAULT_HEAD_POSE      (0.0f, 0.0f, 0.0f);
@@ -386,6 +387,7 @@ bool ArmorStand::hurt(DamageSource* source, float damage)
 
     if (source->isExplosion())
     {
+        playSound(eSoundType_ENTITY_ARMORSTAND_BREAK, 1.0f, 1.0f);
         spawnAtLocation(Item::armor_stand_Id, 1);
         brokenByAnything();
         remove();
@@ -398,6 +400,7 @@ bool ArmorStand::hurt(DamageSource* source, float damage)
         if (attacker && attacker->instanceof(eTYPE_PLAYER) &&
             dynamic_pointer_cast<Player>(attacker)->abilities.instabuild)
         {
+            playSound(eSoundType_ENTITY_ARMORSTAND_BREAK, 1.0f, 1.0f);
             level->broadcastEntityEvent(shared_from_this(), (byte)31);
             remove();
             return true;
@@ -417,6 +420,7 @@ bool ArmorStand::hurt(DamageSource* source, float damage)
         return false;
     }
 
+    playSound(eSoundType_ENTITY_ARMORSTAND_HIT, 1.0f, 1.0f);
     hurtDir = -hurtDir;
     standDamage += damage * 10.0f;
     lastHit = (long long)tickCount;
@@ -424,6 +428,7 @@ bool ArmorStand::hurt(DamageSource* source, float damage)
 
     if (standDamage >= 40.0f)
     {
+        playSound(eSoundType_ENTITY_ARMORSTAND_BREAK, 1.0f, 1.0f);
         spawnAtLocation(Item::armor_stand_Id, 1);
         brokenByAnything();
         remove();

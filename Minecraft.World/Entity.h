@@ -256,6 +256,7 @@ protected:
 public:
 	bool isFireImmune();
 	void clearFallDamageQueue();
+	virtual void causeFallDamage(float distance, float multiplier); // from decomp
 
 protected:
 	virtual void causeFallDamage(float distance);
@@ -303,9 +304,9 @@ public:
 
 protected:
 	virtual bool repositionEntityAfterLoad();
-	const wstring getEncodeId();
 
 public:
+	const wstring getEncodeId();
 	virtual void readAdditionalSaveData(CompoundTag *tag) = 0;
 	virtual void addAdditonalSaveData(CompoundTag *tag) = 0;
 	/**

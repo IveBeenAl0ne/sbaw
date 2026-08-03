@@ -11,6 +11,7 @@ UIComponent_PressStartToPlay::UIComponent_PressStartToPlay(int iPad, void *initD
 	m_showingSaveIcon = false;
 	m_showingAutosaveTimer = false;
 	m_showingTrialTimer = false;
+	m_saveIconPositionAdjusted = false;
 	for(unsigned int i = 0; i < XUSER_MAX_COUNT; ++i)
 	{
 		m_showingPressStart[i] = false;
@@ -43,6 +44,12 @@ wstring UIComponent_PressStartToPlay::getMoviePath()
 void UIComponent_PressStartToPlay::handleReload()
 {
 	// 4J Stu - It's possible these could change during the reload, so can't use the normal controls refresh of it's state
+	if(!m_saveIconPositionAdjusted)
+	{
+		m_controlSaveIcon.setXPos(m_controlSaveIcon.getXPos() + 40);
+		m_controlSaveIcon.setYPos(m_controlSaveIcon.getYPos() - 70);
+		m_saveIconPositionAdjusted = true;
+	}
 	m_controlSaveIcon.setVisible(m_showingSaveIcon);
 	m_labelTrialTimer.setVisible(m_showingAutosaveTimer);
 	m_labelTrialTimer.setLabel(m_autosaveTimer);
@@ -126,6 +133,13 @@ void UIComponent_PressStartToPlay::handleTimerComplete(int id)
 			ui.toastOn = false;
 		}
 	}
+
+	if (id == 2)
+	{
+		showSaveIcon(false);
+		killTimer(id);
+	}
+
 	ui.ClearPressStart();
 }
 
@@ -196,6 +210,16 @@ void UIComponent_PressStartToPlay::showSaveIcon(bool show)
 	else
 	{
 		if(show) app.DebugPrintf("Tried to show save icon while texture pack reload was in progress\n");
+	}
+
+	if(show)
+	{
+		killTimer(2);
+		addTimer(2, 1000);
+	}
+	else
+	{
+		killTimer(2);
 	}
 }
 

@@ -11,6 +11,7 @@ private:
 
 public:
 	TerrainParticle(Level *level, double x, double y, double z, double xa, double ya, double za, Tile *tile, int face, int data, Textures *textures);
+	TerrainParticle(Level *level, double x, double y, double z, double xa, double ya, double za, Tile *tile, int face, int data, Textures *textures, bool useRandomizedLogic);
     shared_ptr<TerrainParticle> init(int x, int y, int z, int data);	// 4J - added data parameter
 	shared_ptr<TerrainParticle> init(int data);
     virtual int getParticleTexture();
