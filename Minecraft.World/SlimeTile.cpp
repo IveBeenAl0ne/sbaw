@@ -40,54 +40,59 @@ int SlimeTile::getPistonPushReaction()
 void SlimeTile::fallOn(Level *level, int x, int y, int z,
                        shared_ptr<Entity> entity, float distance)
 {
-    HalfTransparentTile::fallOn(level, x, y, z, entity, distance);
+    assert(entity != nullptr);
 
-    if (entity == nullptr)
-        return;
+    bool sneaking = entity->isSneaking();
 
-    entity->clearFallDamageQueue();
-
-	entity->fallDistance = 0.0f;
-
-	if (entity->isSneaking() || std::abs(entity->yd) < 0.1f)
+    if (!sneaking)
     {
-        entity->yd = 0.0f;
-        return;
+        entity->causeFallDamage(distance, 0.0f); // no damage
     }
-
-    if (entity->yd < 0.0f)
+    else 
     {
-        entity->yd = -entity->yd;
-
-        if (!(entity->instanceof(eTYPE_LIVINGENTITY)))
-        {
-            entity->yd *= 0.8f;
-        }
+        Tile::fallOn(level, x, y, z, entity, distance); // normal fall damage
     }
 }
 
 void SlimeTile::stepOn(Level *level, int x, int y, int z, shared_ptr<Entity> entity)
 {
-    if (entity != nullptr)
-    {
-        entity->clearFallDamageQueue();
+    assert(entity != nullptr);
+
+    if ((std::abs)(entity->yd) < 0.1) {
+        bool sneaking = entity->isSneaking();
+
+        if (!sneaking) {
+            double factor = (std::abs)(entity->yd) * 0.2 + 0.4;
+
+            entity->xd *= factor;
+            entity->zd *= factor;
+        }
     }
 
-    if (entity != nullptr &&
-        std::abs(entity->yd) < 0.1f &&
-        !entity->isSneaking())
-    {
-        double d0 = 0.4 + std::abs(entity->yd) * 0.2;
-
-        entity->xd *= d0;
-        entity->zd *= d0;
-        level->playSound(x + 0.5, y + 0.5, z + 0.5, eSoundType_MOB_SLIME_SMALL, 0.4f, 0.8f + level->random->nextFloat() * 0.4f);
-    }
-
-    HalfTransparentTile::stepOn(level, x, y, z, entity);
+    Tile::stepOn(level, x, y, z, entity);
 }
 
 void SlimeTile::updateEntityAfterFallOn(Level* level, shared_ptr<Entity> entity)
 {
-    // stub
+    assert(entity != nullptr);
+
+    bool sneaking = entity->isSneaking();
+
+    if (!sneaking) {
+        if (!(entity->yd > -0.08 && entity->yd < 0.0))
+        {
+            if (entity->yd < 0.0) 
+            {
+                entity->yd = -entity->yd; // bounce
+            }
+        }
+        else
+        {
+            Tile::updateEntityAfterFallOn(level, entity); // LAB_02a7a4e4 goto
+        }
+    }
+    else
+    {
+        Tile::updateEntityAfterFallOn(level, entity); // LAB_02a7a4e4 definition
+    }
 }

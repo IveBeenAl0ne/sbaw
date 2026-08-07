@@ -1956,6 +1956,7 @@ void LevelRenderer::renderAdvancedClouds(float alpha)
 
 bool LevelRenderer::updateDirtyChunks()
 {
+	bool passiveChunkLoading = app.GetGameSettings(ProfileManager.GetPrimaryPad(), eGameSetting_PassiveChunkLoading);
 #ifdef _LARGE_WORLDS
 	std::list< std::pair<ClipChunk *, int> > nearestClipChunks;
 #endif
@@ -2182,13 +2183,90 @@ bool LevelRenderer::updateDirtyChunks()
 
 
 	Chunk *chunk = nullptr;
-#ifdef _LARGE_WORLDS
-	if(!nearestClipChunks.empty())
+	bool bHasRebuildWork = false;
+
+	if( passiveChunkLoading == 0 )
 	{
-		int index = 0;
-		for(auto & it : nearestClipChunks)
+		if(!nearestClipChunks.empty())
 		{
-			chunk = it.first->chunk;
+			int index = 0;
+			for(auto & it : nearestClipChunks)
+			{
+				chunk = it.first->chunk;
+				// If this chunk is very near, then move the renderer into a deferred mode. This won't commit any command buffers
+				// for rendering until we call CBuffDeferredModeEnd(), allowing us to group any near changes into an atomic unit. This
+				// is essential so we don't temporarily create any holes in the environment whilst updating one chunk and not the neighbours.
+				// The "ver near" aspect of this is just a cosmetic nicety - exactly the same thing would happen further away, but we just don't
+				// care about it so much from terms of visual impact.
+				if( veryNearCount > 0 )
+				{
+					RenderManager.CBuffDeferredModeStart();
+				}
+				// Build this chunk & return false to continue processing
+				chunk->clearDirty();
+				// Take a copy of the details that are required for chunk rebuilding, and rebuild That instead of the original chunk data. This is done within
+				// the m_csDirtyChunks critical section, which means that any chunks can't be repositioned whilst we are doing this copy. The copy will then
+				// be guaranteed to be consistent whilst rebuilding takes place outside of that critical section.
+				permaChunk[index].makeCopyForRebuild(chunk);
+				++index;
+			}
+			LeaveCriticalSection(&m_csDirtyChunks);
+
+			--index; // Bring it back into 0 counted range
+
+			for(int i = MAX_CHUNK_REBUILD_THREADS - 1; i >= 0; --i)
+			{
+				// Set the events that won't run
+				if( (i+1) > index) s_rebuildCompleteEvents->Set(i);
+				else break;
+			}
+
+			for(; index >=0; --index)
+			{
+				bool bAtomic = false;
+				if((veryNearCount > 0))
+					bAtomic = true;		//MGH -  if veryNearCount, then we're trying to rebuild atomically, so do it all on the main thread
+
+				if( bAtomic || (index == 0) )
+				{
+					//PIXBeginNamedEvent(0,"Rebuilding near chunk %d %d %d",chunk->x, chunk->y, chunk->z);
+					//		static int64_t totalTime = 0;
+					//		static int64_t countTime = 0;
+					//		int64_t startTime = System::currentTimeMillis();
+
+					//app.DebugPrintf("Rebuilding permaChunk %d\n", index);
+
+					permaChunk[index].rebuild();
+
+					if(index !=0)
+						s_rebuildCompleteEvents->Set(index-1);		// MGH - this rebuild happening on the main thread instead, mark the thread it should have been running on as complete
+
+					//		int64_t endTime = System::currentTimeMillis();
+					//		totalTime += (endTime - startTime);
+					//		countTime++;
+					//		printf("%d : %f\n", countTime, (float)totalTime / (float)countTime);
+					//PIXEndNamedEvent();
+				}
+				// 4J Stu - Ignore this path when in constrained mode on Xbox One
+				else
+				{
+					// Activate thread to rebuild this chunk
+					s_activationEventA[index - 1]->Set();
+				}
+			}
+
+			// Wait for the other threads to be done as well
+			s_rebuildCompleteEvents->WaitForAll(INFINITE);
+
+			bHasRebuildWork = true;
+		}
+	}
+	else
+	{
+		if( nearChunk )
+		{
+			chunk = nearChunk->chunk;
+			PIXBeginNamedEvent(0,"Rebuilding near chunk %d %d %d",chunk->x, chunk->y, chunk->z);
 			// If this chunk is very near, then move the renderer into a deferred mode. This won't commit any command buffers
 			// for rendering until we call CBuffDeferredModeEnd(), allowing us to group any near changes into an atomic unit. This
 			// is essential so we don't temporarily create any holes in the environment whilst updating one chunk and not the neighbours.
@@ -2203,91 +2281,24 @@ bool LevelRenderer::updateDirtyChunks()
 			// Take a copy of the details that are required for chunk rebuilding, and rebuild That instead of the original chunk data. This is done within
 			// the m_csDirtyChunks critical section, which means that any chunks can't be repositioned whilst we are doing this copy. The copy will then
 			// be guaranteed to be consistent whilst rebuilding takes place outside of that critical section.
-			permaChunk[index].makeCopyForRebuild(chunk);
-			++index;
+			static Chunk permaChunk;
+			permaChunk.makeCopyForRebuild(chunk);
+			LeaveCriticalSection(&m_csDirtyChunks);
+			//		static int64_t totalTime = 0;
+			//		static int64_t countTime = 0;
+			//		int64_t startTime = System::currentTimeMillis();
+			permaChunk.rebuild();
+			//		int64_t endTime = System::currentTimeMillis();
+			//		totalTime += (endTime - startTime);
+			//		countTime++;
+			//		printf("%d : %f\n", countTime, (float)totalTime / (float)countTime);
+			PIXEndNamedEvent();
+
+			bHasRebuildWork = true;
 		}
-		LeaveCriticalSection(&m_csDirtyChunks);
-
-		--index; // Bring it back into 0 counted range
-
-		for(int i = MAX_CHUNK_REBUILD_THREADS - 1; i >= 0; --i)
-		{
-			// Set the events that won't run
-			if( (i+1) > index) s_rebuildCompleteEvents->Set(i);
-			else break;
-		}
-
-		for(; index >=0; --index)
-		{
-			bool bAtomic = false;
-			if((veryNearCount > 0))
-				bAtomic = true;		//MGH -  if veryNearCount, then we're trying to rebuild atomically, so do it all on the main thread
-
-			if( bAtomic || (index == 0) )
-			{
-				//PIXBeginNamedEvent(0,"Rebuilding near chunk %d %d %d",chunk->x, chunk->y, chunk->z);
-				//		static int64_t totalTime = 0;
-				//		static int64_t countTime = 0;
-				//		int64_t startTime = System::currentTimeMillis();
-
-				//app.DebugPrintf("Rebuilding permaChunk %d\n", index);
-
-				permaChunk[index].rebuild();
-
-				if(index !=0)
-					s_rebuildCompleteEvents->Set(index-1);		// MGH - this rebuild happening on the main thread instead, mark the thread it should have been running on as complete
-
-				//		int64_t endTime = System::currentTimeMillis();
-				//		totalTime += (endTime - startTime);
-				//		countTime++;
-				//		printf("%d : %f\n", countTime, (float)totalTime / (float)countTime);
-				//PIXEndNamedEvent();
-			}
-			// 4J Stu - Ignore this path when in constrained mode on Xbox One
-			else
-			{
-				// Activate thread to rebuild this chunk
-				s_activationEventA[index - 1]->Set();
-			}
-		}
-
-		// Wait for the other threads to be done as well
-		s_rebuildCompleteEvents->WaitForAll(INFINITE);
 	}
-#else
-	if( nearChunk )
-	{
-		chunk = nearChunk->chunk;
-		PIXBeginNamedEvent(0,"Rebuilding near chunk %d %d %d",chunk->x, chunk->y, chunk->z);
-		// If this chunk is very near, then move the renderer into a deferred mode. This won't commit any command buffers
-		// for rendering until we call CBuffDeferredModeEnd(), allowing us to group any near changes into an atomic unit. This
-		// is essential so we don't temporarily create any holes in the environment whilst updating one chunk and not the neighbours.
-		// The "ver near" aspect of this is just a cosmetic nicety - exactly the same thing would happen further away, but we just don't
-		// care about it so much from terms of visual impact.
-		if( veryNearCount > 0 )
-		{
-			RenderManager.CBuffDeferredModeStart();
-		}
-		// Build this chunk & return false to continue processing
-		chunk->clearDirty();
-		// Take a copy of the details that are required for chunk rebuilding, and rebuild That instead of the original chunk data. This is done within
-		// the m_csDirtyChunks critical section, which means that any chunks can't be repositioned whilst we are doing this copy. The copy will then
-		// be guaranteed to be consistent whilst rebuilding takes place outside of that critical section.
-		static Chunk permaChunk;
-		permaChunk.makeCopyForRebuild(chunk);
-		LeaveCriticalSection(&m_csDirtyChunks);
-		//		static int64_t totalTime = 0;
-		//		static int64_t countTime = 0;
-		//		int64_t startTime = System::currentTimeMillis();
-		permaChunk.rebuild();
-		//		int64_t endTime = System::currentTimeMillis();
-		//		totalTime += (endTime - startTime);
-		//		countTime++;
-		//		printf("%d : %f\n", countTime, (float)totalTime / (float)countTime);
-		PIXEndNamedEvent();
-	}
-#endif
-	else
+
+	if( !bHasRebuildWork )
 	{
 		// Nothing to do - clear flags that there are things to process, unless it's been a while since we found any dirty chunks in which case force a check next time through
 		// Scale recheck period with render distance to reduce wasted full-scans at high distances
@@ -3173,6 +3184,11 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 		{
 			int id = PARTICLE_CRACK_ID(eParticleType), data = PARTICLE_CRACK_DATA(eParticleType);
 			particle = std::make_shared<BreakingItemParticle>(lev, x, y, z, xa, ya, za, Item::items[id], textures, data);
+		}
+		else if( ( eParticleType >= eParticleType_blockdust_base ) &&  ( eParticleType <= eParticleType_blockdust_last )  )
+		{
+			int id = PARTICLE_CRACK_ID(eParticleType), data = PARTICLE_CRACK_DATA(eParticleType);
+			particle = dynamic_pointer_cast<Particle>(std::make_shared<TerrainParticle>(lev, x, y, z, xa, ya, za, Tile::tiles[id], 0, data, textures, false)->init(data) );
 		}
 		else if( ( eParticleType >= eParticleType_tilecrack_base ) &&  ( eParticleType <= eParticleType_tilecrack_last )  )
 		{

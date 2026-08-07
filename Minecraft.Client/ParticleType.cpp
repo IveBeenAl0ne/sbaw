@@ -1,5 +1,6 @@
 
 #include "stdafx.h"
+#include <unordered_map>
 #include "ParticleType.h"
 
 ParticleType::ParticleType(const std::string& name, int id, bool overrideLimiter, int paramCount)
@@ -9,6 +10,19 @@ ParticleType::ParticleType(const std::string& name, int id, bool overrideLimiter
     this->overrideLimiter = overrideLimiter; 
     this->paramCount      = paramCount;    
 }
+
+const ParticleType* ParticleType::blockdust  = new ParticleType("blockdust_", 0x29, false, 1);
+const ParticleType* ParticleType::blockcrack = new ParticleType("blockcrack_", 0x28, false, 2); 
+
+static std::unordered_map<int, const ParticleType*>& particleRegistry()
+{
+    static std::unordered_map<int, const ParticleType*> registry = {
+        { ParticleType::blockdust->getId(),  ParticleType::blockdust },
+        { ParticleType::blockcrack->getId(), ParticleType::blockcrack },
+    };
+    return registry;
+}
+
 
 int ParticleType::getId() const
 {
@@ -34,6 +48,7 @@ const ParticleType* ParticleType::getDefault()
 
 const ParticleType* ParticleType::byId(int searchId)
 {
- 
-    return nullptr;
+    auto& reg = particleRegistry();
+    auto it = reg.find(searchId);
+    return (it != reg.end()) ? it->second : nullptr;
 }

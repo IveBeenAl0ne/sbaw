@@ -8,6 +8,7 @@ private:
 	bool m_showingSaveIcon;
 	bool m_showingAutosaveTimer;
 	bool m_showingTrialTimer;
+	bool m_saveIconPositionAdjusted;
 	bool m_showingPressStart[XUSER_MAX_COUNT];
 	wstring m_trialTimer;
 	wstring m_autosaveTimer;

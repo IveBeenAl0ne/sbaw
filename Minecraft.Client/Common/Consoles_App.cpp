@@ -1051,6 +1051,9 @@ int CMinecraftApp::SetDefaultOptions(C_4JProfile::PROFILESETTINGS *pSettings,con
 	//TU34
 	SetGameSettings(iPad, eGameSetting_MinecartSounds, 1);
 
+	// custom
+	SetGameSettings(iPad, eGameSetting_PassiveChunkLoading, 0);
+
 	// 4J-PB - leave these in, or remove from everywhere they are referenced!
 	// Although probably best to leave in unless we split the profile settings into platform specific classes - having different meaning per platform for the same bitmask could get confusing
 	//#ifdef __PS3__
@@ -1516,6 +1519,9 @@ void CMinecraftApp::ApplyGameSettingsChanged(int iPad)
 	ActionGameSettings(iPad, eGameSetting_HideSaveSizeBar);
 	ActionGameSettings(iPad, eGameSetting_SafeCam);
 	ActionGameSettings(iPad, eGameSetting_Swap);
+	
+	// custom
+	ActionGameSettings(iPad, eGameSetting_PassiveChunkLoading);
 }
 
 void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
@@ -1733,6 +1739,9 @@ void CMinecraftApp::ActionGameSettings(int iPad,eGameSetting eVal)
 		//nothing to do here
 		break;
 	case eGameSetting_DeathMessages:
+		//nothing to do here
+		break;
+	case eGameSetting_PassiveChunkLoading:
 		//nothing to do here
 		break;
 	case eGameSetting_UISize:
@@ -2449,6 +2458,21 @@ void CMinecraftApp::SetGameSettings(int iPad,eGameSetting eVal,unsigned char ucV
 			GameSettingsA[iPad]->bSettingsChanged=true;
 		}
 		break;
+	case eGameSetting_PassiveChunkLoading:
+		if((GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_PASSIVECHUNKLOADING)!=(ucVal&0x01)<<18)
+		{
+			if(ucVal==1)
+			{
+				GameSettingsA[iPad]->uiBitmaskValues|=GAMESETTING_PASSIVECHUNKLOADING;
+			}
+			else
+			{
+				GameSettingsA[iPad]->uiBitmaskValues&=~GAMESETTING_PASSIVECHUNKLOADING;
+			}
+			ActionGameSettings(iPad,eVal);
+			GameSettingsA[iPad]->bSettingsChanged=true;
+		}
+		break;
 	case eGameSetting_UISize:
 		if((GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_UISIZE)!=((ucVal&0x03)<<11))
 		{
@@ -2758,6 +2782,9 @@ unsigned char CMinecraftApp::GetGameSettings(int iPad,eGameSetting eVal)
 		// TU9
 	case eGameSetting_DeathMessages:
 		return (GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_DEATHMESSAGES)>>10;
+		break;
+	case eGameSetting_PassiveChunkLoading:
+		return (GameSettingsA[iPad]->uiBitmaskValues&GAMESETTING_PASSIVECHUNKLOADING)>>18;
 		break;
 	case eGameSetting_UISize:
 		{
@@ -3253,11 +3280,17 @@ void CMinecraftApp::HandleXuiActions(void)
 					app.SetAutosaveTimerTime();
 					SetAction(i,eAppAction_Idle);
 
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-					app.SetXuiServerAction(ProfileManager.GetPrimaryPad(),eXuiServerAction_AutoSaveGame);
+                    const int controlType = app.GetGameSettings(ProfileManager.GetPrimaryPad(), eGameSetting_ControlType);
+					const bool useAutosaveAnimation = (controlType == 0 || controlType == 1 || controlType == 4);
 
-					if(app.GetGameHostOption(eGameHostOption_DisableSaving)) StorageManager.SetSaveDisabled(true);
-#else
+                    if (useAutosaveAnimation)
+					{
+						new C4JThread(&UIScene_PauseMenu::SaveWorldThreadProc, (void*)true, "AutosaveSaveThread");
+						if(app.GetGameHostOption(eGameHostOption_DisableSaving)) StorageManager.SetSaveDisabled(true);
+						ui.ShowSavingMessage(ProfileManager.GetPrimaryPad(), C4JStorage::ESavingMessage_Short);
+					}
+                    else
+					{
 					// turn off the gamertags in splitscreen for the primary player, since they are about to be made fullscreen
 					ui.HideAllGameUIElements();
 
@@ -3293,7 +3326,7 @@ void CMinecraftApp::HandleXuiActions(void)
 #endif
 
 					ui.NavigateToScene(ProfileManager.GetPrimaryPad(),eUIScene_FullscreenProgress, loadingParams , eUILayer_Fullscreen, eUIGroup_Fullscreen);
-#endif
+					}
 				}
 				break;
 			case eAppAction_ExitPlayer:
@@ -6398,7 +6431,6 @@ int CMinecraftApp::ExitAndJoinFromInvite(void *pParam,int iPad,C4JStorage::EMess
 
 	return 0;
 }
-
 int CMinecraftApp::ExitAndJoinFromInviteSaveDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result)
 {
 	CMinecraftApp *pClass = static_cast<CMinecraftApp *>(pParam);
@@ -6439,26 +6471,33 @@ int CMinecraftApp::ExitAndJoinFromInviteSaveDialogReturned(void *pParam,int iPad
 					return S_OK;
 				}
 			}
-#ifndef _XBOX_ONE
-			// does the save exist?
-			bool bSaveExists;
-			StorageManager.DoesSaveExist(&bSaveExists);
-			// 4J-PB - we check if the save exists inside the libs
-			// we need to ask if they are sure they want to overwrite the existing game
-			if(bSaveExists)
+
+			const int controlType = app.GetGameSettings(iPad, eGameSetting_ControlType);
+			const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4);
+
+			#ifndef _XBOX_ONE
 			{
-				UINT uiIDA[2];
-				uiIDA[0]=IDS_CONFIRM_CANCEL;
-				uiIDA[1]=IDS_CONFIRM_OK;
-				ui.RequestErrorMessage(IDS_TITLE_SAVE_GAME, IDS_CONFIRM_SAVE_GAME, uiIDA, 2, ProfileManager.GetPrimaryPad(),&CMinecraftApp::ExitAndJoinFromInviteAndSaveReturned,pClass);
-				return 0;
+				// does the save exist?
+				bool bSaveExists;
+				StorageManager.DoesSaveExist(&bSaveExists);
+				// 4J-PB - we check if the save exists inside the libs
+				// we need to ask if they are sure they want to overwrite the existing game
+				if(bSaveExists)
+				{
+					UINT uiIDA[2];
+					uiIDA[0]=IDS_CONFIRM_CANCEL;
+					uiIDA[1]=IDS_CONFIRM_OK;
+					ui.RequestErrorMessage(IDS_TITLE_SAVE_GAME, IDS_CONFIRM_SAVE_GAME, uiIDA, 2, ProfileManager.GetPrimaryPad(),&CMinecraftApp::ExitAndJoinFromInviteAndSaveReturned,pClass);
+					return 0;
+				}
 			}
-			else
-#endif
+            #endif
+
 			{
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-				StorageManager.SetSaveDisabled(false);
-#endif
+				if(consoleAutosave)
+				{
+					StorageManager.SetSaveDisabled(false);
+				}
 				MinecraftServer::getInstance()->setSaveOnExit( true );
 			}
 		}
@@ -7985,13 +8024,17 @@ void CMinecraftApp::EnterSaveNotificationSection()
 	{
 		if(g_NetworkManager.IsInSession())  // this can be triggered from the front end if we're downloading a save
 		{
-		MinecraftServer::getInstance()->broadcastStartSavingPacket();
+			MinecraftServer::getInstance()->broadcastStartSavingPacket();
 
-		if( g_NetworkManager.IsLocalGame() && g_NetworkManager.GetPlayerCount() == 1 )
-		{
-			app.SetXuiServerAction(ProfileManager.GetPrimaryPad(),eXuiServerAction_PauseServer,(void *)TRUE);
+			const int controlType = app.GetGameSettings(ProfileManager.GetPrimaryPad(), eGameSetting_ControlType);
+			const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4);
+			const bool isAutosaveAction = (app.GetXuiServerAction(ProfileManager.GetPrimaryPad()) == eXuiServerAction_AutoSaveGame);
+			const bool shouldPauseServer = g_NetworkManager.IsLocalGame() && g_NetworkManager.GetPlayerCount() == 1 && !(consoleAutosave && isAutosaveAction);
+			if(shouldPauseServer)
+			{
+				app.SetXuiServerAction(ProfileManager.GetPrimaryPad(),eXuiServerAction_PauseServer,(void *)TRUE);
+			}
 		}
-	}
 	}
 	LeaveCriticalSection(&m_saveNotificationCriticalSection);
 }
@@ -8003,13 +8046,17 @@ void CMinecraftApp::LeaveSaveNotificationSection()
 	{
 		if(g_NetworkManager.IsInSession())  // this can be triggered from the front end if we're downloading a save
 		{
-		MinecraftServer::getInstance()->broadcastStopSavingPacket();
+			MinecraftServer::getInstance()->broadcastStopSavingPacket();
 
-		if( g_NetworkManager.IsLocalGame() && g_NetworkManager.GetPlayerCount() == 1 )
-		{
-			app.SetXuiServerAction(ProfileManager.GetPrimaryPad(),eXuiServerAction_PauseServer,(void *)FALSE);
+			const int controlType = app.GetGameSettings(ProfileManager.GetPrimaryPad(), eGameSetting_ControlType);
+			const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4);
+			const bool isAutosaveAction = (app.GetXuiServerAction(ProfileManager.GetPrimaryPad()) == eXuiServerAction_AutoSaveGame);
+			const bool shouldPauseServer = g_NetworkManager.IsLocalGame() && g_NetworkManager.GetPlayerCount() == 1 && !(consoleAutosave && isAutosaveAction);
+			if(shouldPauseServer)
+			{
+				app.SetXuiServerAction(ProfileManager.GetPrimaryPad(),eXuiServerAction_PauseServer,(void *)FALSE);
+			}
 		}
-	}
 	}
 	LeaveCriticalSection(&m_saveNotificationCriticalSection);
 }
@@ -8057,6 +8104,14 @@ int CMinecraftApp::RemoteSaveThreadProc( void* lpParameter )
 	return S_OK;
 }
 
+UINT CMinecraftApp::GetCorrectExitKey(int iPad)
+{
+	const int controlType = GetGameSettings(iPad, eGameSetting_ControlType);
+	const bool consoleAutosave = (controlType == 0 || controlType == 1 || controlType == 4);
+
+	return consoleAutosave ? IDS_CONFIRM_EXIT_GAME_AUTOSAVE : IDS_CONFIRM_EXIT_GAME;
+}
+
 void CMinecraftApp::ExitGameFromRemoteSave( LPVOID lpParameter )
 {
 	int primaryPad = ProfileManager.GetPrimaryPad();
@@ -8065,7 +8120,7 @@ void CMinecraftApp::ExitGameFromRemoteSave( LPVOID lpParameter )
 	uiIDA[0]=IDS_CONFIRM_CANCEL;
 	uiIDA[1]=IDS_CONFIRM_OK;
 
-	ui.RequestAlertMessage(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 2, primaryPad,&CMinecraftApp::ExitGameFromRemoteSaveDialogReturned,nullptr);
+	ui.RequestAlertMessage(IDS_EXIT_GAME, app.GetCorrectExitKey(primaryPad), uiIDA, 2, primaryPad,&CMinecraftApp::ExitGameFromRemoteSaveDialogReturned,nullptr);
 }
 
 int CMinecraftApp::ExitGameFromRemoteSaveDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result)
@@ -10184,11 +10239,13 @@ int CMinecraftApp::GetDLCInfoTexturesOffersCount()
 // AUTOSAVE
 void CMinecraftApp::SetAutosaveTimerTime(void)
 {
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-	m_uiAutosaveTimer= GetTickCount()+1000*60;
-#else
-	m_uiAutosaveTimer= GetTickCount()+GetGameSettings(ProfileManager.GetPrimaryPad(),eGameSetting_Autosave)*1000*60*15;
-#endif
+	int primaryPad = ProfileManager.GetPrimaryPad();
+	const int controlType = app.GetGameSettings(primaryPad, eGameSetting_ControlType);
+	const bool fasterAutosave = (controlType == 0 || controlType == 1 || controlType == 4); // windows, xbox one and ps4
+	if (fasterAutosave)
+		m_uiAutosaveTimer= GetTickCount() + GetGameSettings(primaryPad, eGameSetting_Autosave) * 1000 * 60;
+	else
+		m_uiAutosaveTimer= GetTickCount() + GetGameSettings(primaryPad, eGameSetting_Autosave) * 1000 * 60 * 15;
 }// value x 15 to get mins, x60 for secs
 
 bool CMinecraftApp::AutosaveDue(void)

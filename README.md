@@ -5,6 +5,10 @@ This project aims to backport the newer title updates back to Legacy Console Edi
 [![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/neolegacy)
 [![Emerald Launcher](https://img.shields.io/badge/Get_it_on-LCE_Emerald_Launcher-3fc724)](https://github.com/LCE-Hub/LCE-Emerald-Launcher)
 
+# WARNING: For forking!
+The neoLegacy name is forbidden from usage in any forked copies unless explicit permission is given, this is to combat the growing problem of copycat forks/AI forks.
+You will ALWAYS find the neoLegacy fork [here](https://git.neolegacy.dev/neoStudiosLCE/neoLegacy/)!
+
 # Our roadmap:
 ![Roadmap](.github/roadmap.png)
 

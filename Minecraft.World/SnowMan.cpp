@@ -83,6 +83,16 @@ void SnowMan::aiStep()
 	}
 }
 
+int SnowMan::getHurtSound()
+{
+	return eSoundType_ENTITY_SNOWMAN_HURT;
+}
+
+int SnowMan::getDeathSound()
+{
+	return eSoundType_ENTITY_SNOWMAN_DEATH;
+}
+
 int SnowMan::getDeathLoot()
 {
 	return Item::snowball_Id;

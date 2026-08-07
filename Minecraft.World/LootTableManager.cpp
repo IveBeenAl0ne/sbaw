@@ -174,7 +174,8 @@ int ResolveSmeltedItemId(const std::string &itemName, int currentItemId)
     else if (normalized == "beef"
     || normalized == "porkchop"
     || normalized == "chicken"
-    || normalized == "mutton")
+    || normalized == "mutton"
+    || normalized == "rabbit")
     {
         return GetItemIdByName("cooked_" + normalized);
     }
@@ -1086,7 +1087,8 @@ std::vector<LootTableDropResult> LootTableManager::ResolveDrops(
                             }
                             else if (functionIt->functionName == "enchant_randomly")
                             {
-                                LootLog("[LootDbg] enchant_randomly -> deferred to enchantment system\n");
+                                result.enchantLevels = 1 + randomInt(30);
+                                LootLog("[LootDbg] enchant_randomly -> levels=%d\n", result.enchantLevels);
                             }
                         }
 

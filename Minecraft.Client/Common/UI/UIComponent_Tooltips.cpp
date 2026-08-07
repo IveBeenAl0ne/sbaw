@@ -142,8 +142,8 @@ void UIComponent_Tooltips::updateSafeZone()
 			const F64 screenW = ui.getScreenWidth();
 			const F64 screenH = ui.getScreenHeight();
 			const bool largerThan720Window = (screenH > 720.0f) || (screenW > 1280.0f);
-			const bool menuContext = ui.GetMenuDisplayed(m_iPad);
-			if(getSceneResolution() == eSceneResolution_720 && largerThan720Window && menuContext)
+			// const bool menuContext = ui.GetMenuDisplayed(m_iPad);
+			if(getSceneResolution() == eSceneResolution_720 && largerThan720Window /*&& menuContext*/)
 			{
 				const F64 widthScale = screenW / 1920.0f;
 				const F64 heightScale = screenH / 1080.0f;

@@ -45,7 +45,7 @@ void ItemFrameRenderer::render(shared_ptr<Entity>  _itemframe, double x, double 
 	float back = 0.0f;
 
 	// set offset to 1 if the item frame is not placed by the player
-	if (itemFrame->level->isClientSide && !itemFrame->placedByPlayer)
+	if (itemFrame->level->isClientSide && itemFrame->placedByTutorial)
 	{
 		back = 1.0f;
 	}

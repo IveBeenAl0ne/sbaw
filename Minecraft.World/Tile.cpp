@@ -370,7 +370,7 @@ void Tile::staticCtor()
 	Tile::SOUND_GRAVEL = new Tile::SoundType(eMaterialSoundType_GRAVEL, 1, 1);
 	Tile::SOUND_GRASS = new Tile::SoundType(eMaterialSoundType_GRASS, 1, 1);
 	Tile::SOUND_STONE = new Tile::SoundType(eMaterialSoundType_STONE, 1, 1);
-	Tile::SOUND_SLIME = new Tile::SoundType(eMaterialSoundType_STONE, 1, 1, eSoundType_MOB_SLIME_BIG, eSoundType_MOB_SLIME_BIG);
+	Tile::SOUND_SLIME = new Tile::SoundType(eMaterialSoundType_SLIME, 1, 1, eSoundType_MOB_SLIME_BIG, eSoundType_MOB_SLIME_BIG);
 	Tile::SOUND_METAL = new Tile::SoundType(eMaterialSoundType_STONE, 1, 1.5f);
 	Tile::SOUND_GLASS = new Tile::SoundType(eMaterialSoundType_STONE, 1, 1, eSoundType_RANDOM_GLASS,eSoundType_STEP_STONE);
 	Tile::SOUND_CLOTH = new Tile::SoundType(eMaterialSoundType_CLOTH, 1, 1);
@@ -1642,7 +1642,7 @@ void Tile::registerIcons(IconRegister *iconRegister)
 void Tile::updateEntityAfterFallOn(Level *level, shared_ptr<Entity> entity)
 {
 	if (!entity) return;
-	entity->fallDistance = 0.0f;
+	entity->yd = 0;
 }
 
 wstring Tile::getTileItemIconName()
@@ -1672,6 +1672,9 @@ Tile::SoundType::SoundType(eMATERIALSOUND_TYPE eMaterialSound, float volume, flo
 			break;
 		case eMaterialSoundType_GRASS:
 			this->iBreakSound=eSoundType_DIG_GRASS;
+			break;
+		case eMaterialSoundType_SLIME:
+			this->iStepSound=eSoundType_MOB_SLIME_SMALL;
 			break;
 		case eMaterialSoundType_METAL:
 			this->iBreakSound=eSoundType_DIG_STONE;
@@ -1721,6 +1724,9 @@ Tile::SoundType::SoundType(eMATERIALSOUND_TYPE eMaterialSound, float volume, flo
 		break;
 	case eMaterialSoundType_GRASS:
 		this->iStepSound=eSoundType_STEP_GRASS;
+		break;
+	case eMaterialSoundType_SLIME:
+		this->iStepSound=eSoundType_MOB_SLIME_SMALL;
 		break;
 	case eMaterialSoundType_METAL:
 		this->iStepSound=eSoundType_STEP_METAL;

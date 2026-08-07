@@ -1686,11 +1686,22 @@ void ServerLevel::flagEntitiesToBeRemoved(unsigned int *flags, bool *removedFoun
 }
 void ServerLevel::sendParticles(const ParticleType* type, bool longDistance, double x, double y, double z, int count, double dx, double dy, double dz, double speed, arrayWithLength<int> data)
 {
-	wchar_t buf[32];
-	swprintf_s(buf, L"%d", type->getId());
+    wstring particleName;
+    if (type != nullptr && type->getId() == ParticleType::blockdust->getId() && data.length > 0)
+    {
+        int tileId = data[0] & Tile::TILE_NUM_MASK;
+        int tileData = (data[0] >> Tile::TILE_NUM_SHIFT) & 0xFF;
+        particleName = std::to_wstring(PARTICLE_BLOCKDUST(tileId, tileData));
+    }
+    else
+    {
+        wchar_t buf[32];
+        swprintf_s(buf, L"%d", type != nullptr ? type->getId() : 0);
+        particleName = buf;
+    }
 
     auto packet = make_shared<LevelParticlesPacket>(
-		buf,
+		particleName,
         (float)x, (float)y, (float)z,
         (float)dx, (float)dy, (float)dz,
         (float)speed,

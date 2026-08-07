@@ -405,7 +405,7 @@ void EntityHorse::dropBags()
 void EntityHorse::eatingHorse()
 {
 	openMouth();
-	level->playEntitySound(shared_from_this(), eSoundType_EATING, 1.0f, 1.0f + (random->nextFloat() - random->nextFloat()) * 0.2f);
+	level->playEntitySound(shared_from_this(), eSoundType_ENTITY_HORSE_EAT, 1.0f, 1.0f + (random->nextFloat() - random->nextFloat()) * 0.2f);
 }
 
 /**

@@ -3045,6 +3045,15 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 						}
 						break;
 
+					case eTYPE_CREEPER:
+						{
+							// if currently holding flint and steel
+							if (heldItemId == Item::flint_and_steel_Id) 
+								*piUse=IDS_TOOLTIPS_IGNITE;
+
+							*piAction=IDS_TOOLTIPS_HIT;
+						}
+						break;
 					case eTYPE_COW:
 						{
 							if(player->isAllowedToAttackAnimals()) *piAction=IDS_TOOLTIPS_HIT;
@@ -3622,7 +3631,18 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 		}
 
 		// 4J-JEV: Don't set tooltips when we're reloading the skin, it'll crash.
-		if (!ui.IsReloadingSkin()) ui.SetTooltips( iPad, iA, iB, iX, iY, iLT, iRT, iLB, iRB, iLS, iRS);
+		if (!ui.IsReloadingSkin())
+		{
+			int uiControlType = app.GetGameSettings(iPad, eGameSetting_ControlType);
+			if (uiControlType == 0)
+			{
+				ui.SetTooltips(iPad, iA, iB, iX, iY, iRT, iLT, iLB, iRB, iLS, iRS); // flip left and right triggers on kbm 
+			}
+			else
+			{
+				ui.SetTooltips(iPad, iA, iB, iX, iY, iLT, iRT, iLB, iRB, iLS, iRS);
+			}
+		}
 
 		int wheel = 0;
 		if (InputManager.GetValue(iPad, MINECRAFT_ACTION_LEFT_SCROLL, true) > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_LEFT_SCROLL) )
@@ -4571,8 +4591,20 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 	// Stop menu music and transition to game music for the new level
 	if (soundEngine != nullptr)
 	{
-		soundEngine->stopStreamingNow();
-		soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
+		const bool hasCustomMusic = (Minecraft::GetInstance() != nullptr &&
+			Minecraft::GetInstance()->skins != nullptr &&
+			Minecraft::GetInstance()->skins->getSelected() != nullptr &&
+			Minecraft::GetInstance()->skins->getSelected()->hasAudio());
+		const bool isMenuMusic = soundEngine->isPlayingMenuMusic();
+
+		if (hasCustomMusic || !isMenuMusic)
+		{
+			if (level != nullptr)
+			{
+				soundEngine->stopStreamingNow();
+			}
+			soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
+		}
 	}
 
 	// 4J - stop update thread from processing this level, which blocks until it is safe to move on - will be re-enabled if we set the level to be non-nullptr

@@ -100,7 +100,7 @@ public:
 	//virtual void tick();
 	//bool survives();
 	//virtual bool isPickable();
-	//virtual bool hurt(DamageSource *source, int damage);
+	virtual bool hurt(DamageSource *source, float damage);
 	virtual void addAdditonalSaveData(CompoundTag *tag);
 	virtual void readAdditionalSaveData(CompoundTag *tag);
 	//static Motive *randomMotive();

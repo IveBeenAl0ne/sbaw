@@ -9,6 +9,12 @@
 #include "../Minecraft.Client/Minecraft.h"
 #include "Level.h"
 
+const int HangingEntity::kApplicableDLCIds[] =
+{
+    // 1030,
+    1034,
+};
+
 void HangingEntity::_init(Level *level)
 {
 	checkInterval = 0;
@@ -16,6 +22,7 @@ void HangingEntity::_init(Level *level)
 	xTile = yTile = zTile = 0;
 	this->heightOffset = 0;
 	this->setSize(0.5f, 0.5f);
+	placedByTutorial = false;
 }
 
 HangingEntity::HangingEntity(Level *level) : Entity( level )
@@ -69,7 +76,7 @@ void HangingEntity::setDir(int dir)
 	int offset = 0;
 
 	// set offset to 1 if placed in stock world
-	if (level->isClientSide && !placedByPlayer)
+	if (level->isClientSide && placedByTutorial)
 	{
 		offset = 1;
 	}
@@ -262,6 +269,7 @@ void HangingEntity::push(double xa, double ya, double za)
 void HangingEntity::addAdditonalSaveData(CompoundTag *tag)
 {
 	tag->putByte(L"PlacedByPlayer", placedByPlayer ? 1 : 0);
+	tag->putByte(L"PlacedByTutorial", placedByTutorial ? 1 : 0);
 	tag->putByte(L"Direction", static_cast<byte>(dir));
 	tag->putInt(L"TileX", xTile);
 	tag->putInt(L"TileY", yTile);
@@ -299,6 +307,43 @@ void HangingEntity::readAdditionalSaveData(CompoundTag *tag)
 	if (tag->contains(L"PlacedByPlayer"))
 	{
 		placedByPlayer = tag->getByte(L"PlacedByPlayer") == 1;
+	}
+
+	if (tag->contains(L"PlacedByTutorial"))
+	{
+		placedByTutorial = tag->getByte(L"PlacedByTutorial") == 1;
+	}
+	else
+	{
+		bool isValidDLC = false;
+		bool isTutorial = false;
+		Minecraft *minecraft = Minecraft::GetInstance();
+
+		if (minecraft != nullptr && minecraft->isTutorial())
+		{
+			isTutorial = true;
+		}
+
+		LevelGenerationOptions *levelGen = app.getLevelGenerationOptions();
+
+		if (levelGen != nullptr)
+		{
+			if (levelGen->isTutorial())
+				isTutorial = true;
+
+			if (levelGen->isFromDLC())
+			{
+				if (IsApplicableDLC(levelGen->getRequiredTexturePackId()))
+				{
+					isValidDLC = true;
+				}
+			}
+		}
+		
+		if ((isTutorial || isValidDLC) && !placedByPlayer)
+		{
+			placedByTutorial = true;
+		}
 	}
 
 	bool hasDir = false;

@@ -20,4 +20,7 @@ public:
 
     static const ParticleType* byId(int id);
     static const ParticleType* getDefault();
+
+    static const ParticleType* blockdust;
+    static const ParticleType* blockcrack;
 };

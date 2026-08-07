@@ -1475,7 +1475,7 @@ if (cmd == L"tp" || cmd == L"teleport")
     	shared_ptr<GameCommandPacket> packet = GiveItemCommand::preparePacket(target, item, amount, aux);
     	server->getCommandDispatcher()->performCommand(player, eGameCommand_Give, packet->data);
 	}
-#ifndef _CONTENT_PACKAGE
+#ifdef _DEBUG
 	else if (cmd == L"spectator")
 	{
 		player->m_spectatorMode = !player->m_spectatorMode;

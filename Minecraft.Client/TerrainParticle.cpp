@@ -5,7 +5,11 @@
 #include "../Minecraft.World/net.minecraft.world.level.h"
 #include "../Minecraft.World/net.minecraft.world.h"
 
-TerrainParticle::TerrainParticle(Level *level, double x, double y, double z, double xa, double ya, double za, Tile *tile, int face, int data, Textures *textures) : Particle(level, x, y, z, xa, ya, za)
+TerrainParticle::TerrainParticle(Level *level, double x, double y, double z, double xa, double ya, double za, Tile *tile, int face, int data, Textures *textures) : TerrainParticle(level, x, y, z, xa, ya, za, tile, face, data, textures, true)
+{
+}
+
+TerrainParticle::TerrainParticle(Level *level, double x, double y, double z, double xa, double ya, double za, Tile *tile, int face, int data, Textures *textures, bool useRandomizedLogic) : Particle(level, x, y, z, xa, ya, za, useRandomizedLogic)
 {
     this->tile = tile;
     if (tile == nullptr) return; // tu31 tutorial world fix

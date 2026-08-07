@@ -15,6 +15,7 @@ private:
 	bool m_bPanoramaTexturesLoaded = false;
 
 	wstring m_panoramaTextureRoot;
+	wstring m_panoramaTextureRootKey;
 	float m_panoramaAspect = 1.0f;
 	DWORD m_lastScrollTickMs = 0;
 	float m_panoramaScroll = 0.0f;

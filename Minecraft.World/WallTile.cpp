@@ -155,7 +155,13 @@ AABB *WallTile::getAABB(Level *level, int x, int y, int z)
 bool WallTile::connectsTo(LevelSource *level, int x, int y, int z)
 {
 	int tile = level->getTile(x, y, z);
-	if (tile == id || tile == Tile::fence_gate_Id)
+	if (tile == id || tile == Tile::fence_gate_Id || 
+		tile == Tile::birch_fence_gate_Id ||
+		tile == Tile::spruce_fence_gate_Id ||
+		tile == Tile::jungle_fence_gate_Id ||
+		tile == Tile::acacia_fence_gate_Id ||
+		tile == Tile::dark_oak_fence_gate_Id
+	) // fix: walls only connecting to the regular fence gate
 	{
 		return true;
 	}

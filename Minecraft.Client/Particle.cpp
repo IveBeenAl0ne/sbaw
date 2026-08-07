@@ -98,7 +98,7 @@ Particle::Particle(Level *level, double x, double y, double z) : Entity(nullptr,
 	}
 }
 
-Particle::Particle(Level *level, double x, double y, double z, double xa, double ya, double za) : Entity(nullptr, false)
+Particle::Particle(Level *level, double x, double y, double z, double xa, double ya, double za, bool useRandomizedLogic) : Entity(nullptr, false)
 {
 	_init(level,x,y,z);
 
@@ -113,15 +113,28 @@ Particle::Particle(Level *level, double x, double y, double z, double xa, double
 		this->level = nullptr;
 	}
 
-    xd = xa + static_cast<float>(Math::random() * 2 - 1) * 0.4f;
-    yd = ya + static_cast<float>(Math::random() * 2 - 1) * 0.4f;
-    zd = za + static_cast<float>(Math::random() * 2 - 1) * 0.4f;
-    float speed = static_cast<float>(Math::random() + Math::random() + 1) * 0.15f;
+    if (useRandomizedLogic) {
+		xd = xa + static_cast<float>(Math::random() * 2 - 1) * 0.4f;
+		yd = ya + static_cast<float>(Math::random() * 2 - 1) * 0.4f;
+		zd = za + static_cast<float>(Math::random() * 2 - 1) * 0.4f;
+		float speed = static_cast<float>(Math::random() + Math::random() + 1) * 0.15f;
 
-    float dd = (float) (Mth::sqrt(xd * xd + yd * yd + zd * zd));
-    xd = xd / dd * speed * 0.4f;
-    yd = yd / dd * speed * 0.4f + 0.1f;
-    zd = zd / dd * speed * 0.4f;}
+		float dd = (float) (Mth::sqrt(xd * xd + yd * yd + zd * zd));
+		xd = xd / dd * speed * 0.4f;
+		yd = yd / dd * speed * 0.4f + 0.1f;
+		zd = zd / dd * speed * 0.4f;
+	}
+	else {
+		xd = xa;
+		yd = ya;
+		zd = za;
+	}
+}
+
+
+Particle::Particle(Level *level, double x, double y, double z, double xa, double ya, double za) : Particle(level, x, y, z, xa, ya, za, true)
+{
+}
 
 shared_ptr<Particle> Particle::setPower(float power)
 {

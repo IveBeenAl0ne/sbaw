@@ -124,8 +124,9 @@ void ItemRenderer::render(shared_ptr<Entity> _itemEntity, double x, double y, do
 
         glScalef(s, s, s);
 		
-		bool bSlimeItem = (tile != nullptr && tile->id == Tile::slimeBlock->id);
-		if (bSlimeItem)
+		bool bTranslucentBlockItem = (tile != nullptr && tile->getRenderLayer() >= 2);
+
+		if (bTranslucentBlockItem)
 		{
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glDisable(GL_ALPHA_TEST);
@@ -149,7 +150,7 @@ void ItemRenderer::render(shared_ptr<Entity> _itemEntity, double x, double y, do
             glPopMatrix();
         }
 
-		if (bSlimeItem)
+		if (bTranslucentBlockItem)
 		{
 			glDepthMask(true);
 			glEnable(GL_ALPHA_TEST);
