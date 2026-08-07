@@ -3178,7 +3178,7 @@ shared_ptr<Particle> LevelRenderer::addParticleInternal(ePARTICLE_TYPE eParticle
 		case eParticleType_mobAppearance:
         particle = std::make_shared<MobAppearanceParticle>(lev, x, y, z);
         break;
-	case eParticleType_egg:
+	case eParticleType_thrownegg:
 		particle = std::make_shared<BreakingItemParticle>(lev, x, y, z, Item::egg, textures);
 		break;
 

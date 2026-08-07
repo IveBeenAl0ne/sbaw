@@ -58,7 +58,7 @@ void ThrownEgg::onHit(HitResult *res)
 	}
 
 	for (int i = 0; i < 8; i++)
-		level->addParticle(eParticleType_egg, x, y, z, 0, 0, 0);
+		level->addParticle(eParticleType_thrownegg, x, y, z, 0, 0, 0);
 
 	if (!level->isClientSide)
 	{
