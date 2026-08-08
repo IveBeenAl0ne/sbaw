@@ -421,6 +421,7 @@ bool ServerPlayerGameMode::useItemOn(shared_ptr<Player> player, Level *level, sh
 				if (Tile::tiles[t]->use(level, x, y, z, player, face, clickX, clickY, clickZ))
 				{
 					if(m_gameRules != nullptr) m_gameRules->onUseTile(t,x,y,z);
+					*pbUsedItem = true;
 					return true;
 				}
 			}
