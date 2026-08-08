@@ -690,6 +690,7 @@ void PlayerConnection::handleUseItem(shared_ptr<UseItemPacket> packet)
 	ServerLevel *level = server->getLevel(player->dimension);
 	shared_ptr<ItemInstance> item = player->inventory->getSelected();
 	bool informClient = false;
+	bool blockHandled = false;
 	int x = packet->getX();
 	int y = packet->getY();
 	int z = packet->getZ();
@@ -776,8 +777,7 @@ void PlayerConnection::handleUseItem(shared_ptr<UseItemPacket> packet)
 				int savedItemId    = item ? item->id    : 0;
 				int savedItemCount = item ? item->count : 0;
 #endif
-
-				player->gameMode->useItemOn(player, level, item, x, y, z, face, packet->getClickX(), packet->getClickY(), packet->getClickZ());
+				player->gameMode->useItemOn(player, level, item, x, y, z, face, packet->getClickX(), packet->getClickY(), packet->getClickZ(), false, &blockHandled);
 
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 				if (validFace)
@@ -897,7 +897,8 @@ skipUseItemOn:
 	}
 
 	//Migrate QuickEquip packet here instead
-	if (item != nullptr && (item->getItem()->getBaseItemType() == Item::eBaseItemType_helmet
+	if (item != nullptr && !blockHandled
+		&& (item->getItem()->getBaseItemType() == Item::eBaseItemType_helmet
 		|| item->getItem()->getBaseItemType() == Item::eBaseItemType_chestplate
 		|| item->getItem()->getBaseItemType() == Item::eBaseItemType_leggings
 		|| item->getItem()->getBaseItemType() == Item::eBaseItemType_boots)) {
