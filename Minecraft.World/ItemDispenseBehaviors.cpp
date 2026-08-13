@@ -97,7 +97,7 @@ shared_ptr<ItemInstance> SpawnEggDispenseBehavior::execute(BlockSource *source, 
 
 	// Spawn entity in the middle of the block in front of the dispenser
 	double spawnX = source->getX() + facing->getStepX();
-	double spawnY = source->getBlockY() + .2f; // Above pressure plates
+    double spawnY = (source->getY() + facing->getStepY()) + .2f; // Above pressure plates
 	double spawnZ = source->getZ() + facing->getStepZ();
 
 	int iResult = 0;
