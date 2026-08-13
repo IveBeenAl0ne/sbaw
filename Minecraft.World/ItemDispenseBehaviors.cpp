@@ -97,7 +97,7 @@ shared_ptr<ItemInstance> SpawnEggDispenseBehavior::execute(BlockSource *source, 
 
 	// Spawn entity in the middle of the block in front of the dispenser
 	double spawnX = source->getX() + facing->getStepX();
-    double spawnY = (source->getY() + facing->getStepY()) + .2f; // Above pressure plates
+    double spawnY = source->getY() + facing->getStepY();
 	double spawnZ = source->getZ() + facing->getStepZ();
 
 	int iResult = 0;
@@ -136,7 +136,7 @@ shared_ptr<ItemInstance> FireworksDispenseBehavior::execute(BlockSource *source,
 	FacingEnum *facing = DispenserTile::getFacing(source->getData());
 
 	double spawnX = source->getX() + facing->getStepX();
-    double spawnY = (source->getY() + facing->getStepY()) + .2f;
+    double spawnY = source->getY() + facing->getStepY();
 	double spawnZ = source->getZ() + facing->getStepZ();
 
 	shared_ptr<FireworksRocketEntity> firework = std::make_shared<FireworksRocketEntity>(world, spawnX, spawnY, spawnZ, dispensed);
