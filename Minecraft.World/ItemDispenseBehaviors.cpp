@@ -136,7 +136,7 @@ shared_ptr<ItemInstance> FireworksDispenseBehavior::execute(BlockSource *source,
 	FacingEnum *facing = DispenserTile::getFacing(source->getData());
 
 	double spawnX = source->getX() + facing->getStepX();
-	double spawnY = source->getBlockY() + .2f;
+    double spawnY = (source->getY() + facing->getStepY()) + .2f;
 	double spawnZ = source->getZ() + facing->getStepZ();
 
 	shared_ptr<FireworksRocketEntity> firework = std::make_shared<FireworksRocketEntity>(world, spawnX, spawnY, spawnZ, dispensed);
