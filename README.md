@@ -33,7 +33,7 @@ Huge thanks to the following projects:
 
 ## Windows
 1. Install [Visual Studio 2022](https://aka.ms/vs/17/release/vs_community.exe) or [newer](https://visualstudio.microsoft.com/downloads/).
-2. Clone the repository.
+2. Clone the repository by doing `git clone --recursive https://git.neolegacy.dev/neoStudiosLCE/neoLegacy.git`. 
 3. Open the project folder from Visual Studio.
 4. Set the build configuration to **Windows64 - Debug** (Release is also ok but missing some debug features), then build and run.
 
