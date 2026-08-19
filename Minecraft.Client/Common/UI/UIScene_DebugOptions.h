@@ -41,6 +41,10 @@ class UIScene_DebugOptionsMenu : public UIScene
     int m_iPendingSliderId;
     int m_iPendingSliderValue;
 
+    bool m_bGoToOverworld;
+    bool m_bGoToNether;
+    bool m_bGoToEnd;
+
     bool m_bNotInGame;
 
     UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)

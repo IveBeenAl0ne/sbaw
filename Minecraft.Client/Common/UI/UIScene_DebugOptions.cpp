@@ -21,6 +21,10 @@ UIScene_DebugOptionsMenu::UIScene_DebugOptionsMenu(int iPad, void *initData, UIL
     m_iPendingSliderId = 0;
     m_iPendingSliderValue = 0;
 
+    m_bGoToOverworld = false;
+    m_bGoToNether = false;
+    m_bGoToEnd = false;
+
     doHorizontalResizeCheck();
 
     if (app.GetLocalPlayerCount() > 1)
@@ -84,6 +88,12 @@ void UIScene_DebugOptionsMenu::tick()
         //L"Show Marketing Guide",
 
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_ART_TOOLS), eControl_ArtTools, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_ArtTools)) != 0));
+        
+        // tp
+        m_multiList.AddNewButton(app.GetString(IDS_DEBUG_GO_TO_OVERWORLD), eControl_GoToOverworld);
+        m_multiList.AddNewButton(app.GetString(IDS_DEBUG_GO_TO_NETHER), eControl_GoToNether);
+        m_multiList.AddNewButton(app.GetString(IDS_DEBUG_GO_TO_END), eControl_GoToEnd);
+
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_FREEZE_PLAYERS), eControl_FreezePlayers, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_FreezePlayers)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_FREEZE_TIME), eControl_FreezeTime, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_FreezeTime)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_MOBS_DONT_ATTACK), eControl_MobsDontAttack, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_MobsDontAttack)) != 0));
@@ -102,11 +112,6 @@ void UIScene_DebugOptionsMenu::tick()
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_SHOW_UI_CONSOLE), eControl_ShowUIConsole, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_ShowUIConsole)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_LEADERBOARDS), eControl_DebugLeaderboards, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_DebugLeaderboards)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_HEIGHT_WATER_MAPS), eControl_EnableHeightWaterOverride, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_EnableHeightWaterOverride)) != 0));
- 
-        // tp
-        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_GO_TO_OVERWORLD), eControl_GoToOverworld, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToOverworld)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_GO_TO_NETHER), eControl_GoToNether, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToNether)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_GO_TO_END), eControl_GoToEnd, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToEnd)) != 0));
 
         // save files
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_LOAD_SAVES), eControl_LoadSavesFromDisk, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_LoadSavesFromDisk)) != 0));
@@ -210,6 +215,19 @@ void UIScene_DebugOptionsMenu::handleCheckboxToggled(F64 controlId, bool selecte
 void UIScene_DebugOptionsMenu::handlePress(F64 controlId, F64 childId)
 {
     ui.PlayUISFX(eSFX_Press);
+
+    switch (static_cast<int>(childId))
+    {
+    case eControl_GoToOverworld:
+        m_bGoToOverworld = true;
+        break;
+    case eControl_GoToNether:
+        m_bGoToNether = true;
+        break;
+    case eControl_GoToEnd:
+        m_bGoToEnd = true;
+        break;
+    }
 }
 
 void UIScene_DebugOptionsMenu::setGameSettings()
@@ -235,9 +253,9 @@ void UIScene_DebugOptionsMenu::setGameSettings()
     if (m_multiList.GetCheckboxValue(eControl_DebugLeaderboards)) uiMask |= (1 << eDebugSetting_DebugLeaderboards);
     if (m_multiList.GetCheckboxValue(eControl_EnableHeightWaterOverride)) uiMask |= (1 << eDebugSetting_EnableHeightWaterOverride);
 
-    if (m_multiList.GetCheckboxValue(eControl_GoToOverworld)) uiMask |= (1 << eDebugSetting_GoToOverworld);
-    if (m_multiList.GetCheckboxValue(eControl_GoToNether)) uiMask |= (1 << eDebugSetting_GoToNether);
-    if (m_multiList.GetCheckboxValue(eControl_GoToEnd)) uiMask |= (1 << eDebugSetting_GoToEnd);
+    if (m_bGoToOverworld) uiMask |= (1 << eDebugSetting_GoToOverworld);
+    if (m_bGoToNether) uiMask |= (1 << eDebugSetting_GoToNether);
+    if (m_bGoToEnd) uiMask |= (1 << eDebugSetting_GoToEnd);
 
     if (m_multiList.GetCheckboxValue(eControl_LoadSavesFromDisk)) uiMask |= (1 << eDebugSetting_LoadSavesFromDisk);
     if (m_multiList.GetCheckboxValue(eControl_WriteSavesToDisk)) uiMask |= (1 << eDebugSetting_WriteSavesToDisk);
@@ -261,6 +279,10 @@ void UIScene_DebugOptionsMenu::setGameSettings()
 
         app.CheckGameSettingsChanged(true, m_iPad);
     }
+
+    m_bGoToOverworld = false;
+    m_bGoToNether = false;
+    m_bGoToEnd = false;
 }
 
 void UIScene_DebugOptionsMenu::handleGainFocus(bool navBack)
