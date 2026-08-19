@@ -9828,4 +9828,96 @@ All Ender Chests in a world are linked. Items placed into an Ender Chest are acc
 	<data name="IDS_TILE_BANNER_WHITE">
 		<value>White Banner</value>
 	</data>
+	
+	<data name="IDS_DEBUG_LOAD_SAVES">
+		<value>Load Saves From Local Folder Mode</value>
+	</data>
+
+	<data name="IDS_DEBUG_WRITE_SAVES">
+		<value>Write Saves To Local Folder Mode</value>
+	</data>
+
+	<data name="IDS_DEBUG_ART_TOOLS">
+		<value>Art Tools</value>
+	</data>
+
+	<data name="IDS_DEBUG_FREEZE_PLAYERS">
+		<value>Freeze Players</value>
+	</data>
+
+	<data name="IDS_DEBUG_FREEZE_TIME">
+		<value>Freeze Time</value>
+	</data>
+
+	<data name="IDS_DEBUG_MOBS_DONT_ATTACK">
+		<value>Mobs don't attack</value>
+	</data>
+
+	<data name="IDS_DEBUG_DISABLE_WEATHER">
+		<value>Disable Weather</value>
+	</data>
+
+	<data name="IDS_DEBUG_CRAFT_ANYTHING">
+		<value>Craft Anything</value>
+	</data>
+
+	<data name="IDS_DEBUG_USE_DPAD_FOR_DEBUG">
+		<value>Use DPad for debug</value>
+	</data>
+
+	<data name="IDS_DEBUG_MOBS_DONT_TICK">
+		<value>Mobs don't tick</value>
+	</data>
+
+	<data name="IDS_DEBUG_SUPERFLAT_NETHER">
+		<value>Superflat Nether</value>
+	</data>
+
+	<data name="IDS_DEBUG_MORE_LIGHTNING">
+		<value>More lightning when thundering</value>
+	</data>
+
+	<data name="IDS_DEBUG_BIOME_OVERRIDE">
+		<value>Biome override</value>
+	</data>
+
+	<data name="IDS_DEBUG_UNLOCK_ALL_DLC">
+		<value>Unlock All DLC</value>
+	</data>
+
+	<data name="IDS_DEBUG_SHOW_MARKETING_GUIDE">
+		<value>Show Marketing Guide</value>
+	</data>
+
+	<data name="IDS_DEBUG_SHOW_UI_CONSOLE">
+		<value>Show UI Console</value>
+	</data>
+
+	<data name="IDS_DEBUG_LEADERBOARDS">
+		<value>Debug Leaderboards</value>
+	</data>
+
+	<data name="IDS_DEBUG_HEIGHT_WATER_MAPS">
+		<value>Height-Water Maps</value>
+	</data>
+
+	<data name="IDS_DEBUG_GO_TO_OVERWORLD">
+		<value>Go To Overworld</value>
+	</data>
+
+	<data name="IDS_DEBUG_GO_TO_NETHER">
+		<value>Go To Nether</value>
+	</data>
+
+	<data name="IDS_DEBUG_GO_TO_END">
+		<value>Go To End</value>
+	</data>
+
+	<data name="IDS_DEBUG_DISTRIBUTABLE_SAVE">
+		<value>Distributable Save</value>
+	</data>
+
+	<data name="IDS_DEBUG_SAFE_AREA">
+		<value>Display Safe Area</value>
+	</data>
 </root>

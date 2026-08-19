@@ -78,35 +78,35 @@ void UIScene_DebugOptionsMenu::tick()
         //L"Unlock All DLC", // L"Toggle Font",
         //L"Show Marketing Guide",
 
-        m_multiList.AddNewCheckbox(app.GetString(L"Art Tools"), eControl_ArtTools, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_ArtTools)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Freeze Players"), eControl_FreezePlayers, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_FreezePlayers)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Freeze Time"), eControl_FreezeTime, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_FreezeTime)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Mobs don't attack"), eControl_MobsDontAttack, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_MobsDontAttack)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Disable Weather"), eControl_DisableWeather, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_DisableWeather)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Craft Anything"), eControl_CraftAnything, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_CraftAnything)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Use DPad for debug"), eControl_UseDpadForDebug, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_UseDpadForDebug)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Mobs don't tick"), eControl_MobsDontTick, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_MobsDontTick)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Superflat Nether"), eControl_SuperflatNether, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_SuperflatNether)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"More lightning when thundering"), eControl_RegularLightning, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_RegularLightning)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Biome override"), eControl_EnableBiomeOverride, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_EnableBiomeOverride)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Unlock All DLC"), eControl_UnlockAllDLC, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_UnlockAllDLC)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_ART_TOOLS), eControl_ArtTools, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_ArtTools)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_FREEZE_PLAYERS), eControl_FreezePlayers, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_FreezePlayers)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_FREEZE_TIME), eControl_FreezeTime, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_FreezeTime)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_MOBS_DONT_ATTACK), eControl_MobsDontAttack, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_MobsDontAttack)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_DISABLE_WEATHER), eControl_DisableWeather, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_DisableWeather)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_CRAFT_ANYTHING), eControl_CraftAnything, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_CraftAnything)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_USE_DPAD_FOR_DEBUG), eControl_UseDpadForDebug, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_UseDpadForDebug)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_MOBS_DONT_TICK), eControl_MobsDontTick, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_MobsDontTick)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_SUPERFLAT_NETHER), eControl_SuperflatNether, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_SuperflatNether)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_MORE_LIGHTNING), eControl_RegularLightning, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_RegularLightning)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_BIOME_OVERRIDE), eControl_EnableBiomeOverride, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_EnableBiomeOverride)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_UNLOCK_ALL_DLC), eControl_UnlockAllDLC, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_UnlockAllDLC)) != 0));
 
         // UI
-        m_multiList.AddNewCheckbox(app.GetString(L"Display Safe Area"), eControl_Safearea, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_Safearea)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Show Marketing Guide"), eControl_ShowUIMarketingGuide, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_ShowUIMarketingGuide)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Show UI Console"), eControl_ShowUIConsole, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_ShowUIConsole)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Debug Leaderboards"), eControl_DebugLeaderboards, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_DebugLeaderboards)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Height-Water Maps"), eControl_EnableHeightWaterOverride, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_EnableHeightWaterOverride)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_SAFE_AREA), eControl_Safearea, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_Safearea)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_SHOW_MARKETING_GUIDE), eControl_ShowUIMarketingGuide, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_ShowUIMarketingGuide)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_SHOW_UI_CONSOLE), eControl_ShowUIConsole, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_ShowUIConsole)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_LEADERBOARDS), eControl_DebugLeaderboards, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_DebugLeaderboards)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_HEIGHT_WATER_MAPS), eControl_EnableHeightWaterOverride, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_EnableHeightWaterOverride)) != 0));
  
         // tp
-        m_multiList.AddNewCheckbox(app.GetString(L"Go To Overworld"), eControl_GoToOverworld, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToOverworld)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Go To Nether"), eControl_GoToNether, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToNether)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Go To End"), eControl_GoToEnd, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToEnd)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_GO_TO_OVERWORLD), eControl_GoToOverworld, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToOverworld)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_GO_TO_NETHER), eControl_GoToNether, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToNether)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_GO_TO_END), eControl_GoToEnd, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToEnd)) != 0));
 
         // save files
-        m_multiList.AddNewCheckbox(app.GetString(L"Load Saves From Local Folder Mode"), eControl_LoadSavesFromDisk, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_LoadSavesFromDisk)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Write Saves To Local Folder Mode"), eControl_WriteSavesToDisk, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_WriteSavesToDisk)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(L"Distributable Save"), eControl_DistributableSave, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_DistributableSave)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_LOAD_SAVES), eControl_LoadSavesFromDisk, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_LoadSavesFromDisk)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_WRITE_SAVES), eControl_WriteSavesToDisk, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_WriteSavesToDisk)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_DISTRIBUTABLE_SAVE), eControl_DistributableSave, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_DistributableSave)) != 0));
 
         IggyName funcDoVert = registerFastName(L"DoVerticalResizeCheck");
         IggyName funcHideDesc = registerFastName(L"HideDescription");
