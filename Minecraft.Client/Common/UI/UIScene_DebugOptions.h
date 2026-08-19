@@ -77,4 +77,5 @@ class UIScene_DebugOptionsMenu : public UIScene
     static int LevelToDistance(int dist);
 
     static int DistanceToLevel(int dist);
+    virtual void render(S32 width, S32 height, C4JRender::eViewportType viewport);
 };
