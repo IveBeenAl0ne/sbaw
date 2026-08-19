@@ -871,6 +871,14 @@ public:
 
 	// AP - added this function so we can generate the faceFlags for a block in a single fast function
 	int getFaceFlags(LevelSource *level, int x, int y, int z);
+
+	virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance,
+                            std::shared_ptr<Player> player,
+                            Level* level,
+                            int x, int y, int z) const
+	{
+    return 0;
+	}
 };
 
 class stoneBrick : public Tile {};

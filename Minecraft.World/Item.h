@@ -827,4 +827,11 @@ public:
 	virtual bool isValidRepairItem(shared_ptr<ItemInstance> source, shared_ptr<ItemInstance> repairItem);
 	virtual void registerIcons(IconRegister *iconRegister);
 	virtual attrAttrModMap *getDefaultAttributeModifiers();
+	virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance,
+                            std::shared_ptr<Player> player,
+                            Level* level,
+                            int x, int y, int z) const
+	{
+    return 0;
+	}
 };
