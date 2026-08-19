@@ -710,33 +710,36 @@ void ServerPlayer::doTickB()
 {
 #ifndef _CONTENT_PACKAGE
 	// check if there's a debug dimension change requested
-	//if(app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad())&(1L<<eDebugSetting_GoToNether))
-	//{
-	//	if(level->dimension->id == 0 )
-	//	{
-	//		isInsidePortal=true;
-	//		portalTime=1;
-	//	}
-	//	unsigned int uiVal=app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad());
-	//	app.SetGameSettingsDebugMask(ProfileManager.GetPrimaryPad(),uiVal&~(1L<<eDebugSetting_GoToNether));
-	//}
-	// 	else if (app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad())&(1L<<eDebugSetting_GoToEnd))
-	// 	{
-	// 		if(level->dimension->id == 0 )
-	// 		{
-	// 			server->players->toggleDimension( dynamic_pointer_cast<ServerPlayer>( shared_from_this() ), 1 );
-	// 		}
-	// 		unsigned int uiVal=app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad());
-	// 		app.SetGameSettingsDebugMask(ProfileManager.GetPrimaryPad(),uiVal&~(1L<<eDebugSetting_GoToEnd));
-	// 	}
-	//else
-		if (app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad())&(1L<<eDebugSetting_GoToOverworld))
+    if (app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad()) & (1L << eDebugSetting_GoToNether))
+    {
+        if(level->dimension->id != -1 )
+        {
+			isInsidePortal = true;
+			portalTime = 1;
+        }
+        unsigned int uiVal = app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad());
+        app.SetGameSettingsDebugMask(ProfileManager.GetPrimaryPad(), uiVal & ~(1L << eDebugSetting_GoToNether));
+    }
+	else if (app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad())&(1L<<eDebugSetting_GoToEnd))
 	{
-		if(level->dimension->id != 0 )
+        if (level->dimension->id != 1)
+        {
+            changeDimension(1);
+        }
+		unsigned int uiVal=app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad());
+		app.SetGameSettingsDebugMask(ProfileManager.GetPrimaryPad(),uiVal&~(1L<<eDebugSetting_GoToEnd));
+	}
+	else if (app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad())&(1L<<eDebugSetting_GoToOverworld))
+	{
+		if(level->dimension->id == -1 ) //from the nether
 		{
 			isInsidePortal=true;
 			portalTime=1;
 		}
+        else if (level->dimension->id != 0)
+        {
+            changeDimension(0);
+        }
 		unsigned int uiVal=app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad());
 		app.SetGameSettingsDebugMask(ProfileManager.GetPrimaryPad(),uiVal&~(1L<<eDebugSetting_GoToOverworld));
 	}

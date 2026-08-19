@@ -100,8 +100,8 @@ void UIScene_DebugOptionsMenu::tick()
  
         // tp
         m_multiList.AddNewCheckbox(app.GetString(L"Go To Overworld"), eControl_GoToOverworld, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToOverworld)) != 0));
-        // m_multiList.AddNewCheckbox(app.GetString(L"Go To Nether"), eControl_GoToNether, false);
-        // m_multiList.AddNewCheckbox(app.GetString(L"Go To End"), eControl_GoToEnd, false);
+        m_multiList.AddNewCheckbox(app.GetString(L"Go To Nether"), eControl_GoToNether, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToNether)) != 0));
+        m_multiList.AddNewCheckbox(app.GetString(L"Go To End"), eControl_GoToEnd, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_GoToEnd)) != 0));
 
         // save files
         m_multiList.AddNewCheckbox(app.GetString(L"Load Saves From Local Folder Mode"), eControl_LoadSavesFromDisk, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_LoadSavesFromDisk)) != 0));
@@ -231,6 +231,8 @@ void UIScene_DebugOptionsMenu::setGameSettings()
     if (m_multiList.GetCheckboxValue(eControl_EnableHeightWaterOverride)) uiMask |= (1 << eDebugSetting_EnableHeightWaterOverride);
 
     if (m_multiList.GetCheckboxValue(eControl_GoToOverworld)) uiMask |= (1 << eDebugSetting_GoToOverworld);
+    if (m_multiList.GetCheckboxValue(eControl_GoToNether)) uiMask |= (1 << eDebugSetting_GoToNether);
+    if (m_multiList.GetCheckboxValue(eControl_GoToEnd)) uiMask |= (1 << eDebugSetting_GoToEnd);
 
     if (m_multiList.GetCheckboxValue(eControl_LoadSavesFromDisk)) uiMask |= (1 << eDebugSetting_LoadSavesFromDisk);
     if (m_multiList.GetCheckboxValue(eControl_WriteSavesToDisk)) uiMask |= (1 << eDebugSetting_WriteSavesToDisk);
