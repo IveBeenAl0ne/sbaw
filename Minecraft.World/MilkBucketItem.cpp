@@ -40,12 +40,7 @@ shared_ptr<ItemInstance> MilkBucketItem::use(shared_ptr<ItemInstance> instance, 
 	return instance;
 }
 
-int MilkBucketItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z) const
+int MilkBucketItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
 {
-    if (player != nullptr)
-    {
-        return IDS_TOOLTIPS_DRINK;
-    }
-
-    return 0;
+    return IDS_TOOLTIPS_DRINK;
 }

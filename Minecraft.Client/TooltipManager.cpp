@@ -143,7 +143,9 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
     if (itemInstance)
     {
-        int tooltipId = itemInstance->getItem()->getUseTooltipId(itemInstance, player, level, 0, 0, 0); // Use 0 0 0 coordinates here because we don't need them
+        bool bUseItem = gameMode->useItem(player, level, itemInstance, true);
+
+        int tooltipId = itemInstance->getItem()->getUseTooltipId(itemInstance, player, level, 0, 0, 0, bUseItem); // Use 0 0 0 coordinates here because we don't need them
         if (tooltipId != 0)
         {
             *piUse = tooltipId;

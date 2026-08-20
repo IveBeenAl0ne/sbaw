@@ -46,5 +46,5 @@ public:
 
 	// 4J Added
 	bool canEat(shared_ptr<Player> player) const;
-	virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z) const;
+	virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const;
 };

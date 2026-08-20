@@ -119,7 +119,7 @@ bool FoodItem::canEat(shared_ptr<Player> player) const
 	return player->canEat(canAlwaysEat);
 }
 
-int FoodItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z) const
+int FoodItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
 {
     if (player != nullptr && FoodItem::canEat(player))
     {

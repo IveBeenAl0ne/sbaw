@@ -14,5 +14,5 @@ public:
 	virtual int getUseDuration(shared_ptr<ItemInstance> itemInstance);
 	virtual UseAnim getUseAnimation(shared_ptr<ItemInstance> itemInstance);
 	virtual shared_ptr<ItemInstance> use(shared_ptr<ItemInstance> instance, Level *level, shared_ptr<Player> player);
-	virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z) const;
+	virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const;
 };
