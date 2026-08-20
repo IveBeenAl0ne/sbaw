@@ -39,4 +39,6 @@ public:
     virtual bool isSolidRender(bool isServerLevel = false);
     virtual bool isCubeShaped();
     virtual int getRenderShape();
+
+    virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const;
 };

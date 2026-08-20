@@ -11,13 +11,13 @@ class TileItem : public Item
 public: static const int _class = 0;
 using Item::getColor;
 
-private: 
+private:
 	int tileId;
 	Icon *itemIcon;
 
 public:
-	TileItem(int id); 
-	
+	TileItem(int id);
+
 	virtual int getTileId();
 
 	//@Override
@@ -41,4 +41,10 @@ public:
 
 	//@Override
     virtual void registerIcons(IconRegister *iconRegister);
+
+    virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance,
+                                std::shared_ptr<Player> player,
+                                Level* level,
+                                int x, int y, int z,
+                                bool bUseItem) const override;
 };

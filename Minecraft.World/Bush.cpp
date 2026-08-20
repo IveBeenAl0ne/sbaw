@@ -85,3 +85,8 @@ int Bush::getRenderShape()
 {
 	return Tile::SHAPE_CROSS_TEXTURE;
 }
+
+int Bush::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    return IDS_TOOLTIPS_PLANT;
+}

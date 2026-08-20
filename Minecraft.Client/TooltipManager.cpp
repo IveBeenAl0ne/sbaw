@@ -183,19 +183,17 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                  */
                 if (bUseItemOn && itemInstance != nullptr)
                 {
+                    int tooltipId = itemInstance->getItem()->getUseTooltipId(itemInstance, player, level, x, y, z, bUseItemOn);
+                    if (tooltipId != 0)
+                    {
+                        *piUse = tooltipId;
+                    }
+                }
+
+                if (bUseItemOn && itemInstance != nullptr)
+                {
                     switch (itemInstance->getItem()->id)
                     {
-                    case Tile::mushroom_brown_Id:
-                    case Tile::mushroom_red_Id:
-                    case Tile::tallgrass_Id:
-                    case Tile::cactus_Id:
-                    case Tile::sapling_Id:
-                    case Tile::reeds_Id:
-                    case Tile::flower_Id:
-                    case Tile::rose_Id:
-                        *piUse = IDS_TOOLTIPS_PLANT;
-                        break;
-
                         // Things to USE
                     case Item::hoe_wood_Id:
                     case Item::hoe_stone_Id:
@@ -246,10 +244,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
                     case Item::lead_Id:
                         *piUse = IDS_TOOLTIPS_ATTACH;
-                        break;
-
-                    default:
-                        *piUse = IDS_TOOLTIPS_PLACE;
                         break;
                     }
                 }
