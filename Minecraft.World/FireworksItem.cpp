@@ -98,3 +98,17 @@ void FireworksItem::appendHoverText(shared_ptr<ItemInstance> itemInstance, share
 		}
 	}
 }
+
+int FireworksItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance,
+	                                 std::shared_ptr<Player> player,
+	                                 Level* level,
+	                                 int x, int y, int z,
+	                                 bool bUseItem) const
+{
+	if (bUseItem)
+	{
+		return IDS_TOOLTIPS_FIREWORK_LAUNCH;
+	}
+
+	return 0;
+}

@@ -190,20 +190,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                     }
                 }
 
-                if (bUseItemOn && itemInstance != nullptr)
-                {
-                    switch (itemInstance->getItem()->id)
-                    {
-                    case Item::fireworks_Id:
-                        *piUse = IDS_TOOLTIPS_FIREWORK_LAUNCH;
-                        break;
-
-                    case Item::lead_Id:
-                        *piUse = IDS_TOOLTIPS_ATTACH;
-                        break;
-                    }
-                }
-
                 switch (iTileID)
                 {
                 case Tile::anvil_Id:

@@ -68,7 +68,7 @@ bool LeashItem::bindPlayerMobsTest(shared_ptr<Player> player, Level *level, int 
 {
 	// look for entities that can be attached to the fence
 	double range = 7;
-	vector<shared_ptr<Entity> > *mobs = level->getEntitiesOfClass(typeid(Mob), AABB::newTemp(x - range, y - range, z - range, x + range, y + range, z + range));
+	vector<shared_ptr<Entity>> *mobs = level->getEntitiesOfClass(typeid(Mob), AABB::newTemp(x - range, y - range, z - range, x + range, y + range, z + range));
 
 	if (mobs != nullptr)
 	{
@@ -79,4 +79,26 @@ bool LeashItem::bindPlayerMobsTest(shared_ptr<Player> player, Level *level, int 
 		}
 	}
 	return false;
+}
+
+int LeashItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance,
+	                             std::shared_ptr<Player> player,
+	                             Level* level,
+	                             int x, int y, int z,
+	                             bool bUseItem) const
+{
+    if (bUseItem && level != nullptr)
+    {
+        int targetTile = level->getTile(x, y, z);
+        // Not4J Anaël: We need to check if the target block is a fence because leashes can only attach to those
+        if (targetTile > 0 && Tile::tiles[targetTile] != nullptr)
+        {
+            if (targetTile == Tile::fence_Id || targetTile == Tile::netherFence_Id)
+            {
+                return IDS_TOOLTIPS_ATTACH;
+            }
+        }
+    }
+
+    return 0;
 }
