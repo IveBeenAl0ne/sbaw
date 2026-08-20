@@ -159,19 +159,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
         switch (itemInstance->getItem()->id)
         {
-        case Item::bucket_empty_Id:
-        case Item::glassBottle_Id:
-            if (bUseItem)
-            {
-                *piUse = IDS_TOOLTIPS_COLLECT;
-            }
-            break;
-
-        case Item::bucket_lava_Id:
-        case Item::bucket_water_Id:
-            *piUse = IDS_TOOLTIPS_EMPTY;
-            break;
-
         case Item::boat_Id:
         case Tile::waterLily_Id:
             if (bUseItem)

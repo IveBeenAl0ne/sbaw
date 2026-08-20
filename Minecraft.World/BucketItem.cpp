@@ -43,7 +43,7 @@ bool BucketItem::TestUse(shared_ptr<ItemInstance> itemInstance, Level *level, sh
 		}
 
 		if (content == 0)
-		{			
+		{
 			if (!player->mayUseItemAt(xt, yt, zt, hr->f, itemInstance)) return false;
 			if (level->getMaterial(xt, yt, zt) == Material::water && level->getData(xt, yt, zt) == 0)
 			{
@@ -128,7 +128,7 @@ shared_ptr<ItemInstance> BucketItem::use(shared_ptr<ItemInstance> itemInstance, 
 		}
 
 		if (content == 0)
-		{		
+		{
 			if (!player->mayUseItemAt(xt, yt, zt, hr->f, itemInstance)) return itemInstance;
 			if (level->getMaterial(xt, yt, zt) == Material::water && level->getData(xt, yt, zt) == 0)
 			{
@@ -156,7 +156,7 @@ shared_ptr<ItemInstance> BucketItem::use(shared_ptr<ItemInstance> itemInstance, 
 			{
 				if( level->dimension->id == -1 )
 					player->awardStat(
-					GenericStats::netherLavaCollected(), 
+					GenericStats::netherLavaCollected(),
 					GenericStats::param_noArgs()
 					);
 
@@ -208,25 +208,25 @@ shared_ptr<ItemInstance> BucketItem::use(shared_ptr<ItemInstance> itemInstance, 
 	return itemInstance;
 }
 
-bool BucketItem::emptyBucket(Level *level, int xt, int yt, int zt) 
+bool BucketItem::emptyBucket(Level *level, int xt, int yt, int zt)
 {
 	if (content <= 0) return false;
 
 	Material *material = level->getMaterial(xt, yt, zt);
 	bool nonSolid = !material->isSolid();
 
-	if (level->isEmptyTile(xt, yt, zt) || nonSolid) 
+	if (level->isEmptyTile(xt, yt, zt) || nonSolid)
 	{
 		if (level->dimension->ultraWarm && content == Tile::flowing_water_Id) 
 		{
 			level->playSound(xt + 0.5f, yt + 0.5f, zt + 0.5f, eSoundType_RANDOM_FIZZ, 0.5f, 2.6f + (level->random->nextFloat() - level->random->nextFloat()) * 0.8f);
 
-			for (int i = 0; i < 8; i++) 
+			for (int i = 0; i < 8; i++)
 			{
 				level->addParticle(eParticleType_largesmoke, xt + Math::random(), yt + Math::random(), zt + Math::random(), 0, 0, 0);
 			}
-		} 
-		else 
+		}
+		else
 		{
 			if (!level->isClientSide && nonSolid && !material->isLiquid())
 			{
@@ -239,4 +239,21 @@ bool BucketItem::emptyBucket(Level *level, int xt, int yt, int zt)
 	}
 
 	return false;
+}
+
+int BucketItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (this->content == 0) // Not4J Anaël: If the bucket is empty, set the tooltip to collect
+    {
+        if(bUseItem)
+        {
+            return IDS_TOOLTIPS_COLLECT;
+        }
+    }
+    else
+    {
+        return IDS_TOOLTIPS_EMPTY; // Not4J Anaël: The other way arround but with a full bucket this time
+    }
+
+    return 0;
 }
