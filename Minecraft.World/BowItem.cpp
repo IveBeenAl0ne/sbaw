@@ -107,3 +107,18 @@ Icon *BowItem::getDrawnIcon(int amount)
 {
 	return icons[amount];
 }
+
+int BowItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (player->abilities.instabuild || player->inventory->hasResource(Item::arrow_Id))
+    {
+        if (player->isUsingItem())
+        {
+            return IDS_TOOLTIPS_RELEASE_BOW;
+        }
+        else
+        {
+            return IDS_TOOLTIPS_DRAW_BOW;
+        }
+    }
+}

@@ -41,3 +41,8 @@ shared_ptr<ItemInstance> EmptyMapItem::use(shared_ptr<ItemInstance> itemInstance
 
 	return itemInstance;
 }
+
+int EmptyMapItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    return IDS_TOOLTIPS_USE;
+}

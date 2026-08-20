@@ -21,3 +21,8 @@ shared_ptr<ItemInstance> SnowballItem::use(shared_ptr<ItemInstance> instance, Le
 	if (!level->isClientSide) level->addEntity(std::make_shared<Snowball>(level, player));
 	return instance;
 }
+
+int SnowballItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    return IDS_TOOLTIPS_THROW;
+}

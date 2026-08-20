@@ -37,7 +37,7 @@ float WeaponItem::getDestroySpeed(shared_ptr<ItemInstance> itemInstance, Tile *t
 	return 1.0f;
 }
 
-bool WeaponItem::hurtEnemy(shared_ptr<ItemInstance> itemInstance, shared_ptr<LivingEntity> mob, shared_ptr<LivingEntity> attacker) 
+bool WeaponItem::hurtEnemy(shared_ptr<ItemInstance> itemInstance, shared_ptr<LivingEntity> mob, shared_ptr<LivingEntity> attacker)
 {
 	itemInstance->hurtAndBreak(1, attacker);
 	return true;
@@ -58,7 +58,7 @@ bool WeaponItem::isHandEquipped()
 UseAnim WeaponItem::getUseAnimation(shared_ptr<ItemInstance> itemInstance)
 {
 	return UseAnim_block;
-}    
+}
 
 int WeaponItem::getUseDuration(shared_ptr<ItemInstance> itemInstance)
 {
@@ -102,4 +102,9 @@ attrAttrModMap *WeaponItem::getDefaultAttributeModifiers()
 	result->insert(attrAttrModMap::value_type( SharedMonsterAttributes::ATTACK_DAMAGE->getId(), new AttributeModifier(eModifierId_ITEM_BASEDAMAGE, damage, AttributeModifier::OPERATION_ADDITION) ) );
 
 	return result;
+}
+
+int WeaponItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    return IDS_TOOLTIPS_BLOCK;
 }

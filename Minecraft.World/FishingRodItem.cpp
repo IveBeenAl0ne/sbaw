@@ -20,12 +20,12 @@ FishingRodItem::FishingRodItem(int id) : Item(id)
 	emptyIcon = nullptr;
 }
 
-bool FishingRodItem::isHandEquipped() 
+bool FishingRodItem::isHandEquipped()
 {
 	return true;
 }
 
-bool FishingRodItem::isMirroredArt() 
+bool FishingRodItem::isMirroredArt()
 {
 	return true;
 }
@@ -38,16 +38,16 @@ int FishingRodItem::getEnchantmentValue()
 
 shared_ptr<ItemInstance> FishingRodItem::use(shared_ptr<ItemInstance> instance, Level *level, shared_ptr<Player> player) 
 {
-	if (player->fishing != nullptr) 
+	if (player->fishing != nullptr)
 	{
 		int dmg = player->fishing->retrieve();
 		instance->hurtAndBreak(dmg, player);
 		player->swing();
-	} 
-	else 
+	}
+	else
 	{
 		level->playEntitySound(player, eSoundType_RANDOM_BOW, 0.5f, 0.4f / (random->nextFloat() * 0.4f + 0.8f));
-		if (!level->isClientSide) 
+		if (!level->isClientSide)
 		{
 			// 4J Stu - Move the player->fishing out of the ctor as we cannot reference 'this'
 			shared_ptr<FishingHook> hook = std::make_shared<FishingHook>(level, player);
@@ -68,4 +68,9 @@ void FishingRodItem::registerIcons(IconRegister *iconRegister)
 Icon *FishingRodItem::getEmptyIcon()
 {
 	return emptyIcon;
+}
+
+int FishingRodItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    return IDS_TOOLTIPS_USE;
 }

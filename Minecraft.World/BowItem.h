@@ -28,4 +28,6 @@ public:
 	//@Override
 	void registerIcons(IconRegister *iconRegister);
 	Icon *getDrawnIcon(int amount);
+
+	virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const;
 };

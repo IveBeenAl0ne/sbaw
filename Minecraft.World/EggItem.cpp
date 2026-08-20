@@ -19,7 +19,7 @@ EggItem::EggItem(int id) : Item( id )
 	maxStackSize = 16;
 }
 
-shared_ptr<ItemInstance> EggItem::use(shared_ptr<ItemInstance> instance, Level *level, shared_ptr<Player> player) 
+shared_ptr<ItemInstance> EggItem::use(shared_ptr<ItemInstance> instance, Level *level, shared_ptr<Player> player)
 {
 	if (!player->abilities.instabuild)
 	{
@@ -28,4 +28,9 @@ shared_ptr<ItemInstance> EggItem::use(shared_ptr<ItemInstance> instance, Level *
 	level->playEntitySound( player, eSoundType_RANDOM_BOW, 0.5f, 0.4f / (random->nextFloat() * 0.4f + 0.8f));
 	if (!level->isClientSide) level->addEntity(std::make_shared<ThrownEgg>(level, player));
 	return instance;
+}
+
+int EggItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    return IDS_TOOLTIPS_THROW;
 }

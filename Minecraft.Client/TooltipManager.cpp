@@ -159,39 +159,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
         switch (itemInstance->getItem()->id)
         {
-
-        case Item::fishingRod_Id: // use
-        case Item::emptyMap_Id:
-            *piUse = IDS_TOOLTIPS_USE;
-            break;
-
-        case Item::egg_Id: // throw
-        case Item::snowBall_Id:
-            *piUse = IDS_TOOLTIPS_THROW;
-            break;
-
-        case Item::bow_Id: // draw or release
-            if (player->abilities.instabuild || player->inventory->hasResource(Item::arrow_Id))
-            {
-                if (player->isUsingItem())
-                {
-                    *piUse = IDS_TOOLTIPS_RELEASE_BOW;
-                }
-                else
-                {
-                    *piUse = IDS_TOOLTIPS_DRAW_BOW;
-                }
-            }
-            break;
-
-        case Item::sword_wood_Id:
-        case Item::sword_stone_Id:
-        case Item::sword_iron_Id:
-        case Item::sword_diamond_Id:
-        case Item::sword_gold_Id:
-            *piUse = IDS_TOOLTIPS_BLOCK;
-            break;
-
         case Item::bucket_empty_Id:
         case Item::glassBottle_Id:
             if (bUseItem)
