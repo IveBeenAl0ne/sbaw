@@ -51,6 +51,8 @@ public:
 
 	// 4J Stu - Based loosely on a function that gets added in java much later on (1.3)
 	static vector<pair<int, int> > *getUniquePotionValues();
+
+	virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const;
 private:
 	// 4J Stu - Added to support function above, different from Java implementation
 	static vector<pair<int, int> > s_uniquePotionValues;

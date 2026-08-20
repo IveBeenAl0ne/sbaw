@@ -21,4 +21,6 @@ public:
 	 * level.addEntity(new Minecart(level, x + 0.5f, y + 0.5f, z + 0.5f));
 	 * instance.count--; return true; } return false; }
 	 */
+
+	virtual int getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const;
 };

@@ -152,59 +152,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
         }
     }
 
-    if (itemInstance)
-    {
-        // 4J-PB - very special case for boat and empty bucket and glass bottle and more
-        bool bUseItem = gameMode->useItem(player, level, itemInstance, true);
-
-        switch (itemInstance->getItem()->id)
-        {
-        case Item::boat_Id:
-        case Tile::waterLily_Id:
-            if (bUseItem)
-            {
-                *piUse = IDS_TOOLTIPS_PLACE;
-            }
-            break;
-
-        case Item::potion_Id:
-            if (bUseItem)
-            {
-                if (MACRO_POTION_IS_SPLASH(itemInstance->getAuxValue()))
-                {
-                    *piUse = IDS_TOOLTIPS_THROW;
-                }
-                else
-                {
-                    *piUse = IDS_TOOLTIPS_DRINK;
-                }
-            }
-            break;
-
-        case Item::enderPearl_Id:
-            if (bUseItem)
-            {
-                *piUse = IDS_TOOLTIPS_THROW;
-            }
-            break;
-
-        case Item::eyeOfEnder_Id:
-            // This will only work if there is a stronghold in this dimension
-            if (bUseItem && (level->dimension->id == 0) && level->getLevelData()->getHasStronghold())
-            {
-                *piUse = IDS_TOOLTIPS_THROW;
-            }
-            break;
-
-        case Item::expBottle_Id:
-            if (bUseItem)
-            {
-                *piUse = IDS_TOOLTIPS_THROW;
-            }
-            break;
-        }
-    }
-
     if (hitResult != nullptr)
     {
         switch (hitResult->type)

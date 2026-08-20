@@ -26,9 +26,19 @@ shared_ptr<ItemInstance> EnderpearlItem::use(shared_ptr<ItemInstance> instance, 
 	}
 
 	level->playEntitySound(player, eSoundType_RANDOM_BOW, 0.5f, 0.4f / (random->nextFloat() * 0.4f + 0.8f));
-	if (!level->isClientSide) 
+	if (!level->isClientSide)
 	{
 		level->addEntity(std::make_shared<ThrownEnderpearl>(level, player));
 	}
 	return instance;
+}
+
+int EnderpearlItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem)
+    {
+        return IDS_TOOLTIPS_THROW;
+    }
+
+    return 0;
 }

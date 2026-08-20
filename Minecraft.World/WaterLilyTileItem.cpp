@@ -26,11 +26,11 @@ bool WaterLilyTileItem::TestUse(shared_ptr<ItemInstance> itemInstance, Level *le
 			return false;
 		}
 		if (!player->mayUseItemAt(xt, yt, zt, hr->f, itemInstance))
-		{			
+		{
 			delete hr;
 			return false;
 		}
-		
+
 		delete hr;
 		if (level->getMaterial(xt, yt, zt) == Material::water && level->getData(xt, yt, zt) == 0 && level->isEmptyTile(xt, yt + 1, zt))
 		{
@@ -60,11 +60,11 @@ shared_ptr<ItemInstance> WaterLilyTileItem::use(shared_ptr<ItemInstance> itemIns
 			return itemInstance;
 		}
 		if (!player->mayUseItemAt(xt, yt, zt, hr->f, itemInstance))
-		{			
+		{
 			delete hr;
 			return itemInstance;
 		}
-		
+
 		delete hr;
 		if (level->getMaterial(xt, yt, zt) == Material::water && level->getData(xt, yt, zt) == 0 && level->isEmptyTile(xt, yt + 1, zt))
 		{
@@ -85,4 +85,12 @@ shared_ptr<ItemInstance> WaterLilyTileItem::use(shared_ptr<ItemInstance> itemIns
 int WaterLilyTileItem::getColor(int data, int spriteLayer)
 {
 	return Tile::waterLily->getColor(data);
+}
+
+int WaterLilyTileItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem)
+        return IDS_TOOLTIPS_PLACE;
+
+    return 0;
 }

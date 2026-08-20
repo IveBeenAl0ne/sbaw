@@ -417,3 +417,20 @@ vector<pair<int, int> > *PotionItem::getUniquePotionValues()
 	}
 	return &s_uniquePotionValues;
 }
+
+int PotionItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem)
+    {
+        if (MACRO_POTION_IS_SPLASH(itemInstance->getAuxValue()))
+        {
+            return IDS_TOOLTIPS_THROW;
+        }
+        else
+        {
+            return IDS_TOOLTIPS_DRINK;
+        }
+    }
+
+    return 0;
+}

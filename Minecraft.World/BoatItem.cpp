@@ -132,3 +132,11 @@ shared_ptr<ItemInstance> BoatItem::use(shared_ptr<ItemInstance> itemInstance, Le
 
 	return itemInstance;
 }
+
+int BoatItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem)
+        return IDS_TOOLTIPS_PLACE;
+
+    return 0;
+}

@@ -158,15 +158,15 @@ bool EnderEyeItem::TestUse(shared_ptr<ItemInstance> itemInstance, Level *level, 
 		}
 		else
 		{
-// 			int x,z;			
+// 			int x,z;
 // 			if(app.GetTerrainFeaturePosition(eTerrainFeature_Stronghold,&x,&z))
 // 			{
 // 				level->getLevelData()->setXStronghold(x);
 // 				level->getLevelData()->setZStronghold(z);
 // 				level->getLevelData()->setHasStronghold();
-// 
+//
 // 				app.DebugPrintf("=== FOUND stronghold in terrain features list\n");
-// 				
+//
 // 				app.SetXuiServerAction(ProfileManager.GetPrimaryPad(),eXuiServerAction_StrongholdPosition);
 // 			}
 // 			else
@@ -220,4 +220,14 @@ shared_ptr<ItemInstance> EnderEyeItem::use(shared_ptr<ItemInstance> instance, Le
 		}
 	}
 	return instance;
+}
+
+int EnderEyeItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem && (level->dimension->id == 0) && level->getLevelData()->getHasStronghold())
+    {
+        return IDS_TOOLTIPS_THROW;
+    }
+
+    return 0;
 }

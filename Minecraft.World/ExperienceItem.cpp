@@ -30,3 +30,13 @@ shared_ptr<ItemInstance> ExperienceItem::use(shared_ptr<ItemInstance> itemInstan
 	if (!level->isClientSide) level->addEntity(std::make_shared<ThrownExpBottle>(level, player));
 	return itemInstance;
 }
+
+int ExperienceItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem)
+    {
+        return IDS_TOOLTIPS_THROW;
+    }
+
+    return 0;
+}
