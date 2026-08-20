@@ -114,7 +114,17 @@ FoodItem *FoodItem::setCanAlwaysEat()
 }
 
 // 4J Added
-bool FoodItem::canEat(shared_ptr<Player> player)
+bool FoodItem::canEat(shared_ptr<Player> player) const
 {
 	return player->canEat(canAlwaysEat);
+}
+
+int FoodItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z) const
+{
+    if (player != nullptr && FoodItem::canEat(player))
+    {
+        return IDS_TOOLTIPS_EAT;
+    }
+
+    return 0;
 }

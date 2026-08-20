@@ -832,6 +832,6 @@ public:
                             Level* level,
                             int x, int y, int z) const
 	{
-    return 0;
+        return 0;
 	}
 };

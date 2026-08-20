@@ -140,6 +140,16 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
     shared_ptr<ItemInstance> itemInstance = player->inventory->getSelected();
 
     // 4J-JEV: Moved all this here to avoid having it in 3 different places.
+
+    if (itemInstance)
+    {
+        int tooltipId = itemInstance->getItem()->getUseTooltipId(itemInstance, player, level, 0, 0, 0); // Use 0 0 0 coordinates here because we don't need them
+        if (tooltipId != 0)
+        {
+            *piUse = tooltipId;
+        }
+    }
+
     if (itemInstance)
     {
         // 4J-PB - very special case for boat and empty bucket and glass bottle and more
@@ -147,38 +157,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
         switch (itemInstance->getItem()->id)
         {
-            // food
-        case Item::potatoBaked_Id:
-        case Item::potato_Id:
-        case Item::pumpkinPie_Id:
-        case Item::potatoPoisonous_Id:
-        case Item::carrotGolden_Id:
-        case Item::carrots_Id:
-        case Item::mushroomStew_Id:
-        case Item::apple_Id:
-        case Item::bread_Id:
-        case Item::porkChop_raw_Id:
-        case Item::porkChop_cooked_Id:
-        case Item::apple_gold_Id:
-        case Item::fish_raw_Id:
-        case Item::fish_cooked_Id:
-        case Item::cookie_Id:
-        case Item::beef_cooked_Id:
-        case Item::beef_raw_Id:
-        case Item::chicken_cooked_Id:
-        case Item::chicken_raw_Id:
-        case Item::melon_Id:
-        case Item::rotten_flesh_Id:
-        case Item::spiderEye_Id:
-            // Check that we are actually hungry so will eat this item
-            {
-                FoodItem *food = static_cast<FoodItem *>(itemInstance->getItem());
-                if (food != nullptr && food->canEat(player))
-                {
-                    *piUse = IDS_TOOLTIPS_EAT;
-                }
-            }
-            break;
 
         case Item::bucket_milk_Id:
             *piUse = IDS_TOOLTIPS_DRINK;
