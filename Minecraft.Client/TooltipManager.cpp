@@ -158,10 +158,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
         switch (itemInstance->getItem()->id)
         {
 
-        case Item::bucket_milk_Id:
-            *piUse = IDS_TOOLTIPS_DRINK;
-            break;
-
         case Item::fishingRod_Id: // use
         case Item::emptyMap_Id:
             *piUse = IDS_TOOLTIPS_USE;
