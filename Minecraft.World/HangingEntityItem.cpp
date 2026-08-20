@@ -36,9 +36,9 @@ bool HangingEntityItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Play
 
 	if (!player->mayUseItemAt(xt, yt, zt, face, instance)) return false;
 
-	if (entity != nullptr && entity->survives()) 
+	if (entity != nullptr && entity->survives())
 	{
-		if (!level->isClientSide) 
+		if (!level->isClientSide)
 		{
 			if(level->addEntity(entity)==TRUE)
 			{
@@ -70,14 +70,14 @@ bool HangingEntityItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Play
 
 shared_ptr<HangingEntity> HangingEntityItem::createEntity(Level *level, int x, int y, int z, int dir, int auxValue)  // 4J added auxValue
 {
-	if (eType == eTYPE_PAINTING) 
+	if (eType == eTYPE_PAINTING)
 	{
 		shared_ptr<Painting> painting = std::make_shared<Painting>(level, x, y, z, dir);
 		painting->placedByPlayer = true;
 		painting->placedByTutorial = false;
 
 #ifndef _CONTENT_PACKAGE
-		if (app.DebugArtToolsOn() && auxValue > 0) 
+		if (app.DebugArtToolsOn() && auxValue > 0)
 		{
 			painting->PaintingPostConstructor(dir, auxValue - 1);
 		}
@@ -86,10 +86,10 @@ shared_ptr<HangingEntity> HangingEntityItem::createEntity(Level *level, int x, i
 		{
 			painting->PaintingPostConstructor(dir);
 		}
-		
+
 		return dynamic_pointer_cast<HangingEntity> (painting);
-	} 
-	else if (eType == eTYPE_ITEM_FRAME) 
+	}
+	else if (eType == eTYPE_ITEM_FRAME)
 	{
 		shared_ptr<ItemFrame> itemFrame = std::make_shared<ItemFrame>(level, x, y, z, dir);
 		itemFrame->placedByPlayer = true;
@@ -97,8 +97,8 @@ shared_ptr<HangingEntity> HangingEntityItem::createEntity(Level *level, int x, i
 		itemFrame->setDir(dir);
 
 		return dynamic_pointer_cast<HangingEntity> (itemFrame);
-	} 
-	else 
+	}
+	else
 	{
 		return nullptr;
 	}
@@ -108,10 +108,10 @@ shared_ptr<HangingEntity> HangingEntityItem::createEntity(Level *level, int x, i
 void HangingEntityItem::appendHoverText(shared_ptr<ItemInstance> itemInstance, shared_ptr<Player> player, vector<HtmlString> *lines, bool advanced)
 {
 #ifndef _CONTENT_PACKAGE
-	if (eType == eTYPE_PAINTING && app.DebugArtToolsOn() && itemInstance->getAuxValue() > 0 ) 
+	if (eType == eTYPE_PAINTING && app.DebugArtToolsOn() && itemInstance->getAuxValue() > 0 )
 	{
 		int motive = itemInstance->getAuxValue() - 1;
-		
+
 		wchar_t formatted[256];
 		ZeroMemory(formatted, 256 * sizeof(wchar_t));
 		swprintf(formatted, 256, L"** %ls %dx%d",Painting::Motive::values[motive]->name.c_str(),Painting::Motive::values[motive]->w/16,Painting::Motive::values[motive]->h/16);
@@ -125,4 +125,18 @@ void HangingEntityItem::appendHoverText(shared_ptr<ItemInstance> itemInstance, s
 	{
 		return Item::appendHoverText(itemInstance, player, lines, advanced);
 	}
+}
+
+int HangingEntityItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level *level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem && level != nullptr)
+    {
+        // Not4J Anaël: We need a wall or something solid to place it or the tooltip will be wrong
+        if (level->isSolidBlockingTile(x, y, z))
+        {
+            return IDS_TOOLTIPS_HANG;
+        }
+    }
+
+    return 0;
 }

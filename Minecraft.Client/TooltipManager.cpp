@@ -194,37 +194,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                 {
                     switch (itemInstance->getItem()->id)
                     {
-
-                    case Item::dye_powder_Id:
-                        // bonemeal grows various plants
-                        if (itemInstance->getAuxValue() == DyePowderItem::WHITE)
-                        {
-                            switch (iTileID)
-                            {
-                            case Tile::sapling_Id:
-                            case Tile::wheat_Id:
-                            case Tile::grass_Id:
-                            case Tile::mushroom_brown_Id:
-                            case Tile::mushroom_red_Id:
-                            case Tile::melonStem_Id:
-                            case Tile::pumpkinStem_Id:
-                            case Tile::carrots_Id:
-                            case Tile::potatoes_Id:
-                                *piUse = IDS_TOOLTIPS_GROW;
-                                break;
-                            }
-                        }
-                        break;
-
-                    case Item::painting_Id:
-                        *piUse = IDS_TOOLTIPS_HANG;
-                        break;
-
-                    case Item::flintAndSteel_Id:
-                    case Item::fireball_Id:
-                        *piUse = IDS_TOOLTIPS_IGNITE;
-                        break;
-
                     case Item::fireworks_Id:
                         *piUse = IDS_TOOLTIPS_FIREWORK_LAUNCH;
                         break;

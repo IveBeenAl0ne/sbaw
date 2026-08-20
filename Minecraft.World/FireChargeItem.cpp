@@ -15,7 +15,7 @@ FireChargeItem::FireChargeItem(int id) : Item(id)
 
 bool FireChargeItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> player, Level *level, int x, int y, int z, int face, float clickX, float clickY, float clickZ, bool bTestUseOnOnly)
 {
-	if (level->isClientSide) 
+	if (level->isClientSide)
 	{
 		return true;
 	}
@@ -27,7 +27,7 @@ bool FireChargeItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player>
 	if (face == 4) x--;
 	if (face == 5) x++;
 
-	if (!player->mayUseItemAt(x, y, z, face, instance)) 
+	if (!player->mayUseItemAt(x, y, z, face, instance))
 	{
 		return false;
 	}
@@ -40,13 +40,13 @@ bool FireChargeItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player>
 
 	int targetType = level->getTile(x, y, z);
 
-	if (targetType == 0) 
+	if (targetType == 0)
 	{
 		level->playSound( x + 0.5, y + 0.5, z + 0.5,eSoundType_FIRE_NEWIGNITE, 1, random->nextFloat() * 0.4f + 0.8f);
 		level->setTileAndUpdate(x, y, z, Tile::fire_Id);
 	}
 
-	if (!player->abilities.instabuild) 
+	if (!player->abilities.instabuild)
 	{
 		instance->count--;
 	}
@@ -65,3 +65,16 @@ void FireChargeItem::registerIcons(IconRegister *iconRegister)
 	m_dragonFireballIcon = iconRegister->registerIcon(L"dragonFireball");
 }
 
+int FireChargeItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level *level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem && level != nullptr)
+    {
+        int targetType = level->getTile(x, y, z);
+        if (targetType != 0)
+        {
+            return IDS_TOOLTIPS_IGNITE;
+        }
+    }
+
+    return 0;
+}
