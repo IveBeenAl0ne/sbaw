@@ -194,19 +194,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                 {
                     switch (itemInstance->getItem()->id)
                     {
-                        // Things to USE
-                    case Item::hoe_wood_Id:
-                    case Item::hoe_stone_Id:
-                    case Item::hoe_iron_Id:
-                    case Item::hoe_diamond_Id:
-                    case Item::hoe_gold_Id:
-                        *piUse = IDS_TOOLTIPS_TILL;
-                        break;
-
-                    case Item::seeds_wheat_Id:
-                    case Item::netherwart_seeds_Id:
-                        *piUse = IDS_TOOLTIPS_PLANT;
-                        break;
 
                     case Item::dye_powder_Id:
                         // bonemeal grows various plants

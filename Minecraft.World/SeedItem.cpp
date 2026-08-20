@@ -23,7 +23,7 @@ bool SeedItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> playe
 
 	int targetType = level->getTile(x, y, z);
 
-	if (targetType == targetLand && level->isEmptyTile(x, y + 1, z)) 
+	if (targetType == targetLand && level->isEmptyTile(x, y + 1, z))
 	{
 		if(!bTestUseOnOnly)
 		{
@@ -33,4 +33,18 @@ bool SeedItem::useOn(shared_ptr<ItemInstance> instance, shared_ptr<Player> playe
 		return true;
 	}
 	return false;
+}
+
+int SeedItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem && level != nullptr)
+    {
+        int targetType = level->getTile(x, y, z);
+        int above = level->getTile(x, y + 1, z);
+
+        if (this->targetLand && above == 0)
+            return IDS_TOOLTIPS_PLANT;
+    }
+
+    return 0;
 }

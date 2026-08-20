@@ -54,3 +54,20 @@ const Item::Tier *HoeItem::getTier()
 {
 	return tier;
 }
+
+int HoeItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, std::shared_ptr<Player> player, Level* level, int x, int y, int z, bool bUseItem) const
+{
+    if (bUseItem && level != nullptr)
+    {
+        int targetType = level->getTile(x, y, z);
+        int above = level->getTile(x, y + 1, z);
+
+        // Not4J Anaël: We need to check if the target block is grass, dirt or mycelium and if the top is exposed to air
+        if (above == 0 && (targetType == Tile::grass_Id || targetType == Tile::dirt_Id || targetType == Tile::mycelium_Id))
+        {
+            return IDS_TOOLTIPS_TILL;
+        }
+    }
+
+    return 0;
+}
