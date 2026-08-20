@@ -43,3 +43,8 @@ bool WorkbenchTile::use(Level *level, int x, int y, int z, shared_ptr<Player> pl
 	//player->openFireworks(x, y, z);
 	return true;
 }
+
+int WorkbenchTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const
+{
+    return IDS_TOOLTIPS_USE;
+}

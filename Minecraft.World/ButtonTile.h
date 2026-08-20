@@ -68,4 +68,6 @@ public:
 
 	// 4J Added so we can check before we try to add a tile to the tick list if it's actually going to do seomthing
 	virtual bool shouldTileTick(Level *level, int x,int y,int z);
+
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const;
 };

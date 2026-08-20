@@ -73,4 +73,5 @@ public:
 	void fillVirtualBlockStateProperties(Tile::BlockState *state, LevelSource *level, const BlockPos &pos);
 
 	virtual bool use(Level *level, const BlockPos &pos, Tile::BlockState *state, shared_ptr<Player> player, int clickedFace, float clickX, float clickY, float clickZ, bool soundOnly = false);
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const;
 };

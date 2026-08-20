@@ -47,4 +47,5 @@ protected:
 public:
 	void onLand(Level *level, int xt, int yt, int zt, int data);
 	bool shouldRenderFace(LevelSource *level, int x, int y, int z, int face);
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const;
 };

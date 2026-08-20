@@ -32,3 +32,8 @@ bool BaseEntityTile::triggerEvent(Level *level, int x, int y, int z, int b0, int
 	}
 	return false;
 }
+
+int BaseEntityTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const
+{
+    return IDS_TOOLTIPS_USE;
+}

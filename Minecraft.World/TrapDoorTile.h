@@ -87,6 +87,8 @@ public:
 public:
 	static bool isOpen(int data);
 
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const;
+
 private:
 	static bool attachesTo(int id);
 };

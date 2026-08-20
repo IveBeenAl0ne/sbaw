@@ -880,6 +880,13 @@ public:
 	{
         return 0;
 	}
+
+	virtual int getInteractTooltipId(Level* level,
+	                                 int x, int y, int z,
+									 std::shared_ptr<Player> player) const
+	{
+        return 0;
+	}
 };
 
 class stoneBrick : public Tile {};

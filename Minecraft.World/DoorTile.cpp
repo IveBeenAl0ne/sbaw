@@ -438,3 +438,8 @@ bool DoorTile::use(Level *level, const BlockPos &pos, Tile::BlockState *state, s
 	level->levelEvent(player, LevelEvent::SOUND_OPEN_DOOR, pos.getX(), pos.getY(), pos.getZ(), 0);
 	return true;
 }
+
+int DoorTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const
+{
+    return IDS_TOOLTIPS_USE;
+}

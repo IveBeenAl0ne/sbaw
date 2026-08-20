@@ -232,3 +232,8 @@ bool FenceGateTile::shouldRenderFace(LevelSource *level, int x, int y, int z, in
 {
 	return true;
 }
+
+int FenceGateTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const
+{
+    return IDS_TOOLTIPS_USE;
+}

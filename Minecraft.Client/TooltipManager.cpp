@@ -176,11 +176,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                 // 4J-PB - Call the useItemOn with the TestOnly flag set
                 bool bUseItemOn = gameMode->useItemOn(player, level, itemInstance, x, y, z, face, hitResult->pos, true);
 
-                /* 4J-Jev:
-                 *	Moved this here so we have item tooltips to fallback on
-                 *	for noteblocks, enderportals and flowerpots in case of non-standard items.
-                 *	(ie. ignite behaviour)
-                 */
+                // Not4J Anaël: This is here in case of special blocks like noteblocks and ender pearls/eyes.
                 if (bUseItemOn && itemInstance != nullptr)
                 {
                     int tooltipId = itemInstance->getItem()->getUseTooltipId(itemInstance, player, level, x, y, z, bUseItemOn);
@@ -190,25 +186,19 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                     }
                 }
 
+                if (iTileID > 0 && iTileID < 256 && Tile::tiles[iTileID] != nullptr)
+                {
+                    Tile *pTile = Tile::tiles[iTileID];
+                    int interactTooltip = pTile->getInteractTooltipId(level, x, y, z, player); // Not4J Anaël: shared_ptr<ItemInstance> itemInstance = player->inventory->getSelected();
+                    if (interactTooltip != 0)
+                    {
+                        *piAction = IDS_TOOLTIPS_MINE;
+                        *piUse = interactTooltip;
+                    }
+                }
+
                 switch (iTileID)
                 {
-                case Tile::anvil_Id:
-                case Tile::enchantTable_Id:
-                case Tile::brewingStand_Id:
-                case Tile::workBench_Id:
-                case Tile::furnace_Id:
-                case Tile::furnace_lit_Id:
-                case Tile::door_wood_Id:
-                case Tile::dispenser_Id:
-                case Tile::lever_Id:
-                case Tile::button_stone_Id:
-                case Tile::button_wood_Id:
-                case Tile::trapdoor_Id:
-                case Tile::fenceGate_Id:
-                case Tile::beacon_Id:
-                    *piAction = IDS_TOOLTIPS_MINE;
-                    *piUse = IDS_TOOLTIPS_USE;
-                    break;
 
                 case Tile::chest_Id:
                     *piAction = IDS_TOOLTIPS_MINE;

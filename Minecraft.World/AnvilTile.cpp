@@ -115,3 +115,8 @@ bool AnvilTile::shouldRenderFace(LevelSource *level, int x, int y, int z, int fa
 {
 	return true;
 }
+
+int AnvilTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const
+{
+    return IDS_TOOLTIPS_USE;
+}
