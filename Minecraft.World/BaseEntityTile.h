@@ -12,5 +12,5 @@ public:
 	virtual void onPlace(Level *level, int x, int y, int z);
 	virtual void onRemove(Level *level, int x, int y, int z, int id, int data);
 	virtual bool triggerEvent(Level *level, int x, int y, int z, int b0, int b1);
-	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const;
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const;
 };

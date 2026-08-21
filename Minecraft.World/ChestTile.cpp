@@ -298,7 +298,7 @@ shared_ptr<Container> ChestTile::getContainer(Level *level, int x, int y, int z)
 	if (container == nullptr) return nullptr;
 
 	if (level->isSolidBlockingTile(x, y + 1, z)) return nullptr;
-	if (isCatSittingOnChest(level,x, y, z)) return nullptr;	
+	if (isCatSittingOnChest(level,x, y, z)) return nullptr;
 
 	if (level->getTile(x - 1, y, z) == id && (level->isSolidBlockingTile(x - 1, y + 1, z) || isCatSittingOnChest(level, x - 1, y, z))) return nullptr;
 	if (level->getTile(x + 1, y, z) == id && (level->isSolidBlockingTile(x + 1, y + 1, z) || isCatSittingOnChest(level, x + 1, y, z))) return nullptr;
@@ -346,7 +346,7 @@ int ChestTile::getDirectSignal(LevelSource *level, int x, int y, int z, int dir)
 	}
 }
 
-bool ChestTile::isCatSittingOnChest(Level *level, int x, int y, int z) 
+bool ChestTile::isCatSittingOnChest(Level *level, int x, int y, int z)
 {
 	vector<shared_ptr<Entity> > *entities = level->getEntitiesOfClass(typeid(Ocelot), AABB::newTemp(x, y + 1, z, x + 1, y + 2, z + 1));
 	if ( entities )
@@ -375,9 +375,14 @@ int ChestTile::getAnalogOutputSignal(Level *level, int x, int y, int z, int dir)
 	return AbstractContainerMenu::getRedstoneSignalFromContainer(getContainer(level, x, y, z));
 }
 
-void ChestTile::registerIcons(IconRegister *iconRegister) 
+void ChestTile::registerIcons(IconRegister *iconRegister)
 {
 	// Register wood as the chest's icon, because it's used by the particles
 	// when destroying the chest
 	icon = iconRegister->registerIcon(L"planks_oak");
+}
+
+int ChestTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+    return (Tile::chest->getContainer(level, x, y, z) != nullptr) ? IDS_TOOLTIPS_OPEN : -1;
 }

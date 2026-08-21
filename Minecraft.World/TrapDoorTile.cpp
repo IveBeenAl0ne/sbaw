@@ -242,7 +242,7 @@ bool TrapDoorTile::attachesTo(int id)
 	return tile != nullptr && (tile->material->isSolidBlocking() && tile->isCubeShaped()) || tile == Tile::glowstone || (dynamic_cast<HalfSlabTile *>(tile) != nullptr) || (dynamic_cast<StairTile *>(tile) != nullptr);
 }
 
-int TrapDoorTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const
+int TrapDoorTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
 {
     return IDS_TOOLTIPS_USE;
 }

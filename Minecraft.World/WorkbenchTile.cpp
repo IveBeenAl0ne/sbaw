@@ -44,7 +44,7 @@ bool WorkbenchTile::use(Level *level, int x, int y, int z, shared_ptr<Player> pl
 	return true;
 }
 
-int WorkbenchTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const
+int WorkbenchTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
 {
     return IDS_TOOLTIPS_USE;
 }

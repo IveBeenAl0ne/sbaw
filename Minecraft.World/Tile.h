@@ -883,7 +883,8 @@ public:
 
 	virtual int getInteractTooltipId(Level* level,
 	                                 int x, int y, int z,
-									 std::shared_ptr<Player> player) const
+									 std::shared_ptr<Player> player,
+                                     bool bUseItemOn) const
 	{
         return 0;
 	}

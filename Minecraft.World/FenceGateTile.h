@@ -32,5 +32,5 @@ public:
 	static bool isOpen(int data);
 	virtual void registerIcons(IconRegister* iconRegister);
 	void registerIcons(IconRegister *iconRegister);
-	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const;
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const;
 };

@@ -189,7 +189,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                 if (iTileID > 0 && iTileID < 256 && Tile::tiles[iTileID] != nullptr)
                 {
                     Tile *pTile = Tile::tiles[iTileID];
-                    int interactTooltip = pTile->getInteractTooltipId(level, x, y, z, player); // Not4J Anaël: shared_ptr<ItemInstance> itemInstance = player->inventory->getSelected();
+                    int interactTooltip = pTile->getInteractTooltipId(level, x, y, z, player, bUseItemOn); // Not4J Anaël: shared_ptr<ItemInstance> itemInstance = player->inventory->getSelected();
                     if (interactTooltip != 0)
                     {
                         *piAction = IDS_TOOLTIPS_MINE;
@@ -199,12 +199,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
                 switch (iTileID)
                 {
-
-                case Tile::chest_Id:
-                    *piAction = IDS_TOOLTIPS_MINE;
-                    *piUse = (Tile::chest->getContainer(level, x, y, z) != nullptr) ? IDS_TOOLTIPS_OPEN : -1;
-                    break;
-
                 case Tile::enderChest_Id:
                 case Tile::chest_trap_Id:
                 case Tile::dropper_Id:

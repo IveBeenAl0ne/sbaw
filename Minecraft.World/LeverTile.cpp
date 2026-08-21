@@ -359,7 +359,7 @@ bool LeverTile::isSignalSource()
 	return true;
 }
 
-int LeverTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const
+int LeverTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
 {
     return IDS_TOOLTIPS_USE;
 }

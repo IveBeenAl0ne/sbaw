@@ -389,7 +389,7 @@ void ButtonTile::registerIcons(IconRegister *iconRegister)
     // None
 }
 
-int ButtonTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const
+int ButtonTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
 {
     return IDS_TOOLTIPS_USE;
 }

@@ -33,5 +33,5 @@ public:
 	virtual int getSignal(LevelSource *level, int x, int y, int z, int dir);
 	virtual int getDirectSignal(LevelSource *level, int x, int y, int z, int dir);
 	virtual bool isSignalSource();
-	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player) const;
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const;
 };
