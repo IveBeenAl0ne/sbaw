@@ -84,3 +84,17 @@ bool NoteBlockTile::triggerEvent(Level *level, int x, int y, int z, int i, int n
 
 	return true;
 }
+
+int NoteBlockTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+	return IDS_TOOLTIPS_CHANGEPITCH;
+}
+
+int NoteBlockTile::getAttackTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+    if (player != nullptr && !player->abilities.instabuild)
+    {
+        return IDS_TOOLTIPS_PLAY;
+    }
+    return IDS_TOOLTIPS_MINE;
+}

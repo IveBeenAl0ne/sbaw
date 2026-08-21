@@ -43,7 +43,7 @@ protected:
 	virtual int getAlternateSignal(LevelSource *level, int x, int y, int z, int data);
 	virtual int getAlternateSignalAt(LevelSource *level, int x, int y, int z, int facing);
 
-public:
+	public:
 	virtual bool isSignalSource();
 	virtual void setPlacedBy(Level *level, int x, int y, int z, shared_ptr<LivingEntity> by, shared_ptr<ItemInstance> itemInstance);
 	virtual void onPlace(Level *level, int x, int y, int z);
@@ -75,4 +75,6 @@ protected:
 
 public:
 	virtual bool isMatching(int id);
+
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const override;
 };

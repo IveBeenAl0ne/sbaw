@@ -39,4 +39,6 @@ public:
 	virtual bool hasAnalogOutputSignal();
 	virtual int getAnalogOutputSignal(Level *level, int x, int y, int z, int dir);
 	static int getFillLevel(int data);
+
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const override;
 };

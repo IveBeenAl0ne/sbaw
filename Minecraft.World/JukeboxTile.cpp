@@ -5,6 +5,7 @@
 #include "net.minecraft.world.level.h"
 #include "net.minecraft.h"
 #include "net.minecraft.world.h"
+#include "net.minecraft.world.entity.player.h"
 #include "JukeboxTile.h"
 #include "LevelEvent.h"
 
@@ -190,4 +191,32 @@ int JukeboxTile::getAnalogOutputSignal(Level *level, int x, int y, int z, int di
 {
 	shared_ptr<ItemInstance> record = dynamic_pointer_cast<JukeboxTile::Entity>( level->getTileEntity(x, y, z))->getRecord();
 	return record == nullptr ? Redstone::SIGNAL_NONE : record->id + 1 - Item::record_13_Id;
+}
+
+int JukeboxTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+    shared_ptr<ItemInstance> item = player->inventory->IsHeldItem() ? player->inventory->getSelected() : nullptr;
+
+    // Not4J Anaël: We need to check if the player holds a disk before displaying the tooltip
+    if (item != nullptr && item->getItem() != nullptr)
+    {
+        int itemId = item->getItem()->id;
+        if (itemId >= Item::record_01_Id && itemId <= Item::record_12_Id)
+        {
+            // And if the jukebox already has a disk inside
+            auto tileEntity = dynamic_pointer_cast<JukeboxTile::Entity>(level->getTileEntity(x, y, z));
+            if (tileEntity != nullptr && tileEntity->getRecord() == nullptr)
+            {
+                return IDS_TOOLTIPS_PLAY;
+            }
+        }
+    }
+
+    // If the player doesn't, we can display the eject tooltip
+    if (Tile::jukebox->TestUse(level, x, y, z, player))
+    {
+        return IDS_TOOLTIPS_EJECT;
+    }
+
+    return 0;
 }

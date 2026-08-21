@@ -338,3 +338,8 @@ bool DiodeTile::isMatching(int id)
 {
 	return isSameDiode(id);
 }
+
+int DiodeTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+	return IDS_TOOLTIPS_USE;
+}

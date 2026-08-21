@@ -122,6 +122,13 @@ bool CauldronTile::isSolidRender(bool isServerLevel)
 	return false;
 }
 
+int CauldronTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+	shared_ptr<ItemInstance> item = player->inventory->getSelected();
+	int currentData = level->getData(x, y, z);
+	return (item != nullptr && item->getItem()->id == Item::glassBottle_Id && currentData > 0) ? IDS_TOOLTIPS_COLLECT : 0;
+}
+
 int CauldronTile::getRenderShape()
 {
 	return SHAPE_CAULDRON;

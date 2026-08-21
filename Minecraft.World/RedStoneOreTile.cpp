@@ -126,3 +126,8 @@ shared_ptr<ItemInstance> RedStoneOreTile::getSilkTouchItemInstance(int data)
 {
 	return std::make_shared<ItemInstance>(Tile::redStoneOre);
 }
+
+int RedStoneOreTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+	return bUseItemOn ? IDS_TOOLTIPS_USE : 0;
+}

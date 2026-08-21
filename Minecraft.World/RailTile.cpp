@@ -34,3 +34,8 @@ void RailTile::updateState(Level *level, int x, int y, int z, int data, int dir,
 		}
 	}
 }
+
+int RailTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+	return bUseItemOn ? IDS_TOOLTIPS_PLACE : 0;
+}

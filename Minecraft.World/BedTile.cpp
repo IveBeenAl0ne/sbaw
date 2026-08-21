@@ -306,8 +306,6 @@ Pos *BedTile::findStandUpPosition(Level *level, int x, int y, int z, int skipCou
 {
 	int data = level->getData(x, y, z);
 	int direction = DirectionalTile::getDirection(data);
-
-	// try to find a clear location near the bed
 	for (int step = 0; step <= 1; step++)
 	{
 		int startX = x - HEAD_DIRECTION_OFFSETS[direction][0] * step - 1;
@@ -336,6 +334,11 @@ Pos *BedTile::findStandUpPosition(Level *level, int x, int y, int z, int skipCou
 	}
 
 	return nullptr;
+}
+
+int BedTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+	return bUseItemOn ? IDS_TOOLTIPS_SLEEP : 0;
 }
 
 void BedTile::spawnResources(Level *level, int x, int y, int z, int data, float odds, int playerBonus)

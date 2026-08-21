@@ -174,3 +174,8 @@ int CakeTile::cloneTileId(Level *level, int x, int y, int z)
 {
 	return Item::cake_Id;
 }
+
+int CakeTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+	return (player->abilities.instabuild == false && player->getFoodData()->needsFood()) ? IDS_TOOLTIPS_EAT : 0;
+}

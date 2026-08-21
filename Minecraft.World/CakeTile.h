@@ -46,4 +46,6 @@ public:
     virtual int convertBlockStateToLegacyData(BlockState *state) override;
     virtual Tile::BlockState getBlockState(LevelSource *level, int x, int y, int z) override;
     virtual Tile::BlockState getBlockState(int data);
+
+    virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const override;
 };

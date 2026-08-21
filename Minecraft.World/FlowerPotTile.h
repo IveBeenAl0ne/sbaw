@@ -45,4 +45,6 @@ public:
 	int getResource(int data, Random *random, int playerBonusLevel);
 	static shared_ptr<ItemInstance> getItemFromType(int type);
 	static int getTypeFromItem(shared_ptr<ItemInstance> item);
+
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const override;
 };

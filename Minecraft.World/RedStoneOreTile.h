@@ -31,4 +31,6 @@ private:
 	void poofParticles(Level *level, int x, int y, int z);
 protected:
 	virtual shared_ptr<ItemInstance> getSilkTouchItemInstance(int data);
+
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const override;
 };

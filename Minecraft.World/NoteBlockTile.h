@@ -3,7 +3,7 @@
 
 class Player;
 
-class NoteBlockTile : public BaseEntityTile
+	class NoteBlockTile : public BaseEntityTile
 {
 public:
 	NoteBlockTile(int id);
@@ -13,4 +13,7 @@ public:
 	virtual void attack(Level *level, int x, int y, int z, shared_ptr<Player> player);
 	virtual shared_ptr<TileEntity> newTileEntity(Level *level);
 	virtual bool triggerEvent(Level *level, int x, int y, int z, int i, int note);
+
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const override;
+	virtual int getAttackTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const override;
 };

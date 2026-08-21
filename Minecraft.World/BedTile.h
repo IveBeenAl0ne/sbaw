@@ -38,6 +38,8 @@ public:
 	virtual int getRenderShape();
 	virtual bool isCubeShaped();
 	virtual bool isSolidRender(bool isServerLevel = false);
+
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const override;
 	virtual void updateShape(LevelSource *level, int x, int y, int z, int forceData = -1, shared_ptr<TileEntity> forceEntity = shared_ptr<TileEntity>());	// 4J added forceData, forceEntity param
 	virtual void neighborChanged(Level *level, int x, int y, int z, int type);
 	virtual int getResource(int data, Random *random,int playerBonusLevel);

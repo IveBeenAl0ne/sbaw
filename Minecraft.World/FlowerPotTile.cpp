@@ -208,6 +208,25 @@ shared_ptr<ItemInstance> FlowerPotTile::getItemFromType(int type)
 	return nullptr;
 }
 
+int FlowerPotTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+	if (bUseItemOn == false && level->getData(x, y, z) == 0)
+	{
+		shared_ptr<ItemInstance> item = player->inventory->getSelected();
+		if (item != nullptr)
+		{
+			int itemId = item->getItem()->id;
+			if (itemId == Tile::rose_Id || itemId == Tile::flower_Id || itemId == Tile::cactus_Id
+				|| itemId == Tile::mushroom_brown_Id || itemId == Tile::mushroom_red_Id
+				|| itemId == Tile::deadBush_Id || itemId == Tile::sapling_Id || itemId == Tile::tallgrass_Id)
+			{
+				return IDS_TOOLTIPS_PLANT;
+			}
+		}
+	}
+	return 0;
+}
+
 int FlowerPotTile::getTypeFromItem(shared_ptr<ItemInstance> item)
 {
 	int id = item->getItem()->id;
