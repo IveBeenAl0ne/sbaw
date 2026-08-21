@@ -235,3 +235,8 @@ shared_ptr<HopperTileEntity> HopperTile::getHopper(LevelSource *level, int x, in
 {
 	return dynamic_pointer_cast<HopperTileEntity>( level->getTileEntity(x, y, z) );
 }
+
+int HopperTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+    return IDS_TOOLTIPS_OPEN;
+}

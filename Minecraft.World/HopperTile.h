@@ -59,4 +59,5 @@ public:
 	static Icon *getTexture(const wstring &name);
 	virtual wstring getTileItemIconName();
 	static shared_ptr<HopperTileEntity> getHopper(LevelSource *level, int x, int y, int z);
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const;
 };

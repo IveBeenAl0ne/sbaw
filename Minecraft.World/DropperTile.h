@@ -22,6 +22,7 @@ protected:
 
 public:
 	virtual shared_ptr<TileEntity> newTileEntity(Level *level);
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const;
 
 protected:
 	virtual void dispenseFrom(Level *level, int x, int y, int z);

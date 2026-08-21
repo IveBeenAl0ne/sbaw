@@ -115,3 +115,8 @@ void EnderChestTile::registerIcons(IconRegister *iconRegister)
 	// particles when destroying the chest
 	icon = iconRegister->registerIcon(L"obsidian");
 }
+
+int EnderChestTile::getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const
+{
+    return IDS_TOOLTIPS_OPEN;
+}

@@ -26,4 +26,5 @@ public:
 	shared_ptr<TileEntity> newTileEntity(Level *level);
 	void animateTick(Level *level, int xt, int yt, int zt, Random *random);
 	virtual void registerIcons(IconRegister *iconRegister);
+	virtual int getInteractTooltipId(Level* level, int x, int y, int z, std::shared_ptr<Player> player, bool bUseItemOn) const;
 };
