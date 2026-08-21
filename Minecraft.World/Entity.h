@@ -519,4 +519,11 @@ double distanceSqrToBlockPosCenter(BlockPos* pos);
     void setSkinAdjustments(struct _SkinAdjustments* adj);
 
 
+	virtual int getInteractTooltipId(Level* level,
+                               std::shared_ptr<Player> player,
+                               std::shared_ptr<ItemInstance> heldItem);
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player) const
+	{
+        	return IDS_TOOLTIPS_HIT; // Not4J Anaël: Hit by default on mobs/entities
+	}
 };

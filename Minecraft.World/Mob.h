@@ -176,7 +176,7 @@ public:
 	/**
 	* Added this method so mobs can handle their own spawn settings instead of
 	* hacking MobSpawner.java
-	* 
+	*
 	* @param groupData
 	*            TODO
 	* @return TODO
@@ -227,4 +227,7 @@ public:
 
 	// 4J Added override to update ai elements when loading entity from schematics
 	virtual void setLevel(Level *level);
+	virtual int getInteractTooltipId(Level* level,
+                               std::shared_ptr<Player> player,
+                               std::shared_ptr<ItemInstance> heldItem);
 };

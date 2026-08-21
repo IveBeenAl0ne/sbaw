@@ -16,7 +16,7 @@ public:
 	eINSTANCEOF GetType() { return eTYPE_ENDERDRAGON; };
 	static Entity *create(Level *level) { return new EnderDragon(level); }
 
-private:	
+private:
 	// 4J Added for new behaviours
 	static const int DATA_ID_SYNCHED_ACTION = 17;
 
@@ -169,10 +169,10 @@ private:
 	void strafeAttackTarget();
 	void navigateToNextPathNode();
 
-public:	
+public:
 	virtual void addAdditonalSaveData(CompoundTag *entityTag);
 	virtual void readAdditionalSaveData(CompoundTag *tag);
-	
+
 public:
 	void handleCrystalDestroyed(DamageSource *source);
 
@@ -187,4 +187,8 @@ public:
 	virtual float getHealth() { return LivingEntity::getHealth(); };
 	virtual float getMaxHealth() { return LivingEntity::getMaxHealth(); };
     virtual int getDimension() { return Entity::dimension; }
+
+	virtual int getInteractTooltipId(Level* level,
+                               std::shared_ptr<Player> player,
+                               std::shared_ptr<ItemInstance> heldItem);
 };

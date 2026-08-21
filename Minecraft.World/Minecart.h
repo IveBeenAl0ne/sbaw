@@ -121,4 +121,6 @@ public:
 	virtual wstring getAName();
 	virtual bool hasCustomName();
 	virtual wstring getCustomName();
+
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
 };

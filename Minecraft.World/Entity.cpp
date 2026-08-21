@@ -2208,6 +2208,7 @@ unsigned int Entity::getAnimOverrideBitmask()
 
 	return m_uiAnimOverrideBitmask;
 }
+
 float Entity::getEyeHeight()
 {
     return bbHeight * 0.85f;
@@ -2428,4 +2429,11 @@ void Entity::setSkinAdjustments(struct _SkinAdjustments* adj)
 {
    
     this->m_skinAdjustments = *adj;
+}
+
+int Entity::getInteractTooltipId(Level* level,
+                                 std::shared_ptr<Player> player,
+                                 std::shared_ptr<ItemInstance> heldItem)
+{
+    return 0;
 }

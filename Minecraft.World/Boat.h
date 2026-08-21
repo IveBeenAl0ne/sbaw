@@ -81,4 +81,6 @@ public:
 
 	bool getDoLerp();
 	void setDoLerp(bool doLerp);
+
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
 };

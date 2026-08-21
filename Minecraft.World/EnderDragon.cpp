@@ -187,7 +187,7 @@ void EnderDragon::aiStep()
 		float flap = Mth::cos(flapTime * PI * 2);
 		float oldFlap = Mth::cos(oFlapTime * PI * 2);
 
-		if (oldFlap <= -0.3f && flap >= -0.3f) 
+		if (oldFlap <= -0.3f && flap >= -0.3f)
 		{
 			level->playLocalSound(x, y, z, eSoundType_MOB_ENDERDRAGON_MOVE, 1, 0.8f + random->nextFloat() * .3f, false, 100.0f);
 		}
@@ -715,7 +715,7 @@ void EnderDragon::aiStep()
 	if (!level->isClientSide)
 	{
 		double maxDist = 64.0f;
-		if (getSynchedAction() == e_EnderdragonAction_StrafePlayer && attackTarget != nullptr && attackTarget->distanceToSqr(shared_from_this()) < maxDist * maxDist) 
+		if (getSynchedAction() == e_EnderdragonAction_StrafePlayer && attackTarget != nullptr && attackTarget->distanceToSqr(shared_from_this()) < maxDist * maxDist)
 		{
 			if (this->canSee(attackTarget))
 			{
@@ -746,7 +746,7 @@ void EnderDragon::aiStep()
 					level->addEntity(ie);
 					m_fireballCharge = 0;
 
-					app.DebugPrintf("Finding new target due to having fired a fireball\n");		
+					app.DebugPrintf("Finding new target due to having fired a fireball\n");
 					if( m_currentPath != nullptr )
 					{
 						while(!m_currentPath->isDone())
@@ -757,8 +757,8 @@ void EnderDragon::aiStep()
 					newTarget = true;
 					findNewTarget();
 				}
-			} 
-			else 
+			}
+			else
 			{
 				if (m_fireballCharge > 0) m_fireballCharge--;
 			}
@@ -990,7 +990,7 @@ void EnderDragon::findNewTarget()
 		navigateToNextPathNode();
 
 		if(m_currentPath != nullptr && m_currentPath->isDone())
-		{					
+		{
 			setSynchedAction(e_EnderdragonAction_Landing);
 #if PRINT_DRAGON_STATE_CHANGE_MESSAGES
 			app.DebugPrintf("Dragon action is now: Landing\n");
@@ -1045,7 +1045,7 @@ void EnderDragon::findNewTarget()
 			}
 
 			if(m_currentPath != nullptr) delete m_currentPath;
-			m_currentPath = findPath(currentNodeIndex,targetNodeIndex);		
+			m_currentPath = findPath(currentNodeIndex,targetNodeIndex);
 
 			// Always skip the first node (as that's where we are already)
 			if(m_currentPath != nullptr) m_currentPath->next();
@@ -1214,7 +1214,7 @@ void EnderDragon::tickDeath()
 				level->addEntity(std::make_shared<ExperienceOrb>(level, x, y, z, newCount));
 			}
 		}
-		if (dragonDeathTime == 1) 
+		if (dragonDeathTime == 1)
 		{
 			level->globalLevelEvent(LevelEvent::SOUND_DRAGON_DEATH, static_cast<int>(x), static_cast<int>(y), static_cast<int>(z), 0);
 		}
@@ -1777,7 +1777,7 @@ Path *EnderDragon::reconstruct_path(Node *from, Node *to)
 	NodeArray nodes = NodeArray(count);
 	n = to;
 	nodes.data[--count] = n;
-	while (n->cameFrom != nullptr) 
+	while (n->cameFrom != nullptr)
 	{
 		n = n->cameFrom;
 		nodes.data[--count] = n;
@@ -1787,7 +1787,7 @@ Path *EnderDragon::reconstruct_path(Node *from, Node *to)
 	return ret;
 }
 
-void EnderDragon::addAdditonalSaveData(CompoundTag *entityTag) 
+void EnderDragon::addAdditonalSaveData(CompoundTag *entityTag)
 {
 	app.DebugPrintf("Adding EnderDragon additional save data\n");
 	entityTag->putShort(L"RemainingCrystals", m_remainingCrystalsCount);
@@ -1796,7 +1796,7 @@ void EnderDragon::addAdditonalSaveData(CompoundTag *entityTag)
 	Mob::addAdditonalSaveData(entityTag);
 }
 
-void EnderDragon::readAdditionalSaveData(CompoundTag *tag) 
+void EnderDragon::readAdditionalSaveData(CompoundTag *tag)
 {
 	app.DebugPrintf("Reading EnderDragon additional save data\n");
 	m_remainingCrystalsCount = tag->getShort(L"RemainingCrystals");
@@ -1964,4 +1964,10 @@ Vec3 *EnderDragon::getHeadLookVector(float a)
 		result = getViewVector(a);
 	}
 	return result;
+}
+
+int EnderDragon::getInteractTooltipId(Level* level, std::shared_ptr<Player> player, std::shared_ptr<ItemInstance> heldItem)
+{
+    // Not4J Anaël: Ender dragon doesn't have such interactions (leash, name...) so return nothing
+    return 0;
 }

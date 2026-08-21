@@ -529,3 +529,7 @@ void Boat::setDoLerp(bool doLerp)
 	this->doLerp = doLerp;
 }
 
+int Boat::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_MINE;
+}

@@ -1082,3 +1082,8 @@ wstring Minecart::getCustomName()
 {
 	return name;
 }
+
+int Minecart::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_MINE;
+}

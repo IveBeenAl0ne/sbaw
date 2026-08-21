@@ -216,6 +216,18 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
             }
             int heldItemId = heldItem != nullptr ? heldItem->getItem()->id : -1;
 
+            shared_ptr<Entity> entity = hitResult->entity;
+                if (entity != nullptr)
+                {
+                    *piAction = entity->getAttackTooltipId(player);
+
+                    int useTooltip = entity->getInteractTooltipId(level, player, heldItem);
+                    if (useTooltip != 0)
+                    {
+                        *piUse = useTooltip;
+                    }
+                }
+
             switch (entityType)
             {
             case eTYPE_CHICKEN:

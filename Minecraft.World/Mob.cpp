@@ -1121,3 +1121,31 @@ void Mob::setLevel(Level *level)
 	goalSelector.setLevel(level);
 	targetSelector.setLevel(level);
 }
+
+int Mob::getInteractTooltipId(Level* level, std::shared_ptr<Player> player, std::shared_ptr<ItemInstance> heldItem)
+{
+    // Not4J Anaël: Unleash if leashed
+    if (this->isLeashed() && this->getLeashHolder() == player)
+    {
+        return IDS_TOOLTIPS_UNLEASH;
+    }
+
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        int heldItemId = heldItem->getItem()->id;
+
+        // Leash mobs
+        if (heldItemId == Item::lead_Id && !this->isLeashed() && this->canBeLeashed())
+        {
+            return IDS_TOOLTIPS_LEASH;
+        }
+
+        // Give a name (nametag)
+        if (heldItemId == Item::nameTag_Id)
+        {
+            return IDS_TOOLTIPS_NAME;
+        }
+    }
+
+    return 0;
+}
