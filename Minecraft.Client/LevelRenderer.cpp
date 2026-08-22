@@ -65,7 +65,7 @@
 #include "../Minecraft.World/SoundTypes.h"
 #include "FrustumCuller.h"
 #include "../Minecraft.World/BasicTypeContainers.h"
-#include "Common/UI/UIScene_SettingsGraphicsMenu.h"	
+#include "Common/UI/UIScene_SettingsGraphicsMenu.h"
 #include "ParticleUtils.h"
 #include <unordered_set>
 
@@ -2584,23 +2584,35 @@ void LevelRenderer::setTilesDirty(int x0, int y0, int z0, int x1, int y1, int z1
 	setDirty(x0 - 1, y0 - 1, z0 - 1, x1 + 1, y1 + 1, z1 + 1, level);
 }
 
-bool inline clip(float *bb, float *frustum)
+static const unsigned char K_CORNER_LUT[8][3] = {
+    {0, 1, 2},
+    {3, 1, 2},
+    {0, 4, 2},
+    {3, 4, 2},
+    {0, 1, 5},
+    {3, 1, 5},
+    {0, 4, 5},
+    {3, 4, 5}
+};
+
+bool inline clip(const float * __restrict bb, const float * __restrict planes, const unsigned char * __restrict masks)
 {
-	for (int i = 0; i < 6; ++i, frustum += 4)
-	{
-		if (frustum[0] * (bb[0]) + frustum[1] * (bb[1]) + frustum[2] * (bb[2]) + frustum[3] > 0) continue;
-		if (frustum[0] * (bb[3]) + frustum[1] * (bb[1]) + frustum[2] * (bb[2]) + frustum[3] > 0) continue;
-		if (frustum[0] * (bb[0]) + frustum[1] * (bb[4]) + frustum[2] * (bb[2]) + frustum[3] > 0) continue;
-		if (frustum[0] * (bb[3]) + frustum[1] * (bb[4]) + frustum[2] * (bb[2]) + frustum[3] > 0) continue;
-		if (frustum[0] * (bb[0]) + frustum[1] * (bb[1]) + frustum[2] * (bb[5]) + frustum[3] > 0) continue;
-		if (frustum[0] * (bb[3]) + frustum[1] * (bb[1]) + frustum[2] * (bb[5]) + frustum[3] > 0) continue;
-		if (frustum[0] * (bb[0]) + frustum[1] * (bb[4]) + frustum[2] * (bb[5]) + frustum[3] > 0) continue;
-		if (frustum[0] * (bb[3]) + frustum[1] * (bb[4]) + frustum[2] * (bb[5]) + frustum[3] > 0) continue;
+    // bb[0]=x0, bb[1]=y0, bb[2]=z0
+    // bb[3]=x1, bb[4]=y1, bb[5]=z1
+    for (int i = 0; i < 6; i++, planes += 4)
+    {
+        float A = planes[0];
+        float B = planes[1];
+        float C = planes[2];
+        float D = planes[3];
 
-		return false;
-	}
+        const unsigned char* idx = K_CORNER_LUT[masks[i]];
 
-	return true;
+        if (A * bb[idx[0]] + B * bb[idx[1]] + C * bb[idx[2]] + D <= 0.0f)
+            return false;
+    }
+
+    return true;
 }
 
 #ifdef __PS3__
@@ -2680,103 +2692,118 @@ void LevelRenderer::waitForCull_SPU()
 }
 #endif // __PS3__
 
+/* Anaël/vistaslayer.ovh: Rewriting the culler for better performance:
+ * Note before starting: I chose to use a translator since English isn't my native language and I still lack the technical terminology (even in my own language, actually);
+ * If I've made any mistakes in the comments, feel free to correct them, I won't be offended :)
+ *
+ * The most interesting optimizations are found in the "clip" function.
+ * The original implementation tests the AABB's 8 vertices against each of the 6 frustum planes.
+ *
+ * My implementation uses the sign of each plane's normal to directly select the AABB vertex that maximizes the plane equation.
+ * Only this vertex needs to be tested; if it lies outside the plane, then the entire AABB is outside.
+ * This reduces the worst-case scenario to 6 plane equation evaluations—one equation per plane.
+ *
+ * As a bonus, I use a lookup table (K_CORNER_LUT) to avoid conditional branching when selecting the vertex, nothing much really.
+ */
+
 void LevelRenderer::cull(Culler *culler, float a)
 {
-	int playerIndex = mc->player->GetXboxPad();	// 4J added
+    int playerIndex = mc->player->GetXboxPad();
 
 #if defined __PS3__ && !defined DISABLE_SPU_CODE
-	cull_SPU(playerIndex, culler, a);
-	return;
-#endif // __PS3__
+    cull_SPU(playerIndex, culler, a);
+    return;
+#endif
 
+    FrustumCuller *fc = static_cast<FrustumCuller *>(culler);
+    FrustumData *fd = fc->frustum;
 
-	FrustumCuller *fc = static_cast<FrustumCuller *>(culler);
-	FrustumData *fd = fc->frustum;
-	float fdraw[6 * 4];
-	for( int i = 0; i < 6; i++ )
-	{
-		double fx = fd->m_Frustum[i][0];
-		double fy = fd->m_Frustum[i][1];
-		double fz = fd->m_Frustum[i][2];
-		fdraw[i * 4 + 0] = static_cast<float>(fx);
-		fdraw[i * 4 + 1] = static_cast<float>(fy);
-		fdraw[i * 4 + 2] = static_cast<float>(fz);
-		fdraw[i * 4 + 3] = static_cast<float>(fd->m_Frustum[i][3] + (fx * -fc->xOff) + (fy * -fc->yOff) + (fz * -fc->zOff));
-	}
+    float fdraw[6 * 4];
+    unsigned char planeMasks[6];
 
-	int vis = 0;
-	int total = 0;
-	int numWrong = 0;
+    for( int i = 0; i < 6; i++ )
+    {
+        double fx = fd->m_Frustum[i][0];
+        double fy = fd->m_Frustum[i][1];
+        double fz = fd->m_Frustum[i][2];
 
-	// Reset visible chunk lists for this frame
-	visibleCount_layer0 = 0;
-	visibleCount_layer1 = 0;
-	visibleCount_layer2 = 0;
-	visibleCount_layer3 = 0;
+        fdraw[i * 4 + 0] = (float)fx;
+        fdraw[i * 4 + 1] = (float)fy;
+        fdraw[i * 4 + 2] = (float)fz;
+        fdraw[i * 4 + 3] = (float)(fd->m_Frustum[i][3] + ( fx * -fc->xOff ) + ( fy * - fc->yOff ) + ( fz * -fc->zOff ));
 
-	// Column-level frustum culling: test one AABB per XZ column before testing individual Y chunks.
-	// At dist 64 this reduces ~278K clip() calls to ~17K column tests + per-chunk tests only for visible columns.
-	for (int x = 0; x < xChunks; x++)
-	{
-		for (int z = 0; z < zChunks; z++)
-		{
-			// Build column AABB from bottom and top chunks in this column
-			ClipChunk *bottomChunk = &chunks[playerIndex][(z * yChunks + 0) * xChunks + x];
-			ClipChunk *topChunk = &chunks[playerIndex][(z * yChunks + (yChunks - 1)) * xChunks + x];
-			float columnAABB[6] = {
-				bottomChunk->aabb[0], bottomChunk->aabb[1], bottomChunk->aabb[2],  // minX, minY, minZ
-				bottomChunk->aabb[3], topChunk->aabb[4],    bottomChunk->aabb[5]   // maxX, maxY(top), maxZ
-			};
+        // pre-calculate sign masks for K_CORNER_LUT
+        planeMasks[i] = ((fx >= 0.0) ? 1 : 0) |
+                        ((fy >= 0.0) ? 2 : 0) |
+                        ((fz >= 0.0) ? 4 : 0);
+    }
 
-			// Test entire column against frustum
-			if (!clip(columnAABB, fdraw))
-			{
-				// Entire column outside frustum — mark all Y chunks invisible
-				for (int y = 0; y < yChunks; y++)
-				{
-					ClipChunk *pClipChunk = &chunks[playerIndex][(z * yChunks + y) * xChunks + x];
-					pClipChunk->visible = false;
-				}
-				continue;
-			}
+    int vis = 0;
+    int total = 0;
 
-			// Column is (partially) in frustum — test individual chunks
-			for (int y = 0; y < yChunks; y++)
-			{
-				ClipChunk *pClipChunk = &chunks[playerIndex][(z * yChunks + y) * xChunks + x];
-				unsigned char flags = pClipChunk->globalIdx == -1 ? 0 : globalChunkFlags[ pClipChunk->globalIdx ];
+    visibleCount_layer0 = 0;
+    visibleCount_layer1 = 0;
+    visibleCount_layer2 = 0;
+    visibleCount_layer3 = 0;
 
-				bool clipres = clip(pClipChunk->aabb, fdraw);
+    for (int x = 0; x < xChunks; x++)
+    {
+        for (int z = 0; z < zChunks; z++)
+        {
+            ClipChunk *bottomChunk = &chunks[playerIndex][(z * yChunks + 0) * xChunks + x];
+            ClipChunk *topChunk = &chunks[playerIndex][(z * yChunks + (yChunks - 1)) * xChunks + x];
 
-				if ( (flags & CHUNK_FLAG_COMPILED ) && ( ( flags & CHUNK_FLAG_EMPTYBOTH ) != CHUNK_FLAG_EMPTYBOTH ) )
-				{
-					pClipChunk->visible = clipres;
-					if( pClipChunk->visible ) vis++;
-					total++;
-				}
-				else if (clipres)
-				{
-					pClipChunk->visible = true;
-				}
-				else
-				{
-					pClipChunk->visible = false;
-				}
+            float columnAABB[6] = {
+                bottomChunk->aabb[0], bottomChunk->aabb[1], bottomChunk->aabb[2],
+                bottomChunk->aabb[3], topChunk->aabb[4],    bottomChunk->aabb[5]
+            };
 
-				// Build compact visible chunk lists for renderChunks()
-				if (pClipChunk->visible && pClipChunk->globalIdx != -1 && visibleLists_layer0 != nullptr)
-				{
-					int list = pClipChunk->globalIdx * CHUNK_RENDER_LAYERS + chunkLists;
-					if (!((flags & CHUNK_FLAG_EMPTY0) == CHUNK_FLAG_EMPTY0))
-						visibleLists_layer0[visibleCount_layer0++] = list;
-					if (!((flags & CHUNK_FLAG_EMPTY1) == CHUNK_FLAG_EMPTY1))
-						visibleLists_layer1[visibleCount_layer1++] = list + 1;
-					visibleLists_layer2[visibleCount_layer2++] = list + 2;
-					visibleLists_layer3[visibleCount_layer3++] = list + 3;
-				}
-			}
-		}
-	}
+            if (!clip(columnAABB, fdraw, planeMasks))
+            {
+                for (int y = 0; y < yChunks; y++)
+                {
+                    ClipChunk *pClipChunk = &chunks[playerIndex][(z * yChunks + y) * xChunks + x];
+                    pClipChunk->visible = false;
+                }
+                continue;
+            }
+
+            // the column is in frustum, check chunk by chunk then
+            for (int y = 0; y < yChunks; y++)
+            {
+                ClipChunk *pClipChunk = &chunks[playerIndex][(z * yChunks + y) * xChunks + x];
+                unsigned char flags = pClipChunk->globalIdx == -1 ? 0 : globalChunkFlags[ pClipChunk->globalIdx ];
+
+                bool clipres = clip(pClipChunk->aabb, fdraw, planeMasks);
+
+                if ( (flags & CHUNK_FLAG_COMPILED ) && ( ( flags & CHUNK_FLAG_EMPTYBOTH ) != CHUNK_FLAG_EMPTYBOTH ) )
+                {
+                    pClipChunk->visible = clipres;
+                    if( pClipChunk->visible ) vis++;
+                    total++;
+                }
+                else if (clipres)
+                {
+                    pClipChunk->visible = true;
+                }
+                else
+                {
+                    pClipChunk->visible = false;
+                }
+
+                if (pClipChunk->visible && pClipChunk->globalIdx != -1 && visibleLists_layer0 != nullptr)
+                {
+                    int list = pClipChunk->globalIdx * CHUNK_RENDER_LAYERS + chunkLists;
+                    if (!((flags & CHUNK_FLAG_EMPTY0) == CHUNK_FLAG_EMPTY0))
+                        visibleLists_layer0[visibleCount_layer0++] = list;
+                    if (!((flags & CHUNK_FLAG_EMPTY1) == CHUNK_FLAG_EMPTY1))
+                        visibleLists_layer1[visibleCount_layer1++] = list + 1;
+                    visibleLists_layer2[visibleCount_layer2++] = list + 2;
+                    visibleLists_layer3[visibleCount_layer3++] = list + 3;
+                }
+            }
+        }
+    }
 }
 
 
@@ -4132,4 +4159,3 @@ int LevelRenderer::checkAllPresentChunks(bool *faultFound)
 	}
 	return presentCount;
 }
-
