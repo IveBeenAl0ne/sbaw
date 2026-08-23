@@ -2174,6 +2174,11 @@ void Player::jumpFromGround()
 
 void Player::travel(float xa, float ya)
 {
+	if (isSleeping())
+	{
+		return;
+	}
+
 	double preX = x, preY = y, preZ = z;
 
 	m_elytraImpactYd = (float)yd;
