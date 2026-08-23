@@ -24,6 +24,7 @@ UIScene_DebugOptionsMenu::UIScene_DebugOptionsMenu(int iPad, void *initData, UIL
     m_bGoToOverworld = false;
     m_bGoToNether = false;
     m_bGoToEnd = false;
+    m_bTeleportBusy = false; //fix loading screen softlock
 
     doHorizontalResizeCheck();
 
@@ -94,13 +95,13 @@ void UIScene_DebugOptionsMenu::tick()
         m_multiList.AddNewButton(app.GetString(IDS_DEBUG_GO_TO_NETHER), eControl_GoToNether);
         m_multiList.AddNewButton(app.GetString(IDS_DEBUG_GO_TO_END), eControl_GoToEnd);
 
+        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_MOBS_DONT_TICK), eControl_MobsDontTick, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_MobsDontTick)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_FREEZE_PLAYERS), eControl_FreezePlayers, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_FreezePlayers)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_FREEZE_TIME), eControl_FreezeTime, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_FreezeTime)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_MOBS_DONT_ATTACK), eControl_MobsDontAttack, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_MobsDontAttack)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_DISABLE_WEATHER), eControl_DisableWeather, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_DisableWeather)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_CRAFT_ANYTHING), eControl_CraftAnything, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_CraftAnything)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_USE_DPAD_FOR_DEBUG), eControl_UseDpadForDebug, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_UseDpadForDebug)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_MOBS_DONT_TICK), eControl_MobsDontTick, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_MobsDontTick)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_SUPERFLAT_NETHER), eControl_SuperflatNether, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_SuperflatNether)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_MORE_LIGHTNING), eControl_RegularLightning, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_RegularLightning)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_BIOME_OVERRIDE), eControl_EnableBiomeOverride, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_EnableBiomeOverride)) != 0));
@@ -216,18 +217,27 @@ void UIScene_DebugOptionsMenu::handlePress(F64 controlId, F64 childId)
 {
     ui.PlayUISFX(eSFX_Press);
 
-    switch (static_cast<int>(childId))
+    if (!m_bTeleportBusy) 
     {
-    case eControl_GoToOverworld:
-        m_bGoToOverworld = true;
-        break;
-    case eControl_GoToNether:
-        m_bGoToNether = true;
-        break;
-    case eControl_GoToEnd:
-        m_bGoToEnd = true;
-        break;
+        switch (static_cast<int>(childId))
+        {
+        case eControl_GoToOverworld:
+            m_bGoToOverworld = true;
+            m_bTeleportBusy = true;
+            break;
+        case eControl_GoToNether:
+            m_bGoToNether = true;
+            m_bTeleportBusy = true;
+            break;
+        case eControl_GoToEnd:
+            m_bGoToEnd = true;
+            m_bTeleportBusy = true;
+            break;
+        }
     }
+
+    //switch (static_cast<int>(childId)) //for buttons that are not teleports
+
 }
 
 void UIScene_DebugOptionsMenu::setGameSettings()
@@ -283,6 +293,7 @@ void UIScene_DebugOptionsMenu::setGameSettings()
     m_bGoToOverworld = false;
     m_bGoToNether = false;
     m_bGoToEnd = false;
+    m_bTeleportBusy = false;
 }
 
 void UIScene_DebugOptionsMenu::handleGainFocus(bool navBack)
@@ -305,7 +316,7 @@ void UIScene_DebugOptionsMenu::render(S32 width, S32 height, C4JRender::eViewpor
     }
 
     Font *font = pMinecraft->font;
-    const wstring text = L"WARNING: Options may be unstable!";
+    const wstring text = app.GetString(IDS_DEBUG_WARNING);
     const float scale = 0.6f;
     const int pad = 4;
 

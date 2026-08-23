@@ -44,6 +44,7 @@ class UIScene_DebugOptionsMenu : public UIScene
     bool m_bGoToOverworld;
     bool m_bGoToNether;
     bool m_bGoToEnd;
+    bool m_bTeleportBusy;
 
     bool m_bNotInGame;
 
