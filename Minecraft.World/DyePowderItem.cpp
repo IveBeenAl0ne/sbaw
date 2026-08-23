@@ -189,7 +189,7 @@ bool DyePowderItem::growCrop(shared_ptr<ItemInstance> itemInstance, Level *level
 		}
 		return true;
 	}
-	
+
 
 
 	else if (tile == Tile::mushroom_brown_Id || tile == Tile::mushroom_red_Id)
@@ -310,8 +310,8 @@ bool DyePowderItem::growCrop(shared_ptr<ItemInstance> itemInstance, Level *level
 						else if (random->nextInt(3) != 0)
 						{
 							if (Tile::flower->canSurvive(level, xx, yy, zz)) level->setTileAndUpdate(xx, yy, zz, Tile::yellow_flower_Id);
-						} 
-						else 
+						}
+						else
 						{
 							if (Tile::rose->canSurvive(level, xx, yy, zz)) level->setTileAndUpdate(xx, yy, zz, Tile::red_flower_Id);
 						}
@@ -386,8 +386,8 @@ int DyePowderItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance, s
         case Tile::grass_Id:
         case Tile::mushroom_brown_Id:
         case Tile::mushroom_red_Id:
-        case Tile::melonStem_Id:
-        case Tile::pumpkinStem_Id:
+        case Tile::melon_stem_Id:
+        case Tile::pumpkin_stem_Id:
         case Tile::carrots_Id:
         case Tile::potatoes_Id:
             return IDS_TOOLTIPS_GROW;

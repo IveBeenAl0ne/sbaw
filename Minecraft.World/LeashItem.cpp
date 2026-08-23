@@ -93,7 +93,7 @@ int LeashItem::getUseTooltipId(std::shared_ptr<ItemInstance> itemInstance,
         // Not4J Anaël: We need to check if the target block is a fence because leashes can only attach to those
         if (targetTile > 0 && Tile::tiles[targetTile] != nullptr)
         {
-            if (targetTile == Tile::fence_Id || targetTile == Tile::netherFence_Id)
+            if (targetTile == Tile::fence_Id)
             {
                 return IDS_TOOLTIPS_ATTACH;
             }

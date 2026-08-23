@@ -247,7 +247,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
                     switch (heldItemId)
                     {
-                    case Item::nameTag_Id:
+                    case Item::name_tag_Id:
                         *piUse = IDS_TOOLTIPS_NAME;
                         break;
 
@@ -291,7 +291,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                     switch (heldItemId)
                     {
                         // Things to USE
-                    case Item::nameTag_Id:
+                    case Item::name_tag_Id:
                         *piUse = IDS_TOOLTIPS_NAME;
                         break;
                     case Item::lead_Id:
@@ -300,7 +300,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                             *piUse = IDS_TOOLTIPS_LEASH;
                         }
                         break;
-                    case Item::bucket_empty_Id:
+                    case Item::bucket_Id:
                         *piUse = IDS_TOOLTIPS_MILK;
                         break;
                     default:
@@ -337,7 +337,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                     switch (heldItemId)
                     {
                         // Things to USE
-                    case Item::nameTag_Id:
+                    case Item::name_tag_Id:
                         *piUse = IDS_TOOLTIPS_NAME;
                         break;
 
@@ -349,7 +349,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                         break;
 
                     case Item::bowl_Id:
-                    case Item::bucket_empty_Id: // You can milk a mooshroom with either a bowl (mushroom soup) or a bucket (milk)!
+                    case Item::bucket_Id: // You can milk a mooshroom with either a bowl (mushroom soup) or a bucket (milk)!
                         *piUse = IDS_TOOLTIPS_MILK;
                         break;
                     case Item::shears_Id:
@@ -428,7 +428,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
                     switch (heldItemId)
                     {
-                    case Item::nameTag_Id:
+                    case Item::name_tag_Id:
                         *piUse = IDS_TOOLTIPS_NAME;
                         break;
 
@@ -439,7 +439,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                         }
                         break;
 
-                    case Item::dye_powder_Id:
+                    case Item::dye_Id:
                         {
                             // convert to tile-based color value (0 is white instead of black)
                             int newColor = ColoredTile::getTileDataForItemAuxValue(heldItem->getAuxValue());
@@ -497,7 +497,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                             *piUse = IDS_TOOLTIPS_LEASH;
                         }
                     }
-                    else if (heldItemId == Item::nameTag_Id)
+                    else if (heldItemId == Item::name_tag_Id)
                     {
                         *piUse = IDS_TOOLTIPS_NAME;
                     }
@@ -547,7 +547,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
                     switch (heldItemId)
                     {
-                    case Item::nameTag_Id:
+                    case Item::name_tag_Id:
                         *piUse = IDS_TOOLTIPS_NAME;
                         break;
 
@@ -576,10 +576,10 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                         }
 
                         break;
-                    case Item::enderPearl_Id:
+                    case Item::ender_pearl_Id:
                         // Use is throw, so don't change the tips for the wolf
                         break;
-                    case Item::dye_powder_Id:
+                    case Item::dye_Id:
                         if (wolf->isTame())
                         {
                             if (ColoredTile::getTileDataForItemAuxValue(heldItem->getAuxValue()) != wolf->getCollarColor())
@@ -652,7 +652,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                             *piUse = IDS_TOOLTIPS_LEASH;
                         }
                     }
-                    else if (heldItemId == Item::nameTag_Id)
+                    else if (heldItemId == Item::name_tag_Id)
                     {
                         *piUse = IDS_TOOLTIPS_NAME;
                     }
@@ -752,10 +752,10 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
             case eTYPE_ZOMBIE:
                 {
                     shared_ptr<Zombie> zomb = dynamic_pointer_cast<Zombie>(hitResult->entity);
-                    static GoldenAppleItem *goldapple = static_cast<GoldenAppleItem *>(Item::apple_gold);
+                    static GoldenAppleItem *goldapple = static_cast<GoldenAppleItem *>(Item::golden_apple);
 
                     // zomb->hasEffect(MobEffect::weakness) - not present on client.
-                    if (zomb->isVillager() && zomb->isWeakened() && (heldItemId == Item::apple_gold_Id) && !goldapple->isFoil(heldItem))
+                    if (zomb->isVillager() && zomb->isWeakened() && (heldItemId == Item::golden_apple_Id) && !goldapple->isFoil(heldItem))
                     {
                         *piUse = IDS_TOOLTIPS_CURE;
                     }
@@ -774,18 +774,18 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                     case Item::wheat_Id:
                     case Item::sugar_Id:
                     case Item::bread_Id:
-                    case Tile::hayBlock_Id:
+                    case Tile::hay_block_Id:
                     case Item::apple_Id:
                         heldItemIsFood = true;
                         break;
-                    case Item::carrotGolden_Id:
-                    case Item::apple_gold_Id:
+                    case Item::golden_carrot_Id:
+                    case Item::golden_apple_Id:
                         heldItemIsLove = true;
                         heldItemIsFood = true;
                         break;
-                    case Item::horseArmorDiamond_Id:
-                    case Item::horseArmorGold_Id:
-                    case Item::horseArmorMetal_Id:
+                    case Item::diamond_horse_armor_Id:
+                    case Item::golden_horse_armor_Id:
+                    case Item::iron_horse_armor_Id:
                         heldItemIsArmour = true;
                         break;
                     }
@@ -801,7 +801,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                             *piUse = IDS_TOOLTIPS_LEASH;
                         }
                     }
-                    else if (heldItemId == Item::nameTag_Id)
+                    else if (heldItemId == Item::name_tag_Id)
                     {
                         *piUse = IDS_TOOLTIPS_NAME;
                     }
@@ -894,7 +894,7 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                             *piUse = IDS_TOOLTIPS_LEASH;
                         }
                     }
-                    else if (heldItemId == Item::nameTag_Id)
+                    else if (heldItemId == Item::name_tag_Id)
                     {
                         *piUse = IDS_TOOLTIPS_NAME;
                     }

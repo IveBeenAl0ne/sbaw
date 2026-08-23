@@ -7,7 +7,7 @@
 class TooltipManager
 {
   public:
-    static void getTooltips(std::shared_ptr<MultiplayerLocalPlayer> player,
+    static void getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
                    Level *level,
                    HitResult *hitResult,
                    MultiPlayerGameMode *gameMode,

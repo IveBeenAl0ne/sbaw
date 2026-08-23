@@ -201,7 +201,7 @@ int JukeboxTile::getInteractTooltipId(Level* level, int x, int y, int z, std::sh
     if (item != nullptr && item->getItem() != nullptr)
     {
         int itemId = item->getItem()->id;
-        if (itemId >= Item::record_01_Id && itemId <= Item::record_12_Id)
+        if (itemId >= Item::record_13_Id && itemId <= Item::record_wait_Id)
         {
             // And if the jukebox already has a disk inside
             auto tileEntity = dynamic_pointer_cast<JukeboxTile::Entity>(level->getTileEntity(x, y, z));

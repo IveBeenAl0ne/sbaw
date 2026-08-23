@@ -126,7 +126,7 @@ int CauldronTile::getInteractTooltipId(Level* level, int x, int y, int z, std::s
 {
 	shared_ptr<ItemInstance> item = player->inventory->getSelected();
 	int currentData = level->getData(x, y, z);
-	return (item != nullptr && item->getItem()->id == Item::glassBottle_Id && currentData > 0) ? IDS_TOOLTIPS_COLLECT : 0;
+	return (item != nullptr && item->getItem()->id == Item::glass_bottle_Id && currentData > 0) ? IDS_TOOLTIPS_COLLECT : 0;
 }
 
 int CauldronTile::getRenderShape()

@@ -213,15 +213,9 @@ int FlowerPotTile::getInteractTooltipId(Level* level, int x, int y, int z, std::
 	if (bUseItemOn == false && level->getData(x, y, z) == 0)
 	{
 		shared_ptr<ItemInstance> item = player->inventory->getSelected();
-		if (item != nullptr)
+		if (item != nullptr && getTypeFromItem(item) != 0)
 		{
-			int itemId = item->getItem()->id;
-			if (itemId == Tile::rose_Id || itemId == Tile::flower_Id || itemId == Tile::cactus_Id
-				|| itemId == Tile::mushroom_brown_Id || itemId == Tile::mushroom_red_Id
-				|| itemId == Tile::deadBush_Id || itemId == Tile::sapling_Id || itemId == Tile::tallgrass_Id)
-			{
-				return IDS_TOOLTIPS_PLANT;
-			}
+			return IDS_TOOLTIPS_PLANT;
 		}
 	}
 	return 0;

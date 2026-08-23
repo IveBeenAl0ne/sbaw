@@ -286,7 +286,7 @@ void Mob::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
             playerBonusLevel,
             [this](int maxExclusive) -> int { return random->nextInt(maxExclusive); },
 			isOnFire());
-			
+
 
         if (!drops.empty())
         {
@@ -1141,7 +1141,7 @@ int Mob::getInteractTooltipId(Level* level, std::shared_ptr<Player> player, std:
         }
 
         // Give a name (nametag)
-        if (heldItemId == Item::nameTag_Id)
+        if (heldItemId == Item::name_tag_Id)
         {
             return IDS_TOOLTIPS_NAME;
         }

@@ -251,8 +251,8 @@ set(_MINECRAFT_SERVER_COMMON_ROOT
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_TrialExitUpsell.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_BookAndQuillMenu.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_AchievementsMenu.cpp"
-  "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_AchievementsMenu.h" 
-  "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_AchievementsList.cpp" 
+  "${_MS_SRC}/../Minecraft.Client/Common/UI/UIScene_AchievementsMenu.h"
+  "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_AchievementsList.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/UIControl_AchievementsList.h"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/IUIScene_ClassicCraftingMenu.cpp"
   "${_MS_SRC}/../Minecraft.Client/Common/UI/IUIScene_ClassicCraftingMenu.h"
@@ -527,7 +527,7 @@ set(_MINECRAFT_SERVER_COMMON_ROOT
   "${_MS_SRC}/../Minecraft.Client/ZombieModel.cpp"
   "${_MS_SRC}/../Minecraft.Client/ZombieRenderer.cpp"
   "${_MS_SRC}/../Minecraft.Client/GuardianModel.cpp"
-  "${_MS_SRC}/../Minecraft.Client/GuardianRenderer.cpp"  
+  "${_MS_SRC}/../Minecraft.Client/GuardianRenderer.cpp"
   "${_MS_SRC}/../Minecraft.Client/compat_shims.cpp"
   "${_MS_SRC}/../Minecraft.Client/glWrapper.cpp"
   "${_MS_SRC}/../Minecraft.Client/iob_shim.asm"
@@ -576,6 +576,8 @@ set(_MINECRAFT_SERVER_COMMON_ROOT
   "${_MS_SRC}/../Minecraft.Client/CustomHeadLayer.h"
   "${_MS_SRC}/../Minecraft.Client/CustomHeadLayer.cpp"
   "${_MS_SRC}/../Minecraft.Client/RenderLayer.h"
+  "${_MS_SRC}/../Minecraft.Client/TooltipManager.cpp"
+  "${_MS_SRC}/../Minecraft.Client/TooltipManager.h"
 )
 source_group("" FILES ${_MINECRAFT_SERVER_COMMON_ROOT})
 

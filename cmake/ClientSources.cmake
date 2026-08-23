@@ -496,4 +496,5 @@ set(MINECRAFT_CLIENT_SOURCES
   "glWrapper.cpp"
   "stdafx.cpp"
   "stubs.cpp"
+  "TooltipManager.cpp"
 )
