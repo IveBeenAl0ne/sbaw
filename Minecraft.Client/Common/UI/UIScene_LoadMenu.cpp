@@ -563,6 +563,7 @@ void UIScene_LoadMenu::tick()
 			{
 			case 1: // Creative
 				m_sliderGamemode.setLabel(app.GetString(IDS_GAMEMODE_CREATIVE));
+				m_sliderGamemode.SetSliderValue(1);
 				m_sliderGamemode.handleSliderMove(1);
 				m_bGameModeCreative=true;
 				m_iGameModeId = GameType::CREATIVE->getId();
@@ -570,6 +571,7 @@ void UIScene_LoadMenu::tick()
 #ifdef _ADVENTURE_MODE_ENABLED
 			case 2: // Adventure
 				m_sliderGamemode.setLabel(app.GetString(IDS_GAMEMODE_ADVENTURE));
+				m_sliderGamemode.SetSliderValue(2);
 				m_sliderGamemode.handleSliderMove(2);
 				m_bGameModeCreative=false;
 				m_iGameModeId = GameType::ADVENTURE->getId();
@@ -578,6 +580,7 @@ void UIScene_LoadMenu::tick()
 			case 0: // Survival
 			default:
 				m_sliderGamemode.setLabel(app.GetString(IDS_GAMEMODE_SURVIVAL));
+				m_sliderGamemode.SetSliderValue(0);
 				m_sliderGamemode.handleSliderMove(0);
 				m_bGameModeCreative=false;
 				m_iGameModeId = GameType::SURVIVAL->getId();
@@ -602,8 +605,9 @@ void UIScene_LoadMenu::tick()
 				// Hardcore locks game mode to Survival
 				m_iGameModeId = GameType::SURVIVAL->getId();
 				m_bGameModeCreative = false;
-			    m_sliderGamemode.setLabel(app.GetString(IDS_GAMEMODE_SURVIVAL));
-			    m_sliderGamemode.handleSliderMove(0);
+				m_sliderGamemode.setLabel(app.GetString(IDS_GAMEMODE_SURVIVAL));
+				m_sliderGamemode.SetSliderValue(0);
+				m_sliderGamemode.handleSliderMove(0);
 			}
 		}
 
