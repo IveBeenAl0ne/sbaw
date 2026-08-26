@@ -36,7 +36,7 @@ function(configure_compiler_target target)
       $<$<COMPILE_LANGUAGE:CXX>:/GR>
       $<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C,CXX>>:/Z7>
       $<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C,CXX>>:/Od>
-      $<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:C,CXX>>:/O2 /Oi /GT /GF>
+      $<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:C,CXX>>:/O2 /Ob1 /Oi /GT /GF>
     )
     target_link_options(${target} PRIVATE
       $<$<CONFIG:Debug>:/DEBUG:FULL /INCREMENTAL:NO>
