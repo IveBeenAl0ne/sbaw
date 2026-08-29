@@ -51,17 +51,17 @@ void Cow::registerAttributes()
 	getAttribute(SharedMonsterAttributes::MOVEMENT_SPEED)->setBaseValue(0.2f);
 }
 
-int Cow::getAmbientSound() 
+int Cow::getAmbientSound()
 {
 	return eSoundType_MOB_COW_AMBIENT;
 }
 
-int Cow::getHurtSound() 
+int Cow::getHurtSound()
 {
 	return eSoundType_MOB_COW_HURT;
 }
 
-int Cow::getDeathSound() 
+int Cow::getDeathSound()
 {
 	return eSoundType_MOB_COW_HURT;
 }
@@ -71,12 +71,12 @@ void Cow::playStepSound(int xt, int yt, int zt, int t)
 	playSound(eSoundType_MOB_COW_STEP, 0.15f, 1);
 }
 
-float Cow::getSoundVolume() 
+float Cow::getSoundVolume()
 {
 	return 1.f;
 }
 
-int Cow::getDeathLoot() 
+int Cow::getDeathLoot()
 {
 	return Item::leather->id;
 }
@@ -106,23 +106,23 @@ void Cow::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 }
 */
 
-bool Cow::mobInteract(shared_ptr<Player> player) 
+bool Cow::mobInteract(shared_ptr<Player> player)
 {
 	shared_ptr<ItemInstance> item = player->inventory->getSelected();
-	if (item != nullptr && item->id == Item::bucket->id && !player->abilities.instabuild) 
+	if (item != nullptr && item->id == Item::bucket->id && !player->abilities.instabuild)
 	{
 		player->awardStat(GenericStats::cowsMilked(),GenericStats::param_cowsMilked());
 		playSound(eSoundType_ENTITY_COW_MILK, 1.0f, 1.0f);
 
-		if (item->count-- == 0) 
+		if (item->count-- == 0)
 		{
 			player->inventory->setItem(player->inventory->selected, std::make_shared<ItemInstance>(Item::milk_bucket));
-		} 
-		else if (!player->inventory->add(std::make_shared<ItemInstance>(Item::milk_bucket))) 
+		}
+		else if (!player->inventory->add(std::make_shared<ItemInstance>(Item::milk_bucket)))
 		{
 			player->drop(std::make_shared<ItemInstance>(Item::milk_bucket));
 		}
-		
+
 		return true;
 	}
 	return Animal::mobInteract(player);
@@ -139,4 +139,53 @@ shared_ptr<AgableMob> Cow::getBreedOffspring(shared_ptr<AgableMob> target)
 	{
 		return nullptr;
 	}
+}
+
+int Cow::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    if (player->isAllowedToAttackAnimals())
+    {
+        return IDS_TOOLTIPS_HIT;
+    }
+}
+
+int Cow::getInteractTooltipId(Level *level,
+                              std::shared_ptr<Player> player,
+                              std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    if (this->isLeashed() && this->getLeashHolder() == player)
+        return IDS_TOOLTIPS_UNLEASH;
+
+    switch (heldItemId)
+    {
+    case Item::name_tag_Id:
+        return IDS_TOOLTIPS_NAME;
+
+    case Item::lead_Id:
+        if (!this->isLeashed())
+            return IDS_TOOLTIPS_LEASH;
+
+    case Item::bucket_Id:
+        return IDS_TOOLTIPS_MILK;
+
+    default:
+        {
+            if (!this->isBaby() && !this->isInLove() && (this->getAge() == 0) && this->isFood(heldItem))
+            {
+                return IDS_TOOLTIPS_LOVEMODE;
+            }
+        }
+        break;
+
+    case -1:
+        break; // 4J-JEV: Empty hand.
+    }
+
+    return 0;
 }

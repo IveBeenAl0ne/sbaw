@@ -26,18 +26,18 @@ bool MushroomCow::mobInteract(shared_ptr<Player> player)
 	shared_ptr<ItemInstance> item = player->inventory->getSelected();
 	if (item != nullptr && item->id == Item::bowl_Id && getAge() >= 0)
 	{
-		if (item->count == 1) 
+		if (item->count == 1)
 		{
 			player->inventory->setItem(player->inventory->selected, std::make_shared<ItemInstance>(Item::mushroom_stew));
 			return true;
 		}
 
-		if (player->inventory->add(std::make_shared<ItemInstance>(Item::mushroom_stew)) && !player->abilities.instabuild) 
+		if (player->inventory->add(std::make_shared<ItemInstance>(Item::mushroom_stew)) && !player->abilities.instabuild)
 		{
 			player->inventory->removeItem(player->inventory->selected, 1);
 			return true;
 		}
-	}	
+	}
 	// 4J: Do not allow shearing if we can't create more cows
 	if (item != nullptr && item->id == Item::shears_Id && getAge() >= 0 && level->canCreateMore(eTYPE_COW, Level::eSpawnType_Breed))
 	{
@@ -82,4 +82,57 @@ shared_ptr<AgableMob> MushroomCow::getBreedOffspring(shared_ptr<AgableMob> targe
 	{
 		return nullptr;
 	}
+}
+
+int MushroomCow::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    if (player->isAllowedToAttackAnimals())
+    {
+        return IDS_TOOLTIPS_HIT;
+    }
+}
+
+int MushroomCow::getInteractTooltipId(Level *level,
+                                   std::shared_ptr<Player> player,
+                                   std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+        heldItemId = heldItem->getItem()->id;
+
+    if (this->isLeashed() && this->getLeashHolder() == player)
+        return IDS_TOOLTIPS_UNLEASH;
+
+    // It's an item
+    switch (heldItemId)
+    {
+        // Things to USE
+    case Item::name_tag_Id:
+        return IDS_TOOLTIPS_NAME;
+
+    case Item::lead_Id:
+        if (!this->isLeashed())
+            return IDS_TOOLTIPS_LEASH;
+
+    case Item::bowl_Id:
+    case Item::bucket_Id: // You can milk a mooshroom with either a bowl (mushroom soup) or a bucket (milk)!
+        return IDS_TOOLTIPS_MILK;
+
+    case Item::shears_Id:
+        if (!this->isBaby())
+        {
+            return IDS_TOOLTIPS_SHEAR;
+        }
+
+    default:
+        if (!this->isBaby() && !this->isInLove() && (this->getAge() == 0) && this->isFood(heldItem))
+        {
+            return IDS_TOOLTIPS_LOVEMODE;
+        }
+
+    case -1:
+        break; // 4J-JEV: Empty hand.
+    }
+
+    return 0;
 }
