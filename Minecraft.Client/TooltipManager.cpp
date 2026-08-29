@@ -217,61 +217,19 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
             int heldItemId = heldItem != nullptr ? heldItem->getItem()->id : -1;
 
             shared_ptr<Entity> entity = hitResult->entity;
-                if (entity != nullptr)
-                {
-                    *piAction = entity->getAttackTooltipId(player);
+            if (entity != nullptr)
+            {
+                *piAction = entity->getAttackTooltipId(player);
 
-                    int useTooltip = entity->getInteractTooltipId(level, player, heldItem);
-                    if (useTooltip != 0)
-                    {
-                        *piUse = useTooltip;
-                    }
+                int useTooltip = entity->getInteractTooltipId(level, player, heldItem);
+                if (useTooltip != 0)
+                {
+                    *piUse = useTooltip;
                 }
+            }
 
             switch (entityType)
             {
-            case eTYPE_CHICKEN:
-                {
-                    if (player->isAllowedToAttackAnimals())
-                    {
-                        *piAction = IDS_TOOLTIPS_HIT;
-                    }
-
-                    shared_ptr<Animal> animal = dynamic_pointer_cast<Animal>(hitResult->entity);
-
-                    if (animal->isLeashed() && animal->getLeashHolder() == player)
-                    {
-                        *piUse = IDS_TOOLTIPS_UNLEASH;
-                        break;
-                    }
-
-                    switch (heldItemId)
-                    {
-                    case Item::name_tag_Id:
-                        *piUse = IDS_TOOLTIPS_NAME;
-                        break;
-
-                    case Item::lead_Id:
-                        if (!animal->isLeashed())
-                        {
-                            *piUse = IDS_TOOLTIPS_LEASH;
-                        }
-                        break;
-
-                    default:
-                        {
-                            if (!animal->isBaby() && !animal->isInLove() && (animal->getAge() == 0) && animal->isFood(heldItem))
-                            {
-                                *piUse = IDS_TOOLTIPS_LOVEMODE;
-                            }
-                        }
-                        break;
-
-                    case -1:
-                        break; // 4J-JEV: Empty hand.
-                    }
-                }
-                break;
 
             case eTYPE_COW:
                 {

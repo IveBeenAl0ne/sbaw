@@ -19,7 +19,7 @@ public:
     int eggTime;
 	bool isChickenJockey;
 
-private:	
+private:
 	void _init();
 
 public:
@@ -30,7 +30,7 @@ protected:
 	void registerAttributes();
 
 public:
-	virtual void aiStep();	
+	virtual void aiStep();
 
 protected:
 	virtual void causeFallDamage(float distance);
@@ -40,12 +40,15 @@ protected:
 	virtual void playStepSound(int xt, int yt, int zt, int t);
     virtual int getDeathLoot();
 	// virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
-	
+
 	virtual void addAdditonalSaveData(CompoundTag *tag);
 	virtual void readAdditionalSaveData(CompoundTag *tag);
 
 public:
 	virtual shared_ptr<AgableMob> getBreedOffspring(shared_ptr<AgableMob> target);
 	virtual bool isFood(shared_ptr<ItemInstance> itemInstance);
-
+    virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 };

@@ -71,7 +71,7 @@ void Chicken::aiStep()
 	if (!onGround && flapping < 1) flapping = 1;
 	flapping *= 0.9;
 
-	if (!onGround && yd < 0) 
+	if (!onGround && yd < 0)
 	{
 		yd *= 0.6;
 	}
@@ -80,7 +80,7 @@ void Chicken::aiStep()
 
 	if (!isBaby() && !isChickenJockey)
 	{
-		if (!level->isClientSide && --eggTime <= 0) 
+		if (!level->isClientSide && --eggTime <= 0)
 		{
 			playSound( eSoundType_MOB_CHICKENPLOP, 1.0f, (random->nextFloat() - random->nextFloat()) * 0.2f + 1.0f);
 			spawnAtLocation(Item::egg->id, 1);
@@ -90,22 +90,22 @@ void Chicken::aiStep()
 
 }
 
-void Chicken::causeFallDamage(float distance) 
+void Chicken::causeFallDamage(float distance)
 {
 }
 
 
-int Chicken::getAmbientSound() 
+int Chicken::getAmbientSound()
 {
 	return eSoundType_MOB_CHICKEN_AMBIENT;
 }
 
-int Chicken::getHurtSound() 
+int Chicken::getHurtSound()
 {
 	return eSoundType_MOB_CHICKEN_HURT;
 }
 
-int Chicken::getDeathSound() 
+int Chicken::getDeathSound()
 {
 	return eSoundType_MOB_CHICKEN_HURT;
 }
@@ -115,7 +115,7 @@ void Chicken::playStepSound(int xt, int yt, int zt, int t)
 	playSound(eSoundType_MOB_CHICKEN_STEP, 0.15f, 1);
 }
 
-int Chicken::getDeathLoot() 
+int Chicken::getDeathLoot()
 {
 	return Item::feather->id;
 }
@@ -130,7 +130,7 @@ void Chicken::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 		spawnAtLocation(Item::feather_Id, 1);
 	}
 	// and some meat
-	if (this->isOnFire()) 
+	if (this->isOnFire())
 	{
 		spawnAtLocation(Item::cooked_chicken_Id, 1);
 	}
@@ -171,4 +171,54 @@ shared_ptr<AgableMob> Chicken::getBreedOffspring(shared_ptr<AgableMob> target)
 bool Chicken::isFood(shared_ptr<ItemInstance> itemInstance)
 {
 	return (itemInstance->id == Item::wheat_seeds_Id) || (itemInstance->id == Item::netherwart_seeds_Id) || (itemInstance->id == Item::melon_seeds_Id) || (itemInstance->id == Item::pumpkin_seeds_Id);
+}
+
+int Chicken::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    if (player->isAllowedToAttackAnimals())
+    {
+        return IDS_TOOLTIPS_HIT;
+    }
+}
+
+int Chicken::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    if (this->isLeashed() && this->getLeashHolder() == player)
+    {
+        return IDS_TOOLTIPS_UNLEASH;
+    }
+
+    switch (heldItemId)
+    {
+    case Item::name_tag_Id:
+        return IDS_TOOLTIPS_NAME;
+
+    case Item::lead_Id:
+        if (!this->isLeashed())
+        {
+            return IDS_TOOLTIPS_LEASH;
+        }
+
+    default:
+        {
+            if (!this->isBaby() && !this->isInLove() && (this->getAge() == 0) && this->isFood(heldItem))
+            {
+                return IDS_TOOLTIPS_LOVEMODE;
+            }
+        }
+        break;
+
+    case -1:
+        break; // 4J-JEV: Empty hand.
+    }
+
+    return 0;
 }
