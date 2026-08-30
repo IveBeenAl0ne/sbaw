@@ -230,37 +230,6 @@ void TooltipManager::getTooltips(shared_ptr<MultiplayerLocalPlayer> player,
 
             switch (entityType)
             {
-            case eTYPE_BOAT:
-                *piAction = IDS_TOOLTIPS_MINE;
-                *piUse = IDS_TOOLTIPS_SAIL;
-                break;
-
-            case eTYPE_MINECART_RIDEABLE:
-                *piAction = IDS_TOOLTIPS_MINE;
-                *piUse = IDS_TOOLTIPS_RIDE; // are we in the minecart already? - 4J-JEV: Doesn't matter anymore.
-                break;
-
-            case eTYPE_MINECART_FURNACE:
-                *piAction = IDS_TOOLTIPS_MINE;
-
-                // if you have coal, it'll go. Is there an object in hand?
-                if (heldItemId == Item::coal_Id)
-                {
-                    *piUse = IDS_TOOLTIPS_USE;
-                }
-                break;
-
-            case eTYPE_MINECART_CHEST:
-            case eTYPE_MINECART_HOPPER:
-                *piAction = IDS_TOOLTIPS_MINE;
-                *piUse = IDS_TOOLTIPS_OPEN;
-                break;
-
-            case eTYPE_MINECART_SPAWNER:
-            case eTYPE_MINECART_TNT:
-                *piUse = IDS_TOOLTIPS_MINE;
-                break;
-
             case eTYPE_SHEEP:
                 {
                     // can dye a sheep

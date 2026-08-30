@@ -42,4 +42,8 @@ public:
 	virtual void handleEntityEvent(byte eventId);
 	virtual void tick();
 	virtual BaseMobSpawner *getSpawner();
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 };

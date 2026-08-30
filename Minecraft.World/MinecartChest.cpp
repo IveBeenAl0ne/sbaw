@@ -49,3 +49,15 @@ int MinecartChest::getDefaultDisplayOffset()
 {
 	return 8;
 }
+
+int MinecartChest::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_MINE;
+}
+
+int MinecartChest::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    return IDS_TOOLTIPS_OPEN;
+}

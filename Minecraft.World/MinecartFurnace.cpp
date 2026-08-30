@@ -1,3 +1,4 @@
+#include "Minecart.h"
 #include "stdafx.h"
 #include "net.minecraft.world.damagesource.h"
 #include "net.minecraft.world.entity.h"
@@ -26,7 +27,7 @@ MinecartFurnace::MinecartFurnace(Level *level, double x, double y, double z) : M
 // 4J Added
 int MinecartFurnace::getContainerType()
 {
-    return ContainerOpenPacket::MINECART_HOPPER; 
+    return ContainerOpenPacket::MINECART_HOPPER;
 }
 
 int MinecartFurnace::getType()
@@ -106,10 +107,10 @@ void MinecartFurnace::applyNaturalSlowdown()
         sd = Mth::sqrt(sd);
         xPush /= sd;
         zPush /= sd;
-        
+
         //from 0.05 to 0.1
-        double speed = 0.1; 
-        
+        double speed = 0.1;
+
         xd *= 0.8f;
         yd *= 0;
         zd *= 0.8f;
@@ -182,4 +183,27 @@ Tile *MinecartFurnace::getDefaultDisplayTile()
 int MinecartFurnace::getDefaultDisplayData()
 {
     return 2;
+}
+
+int MinecartFurnace::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_MINE;
+}
+
+int MinecartFurnace::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    if (heldItemId == Item::coal_Id)
+    {
+        return IDS_TOOLTIPS_USE;
+    }
+
+    return 0;
 }

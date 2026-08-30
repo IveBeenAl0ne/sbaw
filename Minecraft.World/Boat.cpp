@@ -332,7 +332,7 @@ void Boat::tick()
 	{
 		if (!level->isClientSide && !removed)
 		{
-			
+
 			remove();
 			for (int i = 0; i < 3; i++)
 			{
@@ -342,8 +342,8 @@ void Boat::tick()
 			{
 				spawnAtLocation(Item::stick->id, 1, 0);
 			}
-			
-			
+
+
 
 		}
 	}
@@ -478,7 +478,7 @@ bool Boat::interact(shared_ptr<Player> player)
 
         if (isRiding)
         {
-           
+
             player->xd = 0;
             player->yd = 0;
             player->zd = 0;
@@ -532,4 +532,11 @@ void Boat::setDoLerp(bool doLerp)
 int Boat::getAttackTooltipId(std::shared_ptr<Player> player)
 {
     return IDS_TOOLTIPS_MINE;
+}
+
+int Boat::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    return IDS_TOOLTIPS_SAIL;
 }

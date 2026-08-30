@@ -163,3 +163,15 @@ bool MinecartHopper::isOnCooldown()
 {
 	return cooldownTime > 0;
 }
+
+int MinecartHopper::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_MINE;
+}
+
+int MinecartHopper::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    return IDS_TOOLTIPS_OPEN;
+}

@@ -83,4 +83,7 @@ public:
 	void setDoLerp(bool doLerp);
 
 	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 };

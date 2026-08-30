@@ -93,3 +93,15 @@ BaseMobSpawner *MinecartSpawner::getSpawner()
 {
 	return spawner;
 }
+
+int MinecartSpawner::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_MINE;
+}
+
+int MinecartSpawner::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    return 0;
+}

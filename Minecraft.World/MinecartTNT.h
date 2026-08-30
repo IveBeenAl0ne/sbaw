@@ -36,6 +36,10 @@ public:
 	virtual bool isPrimed();
 	virtual float getTileExplosionResistance(Explosion *explosion, Level *level, int x, int y, int z, Tile *tile);
 	virtual bool shouldTileExplode(Explosion *explosion, Level *level, int x, int y, int z, int id, float power);
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 
 protected:
 	virtual void readAdditionalSaveData(CompoundTag *tag);

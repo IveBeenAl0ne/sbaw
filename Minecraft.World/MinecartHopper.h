@@ -61,4 +61,8 @@ public:
 	virtual void startOpen() { MinecartContainer::startOpen(); }
 	virtual void stopOpen() { MinecartContainer::stopOpen(); }
 	virtual bool canPlaceItem(int slot, shared_ptr<ItemInstance> item) { return MinecartContainer::canPlaceItem(slot, item); }
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 };

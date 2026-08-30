@@ -178,3 +178,15 @@ void MinecartTNT::addAdditonalSaveData(CompoundTag *tag)
 	Minecart::addAdditonalSaveData(tag);
 	tag->putInt(L"TNTFuse", fuse);
 }
+
+int MinecartTNT::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_MINE;
+}
+
+int MinecartTNT::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    return 0;
+}
