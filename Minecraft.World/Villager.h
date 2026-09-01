@@ -148,4 +148,9 @@ public:
 	virtual bool canBeLeashed();
 	virtual wstring getDisplayName();
 	virtual void thunderHit(const LightningBolt *lightningBolt);
+
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 };

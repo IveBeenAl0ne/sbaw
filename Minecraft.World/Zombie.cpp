@@ -253,7 +253,7 @@ int Zombie::getHurtSound()
 int Zombie::getDeathSound()
 {
 	return eSoundType_MOB_ZOMBIE_DEATH;
-}    
+}
 
 int Zombie::getDeathLoot()
 {
@@ -366,9 +366,9 @@ MobGroupData *Zombie::finalizeMobSpawn(MobGroupData *groupData, int extraData /*
 		if (zombieData->isBaby)
 		{
 			setBaby(true);
-			
+
 			bool checkExisting = false;
-			if (level->random->nextFloat() < 0.05f) 
+			if (level->random->nextFloat() < 0.05f)
 			{
 				vector<shared_ptr<Entity>> *entities = level->getEntitiesOfClass(typeid(Chicken), bb->grow(5.0f, 3.0f, 5.0f));
 				for (auto it = entities->begin(); it != entities->end(); ++it)
@@ -384,7 +384,7 @@ MobGroupData *Zombie::finalizeMobSpawn(MobGroupData *groupData, int extraData /*
 				}
 			}
 
-			if (!checkExisting && level->random->nextFloat() < 0.05f) 
+			if (!checkExisting && level->random->nextFloat() < 0.05f)
 			{
 				shared_ptr<Chicken> chicken = std::make_shared<Chicken>(level);
 				chicken->moveTo(x, y, z, yRot, 0);
@@ -531,4 +531,27 @@ Zombie::ZombieGroupData::ZombieGroupData(bool baby, bool villager)
 {
 	isBaby = baby;
 	isVillager = villager;
+}
+
+int Zombie::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_HIT;
+}
+
+int Zombie::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    static GoldenAppleItem *goldapple = static_cast<GoldenAppleItem *>(Item::golden_apple);
+
+    if (this->isVillager() && this->isWeakened() && (heldItemId == Item::golden_apple_Id) && !goldapple->isFoil(heldItem))
+        return IDS_TOOLTIPS_CURE;
+
+    return 0;
 }

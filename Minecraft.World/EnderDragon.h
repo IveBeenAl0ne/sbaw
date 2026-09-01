@@ -188,7 +188,8 @@ public:
 	virtual float getMaxHealth() { return LivingEntity::getMaxHealth(); };
     virtual int getDimension() { return Entity::dimension; }
 
-	virtual int getInteractTooltipId(Level* level,
-                               std::shared_ptr<Player> player,
-                               std::shared_ptr<ItemInstance> heldItem);
+    virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 };

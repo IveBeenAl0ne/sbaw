@@ -83,6 +83,10 @@ public:
 	virtual void setIsInterested(bool isInterested);
 	virtual bool canMate(shared_ptr<Animal> animal);
 	bool isInterested();
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 
 protected:
 	virtual bool removeWhenFarAway();

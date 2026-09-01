@@ -96,7 +96,7 @@ void Sheep::registerAttributes()
 	getAttribute(SharedMonsterAttributes::MOVEMENT_SPEED)->setBaseValue(0.23f);
 }
 
-void Sheep::defineSynchedData() 
+void Sheep::defineSynchedData()
 {
 	Animal::defineSynchedData();
 
@@ -239,31 +239,31 @@ bool Sheep::mobInteract(shared_ptr<Player> player)
 	return Animal::mobInteract(player);
 }
 
-void Sheep::addAdditonalSaveData(CompoundTag *tag) 
+void Sheep::addAdditonalSaveData(CompoundTag *tag)
 {
 	Animal::addAdditonalSaveData(tag);
 	tag->putBoolean(L"Sheared", isSheared());
 	tag->putByte(L"Color", static_cast<byte>(getColor()));
 }
 
-void Sheep::readAdditionalSaveData(CompoundTag *tag) 
+void Sheep::readAdditionalSaveData(CompoundTag *tag)
 {
 	Animal::readAdditionalSaveData(tag);
 	setSheared(tag->getBoolean(L"Sheared"));
 	setColor((int) tag->getByte(L"Color"));
 }
 
-int Sheep::getAmbientSound() 
+int Sheep::getAmbientSound()
 {
 	return eSoundType_MOB_SHEEP_AMBIENT;
 }
 
-int Sheep::getHurtSound() 
+int Sheep::getHurtSound()
 {
 	return eSoundType_MOB_SHEEP_AMBIENT;
 }
 
-int Sheep::getDeathSound() 
+int Sheep::getDeathSound()
 {
 	return eSoundType_MOB_SHEEP_AMBIENT;
 }
@@ -273,51 +273,51 @@ void Sheep::playStepSound(int xt, int yt, int zt, int t)
 	playSound(eSoundType_MOB_SHEEP_STEP, 0.15f, 1);
 }
 
-int Sheep::getColor() 
+int Sheep::getColor()
 {
 	return (entityData->getByte(DATA_WOOL_ID) & 0x0f);
 }
 
-void Sheep::setColor(int color) 
+void Sheep::setColor(int color)
 {
 	byte current = entityData->getByte(DATA_WOOL_ID);
 	entityData->set(DATA_WOOL_ID, static_cast<byte>((current & 0xf0) | (color & 0x0f)));
 }
 
-bool Sheep::isSheared() 
+bool Sheep::isSheared()
 {
 	return (entityData->getByte(DATA_WOOL_ID) & 0x10) != 0;
 }
 
-void Sheep::setSheared(bool value) 
+void Sheep::setSheared(bool value)
 {
 	byte current = entityData->getByte(DATA_WOOL_ID);
-	if (value) 
+	if (value)
 	{
 		entityData->set(DATA_WOOL_ID, static_cast<byte>(current | 0x10));
-	} 
-	else 
+	}
+	else
 	{
 		entityData->set(DATA_WOOL_ID, static_cast<byte>(current & ~0x10));
 	}
 }
 
-int Sheep::getSheepColor(Random *random) 
+int Sheep::getSheepColor(Random *random)
 {
 	int nextInt = random->nextInt(100);
-	if (nextInt < 5) 
+	if (nextInt < 5)
 	{
 		return 15 - DyePowderItem::BLACK;
 	}
-	if (nextInt < 10) 
+	if (nextInt < 10)
 	{
 		return 15 - DyePowderItem::GRAY;
 	}
-	if (nextInt < 15) 
+	if (nextInt < 15)
 	{
 		return 15 - DyePowderItem::SILVER;
 	}
-	if (nextInt < 18) 
+	if (nextInt < 18)
 	{
 		return 15 - DyePowderItem::BROWN;
 	}
@@ -385,4 +385,79 @@ int Sheep::getOffspringColor(shared_ptr<Animal> animal, shared_ptr<Animal> partn
 int Sheep::getDyeColor(shared_ptr<Animal> animal)
 {
 	return 15 - dynamic_pointer_cast<Sheep>(animal)->getColor();
+}
+
+int Sheep::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    if (player->isAllowedToAttackAnimals())
+    {
+        return IDS_TOOLTIPS_HIT;
+    }
+
+    return 0;
+}
+
+int Sheep::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    if (this->isLeashed() && this->getLeashHolder() == player)
+    {
+        return IDS_TOOLTIPS_UNLEASH;
+    }
+
+    switch (heldItemId)
+    {
+    case Item::name_tag_Id:
+        return IDS_TOOLTIPS_NAME;
+
+    case Item::lead_Id:
+        if (!this->isLeashed())
+        {
+            return IDS_TOOLTIPS_LEASH;
+        }
+        break;
+
+    case Item::dye_Id:
+        {
+            // convert to tile-based color value (0 is white instead of black)
+            int newColor = ColoredTile::getTileDataForItemAuxValue(heldItem->getAuxValue());
+
+            // can only use a dye on sheep that haven't been sheared
+            if (!(this->isSheared() && this->getColor() != newColor))
+            {
+                return IDS_TOOLTIPS_DYE;
+            }
+        }
+        break;
+    case Item::shears_Id:
+        {
+            // can only shear a sheep that hasn't been sheared
+            if (!this->isBaby() && !this->isSheared())
+            {
+                return IDS_TOOLTIPS_SHEAR;
+            }
+        }
+
+        break;
+    default:
+        {
+            if (!this->isBaby() && !this->isInLove() && (this->getAge() == 0) && this->isFood(heldItem))
+            {
+                return IDS_TOOLTIPS_LOVEMODE;
+            }
+        }
+        break;
+
+    case -1:
+        break; // 4J-JEV: Empty hand.
+    }
+
+    return 0;
 }

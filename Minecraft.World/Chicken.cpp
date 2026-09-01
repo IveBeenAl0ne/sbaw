@@ -179,6 +179,8 @@ int Chicken::getAttackTooltipId(std::shared_ptr<Player> player)
     {
         return IDS_TOOLTIPS_HIT;
     }
+
+    return 0;
 }
 
 int Chicken::getInteractTooltipId(Level *level,

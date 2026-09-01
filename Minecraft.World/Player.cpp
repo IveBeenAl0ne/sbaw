@@ -1202,7 +1202,7 @@ void Player::awardKillScore(shared_ptr<Entity> victim, int awardPoints)
 			if ( objective )
 			{
 				Score *score = getScoreboard()->getPlayerScore(getAName(), objective);
-				if ( score ) 
+				if ( score )
 					score->increment();
 			}
 		}
@@ -1450,7 +1450,7 @@ void Player::setDefaultHeadHeight()
 bool Player::hurt(DamageSource *source, float dmg)
 {
 	if (isInvulnerable()) return false;
-	
+
 	if ( hasInvulnerablePrivilege() || (abilities.invulnerable && !source->isBypassInvul()) )	return false;
 
 
@@ -3024,39 +3024,39 @@ unsigned int Player::getPlayerGamePrivilege(unsigned int uiGamePrivileges, EPlay
 
 _SkinAdjustments Player::getSkinAdjustmentsById(unsigned int skinId)
 {
-    
+
     _SkinAdjustments adj = _SkinAdjustments();
 
-    
+
     if ((int)skinId < 0)
     {
-       
+
         app.GetSkinAdjustments(&adj, skinId);
 
-        
+
         unsigned int rawId = skinId & 0x7FFFFFFF;
 
-        
-        if (rawId == 2 || rawId == 3 || rawId == 0xC8 || rawId == 0xC9 || 
-            rawId == 0x194 || rawId == 0x195 || rawId == 0x1F8 || rawId == 0x220 || 
+
+        if (rawId == 2 || rawId == 3 || rawId == 0xC8 || rawId == 0xC9 ||
+            rawId == 0x194 || rawId == 0x195 || rawId == 0x1F8 || rawId == 0x220 ||
             rawId == 0x23A || rawId == 0x23D || rawId == 0x247)
         {
-            
-            adj.data[17] = 2; 
+
+            adj.data[17] = 2;
         }
         else if (rawId == 0x1F4)
         {
-           
+
             adj.data[17] = 5;
         }
         else if (rawId == 0x1FA)
         {
-           
+
             adj.data[17] = 6;
         }
     }
 
-    
+
     return adj;
 }
 
@@ -3534,4 +3534,24 @@ void Player::SetPlayerNameValidState(bool bState)
 bool Player::isSpectator()
 {
     return false;
+}
+
+int Player::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    if (!this->hasInvisiblePrivilege()) // This means they are invisible, not just that they have the privilege
+    {
+        if (app.GetGameHostOption(eGameHostOption_PvP) && player->isAllowedToAttackPlayers())
+        {
+            return IDS_TOOLTIPS_HIT;
+        }
+    }
+
+    return 0;
+}
+
+int Player::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    return 0;
 }

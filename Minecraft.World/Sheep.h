@@ -81,6 +81,10 @@ public:
 	virtual void ate();
 
 	MobGroupData *finalizeMobSpawn(MobGroupData *groupData, int extraData = 0); // 4J Added extraData param
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 
 private:
 	int getOffspringColor(shared_ptr<Animal> animal, shared_ptr<Animal> partner);

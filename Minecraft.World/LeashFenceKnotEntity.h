@@ -34,7 +34,8 @@ public:
 	virtual bool survives();
 	static shared_ptr<LeashFenceKnotEntity> createAndAddKnot(Level *level, int x, int y, int z);
 	static shared_ptr<LeashFenceKnotEntity> findKnotAt(Level *level, int x, int y, int z);
-	virtual int getInteractTooltipId(Level* level,
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
                                      std::shared_ptr<Player> player,
                                      std::shared_ptr<ItemInstance> heldItem);
 };

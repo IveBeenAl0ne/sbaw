@@ -1849,3 +1849,110 @@ shared_ptr<Player> EntityHorse::getOwner()
 {
 	return level->getPlayerByUUID(getOwnerName());
 }
+
+int EntityHorse::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    if (player->isAllowedToAttackAnimals())
+    {
+        return IDS_TOOLTIPS_HIT;
+    }
+
+    return 0;
+}
+
+int EntityHorse::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    bool heldItemIsFood = false, heldItemIsLove = false, heldItemIsArmour = false;
+
+    switch (heldItemId)
+    {
+    case Item::wheat_Id:
+    case Item::sugar_Id:
+    case Item::bread_Id:
+    case Tile::hay_block_Id:
+    case Item::apple_Id:
+        heldItemIsFood = true;
+        break;
+    case Item::golden_carrot_Id:
+    case Item::golden_apple_Id:
+        heldItemIsLove = true;
+        heldItemIsFood = true;
+        break;
+    case Item::diamond_horse_armor_Id:
+    case Item::golden_horse_armor_Id:
+    case Item::iron_horse_armor_Id:
+        heldItemIsArmour = true;
+        break;
+    }
+
+    if (this->isLeashed() && this->getLeashHolder() == player)
+    {
+        return IDS_TOOLTIPS_UNLEASH;
+    }
+    else if (heldItemId == Item::lead_Id)
+    {
+        if (!this->isLeashed())
+        {
+            return IDS_TOOLTIPS_LEASH;
+        }
+    }
+    else if (heldItemId == Item::name_tag_Id)
+    {
+        return IDS_TOOLTIPS_NAME;
+    }
+    else if (this->isBaby()) // 4J-JEV: Can't ride baby horses due to morals.
+    {
+        if (heldItemIsFood)
+        {
+            // 4j - Can feed foles to speed growth.
+            return IDS_TOOLTIPS_FEED;
+        }
+    }
+    else if (!this->isTamed())
+    {
+        if (heldItemId == -1)
+        {
+            // 4j - Player not holding anything, ride and attempt to break untamed horse.
+            return IDS_TOOLTIPS_TAME;
+        }
+        else if (heldItemIsFood)
+        {
+            // 4j - Attempt to make it like you more by feeding it.
+            return IDS_TOOLTIPS_FEED;
+        }
+    }
+    else if (player->isSneaking() || (heldItemId == Item::saddle_Id) || (this->canWearArmor() && heldItemIsArmour))
+    {
+        return IDS_TOOLTIPS_OPEN;
+    }
+    else if (this->canWearBags() && !this->isChestedHorse() && (heldItemId == Tile::chest_Id))
+    {
+        // 4j - Attach saddle-bags (chest) to donkey or mule.
+        return IDS_TOOLTIPS_ATTACH;
+    }
+    else if (this->isReadyForParenting() && heldItemIsLove)
+    {
+        // 4j - Different food to mate horses.
+        return IDS_TOOLTIPS_LOVEMODE;
+    }
+    else if (heldItemIsFood && (this->getHealth() < this->getMaxHealth()))
+    {
+        // 4j - horse is damaged and can eat held item to heal
+        return IDS_TOOLTIPS_HEAL;
+    }
+    else
+    {
+        // 4j - Ride tamed horse.
+        return IDS_TOOLTIPS_MOUNT;
+    }
+
+    return 0;
+}

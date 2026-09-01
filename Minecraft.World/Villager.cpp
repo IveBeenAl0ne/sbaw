@@ -788,7 +788,22 @@ void Villager::thunderHit(const LightningBolt *lightningBolt)
 
 	if (this->isPersistenceRequired())
 		witch->setPersistenceRequired();
-	
+
 	level->addEntity(witch);
 	remove();
+}
+
+int Villager::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_HIT;
+}
+
+int Villager::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    if (!this->isBaby())
+        return IDS_TOOLTIPS_TRADE;
+
+    return 0;
 }

@@ -1966,8 +1966,15 @@ Vec3 *EnderDragon::getHeadLookVector(float a)
 	return result;
 }
 
-int EnderDragon::getInteractTooltipId(Level* level, std::shared_ptr<Player> player, std::shared_ptr<ItemInstance> heldItem)
+int EnderDragon::getAttackTooltipId(std::shared_ptr<Player> player)
 {
-    // Not4J Anaël: Ender dragon doesn't have such interactions (leash, name...) so return nothing
+    return IDS_TOOLTIPS_HIT;
+}
+
+int EnderDragon::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    // Anaël: The enderdragon doesn't have any actions besides hitting (which is handled in getAttackTooltipId), so return nothing
     return 0;
 }

@@ -92,4 +92,9 @@ private:
 	void setSittingOnTile(bool val);
 public:
 	bool isSittingOnTile();
+
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 };

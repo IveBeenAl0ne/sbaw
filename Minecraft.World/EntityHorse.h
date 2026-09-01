@@ -324,7 +324,7 @@ private:
 	virtual float generateRandomMaxHealth();
 	virtual double generateRandomJumpStrength();
 	virtual double generateRandomSpeed();
-	
+
 	shared_ptr<Player> getOwner();
 
 public:
@@ -340,4 +340,9 @@ public:
 
 	static bool isHorseArmor(int itemId);
 	virtual bool onLadder();
+
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 };

@@ -74,35 +74,35 @@ bool Pig::canBeControlledByRider()
 	return item != nullptr && item->id == Item::carrot_on_a_stick_Id;
 }
 
-void Pig::defineSynchedData() 
+void Pig::defineSynchedData()
 {
 	Animal::defineSynchedData();
 	entityData->define(DATA_SADDLE_ID, static_cast<byte>(0));
 }
 
-void Pig::addAdditonalSaveData(CompoundTag *tag) 
+void Pig::addAdditonalSaveData(CompoundTag *tag)
 {
 	Animal::addAdditonalSaveData(tag);
 	tag->putBoolean(L"Saddle", hasSaddle());
 }
 
-void Pig::readAdditionalSaveData(CompoundTag *tag) 
+void Pig::readAdditionalSaveData(CompoundTag *tag)
 {
 	Animal::readAdditionalSaveData(tag);
 	setSaddle(tag->getBoolean(L"Saddle"));
 }
 
-int Pig::getAmbientSound() 
+int Pig::getAmbientSound()
 {
 	return eSoundType_MOB_PIG_AMBIENT;
 }
 
-int Pig::getHurtSound() 
+int Pig::getHurtSound()
 {
 	return eSoundType_MOB_PIG_AMBIENT;
 }
 
-int Pig::getDeathSound() 
+int Pig::getDeathSound()
 {
 	return eSoundType_MOB_PIG_DEATH;
 }
@@ -116,7 +116,7 @@ bool Pig::mobInteract(shared_ptr<Player> player)
 {
 	if(!Animal::mobInteract(player))
 	{
-		if (hasSaddle() && !level->isClientSide && (rider.lock() == nullptr || rider.lock() == player)) 
+		if (hasSaddle() && !level->isClientSide && (rider.lock() == nullptr || rider.lock() == player))
 		{
 			// 4J HEG - Fixed issue with player not being able to dismount pig (issue #4479)
 			player->ride( rider.lock() == player ? nullptr : shared_from_this() );
@@ -127,7 +127,7 @@ bool Pig::mobInteract(shared_ptr<Player> player)
 	return true;
 }
 
-int Pig::getDeathLoot() 
+int Pig::getDeathLoot()
 {
 	if (this->isOnFire() ) return Item::cooked_porkchop->id;
 	return Item::porkchop_Id;
@@ -153,18 +153,18 @@ void Pig::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 }
 */
 
-bool Pig::hasSaddle() 
+bool Pig::hasSaddle()
 {
 	return (entityData->getByte(DATA_SADDLE_ID) & 1) != 0;
 }
 
-void Pig::setSaddle(bool value) 
+void Pig::setSaddle(bool value)
 {
-	if (value) 
+	if (value)
 	{
 		entityData->set(DATA_SADDLE_ID, static_cast<byte>(1));
-	} 
-	else 
+	}
+	else
 	{
 		entityData->set(DATA_SADDLE_ID, static_cast<byte>(0));
 	}
@@ -179,7 +179,7 @@ void Pig::thunderHit(const LightningBolt *lightningBolt)
 	remove();
 }
 
-void Pig::causeFallDamage(float distance) 
+void Pig::causeFallDamage(float distance)
 {
 	Animal::causeFallDamage(distance);
 	if ( (distance > 5) && rider.lock() != nullptr && rider.lock()->instanceof(eTYPE_PLAYER) )
@@ -212,4 +212,67 @@ bool Pig::isFood(shared_ptr<ItemInstance> itemInstance)
 ControlledByPlayerGoal *Pig::getControlGoal()
 {
 	return controlGoal;
+}
+
+int Pig::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    if (player->isAllowedToAttackAnimals())
+    {
+        return IDS_TOOLTIPS_HIT;
+    }
+
+    return 0;
+}
+
+int Pig::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    if (this->isLeashed() && this->getLeashHolder() == player)
+    {
+        return IDS_TOOLTIPS_UNLEASH;
+    }
+    else if (heldItemId == Item::lead_Id)
+    {
+        if (!this->isLeashed())
+        {
+            return IDS_TOOLTIPS_LEASH;
+        }
+    }
+    else if (heldItemId == Item::name_tag_Id)
+    {
+        return IDS_TOOLTIPS_NAME;
+    }
+    else if (this->hasSaddle()) // does the pig have a saddle?
+    {
+        return IDS_TOOLTIPS_MOUNT;
+    }
+    else if (!this->isBaby())
+    {
+        if (player->inventory->IsHeldItem())
+        {
+            switch (heldItemId)
+            {
+            case Item::saddle_Id:
+                return IDS_TOOLTIPS_SADDLE;
+
+            default:
+                {
+                    if (!this->isInLove() && (this->getAge() == 0) && this->isFood(heldItem))
+                    {
+                        return IDS_TOOLTIPS_LOVEMODE;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    return 0;
 }

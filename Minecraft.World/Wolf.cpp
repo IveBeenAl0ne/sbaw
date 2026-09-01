@@ -96,7 +96,7 @@ void Wolf::serverAiMobStep()
 	entityData->set(DATA_HEALTH_ID, getHealth());
 }
 
-void Wolf::defineSynchedData() 
+void Wolf::defineSynchedData()
 {
 	TamableAnimal::defineSynchedData();
 	entityData->define(DATA_HEALTH_ID, getHealth());
@@ -109,7 +109,7 @@ void Wolf::playStepSound(int xt, int yt, int zt, int t)
 	playSound(eSoundType_MOB_WOLF_STEP, 0.15f, 1);
 }
 
-void Wolf::addAdditonalSaveData(CompoundTag *tag) 
+void Wolf::addAdditonalSaveData(CompoundTag *tag)
 {
 	TamableAnimal::addAdditonalSaveData(tag);
 
@@ -117,7 +117,7 @@ void Wolf::addAdditonalSaveData(CompoundTag *tag)
 	tag->putByte(L"CollarColor", static_cast<byte>(getCollarColor()));
 }
 
-void Wolf::readAdditionalSaveData(CompoundTag *tag) 
+void Wolf::readAdditionalSaveData(CompoundTag *tag)
 {
 	TamableAnimal::readAdditionalSaveData(tag);
 
@@ -125,15 +125,15 @@ void Wolf::readAdditionalSaveData(CompoundTag *tag)
 	if (tag->contains(L"CollarColor")) setCollarColor(tag->getByte(L"CollarColor"));
 }
 
-int Wolf::getAmbientSound() 
+int Wolf::getAmbientSound()
 {
-	if (isAngry()) 
+	if (isAngry())
 	{
 		return eSoundType_MOB_WOLF_GROWL;
 	}
-	if (random->nextInt(3) == 0) 
+	if (random->nextInt(3) == 0)
 	{
-		if (isTame() && entityData->getFloat(DATA_HEALTH_ID) < 10) 
+		if (isTame() && entityData->getFloat(DATA_HEALTH_ID) < 10)
 		{
 			return eSoundType_MOB_WOLF_WHINE;
 		}
@@ -142,31 +142,31 @@ int Wolf::getAmbientSound()
 	return eSoundType_MOB_WOLF_BARK;
 }
 
-int Wolf::getHurtSound() 
+int Wolf::getHurtSound()
 {
 	return eSoundType_MOB_WOLF_HURT;
 }
 
-int Wolf::getDeathSound() 
+int Wolf::getDeathSound()
 {
 	return eSoundType_MOB_WOLF_DEATH;
 }
 
-float Wolf::getSoundVolume() 
+float Wolf::getSoundVolume()
 {
 	return 0.4f;
 }
 
-int Wolf::getDeathLoot() 
+int Wolf::getDeathLoot()
 {
 	return -1;
 }
 
-void Wolf::aiStep() 
+void Wolf::aiStep()
 {
 	TamableAnimal::aiStep();
 
-	if (!level->isClientSide && m_isWet && !isShaking && !isPathFinding() && onGround) 
+	if (!level->isClientSide && m_isWet && !isShaking && !isPathFinding() && onGround)
 	{
 		isShaking = true;
 		shakeAnim = 0;
@@ -176,37 +176,37 @@ void Wolf::aiStep()
 	}
 }
 
-void Wolf::tick() 
+void Wolf::tick()
 {
 	TamableAnimal::tick();
 
 	interestedAngleO = interestedAngle;
-	if (isInterested()) 
+	if (isInterested())
 	{
 		interestedAngle = interestedAngle + (1 - interestedAngle) * 0.4f;
-	} 
-	else 
+	}
+	else
 	{
 		interestedAngle = interestedAngle + (0 - interestedAngle) * 0.4f;
 	}
-	if (isInterested()) 
+	if (isInterested())
 	{
 		lookTime = 10;
 	}
 
-	if (isInWaterOrRain()) 
+	if (isInWaterOrRain())
 	{
 		m_isWet = true;
 		isShaking = false;
 		shakeAnim = 0;
 		shakeAnimO = 0;
-	} 
-	else if (m_isWet || isShaking) 
+	}
+	else if (m_isWet || isShaking)
 	{
-		if (isShaking) 
+		if (isShaking)
 		{
 
-			if (shakeAnim == 0) 
+			if (shakeAnim == 0)
 			{
 				playSound(eSoundType_MOB_WOLF_SHAKE, getSoundVolume(), (random->nextFloat() - random->nextFloat()) * 0.2f + 1.0f);
 			}
@@ -214,7 +214,7 @@ void Wolf::tick()
 			shakeAnimO = shakeAnim;
 			shakeAnim += 0.05f;
 
-			if (shakeAnimO >= 2) 
+			if (shakeAnimO >= 2)
 			{
 				m_isWet = false;
 				isShaking = false;
@@ -222,11 +222,11 @@ void Wolf::tick()
 				shakeAnim = 0;
 			}
 
-			if (shakeAnim > 0.4f) 
+			if (shakeAnim > 0.4f)
 			{
 				float yt = static_cast<float>(bb->y0);
 				int shakeCount = static_cast<int>(Mth::sin((shakeAnim - 0.4f) * PI) * 7.0f);
-				for (int i = 0; i < shakeCount; i++) 
+				for (int i = 0; i < shakeCount; i++)
 				{
 					float xo = (random->nextFloat() * 2 - 1) * bbWidth * 0.5f;
 					float zo = (random->nextFloat() * 2 - 1) * bbWidth * 0.5f;
@@ -237,54 +237,54 @@ void Wolf::tick()
 	}
 }
 
-bool Wolf::isWet() 
+bool Wolf::isWet()
 {
 	return m_isWet;
 }
 
-float Wolf::getWetShade(float a) 
+float Wolf::getWetShade(float a)
 {
 	return 0.75f + ((shakeAnimO + (shakeAnim - shakeAnimO) * a) / 2.0f) * 0.25f;
 }
 
-float Wolf::getBodyRollAngle(float a, float offset) 
+float Wolf::getBodyRollAngle(float a, float offset)
 {
 	float progress = ((shakeAnimO + (shakeAnim - shakeAnimO) * a) + offset) / 1.8f;
-	if (progress < 0) 
+	if (progress < 0)
 	{
 		progress = 0;
-	} 
-	else if (progress > 1) 
+	}
+	else if (progress > 1)
 	{
 		progress = 1;
 	}
 	return Mth::sin(progress * PI) * Mth::sin(progress * PI * 11.0f) * 0.15f * PI;
 }
 
-float Wolf::getHeadRollAngle(float a) 
+float Wolf::getHeadRollAngle(float a)
 {
 	return (interestedAngleO + (interestedAngle - interestedAngleO) * a) * 0.15f * PI;
 }
 
-float Wolf::getHeadHeight() 
+float Wolf::getHeadHeight()
 {
 	return bbHeight * 0.8f;
 }
 
-int Wolf::getMaxHeadXRot() 
+int Wolf::getMaxHeadXRot()
 {
-	if (isSitting()) 
+	if (isSitting())
 	{
 		return 20;
 	}
 	return TamableAnimal::getMaxHeadXRot();
 }
 
-bool Wolf::hurt(DamageSource *source, float dmg) 
+bool Wolf::hurt(DamageSource *source, float dmg)
 {
 	// 4J: Protect owned wolves from untrusted players
 	if (isTame())
-	{		
+	{
 		shared_ptr<Entity> entity = source->getDirectEntity();
 		if (entity != nullptr && entity->instanceof(eTYPE_PLAYER))
 		{
@@ -296,7 +296,7 @@ bool Wolf::hurt(DamageSource *source, float dmg)
 	if (isInvulnerable()) return false;
 	shared_ptr<Entity> sourceEntity = source->getEntity();
 	sitGoal->wantToSit(false);
-	if (sourceEntity != nullptr && !(sourceEntity->instanceof(eTYPE_PLAYER) || sourceEntity->instanceof(eTYPE_ARROW))) 
+	if (sourceEntity != nullptr && !(sourceEntity->instanceof(eTYPE_PLAYER) || sourceEntity->instanceof(eTYPE_ARROW)))
 	{
 		// Take half damage from non-players and arrows
 		dmg = (dmg + 1) / 2;
@@ -324,7 +324,7 @@ void Wolf::setTame(bool value)
 	}
 }
 
-void Wolf::tame(const wstring &wsOwnerUUID, bool bDisplayTamingParticles, bool bSetSitting) 
+void Wolf::tame(const wstring &wsOwnerUUID, bool bDisplayTamingParticles, bool bSetSitting)
 {
 	setTame(true);
 	setPath(nullptr);
@@ -338,11 +338,11 @@ void Wolf::tame(const wstring &wsOwnerUUID, bool bDisplayTamingParticles, bool b
 	spawnTamingParticles(bDisplayTamingParticles);
 }
 
-bool Wolf::mobInteract(shared_ptr<Player> player) 
+bool Wolf::mobInteract(shared_ptr<Player> player)
 {
 	shared_ptr<ItemInstance> item = player->inventory->getSelected();
 
-	if (isTame()) 
+	if (isTame())
 	{
 		if (item != nullptr)
 		{
@@ -357,13 +357,13 @@ bool Wolf::mobInteract(shared_ptr<Player> player)
 					if (player->abilities.instabuild==false)
 					{
 						item->count--;
-						if (item->count <= 0) 
+						if (item->count <= 0)
 						{
 							player->inventory->setItem(player->inventory->selected, nullptr);
 						}
 					}
 					return true;
-				}			
+				}
 			}
 			else if (item->id == Item::dye_Id)
 			{
@@ -395,7 +395,7 @@ bool Wolf::mobInteract(shared_ptr<Player> player)
 	}
 	else
 	{
-		if (item != nullptr && item->id == Item::bone->id && !isAngry()) 
+		if (item != nullptr && item->id == Item::bone->id && !isAngry())
 		{
 			// 4J-PB - don't lose the bone in creative mode
 			if (player->abilities.instabuild==false)
@@ -407,9 +407,9 @@ bool Wolf::mobInteract(shared_ptr<Player> player)
 				}
 			}
 
-			if (!level->isClientSide) 
+			if (!level->isClientSide)
 			{
-				if (random->nextInt(3) == 0) 
+				if (random->nextInt(3) == 0)
 				{
 					// 4J : WESTY: Added for new acheivements.
 					player->awardStat(GenericStats::tamedEntity(eTYPE_WOLF),GenericStats::param_tamedEntity(eTYPE_WOLF));
@@ -418,8 +418,8 @@ bool Wolf::mobInteract(shared_ptr<Player> player)
 					tame(player->getUUID(),true,true);
 
 					level->broadcastEntityEvent(shared_from_this(), EntityEvent::TAMING_SUCCEEDED);
-				} 
-				else 
+				}
+				else
 				{
 					spawnTamingParticles(false);
 					level->broadcastEntityEvent(shared_from_this(), EntityEvent::TAMING_FAILED);
@@ -438,15 +438,15 @@ bool Wolf::mobInteract(shared_ptr<Player> player)
 	return TamableAnimal::mobInteract(player);
 }
 
-void Wolf::handleEntityEvent(byte id) 
+void Wolf::handleEntityEvent(byte id)
 {
 	if (id == EntityEvent::SHAKE_WETNESS)
 	{
 		isShaking = true;
 		shakeAnim = 0;
 		shakeAnimO = 0;
-	} 
-	else 
+	}
+	else
 	{
 		TamableAnimal::handleEntityEvent(id);
 	}
@@ -454,11 +454,11 @@ void Wolf::handleEntityEvent(byte id)
 
 float Wolf::getTailAngle()
 {
-	if (isAngry()) 
+	if (isAngry())
 	{
 		return 0.49f * PI;
-	} 
-	else if (isTame()) 
+	}
+	else if (isTame())
 	{
 		return (0.55f - (MAX_HEALTH - entityData->getFloat(DATA_HEALTH_ID)) * 0.02f) * PI;
 	}
@@ -478,18 +478,18 @@ int Wolf::getMaxSpawnClusterSize()
 	return 4;
 }
 
-bool Wolf::isAngry() 
+bool Wolf::isAngry()
 {
 	return (entityData->getByte(DATA_FLAGS_ID) & 0x02) != 0;
 }
 
-void Wolf::setAngry(bool value) 
+void Wolf::setAngry(bool value)
 {
 	byte current = entityData->getByte(DATA_FLAGS_ID);
-	if (value) 
+	if (value)
 	{
 		entityData->set(DATA_FLAGS_ID, static_cast<byte>(current | 0x02));
-	} 
+	}
 	else
 	{
 		entityData->set(DATA_FLAGS_ID, static_cast<byte>(current & ~0x02));
@@ -507,10 +507,10 @@ void Wolf::setCollarColor(int color)
 }
 
 // 4J-PB added for tooltips
-int Wolf::GetSynchedHealth()	
+int Wolf::GetSynchedHealth()
 {
 	return getEntityData()->getFloat(DATA_HEALTH_ID);
-}	
+}
 
 shared_ptr<AgableMob> Wolf::getBreedOffspring(shared_ptr<AgableMob> target)
 {
@@ -596,4 +596,117 @@ bool Wolf::wantsToAttack(shared_ptr<LivingEntity> target, shared_ptr<LivingEntit
 		return false;
 	}
 	return true;
+}
+
+int Wolf::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    if (player->isAllowedToAttackAnimals())
+    {
+        return IDS_TOOLTIPS_HIT;
+    }
+
+    return 0;
+}
+
+int Wolf::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    if (this->isLeashed() && this->getLeashHolder() == player)
+    {
+        return IDS_TOOLTIPS_UNLEASH;
+    }
+
+    switch (heldItemId)
+    {
+    case Item::name_tag_Id:
+        return IDS_TOOLTIPS_NAME;
+
+    case Item::lead_Id:
+        if (!this->isLeashed())
+        {
+            return IDS_TOOLTIPS_LEASH;
+        }
+        break;
+
+    case Item::bone_Id:
+        if (!this->isAngry() && !this->isTame())
+        {
+            return IDS_TOOLTIPS_TAME;
+        }
+        else if (equalsIgnoreCase(player->getUUID(), this->getOwnerUUID()))
+        {
+            if (this->isSitting())
+            {
+                return IDS_TOOLTIPS_FOLLOWME;
+            }
+            else
+            {
+                return IDS_TOOLTIPS_SIT;
+            }
+        }
+
+        break;
+    case Item::ender_pearl_Id:
+        // Use is throw, so don't change the tips for the this
+        break;
+    case Item::dye_Id:
+        if (this->isTame())
+        {
+            if (ColoredTile::getTileDataForItemAuxValue(heldItem->getAuxValue()) != this->getCollarColor())
+            {
+                return IDS_TOOLTIPS_DYECOLLAR;
+            }
+            else if (this->isSitting())
+            {
+                return IDS_TOOLTIPS_FOLLOWME;
+            }
+            else
+            {
+                return IDS_TOOLTIPS_SIT;
+            }
+        }
+        break;
+    default:
+        if (this->isTame())
+        {
+            if (this->isFood(heldItem))
+            {
+                if (this->GetSynchedHealth() < this->getMaxHealth())
+                {
+                    return IDS_TOOLTIPS_HEAL;
+                }
+                else
+                {
+                    if (!this->isBaby() && !this->isInLove() && (this->getAge() == 0))
+                    {
+                        return IDS_TOOLTIPS_LOVEMODE;
+                    }
+                }
+                // break out here
+                break;
+            }
+
+            if (equalsIgnoreCase(player->getUUID(), this->getOwnerUUID()))
+            {
+                if (this->isSitting())
+                {
+                    return IDS_TOOLTIPS_FOLLOWME;
+                }
+                else
+                {
+                    return IDS_TOOLTIPS_SIT;
+                }
+            }
+        }
+        break;
+    }
+
+    return 0;
 }

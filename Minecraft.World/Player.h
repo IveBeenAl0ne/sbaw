@@ -83,7 +83,7 @@ protected:
 
 public:
 	int ticksElytraFlying;
-	float rotateElytraX; 
+	float rotateElytraX;
 	float rotateElytraY;
 	float rotateElytraZ;
 	float m_elytraImpactYd;
@@ -95,7 +95,7 @@ public:
 	int   m_fireworkBoostTicks;
 	int   m_elytraRocketCooldown;
 public:
-	void startFireworkBoost(shared_ptr<ItemInstance> firework); 
+	void startFireworkBoost(shared_ptr<ItemInstance> firework);
 	bool isElytraFlying();
 	virtual void setElytraFlying(bool flying);
 
@@ -324,7 +324,7 @@ private:
 
 public:
 	/**
-	* 
+	*
 	* @param forcefulWakeUp
 	*            If the player has been forced to wake up. When this happens,
 	*            the client will skip the wake-up animation. For example, when
@@ -569,6 +569,11 @@ public:
 	vector<SKIN_OFFSET *> *GetSkinOffsets();
 	void SetSkinOffsets(vector<SKIN_OFFSET *> *ppSkinOffsets);
 
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
+
 #if defined(__PS3__) || defined(__ORBIS__)
 	enum ePlayerNameValidState
 	{
@@ -595,13 +600,12 @@ private:
 
 struct PlayerKeyHash
 {
-	inline int operator() (const shared_ptr<Player> k) const 
+	inline int operator() (const shared_ptr<Player> k) const
 	{ return Player::hash_fnct (k); }
 };
 
 struct PlayerKeyEq
 {
-	inline bool operator() (const shared_ptr<Player> x, const shared_ptr<Player> y) const 
+	inline bool operator() (const shared_ptr<Player> x, const shared_ptr<Player> y) const
 	{ return Player::eq_test (x, y); }
 };
-

@@ -94,6 +94,10 @@ protected:
 
 public:
 	virtual bool isConverting();
+	virtual int getAttackTooltipId(std::shared_ptr<Player> player);
+    virtual int getInteractTooltipId(Level *level,
+                                     std::shared_ptr<Player> player,
+                                     std::shared_ptr<ItemInstance> heldItem);
 
 protected:
 	virtual void finishConversion();

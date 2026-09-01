@@ -307,7 +307,7 @@ void Ocelot::setCatType(int type)
 
 bool Ocelot::canSpawn()
 {
-	
+
 	//return level->random->nextInt(3) != 0; when checkSpawnObstruction is implemented
 	// artificially make ozelots more rare
 	if (level->random->nextInt(3) == 0)
@@ -383,4 +383,80 @@ bool Ocelot::isSittingOnTile()
 {
 	byte current = entityData->getByte(DATA_FLAGS_ID);
 	return (current & 0x02) > 0;
+}
+
+int Ocelot::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    if (player->isAllowedToAttackAnimals())
+    {
+        return IDS_TOOLTIPS_HIT;
+    }
+
+    return 0;
+}
+
+int Ocelot::getInteractTooltipId(Level *level,
+                                std::shared_ptr<Player> player,
+                                std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    if (this->isLeashed() && this->getLeashHolder() == player)
+    {
+        return IDS_TOOLTIPS_UNLEASH;
+    }
+    else if (heldItemId == Item::lead_Id)
+    {
+        if (!this->isLeashed())
+        {
+            return IDS_TOOLTIPS_LEASH;
+        }
+    }
+    else if (heldItemId == Item::name_tag_Id)
+    {
+        return IDS_TOOLTIPS_NAME;
+    }
+    else if (this->isTame())
+    {
+        // 4J-PB - if you have a raw fish in your hand, you will feed the this rather than have it sit/follow
+        if (this->isFood(heldItem))
+        {
+            if (!this->isBaby())
+            {
+                if (!this->isInLove())
+                {
+                    if (this->getAge() == 0)
+                    {
+                        return IDS_TOOLTIPS_LOVEMODE;
+                    }
+                }
+                else
+                {
+                    return IDS_TOOLTIPS_FEED;
+                }
+            }
+        }
+        else if (equalsIgnoreCase(player->getUUID(), this->getOwnerUUID()) && !this->isSittingOnTile())
+        {
+            if (this->isSitting())
+            {
+                return IDS_TOOLTIPS_FOLLOWME;
+            }
+            else
+            {
+                return IDS_TOOLTIPS_SIT;
+            }
+        }
+    }
+    else if (heldItemId >= 0)
+    {
+        if (this->isFood(heldItem))
+        {
+            return IDS_TOOLTIPS_TAME;
+        }
+    }
 }

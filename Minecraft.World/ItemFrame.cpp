@@ -37,7 +37,7 @@ ItemFrame::ItemFrame(Level *level, int xTile, int yTile, int zTile, int dir) : H
 	setDir(dir);
 }
 
-void ItemFrame::defineSynchedData() 
+void ItemFrame::defineSynchedData()
 {
 	getEntityData()->defineNULL(DATA_ITEM, nullptr);
 	getEntityData()->define(DATA_ROTATION, static_cast<byte>(0));
@@ -50,7 +50,7 @@ bool ItemFrame::shouldRenderAtSqrDistance(double distance)
 	return distance < size * size;
 }
 
-void ItemFrame::dropItem(shared_ptr<Entity> causedBy) 
+void ItemFrame::dropItem(shared_ptr<Entity> causedBy)
 {
 	shared_ptr<ItemInstance> item = getItem();
 
@@ -84,7 +84,7 @@ void ItemFrame::removeFramedMap(shared_ptr<ItemInstance> item)
 	item->setFramed(nullptr);
 }
 
-shared_ptr<ItemInstance> ItemFrame::getItem() 
+shared_ptr<ItemInstance> ItemFrame::getItem()
 {
 	return getEntityData()->getItemInstance(DATA_ITEM);
 }
@@ -128,16 +128,16 @@ void ItemFrame::setRotation(int rotation, bool notifyNeighbors)
 
 void ItemFrame::setRotation(int rotation)
 {
-    
+
     getEntityData()->set(DATA_ROTATION, static_cast<byte>(rotation % 8));
     level->updateNeighbourForOutputSignal(xTile, yTile, zTile, Tile::comparator_off->id);
 }
 
 
 
-void ItemFrame::addAdditonalSaveData(CompoundTag *tag) 
+void ItemFrame::addAdditonalSaveData(CompoundTag *tag)
 {
-	if (getItem() != nullptr) 
+	if (getItem() != nullptr)
 	{
 		tag->putCompound(L"Item", getItem()->save(new CompoundTag()));
 		tag->putByte(L"ItemRotation", static_cast<byte>(getRotation()));
@@ -146,10 +146,10 @@ void ItemFrame::addAdditonalSaveData(CompoundTag *tag)
 	HangingEntity::addAdditonalSaveData(tag);
 }
 
-void ItemFrame::readAdditionalSaveData(CompoundTag *tag) 
+void ItemFrame::readAdditionalSaveData(CompoundTag *tag)
 {
 	CompoundTag *itemTag = tag->getCompound(L"Item");
-	if (itemTag != nullptr && !itemTag->isEmpty()) 
+	if (itemTag != nullptr && !itemTag->isEmpty())
 	{
 		setItem(ItemInstance::fromTag(itemTag));
 		setRotation(tag->getByte(L"ItemRotation"));
@@ -159,37 +159,37 @@ void ItemFrame::readAdditionalSaveData(CompoundTag *tag)
 	HangingEntity::readAdditionalSaveData(tag);
 }
 
-bool ItemFrame::interact(shared_ptr<Player> player) 
+bool ItemFrame::interact(shared_ptr<Player> player)
 {
 	if(!player->isAllowedToInteract(shared_from_this()))
 	{
 		return false;
 	}
 
-	if (getItem() == nullptr) 
+	if (getItem() == nullptr)
 	{
 		shared_ptr<ItemInstance> item = player->getCarriedItem();
 
-		if (item != nullptr) 
+		if (item != nullptr)
 		{
-			if (!level->isClientSide)//isClientSide) 
+			if (!level->isClientSide)//isClientSide)
 			{
 				setItem(item);
 				playSound(eSoundType_ENTITY_ITEMFRAME_ADD_ITEM, 1.0f, 1.0f);
 
-				if (!player->abilities.instabuild) 
+				if (!player->abilities.instabuild)
 				{
-					if (--item->count <= 0) 
+					if (--item->count <= 0)
 					{
 						player->inventory->setItem(player->inventory->selected, nullptr);
 					}
 				}
 			}
 		}
-	} 
-	else 
+	}
+	else
 	{
-		if (!level->isClientSide)//isClientSide) 
+		if (!level->isClientSide)//isClientSide)
 		{
 			setRotation(getRotation() + 1);
 			playSound(eSoundType_ENTITY_ITEMFRAME_ROTATE_ITEM, 1.0f, 1.0f);
@@ -204,11 +204,11 @@ bool ItemFrame::hurt(DamageSource *source, float damage)
     if (level->isClientSide) return false;
 
     shared_ptr<ItemInstance> item = getItem();
-    
+
     if (!source->isExplosion() && item != nullptr)
     {
         shared_ptr<Entity> sourceEntity = source->getEntity();
-        
+
         if (sourceEntity != nullptr && sourceEntity->instanceof(eTYPE_PLAYER))
         {
             shared_ptr<Player> player = dynamic_pointer_cast<Player>(sourceEntity);
@@ -250,4 +250,35 @@ int ItemFrame::getAnalogOutput()
 float ItemFrame::getPickRadius()
 {
 	return 0.0f;
+}
+
+int ItemFrame::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_HIT;
+}
+
+int ItemFrame::getInteractTooltipId(Level *level,
+                                    std::shared_ptr<Player> player,
+                                    std::shared_ptr<ItemInstance> heldItem)
+{
+    int heldItemId = -1;
+    if (heldItem != nullptr && heldItem->getItem() != nullptr)
+    {
+        heldItemId = heldItem->getItem()->id;
+    }
+
+    // is the frame occupied?
+    if (this->getItem() != nullptr)
+    {
+        // rotate the item
+        return IDS_TOOLTIPS_ROTATE;
+    }
+    else
+    {
+        // is there an object in hand?
+        if (heldItemId >= 0)
+        {
+            return IDS_TOOLTIPS_PLACE;
+        }
+    }
 }

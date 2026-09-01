@@ -169,7 +169,14 @@ shared_ptr<LeashFenceKnotEntity> LeashFenceKnotEntity::findKnotAt(Level *level, 
 	return nullptr;
 }
 
-int LeashFenceKnotEntity::getInteractTooltipId(Level* level, std::shared_ptr<Player> player, std::shared_ptr<ItemInstance> heldItem)
+int LeashFenceKnotEntity::getAttackTooltipId(std::shared_ptr<Player> player)
+{
+    return IDS_TOOLTIPS_UNLEASH;
+}
+
+int LeashFenceKnotEntity::getInteractTooltipId(Level *level,
+                                               std::shared_ptr<Player> player,
+                                               std::shared_ptr<ItemInstance> heldItem)
 {
     if (heldItem != nullptr && heldItem->getItem() != nullptr && heldItem->getItem()->id == Item::lead_Id)
     {
