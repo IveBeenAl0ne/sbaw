@@ -2715,6 +2715,7 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 				case Item::iron_boots_Id:
 				case Item::golden_boots_Id:
 				case Item::diamond_boots_Id:
+				case Item::elytra_Id:
 					*piUse = IDS_TOOLTIPS_EQUIP;
 					break;
 				}
