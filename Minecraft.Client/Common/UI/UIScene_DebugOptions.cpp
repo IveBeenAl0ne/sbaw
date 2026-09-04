@@ -241,6 +241,7 @@ void UIScene_DebugOptionsMenu::handlePress(F64 controlId, F64 childId)
 
 void UIScene_DebugOptionsMenu::setGameSettings()
 {
+#ifdef _DEBUG
     unsigned int uiMask = 0;
 
     if (m_multiList.GetCheckboxValue(eControl_ArtTools)) uiMask |= (1 << eDebugSetting_ArtTools);
@@ -287,6 +288,7 @@ void UIScene_DebugOptionsMenu::setGameSettings()
 
         app.CheckGameSettingsChanged(true, m_iPad);
     }
+#endif
 
     m_bGoToOverworld = false;
     m_bGoToNether = false;
