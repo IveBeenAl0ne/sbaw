@@ -29,9 +29,9 @@ class UIScene_DebugOptionsMenu : public UIScene
         eControl_GoToOverworld = 18,
         eControl_GoToNether = 19,
         eControl_GoToEnd = 20,
-        eControl_UnlockAllDLC = 21,
-        eControl_LoadSavesFromDisk = 22,
-        eControl_WriteSavesToDisk = 23,
+        //eControl_UnlockAllDLC = 21, //unused
+        eControl_LoadSavesFromDisk = 21,
+        eControl_WriteSavesToDisk = 22,
     };
 
     UIControl_MultiList m_multiList;

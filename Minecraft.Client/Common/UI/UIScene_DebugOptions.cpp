@@ -105,7 +105,6 @@ void UIScene_DebugOptionsMenu::tick()
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_SUPERFLAT_NETHER), eControl_SuperflatNether, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_SuperflatNether)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_MORE_LIGHTNING), eControl_RegularLightning, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_RegularLightning)) != 0));
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_BIOME_OVERRIDE), eControl_EnableBiomeOverride, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_EnableBiomeOverride)) != 0));
-        m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_UNLOCK_ALL_DLC), eControl_UnlockAllDLC, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_UnlockAllDLC)) != 0));
 
         // UI
         m_multiList.AddNewCheckbox(app.GetString(IDS_DEBUG_SAFE_AREA), eControl_Safearea, ((app.GetGameSettingsDebugMask(m_iPad) & (1 << eDebugSetting_Safearea)) != 0));
@@ -255,7 +254,6 @@ void UIScene_DebugOptionsMenu::setGameSettings()
     if (m_multiList.GetCheckboxValue(eControl_SuperflatNether)) uiMask |= (1 << eDebugSetting_SuperflatNether);
     if (m_multiList.GetCheckboxValue(eControl_RegularLightning)) uiMask |= (1 << eDebugSetting_RegularLightning);
     if (m_multiList.GetCheckboxValue(eControl_EnableBiomeOverride)) uiMask |= (1 << eDebugSetting_EnableBiomeOverride);
-    if (m_multiList.GetCheckboxValue(eControl_UnlockAllDLC)) uiMask |= (1 << eDebugSetting_UnlockAllDLC);
 
     if (m_multiList.GetCheckboxValue(eControl_Safearea)) uiMask |= (1 << eDebugSetting_Safearea);
     if (m_multiList.GetCheckboxValue(eControl_ShowUIMarketingGuide)) uiMask |= (1 << eDebugSetting_ShowUIMarketingGuide);
