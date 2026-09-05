@@ -571,8 +571,8 @@ void UIScene_MainMenu::render(S32 width, S32 height, C4JRender::eViewportType vi
 
 	Font *font = pMinecraft->font;
 	const wstring part1 = L"neo";
-	const wstring part2 = L"Legacy";
-	const wstring part3 = L" Build " + to_wstring(VER_PRODUCTBUILD);
+	const wstring part2 = L"Legacy ";
+	const wstring part3 = VER_LAST_TAG;
 
 	const float scale = 0.6f;
 	const int pad = 4;

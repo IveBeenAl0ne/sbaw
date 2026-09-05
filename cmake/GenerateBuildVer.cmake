@@ -21,6 +21,17 @@ if(NOT rc EQUAL 0)
   set(GIT_SHA "unknown")
 endif()
 
+# Get the latest tag, excluding dedicated server ones
+execute_process(
+  COMMAND git describe --tags --match "v[0-9]*" --exclude "*-Dedicated-Server"
+  OUTPUT_VARIABLE GIT_TAG
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE rc
+)
+if(NOT rc EQUAL 0)
+  set(GIT_TAG "unknown")
+endif()
+
 # Get branch name
 execute_process(
   COMMAND git symbolic-ref --short HEAD
@@ -70,6 +81,7 @@ set(_content
   "#define VER_FILEVERSION_STR_W VER_PRODUCTVERSION_STR_W\n"
   "#define VER_BRANCHVERSION_STR_W L\"${GIT_REF}\"\n"
   "#define VER_NETWORK VER_PRODUCTBUILD\n"
+  "#define VER_LAST_TAG L\"${GIT_TAG}${SUFFIX}\"\n"
 )
 
 set(_tmp "${OUTPUT_FILE}.tmp")
