@@ -50,7 +50,7 @@ void ServerPlayerGameMode::setGameModeForPlayer(GameType *gameModeForPlayer)
 {
 	this->gameModeForPlayer = gameModeForPlayer;
 
-	gameModeForPlayer->updatePlayerAbilities(&(player->abilities));
+	gameModeForPlayer->updatePlayerAbilities(&(player->abilities), player);
 	player->onUpdateAbilities();
 
 }
@@ -66,7 +66,7 @@ bool ServerPlayerGameMode::isSurvival()
 }
 
 bool ServerPlayerGameMode::isCreative() {
-    if (!this || !gameModeForPlayer) return false; 
+    if (!this || !gameModeForPlayer) return false;
     return gameModeForPlayer->isCreative();
 }
 void ServerPlayerGameMode::updateGameMode(GameType *gameType)
@@ -138,7 +138,7 @@ void ServerPlayerGameMode::startDestroyBlock(int x, int y, int z, int face)
 {
 	if(!player->isAllowedToMine()) return;
 
-	if (gameModeForPlayer->isAdventureRestricted())
+	if (gameModeForPlayer->isAdventureRestricted() || gameModeForPlayer->isSpectator())
 	{
 		if (!player->mayDestroyBlockAt(x, y, z))
 		{
@@ -237,7 +237,7 @@ bool ServerPlayerGameMode::superDestroyBlock(int x, int y, int z)
 
 bool ServerPlayerGameMode::destroyBlock(int x, int y, int z)
 {
-	if (gameModeForPlayer->isAdventureRestricted())
+	if (gameModeForPlayer->isAdventureRestricted() || gameModeForPlayer->isSpectator())
 	{
 		if (!player->mayDestroyBlockAt(x, y, z))
 		{
@@ -257,7 +257,7 @@ bool ServerPlayerGameMode::destroyBlock(int x, int y, int z)
 	int data = level->getData(x, y, z);
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 	int eventExp = 0;
-	if (!isCreative() && !gameModeForPlayer->isAdventureRestricted())
+	if (!isCreative() && !gameModeForPlayer->isAdventureRestricted() || !gameModeForPlayer->isSpectator())
 	{
 		Tile *tile = Tile::tiles[t];
 		if (tile != nullptr && player->canDestroy(tile))
@@ -336,7 +336,7 @@ bool ServerPlayerGameMode::destroyBlock(int x, int y, int z)
 		}
 		player->connection->send( tup );
 	}
-	else 
+	else
 	{
 		shared_ptr<ItemInstance> item = player->getSelectedItem();
 		bool canDestroy = player->canDestroy(Tile::tiles[t]);
@@ -378,7 +378,12 @@ bool ServerPlayerGameMode::useItem(shared_ptr<Player> player, Level *level, shar
 {
 	if(!player->isAllowedToUse(item)) return false;
 
-	int oldCount = item->count;
+    if (player != nullptr && (player->isSpectator() || player->abilities.spectatorMode))
+    {
+        return false;
+    }
+
+    int oldCount = item->count;
 	int oldAux = item->getAuxValue();
 	shared_ptr<ItemInstance> itemInstance = item->use(level, player);
 	if (itemInstance != item || (itemInstance != nullptr && (itemInstance->count != oldCount || itemInstance->getUseDuration() > 0 || itemInstance->getAuxValue() != oldAux)))
@@ -386,7 +391,7 @@ bool ServerPlayerGameMode::useItem(shared_ptr<Player> player, Level *level, shar
 		player->inventory->items[player->inventory->selected] = itemInstance;
 		if (isCreative())
 		{
-			//if  (!(Item::items[itemInstance->id]->getBaseItemType() == 7 || Item::items[itemInstance->id]->getBaseItemType() == 8 || Item::items[itemInstance->id]->getBaseItemType() == 9 || Item::items[itemInstance->id]->getBaseItemType() == 10)) 
+			//if  (!(Item::items[itemInstance->id]->getBaseItemType() == 7 || Item::items[itemInstance->id]->getBaseItemType() == 8 || Item::items[itemInstance->id]->getBaseItemType() == 9 || Item::items[itemInstance->id]->getBaseItemType() == 10))
 			itemInstance->count = oldCount;
 			if (itemInstance->isDamageableItem()) itemInstance->setAuxValue(oldAux);
 		}
@@ -406,6 +411,12 @@ bool ServerPlayerGameMode::useItem(shared_ptr<Player> player, Level *level, shar
 
 bool ServerPlayerGameMode::useItemOn(shared_ptr<Player> player, Level *level, shared_ptr<ItemInstance> item, int x, int y, int z, int face, float clickX, float clickY, float clickZ, bool bTestUseOnOnly, bool *pbUsedItem)
 {
+    if (player != nullptr && (player->isSpectator() || player->abilities.spectatorMode))
+    {
+        if (pbUsedItem) *pbUsedItem = false;
+        return false;
+    }
+
 	// 4J-PB - Adding a test only version to allow tooltips to be displayed
 	int t = level->getTile(x, y, z);
 	if (!player->isSneaking() || player->getCarriedItem() == nullptr)
@@ -416,7 +427,7 @@ bool ServerPlayerGameMode::useItemOn(shared_ptr<Player> player, Level *level, sh
 			{
 				if (Tile::tiles[t]->TestUse()) return true;
 			}
-			else 
+			else
 			{
 				if (Tile::tiles[t]->use(level, x, y, z, player, face, clickX, clickY, clickZ))
 				{
@@ -457,6 +468,6 @@ void ServerPlayerGameMode::setGameRules(GameRulesInstance *rules)
 }
 GameType* ServerPlayerGameMode::getGameType()
 {
-    
+
      return gameModeForPlayer;
 }

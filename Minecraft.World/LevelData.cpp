@@ -198,7 +198,7 @@ LevelData::LevelData(CompoundTag *tag)
 	}
 	else
 <<<<<<< HEAD
-	{		
+	{
 	this->loadedPlayerTag = nullptr;
 =======
 	{

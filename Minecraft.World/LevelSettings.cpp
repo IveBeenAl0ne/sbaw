@@ -1,7 +1,11 @@
+#include "Player.h"
 #include "stdafx.h"
 #include "LevelSettings.h"
 #include "net.minecraft.world.level.storage.h"
 #include "LevelType.h"
+#include "LivingEntity.h"
+#include "MobEffect.h"
+#include "MobEffectInstance.h"
 
 GameType *GameType::NOT_SET = nullptr;
 GameType *GameType::SURVIVAL= nullptr;
@@ -34,22 +38,56 @@ wstring GameType::getName()
 	return name;
 }
 
-void GameType::updatePlayerAbilities(Abilities *abilities)
+void GameType::updatePlayerAbilities(Abilities *abilities, shared_ptr<Player> player)
 {
 	if (this == CREATIVE)
 	{
 		abilities->mayfly = true;
 		abilities->instabuild = true;
 		abilities->invulnerable = true;
+		abilities->spectatorMode = false;
+		player->noPhysics = false;
+		player->setInvisible(false);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CannotMine, 0);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CannotBuild, 0);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CanUseContainers, 1);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CanUseDoorsAndSwitches, 1);
+        player->removeEffect(MobEffect::nightVision->id);
 	}
+	else if (this == SPECTATOR)
+    {
+        abilities->mayfly = true;
+        abilities->flying = true;
+        abilities->instabuild = false;
+        abilities->invulnerable = true;
+        abilities->spectatorMode = true;
+        abilities->mayBuild = false;
+        abilities->setFlyingSpeed(0.08f);
+        player->noPhysics = true;
+        player->onGround = false;
+        player->addEffect(new MobEffectInstance(MobEffect::nightVision->id, 0x7fffffff, 0, true));
+        player->setInvisible(true);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CannotMine, 1);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CannotBuild, 1);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CanUseContainers, 0);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CanUseDoorsAndSwitches, 0);
+    }
 	else
 	{
+	    player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CannotMine, 0);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CannotBuild, 0);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CanUseContainers, 1);
+        player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_CanUseDoorsAndSwitches, 1);
+        player->removeEffect(MobEffect::nightVision->id);
+        player->noPhysics = false;
+        player->setInvisible(false);
 		abilities->mayfly = false;
 		abilities->instabuild = false;
 		abilities->invulnerable = false;
 		abilities->flying = false;
+		abilities->spectatorMode = false;
 	}
-	abilities->mayBuild = !isAdventureRestricted();
+	abilities->mayBuild = !isAdventureRestricted() && !isSpectator();
 }
 
 bool GameType::isAdventureRestricted()
@@ -77,6 +115,7 @@ GameType *GameType::byId(int id)
 	else if(id == SURVIVAL->id) return SURVIVAL;
 	else if(id == CREATIVE->id) return CREATIVE;
 	else if(id == ADVENTURE->id) return ADVENTURE;
+	else if(id == SPECTATOR->id) return SPECTATOR;
 
 	return SURVIVAL;
 }
@@ -87,6 +126,8 @@ GameType *GameType::byName(const wstring &name)
 	else if(name.compare(SURVIVAL->name) == 0) return SURVIVAL;
 	else if(name.compare(CREATIVE->name) == 0) return CREATIVE;
 	else if(name.compare(ADVENTURE->name) == 0) return ADVENTURE;
+	else if(name.compare(SPECTATOR->name) == 0) return SPECTATOR;
+
 
 	return SURVIVAL;
 }

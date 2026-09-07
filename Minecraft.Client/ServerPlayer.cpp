@@ -1987,8 +1987,11 @@ void ServerPlayer::restoreFrom(shared_ptr<Player> oldPlayer, bool restoreAll)
 
 void ServerPlayer::onEffectAdded(MobEffectInstance *effect)
 {
-	Player::onEffectAdded(effect);
-	connection->send(std::make_shared<UpdateMobEffectPacket>(entityId, effect));
+    if (this->connection != nullptr)
+    {
+       	Player::onEffectAdded(effect);
+        connection->send(std::make_shared<UpdateMobEffectPacket>(entityId, effect));
+    }
 }
 
 
@@ -2001,8 +2004,11 @@ void ServerPlayer::onEffectUpdated(MobEffectInstance *effect, bool doRefreshAttr
 
 void ServerPlayer::onEffectRemoved(MobEffectInstance *effect)
 {
-	Player::onEffectRemoved(effect);
-	connection->send(std::make_shared<RemoveMobEffectPacket>(entityId, effect));
+    if (this->connection != nullptr)
+    {
+        Player::onEffectRemoved(effect);
+        this->connection->send(std::make_shared<RemoveMobEffectPacket>(this->entityId, effect));
+    }
 }
 
 void ServerPlayer::teleportTo(double x, double y, double z)

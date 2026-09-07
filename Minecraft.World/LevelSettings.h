@@ -27,7 +27,7 @@ private:
 public:
 	int getId();
 	wstring getName();
-	void updatePlayerAbilities(Abilities *abilities);
+	void updatePlayerAbilities(Abilities *abilities, shared_ptr<Player> player);
 	bool isAdventureRestricted();
 	bool isCreative();
 	bool isSurvival();

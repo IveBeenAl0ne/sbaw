@@ -31,6 +31,7 @@
 #include "../Minecraft.World/LevelData.h"
 #include "../Minecraft.World/Pos.h"
 #include "../Minecraft.World/Achievements.h"
+#include "../Minecraft.World/Player.h"
 #include "EntityTracker.h"
 #include "ServerConnection.h"
 #include "../Minecraft.World/GenericStats.h"
@@ -983,7 +984,7 @@ void PlayerConnection::onUnhandledPacket(shared_ptr<Packet> packet)
 
 void PlayerConnection::send(shared_ptr<Packet> packet)
 {
-	if( connection->getSocket() != nullptr )
+    if( connection->getSocket() != nullptr )
 	{
 #if defined(_WINDOWS64) && defined(MINECRAFT_SERVER_BUILD)
 		// Security gate: when require-secure-client is enabled, buffer ALL outgoing
@@ -1363,12 +1364,12 @@ if (cmd == L"tp" || cmd == L"teleport")
 
 		if (targetName.empty())
 		{
-        
+
 			server->getCommandDispatcher()->performCommand(player, eGameCommand_Kill, byteArray());
 		}
 		else
 		{
-        
+
 			ByteArrayOutputStream baos;
 			DataOutputStream dos(&baos);
 			dos.writeUTF(targetName);
@@ -1419,6 +1420,8 @@ if (cmd == L"tp" || cmd == L"teleport")
         	mode = 1;
     	else if (modeStr == L"2" || modeStr == L"a" || modeStr == L"adventure")
         	mode = 2;
+        else if (modeStr == L"3" || modeStr == L"spectator")
+            mode = 3;
     	else {
         	warn(L"Unknown game mode: " + modeStr);
         	return;
@@ -1476,33 +1479,6 @@ if (cmd == L"tp" || cmd == L"teleport")
     	shared_ptr<GameCommandPacket> packet = GiveItemCommand::preparePacket(target, item, amount, aux);
     	server->getCommandDispatcher()->performCommand(player, eGameCommand_Give, packet->data);
 	}
-#ifdef _DEBUG
-	else if (cmd == L"spectator")
-	{
-		player->m_spectatorMode = !player->m_spectatorMode;
-		if (player->m_spectatorMode)
-		{
-			player->abilities.mayfly = true;
-			player->abilities.flying = true;
-			player->abilities.invulnerable = true;
-			player->abilities.spectatorMode = true;
-			player->abilities.setFlyingSpeed(0.1f);
-			player->noPhysics = true;
-			player->addEffect(new MobEffectInstance(MobEffect::nightVision->id, 0x7fffffff, 0, true));
-			info(L"Spectator mode enabled.");
-		}
-		else
-		{
-			player->gameMode->getGameModeForPlayer()->updatePlayerAbilities(&player->abilities);
-			player->abilities.spectatorMode = false;
-			player->abilities.setFlyingSpeed(0.05f);
-			player->noPhysics = false;
-			player->removeEffect(MobEffect::nightVision->id);
-			info(L"Spectator mode disabled.");
-		}
-		player->onUpdateAbilities();
-	}
-#endif
 }
 
 void PlayerConnection::handleAnimate(shared_ptr<AnimatePacket> packet)
@@ -2026,7 +2002,7 @@ void PlayerConnection::handleGameCommand(shared_ptr<GameCommandPacket> packet)
 		player->getName().c_str(), player->isModerator() ? 1 : 0, isHost ? 1 : 0,
 		static_cast<int>(packet->command));
 #endif
-	
+
 
 	MinecraftServer::getInstance()->getCommandDispatcher()->performCommand(player, packet->command, packet->data);
 }

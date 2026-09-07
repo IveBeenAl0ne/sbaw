@@ -41,7 +41,7 @@ void MultiPlayerGameMode::creativeDestroyBlock(Minecraft *minecraft, MultiPlayer
 
 void MultiPlayerGameMode::adjustPlayer(shared_ptr<Player> player)
 {
-	localPlayerMode->updatePlayerAbilities(&player->abilities);
+	localPlayerMode->updatePlayerAbilities(&player->abilities, player);
 }
 
 bool MultiPlayerGameMode::isCutScene()
@@ -52,7 +52,7 @@ bool MultiPlayerGameMode::isCutScene()
 void MultiPlayerGameMode::setLocalMode(GameType *mode)
 {
 	localPlayerMode = mode;
-	localPlayerMode->updatePlayerAbilities(&minecraft->player->abilities);
+	localPlayerMode->updatePlayerAbilities(&minecraft->player->abilities, minecraft->player);
 }
 
 void MultiPlayerGameMode::initPlayer(shared_ptr<Player> player)
@@ -67,13 +67,18 @@ bool MultiPlayerGameMode::canHurtPlayer()
 
 bool MultiPlayerGameMode::destroyBlock(int x, int y, int z, int face)
 {
-	if (localPlayerMode->isAdventureRestricted()) {
+	if (localPlayerMode->isAdventureRestricted() || localPlayerMode->isSpectator()) {
         if (!minecraft->player->mayDestroyBlockAt(x, y, z)) {
             return false;
         }
     }
 
-	if (localPlayerMode->isCreative())
+    if (minecraft->player != nullptr && (minecraft->player->isSpectator() || minecraft->player->abilities.spectatorMode))
+    {
+        return false;
+    }
+
+    if (localPlayerMode->isCreative())
 	{
         if (minecraft->player->getCarriedItem() != nullptr && dynamic_cast<WeaponItem *>(minecraft->player->getCarriedItem()->getItem()) != nullptr)
 		{
@@ -113,10 +118,15 @@ bool MultiPlayerGameMode::destroyBlock(int x, int y, int z, int face)
 }
 
 void MultiPlayerGameMode::startDestroyBlock(int x, int y, int z, int face)
-{	
+{
 	if(!minecraft->player->isAllowedToMine()) return;
 
-	if (localPlayerMode->isAdventureRestricted())
+    if (minecraft->player != nullptr && (minecraft->player->isSpectator() || minecraft->player->abilities.spectatorMode))
+    {
+        return;
+    }
+
+    if (localPlayerMode->isAdventureRestricted() || localPlayerMode->isSpectator())
 	{
         if (!minecraft->player->mayDestroyBlockAt(x, y, z))
 		{
@@ -157,7 +167,7 @@ void MultiPlayerGameMode::startDestroyBlock(int x, int y, int z, int face)
             yDestroyBlock = y;
             zDestroyBlock = z;
 			destroyingItem = minecraft->player->getCarriedItem();
-            destroyProgress = 0;        
+            destroyProgress = 0;
             destroyTicks = 0;
 			minecraft->level->destroyTileProgress(minecraft->player->entityId, xDestroyBlock, yDestroyBlock, zDestroyBlock, static_cast<int>(destroyProgress * 10) - 1);
         }
@@ -181,6 +191,12 @@ void MultiPlayerGameMode::stopDestroyBlock()
 void MultiPlayerGameMode::continueDestroyBlock(int x, int y, int z, int face)
 {
 	if(!minecraft->player->isAllowedToMine()) return;
+
+    if (minecraft->player != nullptr && (minecraft->player->isSpectator() || minecraft->player->abilities.spectatorMode))
+    {
+        return;
+    }
+
     ensureHasSentCarriedItem();
 //        connection.send(new PlayerActionPacket(PlayerActionPacket.CONTINUE_DESTROY_BLOCK, x, y, z, face));
 
@@ -262,7 +278,7 @@ bool MultiPlayerGameMode::sameDestroyTarget(int x, int y, int z)
     bool sameItems = destroyingItem == nullptr && selected == nullptr;
     if (destroyingItem != nullptr && selected != nullptr)
 	{
-        sameItems = 
+        sameItems =
 			selected->id == destroyingItem->id &&
 			ItemInstance::tagMatches(selected, destroyingItem) &&
 			(selected->isDamageableItem() || selected->getAuxValue() == destroyingItem->getAuxValue());
@@ -284,6 +300,11 @@ bool MultiPlayerGameMode::useItemOn(shared_ptr<Player> player, Level *level, sha
 {
 	if( pbUsedItem ) *pbUsedItem = false;	// Did we actually use the held item?
 
+	if (player != nullptr && (player->isSpectator() || player->abilities.spectatorMode))
+    {
+        return false;
+    }
+
 	// 4J-PB - Adding a test only version to allow tooltips to be displayed
 	if(!bTestUseOnly)
 	{
@@ -296,16 +317,16 @@ bool MultiPlayerGameMode::useItemOn(shared_ptr<Player> player, Level *level, sha
 
 	if (!player->isSneaking() || player->getCarriedItem() == nullptr)
 	{
-		int t = level->getTile(x, y, z);	
+		int t = level->getTile(x, y, z);
 		if (t > 0 && player->isAllowedToUse(Tile::tiles[t]))
 		{
 			if(bTestUseOnly)
 			{
 				switch(t)
 				{
-				case Tile::jukebox_Id: 
+				case Tile::jukebox_Id:
 				case Tile::bed_Id: // special case for a bed
-					if (Tile::tiles[t]->TestUse(level, x, y, z, player )) 
+					if (Tile::tiles[t]->TestUse(level, x, y, z, player ))
 					{
 						return true;
 					}
@@ -320,7 +341,7 @@ bool MultiPlayerGameMode::useItemOn(shared_ptr<Player> player, Level *level, sha
 					break;
 				}
 			}
-			else 
+			else
 			{
 				if (Tile::tiles[t]->use(level, x, y, z, player, face, clickX, clickY, clickZ)) didSomething = true;
 			}
@@ -360,7 +381,7 @@ bool MultiPlayerGameMode::useItemOn(shared_ptr<Player> player, Level *level, sha
 	else
 	{
 		int t = level->getTile(x, y, z);
-		// 4J - Bit of a hack, however seems preferable to any larger changes which would have more chance of causing unwanted side effects. 
+		// 4J - Bit of a hack, however seems preferable to any larger changes which would have more chance of causing unwanted side effects.
 		// If we aren't going to be actually performing the use method locally, then call this method with its "soundOnly" parameter set to true.
 		// This is an addition from the java version, and as its name suggests, doesn't actually perform the use locally but just makes any sounds that
 		// are meant to be directly caused by this. If we don't do this, then the sounds never happen as the tile's use method is only called on the
@@ -374,7 +395,7 @@ bool MultiPlayerGameMode::useItemOn(shared_ptr<Player> player, Level *level, sha
 		}
 	}
 
-	// 4J Stu - Do the action before we send the packet, so that our predicted count is sent in the packet and the server 
+	// 4J Stu - Do the action before we send the packet, so that our predicted count is sent in the packet and the server
 	// doesn't think it has to update us
 	// Fix for #7904 - Gameplay: Players can dupe torches by throwing them repeatedly into water.
 	if(!bTestUseOnly)
@@ -386,7 +407,12 @@ bool MultiPlayerGameMode::useItemOn(shared_ptr<Player> player, Level *level, sha
 
 bool MultiPlayerGameMode::useItem(shared_ptr<Player> player, Level *level, shared_ptr<ItemInstance> item, bool bTestUseOnly)
 {
-	if(!player->isAllowedToUse(item)) return false;
+    if (player != nullptr && (player->isSpectator() || player->abilities.spectatorMode))
+    {
+        return false;
+    }
+
+    if(!player->isAllowedToUse(item)) return false;
 
 	// 4J-PB - Adding a test only version to allow tooltips to be displayed
 	if(!bTestUseOnly)
@@ -394,11 +420,11 @@ bool MultiPlayerGameMode::useItem(shared_ptr<Player> player, Level *level, share
 		ensureHasSentCarriedItem();
 	}
 
-	// 4J Stu - Do the action before we send the packet, so that our predicted count is sent in the packet and the server 
+	// 4J Stu - Do the action before we send the packet, so that our predicted count is sent in the packet and the server
 	// doesn't think it has to update us, or can update us if we are wrong
 	// Fix for #13120 - Using a bucket of water or lava in the spawn area (centre of the map) causes the inventory to get out of sync
     bool result = false;
-	
+
 	// 4J-PB added for tooltips to test use only
 	if(bTestUseOnly)
 	{
@@ -418,7 +444,7 @@ bool MultiPlayerGameMode::useItem(shared_ptr<Player> player, Level *level, share
 			result = true;
 		}
 	}
-	
+
 	if(!bTestUseOnly)
 	{
 		connection->send(std::make_shared<UseItemPacket>(-1, -1, -1, 255, player->inventory->getSelected(), 0, 0, 0));
@@ -433,6 +459,11 @@ shared_ptr<MultiplayerLocalPlayer> MultiPlayerGameMode::createPlayer(Level *leve
 
 void MultiPlayerGameMode::attack(shared_ptr<Player> player, shared_ptr<Entity> entity)
 {
+    if (player != nullptr && (player->isSpectator() || player->abilities.spectatorMode))
+    {
+        return;
+    }
+
     ensureHasSentCarriedItem();
     connection->send(std::make_shared<InteractPacket>(player->entityId, entity->entityId, InteractPacket::ATTACK));
     player->attack(entity);
@@ -440,6 +471,11 @@ void MultiPlayerGameMode::attack(shared_ptr<Player> player, shared_ptr<Entity> e
 
 bool MultiPlayerGameMode::interact(shared_ptr<Player> player, shared_ptr<Entity> entity)
 {
+    if (player != nullptr && (player->isSpectator() || player->abilities.spectatorMode))
+    {
+        return false;
+    }
+
     ensureHasSentCarriedItem();
     connection->send(std::make_shared<InteractPacket>(player->entityId, entity->entityId, InteractPacket::INTERACT));
     return player->interact(entity);
