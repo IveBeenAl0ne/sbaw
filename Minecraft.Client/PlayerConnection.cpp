@@ -20,6 +20,8 @@
 #include "../Minecraft.World/net.minecraft.world.entity.animal.h"
 #include "../Minecraft.World/net.minecraft.network.h"
 #include "../Minecraft.World/net.minecraft.world.food.h"
+#include "../net.minecraft.world.entity.h"
+#include "../net.minecraft.world.entity.npc.h"
 #include "../Minecraft.World/AABB.h"
 #include "../Minecraft.World/Pos.h"
 #include "../Minecraft.World/SharedConstants.h"
@@ -1109,6 +1111,9 @@ void PlayerConnection::handleCommand(const wstring& message)
 	wstringstream ss(message.substr(1));
 	wstring cmd;
 	ss >> cmd;
+
+	ServerLevel *level = server->getLevel(player->dimension);
+
 if (cmd == L"tp" || cmd == L"teleport")
 {
 
@@ -1478,6 +1483,618 @@ if (cmd == L"tp" || cmd == L"teleport")
 
     	shared_ptr<GameCommandPacket> packet = GiveItemCommand::preparePacket(target, item, amount, aux);
     	server->getCommandDispatcher()->performCommand(player, eGameCommand_Give, packet->data);
+	} else if (cmd == L"setblock") {
+        if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+        {
+            warn(L"Cheats are not enabled on this server.");
+            return;
+        }
+
+        std::wstring strX, strY, strZ, tileStr;
+        ss >> strX >> strY >> strZ >> tileStr;
+
+        auto parseCoord = [](const std::wstring& str, double playerPos) -> int {
+            if (str.empty()) return 0;
+
+            if (str[0] == L'~')
+            {
+                int base = static_cast<int>(floor(playerPos));
+                if (str.length() > 1)
+                {
+                    base += std::wcstol(str.substr(1).c_str(), nullptr, 10);
+                }
+                return base;
+            }
+
+            return static_cast<int>(std::wcstol(str.c_str(), nullptr, 10));
+        };
+
+        int blockX = parseCoord(strX, player->x);
+        int blockY = parseCoord(strY, player->y);
+        int blockZ = parseCoord(strZ, player->z);
+
+        if (blockY >= 0 && blockY < 256)
+        {
+            int tile = 0;
+            try
+            {
+                tile = tileStr.find(L"minecraft:") == 0 ? GetItemIdByName(tileStr.substr(10)) : std::stoi(tileStr);
+
+                if (!(tile >= 0 && tile < 256 && Tile::tiles[tile] != nullptr))
+                    throw "You can't setblock an item... Try with a tile";
+            }
+            catch (...)
+            {
+                warn(L"Invalid block ID/Name or amount");
+                return;
+            }
+
+            level->setTileAndUpdate(blockX, blockY, blockZ, tile);
+            info(L"Successfully placed block.");
+        }
+	} else if (cmd == L"fill") {
+	    // this is pretty much a copy of setblock but instead of pasting a block alone we normalize each points and place the blocks one by one in
+		// the world using the imbricated for loop at the bottom
+        if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+        {
+            warn(L"Cheats are not enabled on this server.");
+            return;
+        }
+
+        std::wstring posX1, posY1, posZ1, posX2, posY2, posZ2, tileStr;
+        ss >> posX1 >> posY1 >> posZ1 >> posX2 >> posY2 >> posZ2 >> tileStr;
+
+        auto parseCoord = [](const std::wstring& str, double playerPos) -> int {
+            if (str.empty()) return 0;
+
+            if (str[0] == L'~')
+            {
+                int base = static_cast<int>(floor(playerPos));
+                if (str.length() > 1)
+                {
+                    base += std::wcstol(str.substr(1).c_str(), nullptr, 10);
+                }
+                return base;
+            }
+
+            return static_cast<int>(std::wcstol(str.c_str(), nullptr, 10));
+        };
+
+        int blockX1 = parseCoord(posX1, player->x);
+        int blockY1 = parseCoord(posY1, player->y);
+        int blockZ1 = parseCoord(posZ1, player->z);
+
+        int blockX2 = parseCoord(posX2, player->x);
+        int blockY2 = parseCoord(posY2, player->y);
+        int blockZ2 = parseCoord(posZ2, player->z);
+
+        int minX = min(blockX1, blockX2);
+        int maxX = max(blockX1, blockX2);
+        int minY = max(0, min(blockY1, blockY2));
+        int maxY = min(255, max(blockY1, blockY2));
+        int minZ = min(blockZ1, blockZ2);
+        int maxZ = max(blockZ1, blockZ2);
+
+        // Limit fill to 32k because if you try to do too many you could certainly break the game, and its on par with java
+        int volume = (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
+        if (volume > 32768)
+        {
+            warn(L"Too much blocks in specified area (max 32768)");
+            return;
+        }
+
+        int tile = 0;
+        try
+        {
+            if (tileStr.find(L"minecraft:") == 0)
+            {
+                tile = GetItemIdByName(tileStr.substr(10));
+            }
+            else
+            {
+                tile = static_cast<int>(std::wcstol(tileStr.c_str(), nullptr, 10));
+            }
+
+            if (!(tile >= 0 && tile < 256 && Tile::tiles[tile] != nullptr))
+            {
+                warn(L"Invalid Tile name or ID.");
+                return;
+            }
+        }
+        catch (...)
+        {
+            warn(L"Invalid Tile name or ID.");
+            return;
+        }
+
+        for (int x = minX; x <= maxX; ++x)
+        {
+            for (int y = minY; y <= maxY; ++y)
+            {
+                for (int z = minZ; z <= maxZ; ++z)
+                {
+                    level->setTileAndUpdate(x, y, z, tile);
+                }
+            }
+        }
+        wstring successMessage = L"Successfully filled " + to_wstring(volume) + L" blocks.";
+        info(successMessage);
+	} else if (cmd == L"summon") {
+        if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+        {
+            warn(L"Cheats are not enabled on this server.");
+            return;
+        }
+
+        std::wstring entityName, strX, strY, strZ;
+        ss >> entityName;
+
+        if (entityName.empty())
+        {
+            warn(L"Usage: /summon <entityName> [x] [y] [z]");
+            return;
+        }
+
+        ss >> strX >> strY >> strZ;
+
+        auto parseCoord = [](const std::wstring& str, double playerPos) -> double {
+            if (str.empty()) return playerPos;
+
+            if (str[0] == L'~')
+            {
+                double base = playerPos;
+                if (str.length() > 1)
+                {
+                    base += std::wcstod(str.substr(1).c_str(), nullptr);
+                }
+                return base;
+            }
+
+            return std::wcstod(str.c_str(), nullptr);
+        };
+
+        double spawnX = parseCoord(strX, player->x);
+        double spawnY = parseCoord(strY, player->y);
+        double spawnZ = parseCoord(strZ, player->z);
+
+        if (entityName.find(L"minecraft:") == 0)
+        {
+            entityName = entityName.substr(10);
+        }
+
+        shared_ptr<Entity> newEntity = EntityIO::newEntity(entityName, level);
+
+        if (newEntity != nullptr)
+        {
+            newEntity->moveTo(spawnX, spawnY, spawnZ, Mth::wrapDegrees(level->random->nextFloat() * 360.0f), 0.0f);
+
+            if (newEntity->instanceof(eTYPE_MOB))
+            {
+                shared_ptr<Mob> mob = dynamic_pointer_cast<Mob>(newEntity);
+                newEntity->setDespawnProtected();
+                mob->yHeadRot = mob->yRot;
+                mob->yBodyRot = mob->yRot;
+
+                mob->finalizeMobSpawn(nullptr, 0);
+            }
+
+            level->addEntity(newEntity);
+            info(L"Summoned " + entityName + L".");
+        }
+        else
+        {
+            warn(L"Unknown entity or failed to summon.");
+        }
+    } else if (cmd == L"seed") {
+        info(L"Current seed: " + to_wstring(level->getLevelData()->getSeed()) + L".");
+    } else if (cmd == L"setworldspawn") {
+        int dim = level->dimension->id;
+
+        if (dim != 0)
+        {
+            warn(L"You can't set the world spawn outside of the overworld!");
+        }
+        else
+        {
+            std::wstring posX, posY, posZ;
+            ss >> posX >> posY >> posZ;
+
+            auto parseCoord = [](const std::wstring &str, double playerPos) -> double {
+                if (str.empty())
+                {
+                    return playerPos;
+                }
+
+                if (str[0] == L'~')
+                {
+                    double base = playerPos;
+                    if (str.length() > 1)
+                    {
+                        base += std::wcstod(str.substr(1).c_str(), nullptr);
+                    }
+                    return base;
+                }
+
+                return std::wcstod(str.c_str(), nullptr);
+            };
+
+            double spawnX = parseCoord(posX, player->x);
+            double spawnY = parseCoord(posY, player->y);
+            double spawnZ = parseCoord(posZ, player->z);
+
+            level->getLevelData()->setSpawn(spawnX, spawnY, spawnZ);
+
+            info(L"World spawn has been set to X: " + to_wstring(spawnX) + L" Y: " + to_wstring(spawnY) + L" Z: " + to_wstring(spawnZ));
+        }
+    } else if (cmd == L"spawnpoint") {
+        std::wstring targetName, posX, posY, posZ;
+        ss >> targetName >> posX >> posY >> posZ;
+
+       	shared_ptr<ServerPlayer> targetPlayer;
+       	if (targetName.empty()) {
+           	targetPlayer = player;
+       	} else {
+           	targetPlayer = server->getPlayers()->getPlayer(targetName);
+           	if (!targetPlayer) {
+               	warn(L"Player not found: " + targetName);
+               	return;
+           	}
+       	}
+
+        auto parseCoord = [](const std::wstring &str, double playerPos) -> double {
+            if (str.empty())
+            {
+                return playerPos;
+            }
+
+            if (str[0] == L'~')
+            {
+                double base = playerPos;
+                if (str.length() > 1)
+                {
+                    base += std::wcstod(str.substr(1).c_str(), nullptr);
+                }
+                return base;
+            }
+
+            return std::wcstod(str.c_str(), nullptr);
+        };
+
+        double spawnX = parseCoord(posX, player->x);
+        double spawnY = parseCoord(posY, player->y);
+        double spawnZ = parseCoord(posZ, player->z);
+
+        Pos *newSpawn = new Pos(spawnX, spawnY, spawnZ);
+
+        targetPlayer->setRespawnPosition(newSpawn, true);
+
+        info(L"Set " + targetPlayer->getName() + L"'s spawn point to " + to_wstring(spawnX) + L", " + to_wstring(spawnY) + L", " + to_wstring(spawnZ));
+    }
+    else if (cmd == L"xp")
+    {
+        if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+        {
+            warn(L"Cheats are not enabled on this server.");
+            return;
+        }
+
+        std::wstring arg1, arg2, arg3, arg4;
+        ss >> arg1 >> arg2 >> arg3 >> arg4;
+
+        if (arg1.empty())
+        {
+            warn(L"Usage: /xp <amount[L]> [player]");
+            warn(L"OR: /xp [player] <add|set> <amount> <levels|points>");
+            return;
+        }
+
+        shared_ptr<ServerPlayer> targetPlayer = player;
+        bool isLevel = false;
+        int amount = 0;
+        bool isSet = false;
+
+        if (arg2 == L"add" || arg2 == L"set")
+        {
+            targetPlayer = server->getPlayers()->getPlayer(arg1);
+            if (!targetPlayer)
+            {
+                warn(L"Player not found: " + arg1);
+                return;
+            }
+
+            isSet = (arg2 == L"set");
+            amount = static_cast<int>(std::wcstol(arg3.c_str(), nullptr, 10));
+            isLevel = (arg4 == L"levels" || arg4 == L"l" || arg4 == L"L");
+        }
+
+        // Old java syntax for convenience
+        else
+        {
+            std::wstring amountStr = arg1;
+
+            if (!amountStr.empty() && (amountStr.back() == L'L' || amountStr.back() == L'l'))
+            {
+                isLevel = true;
+                amountStr.pop_back();
+            }
+
+            amount = static_cast<int>(std::wcstol(amountStr.c_str(), nullptr, 10));
+
+            if (!arg2.empty())
+            {
+                targetPlayer = server->getPlayers()->getPlayer(arg2);
+                if (!targetPlayer)
+                {
+                    warn(L"Player not found: " + arg2 + L".");
+                    return;
+                }
+            }
+        }
+
+        if (isLevel)
+        {
+            if (isSet)
+            {
+                targetPlayer->experienceLevel = amount;
+                targetPlayer->experienceProgress = 0.0f;
+                targetPlayer->giveExperienceLevels(0);
+            }
+            else
+            {
+                targetPlayer->giveExperienceLevels(amount);
+            }
+        }
+        else
+        {
+            if (isSet)
+            {
+                targetPlayer->totalExperience = amount;
+                targetPlayer->experienceLevel = 0;
+                targetPlayer->experienceProgress = 0.0f;
+                targetPlayer->giveExperienceLevels(0);
+            }
+            else
+            {
+                targetPlayer->totalExperience += amount;
+                targetPlayer->giveExperienceLevels(0);
+            }
+        }
+
+        info(L"Gave XP to " + targetPlayer->getName());
+    }
+    else if (cmd == L"difficulty")
+    {
+        if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+        {
+            warn(L"Cheats are not enabled on this server.");
+            return;
+        }
+
+        auto difficultyString = [](int difficulty) -> std::wstring
+        {
+            switch (difficulty)
+            {
+            case 0:
+                return L"Peaceful";
+            case 1:
+                return L"Easy";
+            case 2:
+                return L"Normal";
+            case 3:
+                return L"Hard";
+            default:
+                return L"Unknown";
+            }
+        };
+
+        std::wstring newDifficulty;
+
+        ss >> newDifficulty;
+
+        if (newDifficulty.empty())
+        {
+            info(L"Current difficulty is " + difficultyString(level->difficulty) + L".");
+            return;
+        }
+
+        int diffValue = -1;
+
+        if (newDifficulty == L"peaceful" || newDifficulty == L"0")
+        {
+            diffValue = 0;
+        }
+        else if (newDifficulty == L"easy" || newDifficulty == L"1")
+        {
+            diffValue = 1;
+        }
+        else if (newDifficulty == L"normal" || newDifficulty == L"2")
+        {
+            diffValue = 2;
+        }
+        else if (newDifficulty == L"hard"  || newDifficulty == L"3")
+        {
+            diffValue = 3;
+        }
+        else
+        {
+            warn(L"This difficulty type: " + newDifficulty + L" Does not exist.");
+            warn(L"Supported difficulties are: peaceful, easy, normal, hard.");
+            return;
+        }
+
+        app.SetGameHostOption(eGameHostOption_Difficulty, diffValue);
+
+        /*
+        if (level->getLevelData() != nullptr)
+        {
+            level->getLevelData()->setDifficulty(diffValue);
+        }
+        */
+
+        level->difficulty = diffValue;
+
+        info(L"Level difficulty updated to " + newDifficulty);
+    }
+    else if (cmd == L"effect")
+    {
+        // Note: Most of the logic is stolen from EffectCommand.cpp, everything was commented but seems like its working at least... Thanks 4J i guess ?
+        if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+        {
+            warn(L"Cheats are not enabled on this server.");
+            return;
+        }
+
+        std::wstring action, targetOrEffect, effectStr, durationStr, ampStr;
+        ss >> action;
+
+        if (action.empty())
+        {
+            warn(L"Usage: /effect <give|clear> [player] <effectId|name> <seconds> <amplifier>");
+            return;
+        }
+
+        shared_ptr<ServerPlayer> targetPlayer = player;
+
+        if (action == L"clear")
+        {
+            std::wstring possiblePlayer;
+            ss >> possiblePlayer;
+
+            if (!possiblePlayer.empty())
+            {
+                targetPlayer = server->getPlayers()->getPlayer(possiblePlayer);
+                if (!targetPlayer)
+                {
+                    warn(L"Player not found: " + possiblePlayer);
+                    return;
+                }
+            }
+
+            targetPlayer->removeAllEffects();
+            info(L"Cleared all effects from " + targetPlayer->getName() + L".");
+            return;
+        }
+
+        if (action == L"give")
+        {
+            ss >> targetOrEffect;
+
+            if (targetOrEffect.empty())
+            {
+                warn(L"Usage: /effect give <player> <effectId|name> <seconds> <amplifier>");
+                return;
+            }
+
+            shared_ptr<ServerPlayer> foundPlayer = server->getPlayers()->getPlayer(targetOrEffect);
+            if (foundPlayer != nullptr)
+            {
+                targetPlayer = foundPlayer;
+                ss >> effectStr >> durationStr >> ampStr;
+            }
+            else
+            {
+                effectStr = targetOrEffect;
+                ss >> durationStr >> ampStr;
+            }
+
+            if (effectStr.empty())
+            {
+                warn(L"Please specify an effect ID or name.");
+                return;
+            }
+
+            if (effectStr.find(L"minecraft:") == 0)
+            {
+                effectStr = effectStr.substr(10);
+            }
+
+            int effectId = static_cast<int>(std::wcstol(effectStr.c_str(), nullptr, 10));
+
+            if (effectId == 0)
+            {
+                effectId = MobEffect::getEffectIdByCanonicalName(effectStr);
+            }
+
+            int seconds = durationStr.empty() ? 30 : static_cast<int>(std::wcstol(durationStr.c_str(), nullptr, 10));
+            int amplifier = ampStr.empty() ? 0 : static_cast<int>(std::wcstol(ampStr.c_str(), nullptr, 10));
+
+            int durationTicks = seconds * 20;
+
+            if (effectId > 0 && effectId < MobEffect::NUM_EFFECTS && MobEffect::effects[effectId] != nullptr)
+            {
+                if (seconds == 0)
+                {
+                    targetPlayer->removeEffect(effectId);
+                    info(L"Removed effect from " + targetPlayer->getName() + L".");
+                }
+                else
+                {
+                    targetPlayer->addEffect(new MobEffectInstance(effectId, durationTicks, amplifier));
+                    info(L"Applied effect " + effectStr + L" (ID " + to_wstring(effectId) + L") to " + targetPlayer->getName() + L".");
+                }
+            }
+            else
+            {
+                warn(L"Invalid or unknown effect: " + effectStr);
+            }
+        }
+        else
+        {
+            warn(L"Unknown action. Use give or clear.");
+        }
+    }
+    else if (cmd == L"kick")
+    {
+        if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+        {
+            warn(L"Cheats are not enabled on this server.");
+            return;
+        }
+
+        std::wstring targetPlayer, confirmationSelfKick;
+
+        ss >> targetPlayer;
+
+        if (targetPlayer.empty())
+        {
+            warn(L"Usage: /kick <player>");
+            return;
+        }
+
+        ss >> confirmationSelfKick;
+
+        bool imSureGoAhead = (confirmationSelfKick == L"im100%sure");
+
+        shared_ptr<ServerPlayer> foundPlayer = server->getPlayers()->getPlayer(targetPlayer);
+
+        // Note: I added this because in some specific case kicking yourself can be helpful
+        // Maybe the message could be tweaked a bit.. Idk, edit it if you have a better idea than me
+
+        if (player == foundPlayer && !imSureGoAhead)
+        {
+            info(L"I don't think trying to kick yourself is a great idea honestly...");
+            info(L"(pass im100%sure as a 2nd argument if you are a 100% sure)");
+            return;
+        }
+
+        foundPlayer->connection->setWasKicked();
+
+        foundPlayer->connection->send(
+            std::make_shared<DisconnectPacket>(DisconnectPacket::eDisconnect_Kicked)
+        );
+
+        server->getPlayers()->kickPlayerByShortId(foundPlayer->connection->getNetworkPlayer()->GetSmallId());
+
+        shared_ptr<ChatPacket> kickMessage(
+            std::make_shared<ChatPacket>(
+                L"Player " + foundPlayer->getName() + L" was kicked."
+            )
+        );
+        server->getPlayers()->broadcastAll(kickMessage);
+    }
+    else
+	{
+	    warn(L"The command '" + cmd + L"' is not recognized. Check the syntax and try again.");
 	}
 }
 

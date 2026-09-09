@@ -126,4 +126,108 @@ public:
 	virtual void removeAttributeModifiers(shared_ptr<LivingEntity> entity, BaseAttributeMap *attributes, int amplifier);
 	virtual void addAttributeModifiers(shared_ptr<LivingEntity> entity, BaseAttributeMap *attributes, int amplifier);
 	virtual double getAttributeModifierValue(int amplifier, AttributeModifier *original);
+    static int getEffectIdByCanonicalName(const std::wstring &name)
+    {
+        std::wstring lower = name;
+        for (auto &c : lower)
+        {
+            c = towlower(c);
+        }
+
+        // I know this is ugly but it didn't leave me the choice...
+        if (lower == L"speed")
+        {
+            return MobEffect::movementSpeed ? MobEffect::movementSpeed->id : 1;
+        }
+        if (lower == L"slowness")
+        {
+            return MobEffect::movementSlowdown ? MobEffect::movementSlowdown->id : 2;
+        }
+        if (lower == L"haste")
+        {
+            return MobEffect::digSpeed ? MobEffect::digSpeed->id : 3;
+        }
+        if (lower == L"mining_fatigue")
+        {
+            return MobEffect::digSlowdown ? MobEffect::digSlowdown->id : 4;
+        }
+        if (lower == L"strength")
+        {
+            return MobEffect::damageBoost ? MobEffect::damageBoost->id : 5;
+        }
+        if (lower == L"instant_health")
+        {
+            return MobEffect::heal ? MobEffect::heal->id : 6;
+        }
+        if (lower == L"instant_damage")
+        {
+            return MobEffect::harm ? MobEffect::harm->id : 7;
+        }
+        if (lower == L"jump_boost")
+        {
+            return MobEffect::jump ? MobEffect::jump->id : 8;
+        }
+        if (lower == L"nausea")
+        {
+            return MobEffect::confusion ? MobEffect::confusion->id : 9;
+        }
+        if (lower == L"regeneration")
+        {
+            return MobEffect::regeneration ? MobEffect::regeneration->id : 10;
+        }
+        if (lower == L"resistance")
+        {
+            return MobEffect::damageResistance ? MobEffect::damageResistance->id : 11;
+        }
+        if (lower == L"fire_resistance")
+        {
+            return MobEffect::fireResistance ? MobEffect::fireResistance->id : 12;
+        }
+        if (lower == L"water_breathing")
+        {
+            return MobEffect::waterBreathing ? MobEffect::waterBreathing->id : 13;
+        }
+        if (lower == L"invisibility")
+        {
+            return MobEffect::invisibility ? MobEffect::invisibility->id : 14;
+        }
+        if (lower == L"blindness")
+        {
+            return MobEffect::blindness ? MobEffect::blindness->id : 15;
+        }
+        if (lower == L"night_vision")
+        {
+            return MobEffect::nightVision ? MobEffect::nightVision->id : 16;
+        }
+        if (lower == L"hunger")
+        {
+            return MobEffect::hunger ? MobEffect::hunger->id : 17;
+        }
+        if (lower == L"weakness")
+        {
+            return MobEffect::weakness ? MobEffect::weakness->id : 18;
+        }
+        if (lower == L"poison")
+        {
+            return MobEffect::poison ? MobEffect::poison->id : 19;
+        }
+        if (lower == L"wither")
+        {
+            return MobEffect::wither ? MobEffect::wither->id : 20;
+        }
+        if (lower == L"health_boost")
+        {
+            return MobEffect::healthBoost ? MobEffect::healthBoost->id : 21;
+        }
+        if (lower == L"absorption")
+        {
+            return MobEffect::absorption ? MobEffect::absorption->id : 22;
+        }
+        if (lower == L"saturation")
+        {
+            return MobEffect::saturation ? MobEffect::saturation->id : 23;
+        }
+
+        return 0;
+    }
 };
