@@ -38,6 +38,7 @@
 #include "ServerConnection.h"
 #include "../Minecraft.World/GenericStats.h"
 #include "../Minecraft.World/JavaMath.h"
+#include "../Minecraft.World/Enchantment.h"
 
 #include "../Minecraft.World/ListTag.h"
 // 4J Added
@@ -2080,22 +2081,99 @@ if (cmd == L"tp" || cmd == L"teleport")
         foundPlayer->connection->setWasKicked();
 
         foundPlayer->connection->send(
-            std::make_shared<DisconnectPacket>(DisconnectPacket::eDisconnect_Kicked)
-        );
+            std::make_shared<DisconnectPacket>(DisconnectPacket::eDisconnect_Kicked));
 
         server->getPlayers()->kickPlayerByShortId(foundPlayer->connection->getNetworkPlayer()->GetSmallId());
 
         shared_ptr<ChatPacket> kickMessage(
             std::make_shared<ChatPacket>(
-                L"Player " + foundPlayer->getName() + L" was kicked."
-            )
-        );
+                L"Player " + foundPlayer->getName() + L" was kicked."));
         server->getPlayers()->broadcastAll(kickMessage);
     }
+    else if (cmd == L"enchant")
+    {
+        if (!app.GetGameHostOption(eGameHostOption_CheatsEnabled))
+        {
+            warn(L"Cheats are not enabled on this server.");
+            return;
+        }
+
+        if (!player->hasPermission(eGameCommand_Give))
+        {
+            warn(L"You do not have permission to use this command.");
+            return;
+        }
+
+        std::wstring idStr, levelStr;
+        ss >> idStr >> levelStr;
+
+        if (idStr.empty())
+        {
+            warn(L"Usage: /enchant <enchantment> [level]");
+            return;
+        }
+
+        wchar_t *endPtr = nullptr;
+        int enchantmentId = static_cast<int>(std::wcstol(idStr.c_str(), &endPtr, 10));
+
+        if (endPtr == idStr.c_str())
+        {
+            enchantmentId = Enchantment::getEnchantmentIdByCanonicalName(idStr);
+        }
+
+        int enchantmentLevel = levelStr.empty() ? 1 : static_cast<int>(std::wcstol(levelStr.c_str(), nullptr, 10));
+
+        shared_ptr<ItemInstance> selectedItem = player->getSelectedItem();
+
+        if (selectedItem == nullptr)
+        {
+            warn(L"You have to hold an item! (Why would you want to enchant nothing ?)");
+            return;
+        }
+
+        if (enchantmentId < 0 || enchantmentId >= 256 || Enchantment::enchantments[enchantmentId] == nullptr)
+        {
+            warn(L"Enchantment not found: " + idStr);
+            return;
+        }
+
+        Enchantment *e = Enchantment::enchantments[enchantmentId];
+        if (!e->canEnchant(selectedItem))
+        {
+            warn(L"This item cannot be enchanted with " + Enchantment::getEnchantmentName(e, enchantmentLevel) + L".");
+            return;
+        }
+
+        if (selectedItem->hasTag())
+        {
+            ListTag<CompoundTag> *enchantmentTags = selectedItem->getEnchantmentTags();
+            if (enchantmentTags != nullptr)
+            {
+                for (int i = 0; i < enchantmentTags->size(); i++)
+                {
+                    int type = enchantmentTags->get(i)->getShort((wchar_t *)ItemInstance::TAG_ENCH_ID);
+
+                    if (type >= 0 && type < 256 && Enchantment::enchantments[type] != nullptr)
+                    {
+                        Enchantment *existing = Enchantment::enchantments[type];
+                        if (!existing->isCompatibleWith(e))
+                        {
+                            warn(L"Enchantment incompatibility!" + Enchantment::getEnchantmentName(e, enchantmentLevel) + L" cannot be combined with existing enchantment.");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        selectedItem->enchant(e, enchantmentLevel);
+
+        info(L"Enchantment applied: " + Enchantment::getEnchantmentName(e, enchantmentLevel) + L".");
+    }
     else
-	{
-	    warn(L"The command '" + cmd + L"' is not recognized. Check the syntax and try again.");
-	}
+    {
+        warn(L"The command '" + cmd + L"' is not recognized. Check the syntax and try again.");
+    }
 }
 
 void PlayerConnection::handleAnimate(shared_ptr<AnimatePacket> packet)
