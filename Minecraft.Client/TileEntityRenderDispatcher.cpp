@@ -16,6 +16,7 @@
 #include "BeaconRenderer.h"
 #include "BannerRenderer.h"
 #include "BannerModel.h"
+#include "Frustum.h"
 
 TileEntityRenderDispatcher *TileEntityRenderDispatcher::instance = nullptr;
 double TileEntityRenderDispatcher::xOff = 0;
@@ -137,11 +138,19 @@ void TileEntityRenderDispatcher::render(shared_ptr<TileEntity> e, float a, bool 
 
 void TileEntityRenderDispatcher::render(shared_ptr<TileEntity> entity, double x, double y, double z, float a, bool setColor/*=true*/, float alpha, bool useCompiled)
 {
-	TileEntityRenderer *renderer = getRenderer(entity);
-	if (renderer != nullptr)
-	{
-		renderer->render(entity, x, y, z, a, setColor, alpha, useCompiled);
-	}
+    AABB *bb = AABB::newTemp(x - 1.0, y - 0.5, z - 1.0, x + 2.0, y + 1.5, z + 2.0);
+
+    // Check if the tile entity is in the camera field.. If it isn't, don't render it
+    if (bb != nullptr && !Frustum::getFrustum()->isVisible(bb))
+    {
+        return;
+    }
+
+    TileEntityRenderer *renderer = getRenderer(entity);
+    if (renderer != nullptr)
+    {
+        renderer->render(entity, x, y, z, a, setColor, alpha, useCompiled);
+    }
 }
 
 void TileEntityRenderDispatcher::setLevel(Level *level)
