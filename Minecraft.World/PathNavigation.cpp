@@ -149,12 +149,14 @@ Path *PathNavigation::getPath()
 	return path;
 }
 
-void PathNavigation::tick()
-{
-	++_tick;
-	if (isDone()) return;
+	void PathNavigation::tick()
+	{
+		++_tick;
+		if (isDone()) return;
 
-	if (canUpdatePath()) updatePath();
+		// Instead of calculating the path every tick, do it only once every 8 ticks
+		// Players won't see the difference
+		if (_tick % 8 == 0 && canUpdatePath()) updatePath();
 
 	if (isDone()) return;
 	Vec3 *target = path->currentPos(mob->shared_from_this());
